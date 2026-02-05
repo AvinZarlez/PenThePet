@@ -74,6 +74,12 @@ Scripts must be loaded in this specific order (already configured in index.html)
 - **Manual Testing**: Test in browser with `python3 -m http.server 8080` or similar
 - **Browser Console**: Game instance is accessible via `window.game` for debugging
 - **Cross-Browser**: Test in Chrome, Firefox, Safari when possible
+- **Mobile Testing**: Always test functionality on mobile screen sizes (phone viewports) using browser developer tools. Ensure:
+  - All interactive elements are easily tappable on touch screens
+  - Text is readable at small screen sizes
+  - Grid scales appropriately for phone screens
+  - Controls stack vertically and remain accessible
+  - Test at common phone widths: 375px (iPhone), 360px (Android), 414px (iPhone Plus)
 
 ### Adding New Features
 
@@ -100,8 +106,9 @@ Scripts must be loaded in this specific order (already configured in index.html)
 ## Common Tasks
 
 ### Changing Grid Size
-- Modify `CONFIG.GRID_DEFAULT_SIZE` in config.js
-- Update min/max constraints if needed
+- Modify `CONFIG.grid.defaultSize` in config.js
+- Update min/max constraints if needed (current max is 21)
+- Always test on mobile viewports after grid size changes
 
 ### Adjusting Tile Distribution
 - Modify `CONFIG.TILE_RATIOS` in config.js to change probability weights

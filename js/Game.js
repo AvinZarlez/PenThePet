@@ -18,6 +18,8 @@ class Game {
         this.boundHandleArrowKeys = this.handleArrowKeys.bind(this);
         this.lastFocusedCell = null; // Track last focused cell for keyboard persistence
         this.petEmoji = '🐶'; // Default pet emoji
+        this.hintMode = CONFIG.hints.mode; // Hint mode: disabled, checkOptimal, revealTarget
+        this.goalAreaSize = CONFIG.gameplay.goalAreaSize; // Goal area size for optimal solution
         this.attachEventListeners();
         this.init();
     }
@@ -31,6 +33,7 @@ class Game {
         this.wallCount = 0;
         this.render();
         this.updateWallCounter();
+        this.updateAreaSizeDisplay();
     }
 
     /**
@@ -56,6 +59,7 @@ class Game {
         
         // Update penned status indicator
         this.updatePennedStatus(isPenned);
+        this.updateAreaSizeDisplay();
     }
 
     /**
@@ -300,7 +304,7 @@ class Game {
             const yellowTileCount = isPenned ? this.getAccessibleTiles().size : 0;
             
             if (isPenned) {
-                statusElement.innerHTML = `<span class="submit-label">Submit</span><span class="submit-check">✓</span><span class="submit-count">${yellowTileCount}</span>`;
+                statusElement.innerHTML = `<span class="submit-label">Submit</span><span class="submit-check">✓</span>`;
                 statusElement.className = 'penned-status penned';
                 statusElement.title = `Pet is penned! Click to view area (${yellowTileCount} tiles)`;
                 statusElement.disabled = false;
@@ -318,6 +322,35 @@ class Game {
     }
 
     /**
+     * Update the area size display with current area size and goal coloring
+     */
+    updateAreaSizeDisplay() {
+        const areaSizeElement = document.getElementById('areaSize');
+        const areaSizeDisplay = areaSizeElement ? areaSizeElement.parentElement : null;
+        
+        if (areaSizeElement && areaSizeDisplay) {
+            const pathInfo = this.calculatePath();
+            const isPenned = !pathInfo.hasPath;
+            
+            if (isPenned) {
+                const areaSize = this.getAccessibleTiles().size;
+                areaSizeElement.textContent = areaSize.toString();
+                
+                // Apply color based on goal comparison
+                areaSizeDisplay.classList.remove('penned-yellow', 'penned-green');
+                if (areaSize < this.goalAreaSize) {
+                    areaSizeDisplay.classList.add('penned-yellow');
+                } else {
+                    areaSizeDisplay.classList.add('penned-green');
+                }
+            } else {
+                areaSizeElement.textContent = '∞';
+                areaSizeDisplay.classList.remove('penned-yellow', 'penned-green');
+            }
+        }
+    }
+
+    /**
      * Reset the game to initial state
      */
     reset() {
@@ -325,6 +358,7 @@ class Game {
         this.wallCount = 0;
         this.render();
         this.updateWallCounter();
+        this.updateAreaSizeDisplay();
     }
 
     /**
@@ -336,6 +370,7 @@ class Game {
         this.wallCount = 0;
         this.render();
         this.updateWallCounter();
+        this.updateAreaSizeDisplay();
     }
 
     /**
@@ -359,6 +394,7 @@ class Game {
         const exitViewerBtn = document.getElementById('exitViewer');
         const gridSizeInput = document.getElementById('gridSize');
         const petTypeSelect = document.getElementById('petType');
+        const hintModeSelect = document.getElementById('hintMode');
         
         if (newGameBtn) {
             newGameBtn.addEventListener('click', () => this.newGame());
@@ -388,6 +424,13 @@ class Game {
         if (petTypeSelect) {
             petTypeSelect.addEventListener('change', (e) => {
                 this.petEmoji = e.target.value;
+                this.render();
+            });
+        }
+
+        if (hintModeSelect) {
+            hintModeSelect.addEventListener('change', (e) => {
+                this.hintMode = e.target.value;
                 this.render();
             });
         }
