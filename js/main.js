@@ -13,6 +13,14 @@ let game;
 function initGame() {
     game = new Game(CONFIG.grid.defaultSize);
     
+    // Set grid size input attributes from config
+    const gridSizeInput = document.getElementById('gridSize');
+    if (gridSizeInput) {
+        gridSizeInput.min = CONFIG.grid.minSize;
+        gridSizeInput.max = CONFIG.grid.maxSize;
+        gridSizeInput.value = CONFIG.grid.defaultSize;
+    }
+    
     // Export for potential use in console or testing
     if (typeof window !== 'undefined') {
         window.game = game;

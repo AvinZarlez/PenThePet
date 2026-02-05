@@ -17,6 +17,7 @@ class Game {
         this.maxWalls = 9;
         this.boundHandleArrowKeys = this.handleArrowKeys.bind(this);
         this.lastFocusedCell = null; // Track last focused cell for keyboard persistence
+        this.petEmoji = '🐶'; // Default pet emoji
         this.attachEventListeners();
         this.init();
     }
@@ -84,7 +85,7 @@ class Game {
         
         // Add home emoji if this is the home tile
         if (tileType === 'home') {
-            cell.textContent = tileInfo.emoji || '🏠🐾';
+            cell.textContent = `🏠${this.petEmoji}`;
         }
         
         // Add path overlay (paw emoji) if this cell is on the path
@@ -299,7 +300,7 @@ class Game {
             const yellowTileCount = isPenned ? this.getAccessibleTiles().size : 0;
             
             if (isPenned) {
-                statusElement.innerHTML = `<span style="font-size: 0.8em;">✓</span><span style="font-size: 0.5em; display: block; margin-top: -8px;">${yellowTileCount}</span>`;
+                statusElement.innerHTML = `<span class="submit-label">Submit</span><span class="submit-check">✓</span><span class="submit-count">${yellowTileCount}</span>`;
                 statusElement.className = 'penned-status penned';
                 statusElement.title = `Pet is penned! Click to view area (${yellowTileCount} tiles)`;
                 statusElement.disabled = false;
@@ -341,9 +342,11 @@ class Game {
      * Change the grid size
      * @param {number} newSize - The new grid size
      */
-    changeSize(newSize) {
-        this.grid.resize(newSize);
-        this.render();
+    changeGridSize(newSize) {
+        if (newSize >= CONFIG.grid.minSize && newSize <= CONFIG.grid.maxSize) {
+            this.grid = new Grid(newSize);
+            this.newGame();
+        }
     }
 
     /**
@@ -354,6 +357,8 @@ class Game {
         const resetBtn = document.getElementById('resetBtn');
         const statusBtn = document.getElementById('pennedStatus');
         const exitViewerBtn = document.getElementById('exitViewer');
+        const gridSizeInput = document.getElementById('gridSize');
+        const petTypeSelect = document.getElementById('petType');
         
         if (newGameBtn) {
             newGameBtn.addEventListener('click', () => this.newGame());
@@ -369,6 +374,22 @@ class Game {
 
         if (exitViewerBtn) {
             exitViewerBtn.addEventListener('click', () => this.hideRoamingArea());
+        }
+
+        if (gridSizeInput) {
+            gridSizeInput.addEventListener('change', (e) => {
+                const newSize = parseInt(e.target.value);
+                this.changeGridSize(newSize);
+                // Update input to reflect actual grid size (in case validation failed)
+                e.target.value = this.grid.size;
+            });
+        }
+
+        if (petTypeSelect) {
+            petTypeSelect.addEventListener('change', (e) => {
+                this.petEmoji = e.target.value;
+                this.render();
+            });
         }
 
         // Add arrow key navigation (using bound function for potential cleanup)
