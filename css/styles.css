@@ -219,6 +219,10 @@ button:active {
     background: linear-gradient(135deg, #7ed957 0%, #4caf50 100%);
 }
 
+.cell.grass.penned {
+    background: linear-gradient(135deg, #ffeb3b 0%, #ffc107 100%);
+}
+
 .cell.water {
     background: linear-gradient(135deg, #4fc3f7 0%, #2196f3 100%);
     cursor: not-allowed;
@@ -236,10 +240,6 @@ button:active {
     align-items: center;
     justify-content: center;
     font-size: 1.5em;
-}
-
-.cell.penned {
-    background: linear-gradient(135deg, #ffeb3b 0%, #ffc107 100%);
 }
 
 .cell.water:hover {
