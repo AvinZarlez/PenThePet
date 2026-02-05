@@ -15,6 +15,7 @@ class Game {
         this.gridElement = document.getElementById('grid');
         this.wallCount = 0;
         this.maxWalls = 9;
+        this.boundHandleArrowKeys = this.handleArrowKeys.bind(this);
         this.attachEventListeners();
         this.init();
     }
@@ -165,8 +166,8 @@ class Game {
             resetBtn.addEventListener('click', () => this.reset());
         }
 
-        // Add arrow key navigation
-        document.addEventListener('keydown', (e) => this.handleArrowKeys(e));
+        // Add arrow key navigation (using bound function for potential cleanup)
+        document.addEventListener('keydown', this.boundHandleArrowKeys);
     }
 
     /**
