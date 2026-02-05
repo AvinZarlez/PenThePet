@@ -18,8 +18,8 @@ class Game {
         this.boundHandleArrowKeys = this.handleArrowKeys.bind(this);
         this.lastFocusedCell = null; // Track last focused cell for keyboard persistence
         this.petEmoji = '🐶'; // Default pet emoji
-        this.hintMode = CONFIG.hints.mode; // Hint mode: disabled, checkOptimal, revealTarget
-        this.goalAreaSize = CONFIG.gameplay.goalAreaSize; // Goal area size for optimal solution
+        this.hintMode = CONFIG.hints.mode; // Hint mode: disabled, checkOptimal, revealTarget (UI ready, logic TBD)
+        this.goalAreaSize = CONFIG.gameplay.goalAreaSize; // Goal area size threshold (hardcoded, future: calculate per map)
         this.attachEventListeners();
         this.init();
     }
@@ -431,6 +431,9 @@ class Game {
         if (hintModeSelect) {
             hintModeSelect.addEventListener('change', (e) => {
                 this.hintMode = e.target.value;
+                // TODO: Implement hint functionality based on selected mode
+                // - checkOptimal: Show if current solution meets optimal criteria
+                // - revealTarget: Show the target/optimal area size or solution
                 this.render();
             });
         }

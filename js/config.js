@@ -30,7 +30,7 @@ const CONFIG = {
     gameplay: {
         allowWallRemoval: false,    // If true, clicking walls removes them
         autoSaveState: false,        // If true, saves game state to localStorage
-        goalAreaSize: 10,            // Goal for optimal area size (placeholder for future calculation)
+        goalAreaSize: 10,            // Goal area size threshold (TODO: calculate based on grid size/difficulty)
     },
 
     // Hint system
