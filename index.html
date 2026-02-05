@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pen the Pet - A Logic Puzzle Game</title>
+    
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1><span aria-hidden="true">🐾</span> Pen the Pet</h1>
+        <p class="subtitle">A Logic Puzzle Game About Fencing</p>
+
+        <div class="info">
+            <h3>How to Play:</h3>
+            <p>Click on grass tiles to build walls and pen in your pet! Water tiles cannot be clicked.</p>
+            
+            <div class="legend">
+                <div class="legend-item">
+                    <div class="legend-box grass"></div>
+                    <span>Grass (clickable)</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-box water"></div>
+                    <span>Water (blocked)</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-box wall"></div>
+                    <span>Wall (placed)</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="controls">
+            <button id="newGameBtn">New Game</button>
+            <button id="resetBtn">Reset</button>
+        </div>
+
+        <div class="grid-container">
+            <div id="grid" class="grid"></div>
+        </div>
+
+        <footer>
+            <p>Built with HTML, CSS, and JavaScript</p>
+        </footer>
+    </div>
+
+    <!-- Game Scripts (Load in order: config -> types -> grid -> game -> main) -->
+    <script src="js/config.js"></script>
+    <script src="js/tileTypes.js"></script>
+    <script src="js/Grid.js"></script>
+    <script src="js/Game.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>
