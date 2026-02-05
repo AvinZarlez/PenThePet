@@ -233,7 +233,7 @@ button:active {
     padding: 3px;
     border-radius: 10px;
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-    max-width: min(95vw, 95vh);
+    max-width: 95vw;
     width: fit-content;
     margin: 0 auto;
 }
