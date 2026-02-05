@@ -21,6 +21,13 @@ class Game {
         this.petEmoji = '🐶'; // Default pet emoji
         this.hintMode = CONFIG.hints.mode; // Hint mode: disabled, checkOptimal, revealTarget (UI ready, logic TBD)
         this.goalAreaSize = CONFIG.gameplay.goalAreaSize; // Goal area size threshold (hardcoded, future: calculate per map)
+        
+        // Grid sizing constants
+        this.CELL_GAP = 3;       // Gap between cells in pixels
+        this.GRID_PADDING = 6;   // Grid padding (3px * 2)
+        this.MIN_CELL_SIZE = 20; // Minimum cell size for usability
+        this.MAX_CELL_SIZE = 50; // Maximum cell size for aesthetics
+        
         this.attachEventListeners();
         this.init();
     }
@@ -45,17 +52,7 @@ class Game {
         this.gridElement.style.gridTemplateColumns = `repeat(${this.grid.size}, 1fr)`;
         
         // Set dynamic cell size based on grid size to ensure it always fits
-        // Calculate max cell size that fits in viewport
-        const maxGridWidth = Math.min(window.innerWidth * 0.95, window.innerHeight * 0.95);
-        const gap = 3; // pixels between cells
-        const padding = 6; // grid padding (3px * 2)
-        const maxCellSize = Math.floor((maxGridWidth - padding - (gap * (this.grid.size - 1))) / this.grid.size);
-        
-        // Set minimum cell size for usability, maximum for aesthetics
-        const cellSize = Math.max(20, Math.min(50, maxCellSize));
-        
-        this.gridElement.style.setProperty('--cell-size', `${cellSize}px`);
-        this.gridElement.style.gap = `${gap}px`;
+        this.updateCellSizes();
 
         const allTiles = this.grid.getAllTiles();
         
@@ -473,16 +470,22 @@ class Game {
     }
 
     /**
+     * Calculate optimal cell size based on viewport and grid size
+     * @returns {number} The calculated cell size in pixels
+     */
+    calculateCellSize() {
+        const maxGridWidth = Math.min(window.innerWidth * 0.95, window.innerHeight * 0.95);
+        const maxCellSize = Math.floor((maxGridWidth - this.GRID_PADDING - (this.CELL_GAP * (this.grid.size - 1))) / this.grid.size);
+        return Math.max(this.MIN_CELL_SIZE, Math.min(this.MAX_CELL_SIZE, maxCellSize));
+    }
+
+    /**
      * Update cell sizes based on current viewport and grid size
      */
     updateCellSizes() {
-        const maxGridWidth = Math.min(window.innerWidth * 0.95, window.innerHeight * 0.95);
-        const gap = 3;
-        const padding = 6;
-        const maxCellSize = Math.floor((maxGridWidth - padding - (gap * (this.grid.size - 1))) / this.grid.size);
-        const cellSize = Math.max(20, Math.min(50, maxCellSize));
-        
+        const cellSize = this.calculateCellSize();
         this.gridElement.style.setProperty('--cell-size', `${cellSize}px`);
+        this.gridElement.style.gap = `${this.CELL_GAP}px`;
     }
 
     /**
