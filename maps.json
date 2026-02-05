@@ -1,0 +1,16 @@
+{
+  "2026-02-05": {
+    "size": 9,
+    "map": [
+      ["grass", "water", "grass", "grass", "grass", "grass", "grass", "grass", "water"],
+      ["water", "grass", "grass", "grass", "grass", "grass", "grass", "water", "grass"],
+      ["grass", "grass", "grass", "grass", "grass", "grass", "grass", "water", "water"],
+      ["grass", "grass", "grass", "grass", "grass", "grass", "grass", "water", "water"],
+      ["grass", "grass", "grass", "water", "home", "grass", "grass", "grass", "grass"],
+      ["grass", "water", "water", "water", "grass", "grass", "grass", "grass", "grass"],
+      ["grass", "water", "water", "grass", "water", "grass", "water", "grass", "grass"],
+      ["grass", "grass", "grass", "grass", "water", "grass", "water", "grass", "water"],
+      ["grass", "grass", "water", "grass", "grass", "grass", "grass", "water", "grass"]
+    ]
+  }
+}
