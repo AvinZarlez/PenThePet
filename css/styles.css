@@ -93,6 +93,10 @@ h1 {
     background: linear-gradient(135deg, #8d6e63 0%, #5d4037 100%);
 }
 
+.legend-box.home {
+    background: linear-gradient(135deg, #ffeb3b 0%, #ffc107 100%);
+}
+
 /* ========== Button Styles ========== */
 .controls {
     display: flex;
@@ -215,6 +219,10 @@ button:active {
     background: linear-gradient(135deg, #7ed957 0%, #4caf50 100%);
 }
 
+.cell.grass.penned {
+    background: linear-gradient(135deg, #ffeb3b 0%, #ffc107 100%);
+}
+
 .cell.water {
     background: linear-gradient(135deg, #4fc3f7 0%, #2196f3 100%);
     cursor: not-allowed;
@@ -225,9 +233,56 @@ button:active {
     cursor: pointer;
 }
 
+.cell.home {
+    background: linear-gradient(135deg, #ffeb3b 0%, #ffc107 100%);
+    cursor: default;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5em;
+}
+
 .cell.water:hover {
     transform: none;
     box-shadow: none;
+}
+
+.cell.home:hover {
+    transform: none;
+    box-shadow: none;
+}
+
+/* Path overlay */
+.cell::after {
+    content: attr(data-overlay);
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 1.8em;
+    pointer-events: none;
+}
+
+/* ========== Penned Status Indicator ========== */
+.penned-status {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 20px;
+    background: linear-gradient(135deg, #f0f0f0 0%, #e0e0e0 100%);
+    border-radius: 8px;
+    font-weight: bold;
+    border: 2px solid #333;
+    font-size: 2em;
+    min-width: 60px;
+}
+
+.penned-status.penned {
+    color: #4caf50;
+}
+
+.penned-status.not-penned {
+    color: #ff5252;
 }
 
 /* ========== Footer Styles ========== */

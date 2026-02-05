@@ -28,6 +28,9 @@ class Grid {
             }
             this.tiles.push(row);
         }
+        
+        // Place home tile at center (never on edge)
+        this._placeHomeTile();
     }
 
     /**
@@ -42,6 +45,42 @@ class Grid {
         // Currently supports grass and water
         // Future: extend this to support more tile types
         return rand < grassThreshold ? 'grass' : 'water';
+    }
+
+    /**
+     * Place a home tile at the center of the grid
+     * Ensures only one home tile exists and it's not on an edge
+     * @private
+     */
+    _placeHomeTile() {
+        // Remove any existing home tiles first
+        for (let i = 0; i < this.size; i++) {
+            for (let j = 0; j < this.size; j++) {
+                if (this.tiles[i][j] === 'home') {
+                    this.tiles[i][j] = 'grass';
+                }
+            }
+        }
+        
+        // Place home at center (for now, can be randomized later)
+        const centerRow = Math.floor(this.size / 2);
+        const centerCol = Math.floor(this.size / 2);
+        this.tiles[centerRow][centerCol] = 'home';
+    }
+
+    /**
+     * Get the position of the home tile
+     * @returns {Object|null} Object with row and col properties, or null if not found
+     */
+    getHomePosition() {
+        for (let i = 0; i < this.size; i++) {
+            for (let j = 0; j < this.size; j++) {
+                if (this.tiles[i][j] === 'home') {
+                    return { row: i, col: j };
+                }
+            }
+        }
+        return null;
     }
 
     /**
