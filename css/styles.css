@@ -223,7 +223,7 @@ button:active {
     margin-bottom: 20px;
     width: 100%;
     max-width: 100%;
-    overflow: hidden;
+    overflow: visible;
 }
 
 .grid {
@@ -233,7 +233,7 @@ button:active {
     padding: 3px;
     border-radius: 10px;
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-    max-width: 95vw;
+    max-width: 90vw;
     width: fit-content;
     margin: 0 auto;
 }
