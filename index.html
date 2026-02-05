@@ -145,6 +145,13 @@
             box-shadow: 0 3px 8px rgba(0, 0, 0, 0.3);
         }
 
+        .cell:focus {
+            outline: 3px solid #fff;
+            outline-offset: 2px;
+            transform: scale(1.05);
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.3);
+        }
+
         .cell.grass {
             background: linear-gradient(135deg, #7ed957 0%, #4caf50 100%);
         }
@@ -189,7 +196,7 @@
 </head>
 <body>
     <div class="container">
-        <h1>🐾 Pen the Pet</h1>
+        <h1><span aria-hidden="true">🐾</span> Pen the Pet</h1>
         <p class="subtitle">A Logic Puzzle Game About Fencing</p>
 
         <div class="info">
@@ -233,6 +240,7 @@
                 this.grid = [];
                 this.initialGrid = [];
                 this.gridElement = document.getElementById('grid');
+                this.attachEventListeners();
                 this.init();
             }
 
@@ -240,7 +248,6 @@
                 this.generateGrid();
                 this.saveInitialState();
                 this.renderGrid();
-                this.attachEventListeners();
             }
 
             generateGrid() {
@@ -267,11 +274,29 @@
                 for (let i = 0; i < this.size; i++) {
                     for (let j = 0; j < this.size; j++) {
                         const cell = document.createElement('div');
-                        cell.className = `cell ${this.grid[i][j]}`;
+                        const cellType = this.grid[i][j];
+                        cell.className = `cell ${cellType}`;
                         cell.dataset.row = i;
                         cell.dataset.col = j;
                         
+                        // Add accessibility attributes
+                        if (cellType === 'grass') {
+                            cell.setAttribute('role', 'button');
+                            cell.setAttribute('tabindex', '0');
+                            cell.setAttribute('aria-label', `Grass tile at row ${i + 1}, column ${j + 1}. Click to build a wall.`);
+                        } else if (cellType === 'water') {
+                            cell.setAttribute('aria-label', `Water tile at row ${i + 1}, column ${j + 1}. Cannot be clicked.`);
+                        } else if (cellType === 'wall') {
+                            cell.setAttribute('aria-label', `Wall at row ${i + 1}, column ${j + 1}.`);
+                        }
+                        
                         cell.addEventListener('click', () => this.handleCellClick(i, j));
+                        cell.addEventListener('keydown', (e) => {
+                            if (e.key === 'Enter' || e.key === ' ') {
+                                e.preventDefault();
+                                this.handleCellClick(i, j);
+                            }
+                        });
                         
                         this.gridElement.appendChild(cell);
                     }
