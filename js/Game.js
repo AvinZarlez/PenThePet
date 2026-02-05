@@ -17,16 +17,16 @@ class Game {
         this.maxWalls = 9;
         this.boundHandleArrowKeys = this.handleArrowKeys.bind(this);
         this.boundHandleResize = this.handleResize.bind(this);
-        this.lastFocusedCell = null; // Track last focused cell for keyboard persistence
-        this.petEmoji = '🐶'; // Default pet emoji
-        this.hintMode = CONFIG.hints.mode; // Hint mode: disabled, checkOptimal, revealTarget (UI ready, logic TBD)
-        this.goalAreaSize = CONFIG.gameplay.goalAreaSize; // Goal area size threshold (hardcoded, future: calculate per map)
+        this.lastFocusedCell = null;
+        this.petEmoji = '🐶';
+        this.hintMode = CONFIG.hints.mode;
+        this.goalAreaSize = CONFIG.gameplay.goalAreaSize;
         
         // Grid sizing constants
-        this.CELL_GAP = 3;       // Gap between cells in pixels
-        this.GRID_PADDING = 6;   // Grid padding (3px * 2)
-        this.MIN_CELL_SIZE = 20; // Minimum cell size for usability
-        this.MAX_CELL_SIZE = 50; // Maximum cell size for aesthetics
+        this.CELL_GAP = 3;
+        this.GRID_PADDING = 6;
+        this.MIN_CELL_SIZE = 20;
+        this.MAX_CELL_SIZE = 50;
         
         this.attachEventListeners();
         this.init();
@@ -36,7 +36,9 @@ class Game {
      * Initialize a new game
      */
     init() {
-        this.grid.generate();
+        // Use today's date for consistent daily maps
+        const today = new Date().toISOString().split('T')[0];
+        this.grid.generate(today);
         this.grid.saveInitialState();
         this.wallCount = 0;
         this.render();

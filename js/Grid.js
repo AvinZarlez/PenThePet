@@ -19,7 +19,16 @@ class Grid {
     /**
      * Generate a new random grid based on tile distribution
      */
-    generate() {
+    generate(dateString = null) {
+        // If date provided, use it to modify random seed
+        if (dateString) {
+            let hash = 0;
+            for (let char of dateString) {
+                hash = hash * 31 + char.charCodeAt(0);
+            }
+            Math.seedrandom = hash; // Store for reference
+        }
+        
         this.tiles = [];
         for (let i = 0; i < this.size; i++) {
             const row = [];
