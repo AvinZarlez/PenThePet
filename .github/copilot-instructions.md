@@ -74,6 +74,16 @@ Scripts must be loaded in this specific order (already configured in index.html)
 - **Manual Testing**: Test in browser with `python3 -m http.server 8080` or similar
 - **Browser Console**: Game instance is accessible via `window.game` for debugging
 - **Cross-Browser**: Test in Chrome, Firefox, Safari when possible
+- **Mobile Testing**: Always test functionality on mobile screen sizes (phone viewports) using browser developer tools. Ensure:
+  - All interactive elements are easily tappable on touch screens
+  - Text is readable at small screen sizes
+  - Grid scales appropriately for phone screens (dynamic sizing ensures this)
+  - Controls stack vertically and remain accessible
+  - Test at common phone widths: 375px (iPhone), 360px (Android), 414px (iPhone Plus)
+- **Grid Scaling**: The grid uses dynamic scaling to fit any viewport size:
+  - Maximum grid size (21x21) is always fully visible on any screen
+  - Cell sizes automatically adjust from 20px (minimum) to 50px (maximum)
+  - Window resize events trigger recalculation for responsive behavior
 
 ### Adding New Features
 
@@ -100,8 +110,9 @@ Scripts must be loaded in this specific order (already configured in index.html)
 ## Common Tasks
 
 ### Changing Grid Size
-- Modify `CONFIG.GRID_DEFAULT_SIZE` in config.js
-- Update min/max constraints if needed
+- Modify `CONFIG.grid.defaultSize` in config.js
+- Update min/max constraints if needed (current max is 21)
+- Always test on mobile viewports after grid size changes
 
 ### Adjusting Tile Distribution
 - Modify `CONFIG.TILE_RATIOS` in config.js to change probability weights
@@ -113,9 +124,13 @@ Scripts must be loaded in this specific order (already configured in index.html)
 4. Optionally add legend entry in index.html
 
 ### Modifying Visual Appearance
-- Cell size: `CONFIG.CELL_SIZE` in config.js
-- Cell gap: `CONFIG.CELL_GAP` in config.js
+- Cell size: Dynamically calculated by `Game.calculateCellSize()` based on viewport and grid size
+  - Min: 20px (for usability on small screens)
+  - Max: 50px (for aesthetics on large screens)
+  - Automatically adjusts to ensure any grid size fits in any viewport
+- Cell gap: `Game.CELL_GAP` constant (default: 3px)
 - Colors/gradients: styles.css or TILE_TYPES in tileTypes.js
+- Font sizes: Use `clamp()` for responsive scaling relative to `--cell-size` CSS variable
 
 ## Deployment
 

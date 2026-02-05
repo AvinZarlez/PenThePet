@@ -16,8 +16,18 @@ class Game {
         this.wallCount = 0;
         this.maxWalls = 9;
         this.boundHandleArrowKeys = this.handleArrowKeys.bind(this);
+        this.boundHandleResize = this.handleResize.bind(this);
         this.lastFocusedCell = null; // Track last focused cell for keyboard persistence
         this.petEmoji = '🐶'; // Default pet emoji
+        this.hintMode = CONFIG.hints.mode; // Hint mode: disabled, checkOptimal, revealTarget (UI ready, logic TBD)
+        this.goalAreaSize = CONFIG.gameplay.goalAreaSize; // Goal area size threshold (hardcoded, future: calculate per map)
+        
+        // Grid sizing constants
+        this.CELL_GAP = 3;       // Gap between cells in pixels
+        this.GRID_PADDING = 6;   // Grid padding (3px * 2)
+        this.MIN_CELL_SIZE = 20; // Minimum cell size for usability
+        this.MAX_CELL_SIZE = 50; // Maximum cell size for aesthetics
+        
         this.attachEventListeners();
         this.init();
     }
@@ -31,6 +41,7 @@ class Game {
         this.wallCount = 0;
         this.render();
         this.updateWallCounter();
+        this.updateAreaSizeDisplay();
     }
 
     /**
@@ -39,6 +50,9 @@ class Game {
     render() {
         this.gridElement.innerHTML = '';
         this.gridElement.style.gridTemplateColumns = `repeat(${this.grid.size}, 1fr)`;
+        
+        // Set dynamic cell size based on grid size to ensure it always fits
+        this.updateCellSizes();
 
         const allTiles = this.grid.getAllTiles();
         
@@ -56,6 +70,7 @@ class Game {
         
         // Update penned status indicator
         this.updatePennedStatus(isPenned);
+        this.updateAreaSizeDisplay();
     }
 
     /**
@@ -300,7 +315,7 @@ class Game {
             const yellowTileCount = isPenned ? this.getAccessibleTiles().size : 0;
             
             if (isPenned) {
-                statusElement.innerHTML = `<span class="submit-label">Submit</span><span class="submit-check">✓</span><span class="submit-count">${yellowTileCount}</span>`;
+                statusElement.innerHTML = `<span class="submit-label">Submit</span><span class="submit-check">✓</span>`;
                 statusElement.className = 'penned-status penned';
                 statusElement.title = `Pet is penned! Click to view area (${yellowTileCount} tiles)`;
                 statusElement.disabled = false;
@@ -318,6 +333,35 @@ class Game {
     }
 
     /**
+     * Update the area size display with current area size and goal coloring
+     */
+    updateAreaSizeDisplay() {
+        const areaSizeElement = document.getElementById('areaSize');
+        const areaSizeDisplay = areaSizeElement ? areaSizeElement.parentElement : null;
+        
+        if (areaSizeElement && areaSizeDisplay) {
+            const pathInfo = this.calculatePath();
+            const isPenned = !pathInfo.hasPath;
+            
+            if (isPenned) {
+                const areaSize = this.getAccessibleTiles().size;
+                areaSizeElement.textContent = areaSize.toString();
+                
+                // Apply color based on goal comparison
+                areaSizeDisplay.classList.remove('penned-yellow', 'penned-green');
+                if (areaSize < this.goalAreaSize) {
+                    areaSizeDisplay.classList.add('penned-yellow');
+                } else {
+                    areaSizeDisplay.classList.add('penned-green');
+                }
+            } else {
+                areaSizeElement.textContent = '∞';
+                areaSizeDisplay.classList.remove('penned-yellow', 'penned-green');
+            }
+        }
+    }
+
+    /**
      * Reset the game to initial state
      */
     reset() {
@@ -325,6 +369,7 @@ class Game {
         this.wallCount = 0;
         this.render();
         this.updateWallCounter();
+        this.updateAreaSizeDisplay();
     }
 
     /**
@@ -336,6 +381,7 @@ class Game {
         this.wallCount = 0;
         this.render();
         this.updateWallCounter();
+        this.updateAreaSizeDisplay();
     }
 
     /**
@@ -359,6 +405,7 @@ class Game {
         const exitViewerBtn = document.getElementById('exitViewer');
         const gridSizeInput = document.getElementById('gridSize');
         const petTypeSelect = document.getElementById('petType');
+        const hintModeSelect = document.getElementById('hintMode');
         
         if (newGameBtn) {
             newGameBtn.addEventListener('click', () => this.newGame());
@@ -392,8 +439,53 @@ class Game {
             });
         }
 
+        if (hintModeSelect) {
+            hintModeSelect.addEventListener('change', (e) => {
+                this.hintMode = e.target.value;
+                // TODO: Implement hint functionality based on selected mode
+                // - checkOptimal: Show if current solution meets optimal criteria
+                // - revealTarget: Show the target/optimal area size or solution
+                this.render();
+            });
+        }
+
         // Add arrow key navigation (using bound function for potential cleanup)
         document.addEventListener('keydown', this.boundHandleArrowKeys);
+        
+        // Add window resize handler to recalculate cell sizes
+        window.addEventListener('resize', this.boundHandleResize);
+    }
+
+    /**
+     * Handle window resize events
+     */
+    handleResize() {
+        // Use a debounce to avoid excessive recalculations
+        if (this.resizeTimeout) {
+            clearTimeout(this.resizeTimeout);
+        }
+        this.resizeTimeout = setTimeout(() => {
+            this.updateCellSizes();
+        }, 100);
+    }
+
+    /**
+     * Calculate optimal cell size based on viewport and grid size
+     * @returns {number} The calculated cell size in pixels
+     */
+    calculateCellSize() {
+        const maxGridWidth = Math.min(window.innerWidth * 0.95, window.innerHeight * 0.95);
+        const maxCellSize = Math.floor((maxGridWidth - this.GRID_PADDING - (this.CELL_GAP * (this.grid.size - 1))) / this.grid.size);
+        return Math.max(this.MIN_CELL_SIZE, Math.min(this.MAX_CELL_SIZE, maxCellSize));
+    }
+
+    /**
+     * Update cell sizes based on current viewport and grid size
+     */
+    updateCellSizes() {
+        const cellSize = this.calculateCellSize();
+        this.gridElement.style.setProperty('--cell-size', `${cellSize}px`);
+        this.gridElement.style.gap = `${this.CELL_GAP}px`;
     }
 
     /**

@@ -156,6 +156,31 @@ button:active {
     justify-content: center;
 }
 
+/* ========== Area Size Display Styles ========== */
+.area-size-display {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    background: linear-gradient(135deg, #f0f0f0 0%, #e0e0e0 100%);
+    border-radius: 8px;
+    font-weight: bold;
+    border: 2px solid #333;
+    min-width: 100px;
+    justify-content: center;
+    transition: background 0.3s ease, border-color 0.3s ease;
+}
+
+.area-size-display.penned-yellow {
+    background: linear-gradient(135deg, #fff59d 0%, #ffeb3b 100%);
+    border-color: #f57f17;
+}
+
+.area-size-display.penned-green {
+    background: linear-gradient(135deg, #a5d6a7 0%, #66bb6a 100%);
+    border-color: #2e7d32;
+}
+
 .counter-label {
     color: #333;
     font-size: 0.95em;
@@ -196,6 +221,9 @@ button:active {
     display: flex;
     justify-content: center;
     margin-bottom: 20px;
+    width: 100%;
+    max-width: 100%;
+    overflow: hidden;
 }
 
 .grid {
@@ -205,16 +233,22 @@ button:active {
     padding: 3px;
     border-radius: 10px;
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    max-width: min(95vw, 95vh);
+    width: fit-content;
+    margin: 0 auto;
 }
 
 /* ========== Cell Styles ========== */
 .cell {
-    width: 50px;
-    height: 50px;
-    border-radius: 5px;
+    width: var(--cell-size, 50px);
+    height: var(--cell-size, 50px);
+    aspect-ratio: 1;
+    border-radius: max(2px, calc(var(--cell-size, 50px) * 0.1));
     cursor: pointer;
     transition: transform 0.1s, box-shadow 0.1s;
     position: relative;
+    min-width: 20px;
+    min-height: 20px;
 }
 
 .cell:hover {
@@ -255,7 +289,7 @@ button:active {
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.5em;
+    font-size: clamp(0.8em, calc(var(--cell-size, 50px) / 33), 1.5em);
 }
 
 .cell.water:hover {
@@ -275,7 +309,7 @@ button:active {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    font-size: 1.8em;
+    font-size: clamp(1em, calc(var(--cell-size, 50px) / 28), 1.8em);
     pointer-events: none;
 }
 
@@ -319,17 +353,13 @@ button:active {
     color: #ff5252;
 }
 
+/* Remove count from submit button - now shown in area size display */
 .submit-label {
     font-size: 0.6em;
 }
 
 .submit-check {
-    font-size: 0.8em;
-}
-
-.submit-count {
-    font-size: 0.5em;
-    margin-top: -8px;
+    font-size: 1em;
 }
 
 /* ========== Roaming Area Viewer Sidebar ========== */
@@ -496,17 +526,53 @@ footer {
 }
 
 /* ========== Responsive Styles ========== */
-@media (max-width: 600px) {
-    .cell {
-        width: 40px;
-        height: 40px;
+@media (max-width: 768px) {
+    .controls {
+        flex-direction: column;
+        gap: 10px;
     }
 
+    .wall-counter,
+    .area-size-display {
+        width: 100%;
+        max-width: 300px;
+    }
+
+    .options-content {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .option-item {
+        width: 100%;
+    }
+}
+
+@media (max-width: 600px) {
     h1 {
         font-size: 1.5em;
     }
 
     .container {
         padding: 20px;
+    }
+
+    .roam-viewer-sidebar {
+        width: 100%;
+        right: -100%;
+    }
+
+    .roam-viewer-sidebar.active {
+        right: 0;
+    }
+}
+
+@media (max-width: 400px) {
+    .container {
+        padding: 15px;
+    }
+
+    h1 {
+        font-size: 1.3em;
     }
 }

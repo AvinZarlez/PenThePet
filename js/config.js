@@ -10,7 +10,7 @@ const CONFIG = {
     grid: {
         defaultSize: 9,        // Default grid dimensions (9x9)
         minSize: 6,            // Minimum allowed grid size
-        maxSize: 32,           // Maximum allowed grid size
+        maxSize: 21,           // Maximum allowed grid size
     },
 
     // Tile generation probabilities (should sum to 1.0)
@@ -30,6 +30,12 @@ const CONFIG = {
     gameplay: {
         allowWallRemoval: false,    // If true, clicking walls removes them
         autoSaveState: false,        // If true, saves game state to localStorage
+        goalAreaSize: 10,            // Goal area size threshold (TODO: calculate based on grid size/difficulty)
+    },
+
+    // Hint system
+    hints: {
+        mode: 'disabled',            // Options: 'disabled', 'checkOptimal', 'revealTarget'
     }
 };
 

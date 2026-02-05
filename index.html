@@ -43,6 +43,10 @@
                 <span class="counter-label">Walls Placed:</span>
                 <span id="wallCounter" class="counter-value">0 / 9</span>
             </div>
+            <div class="area-size-display">
+                <span class="counter-label">Area Size:</span>
+                <span id="areaSize" class="counter-value">∞</span>
+            </div>
             <button class="penned-status not-penned" id="pennedStatus" 
                     title="Click when penned to see roaming area" 
                     data-interactive="false">
@@ -79,7 +83,7 @@
             <div class="options-content">
                 <div class="option-item">
                     <label for="gridSize">Grid Size:</label>
-                    <input type="number" id="gridSize" min="6" max="32" value="9">
+                    <input type="number" id="gridSize" min="6" max="21" value="9">
                 </div>
                 <div class="option-item">
                     <label for="petType">Pet Type:</label>
@@ -109,6 +113,14 @@
                         <option value="🐭">🐭 Mouse Face</option>
                         <option value="🐁">🐁 Mouse</option>
                         <option value="🪨">🪨 Rock</option>
+                    </select>
+                </div>
+                <div class="option-item">
+                    <label for="hintMode">Hint:</label>
+                    <select id="hintMode">
+                        <option value="disabled">Disabled</option>
+                        <option value="checkOptimal">Check Optimal</option>
+                        <option value="revealTarget">Reveal Target</option>
                     </select>
                 </div>
             </div>
