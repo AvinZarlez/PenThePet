@@ -16,6 +16,7 @@ class Game {
         this.wallCount = 0;
         this.maxWalls = 9;
         this.boundHandleArrowKeys = this.handleArrowKeys.bind(this);
+        this.boundHandleResize = this.handleResize.bind(this);
         this.lastFocusedCell = null; // Track last focused cell for keyboard persistence
         this.petEmoji = '🐶'; // Default pet emoji
         this.hintMode = CONFIG.hints.mode; // Hint mode: disabled, checkOptimal, revealTarget (UI ready, logic TBD)
@@ -42,6 +43,19 @@ class Game {
     render() {
         this.gridElement.innerHTML = '';
         this.gridElement.style.gridTemplateColumns = `repeat(${this.grid.size}, 1fr)`;
+        
+        // Set dynamic cell size based on grid size to ensure it always fits
+        // Calculate max cell size that fits in viewport
+        const maxGridWidth = Math.min(window.innerWidth * 0.95, window.innerHeight * 0.95);
+        const gap = 3; // pixels between cells
+        const padding = 6; // grid padding (3px * 2)
+        const maxCellSize = Math.floor((maxGridWidth - padding - (gap * (this.grid.size - 1))) / this.grid.size);
+        
+        // Set minimum cell size for usability, maximum for aesthetics
+        const cellSize = Math.max(20, Math.min(50, maxCellSize));
+        
+        this.gridElement.style.setProperty('--cell-size', `${cellSize}px`);
+        this.gridElement.style.gap = `${gap}px`;
 
         const allTiles = this.grid.getAllTiles();
         
@@ -440,6 +454,35 @@ class Game {
 
         // Add arrow key navigation (using bound function for potential cleanup)
         document.addEventListener('keydown', this.boundHandleArrowKeys);
+        
+        // Add window resize handler to recalculate cell sizes
+        window.addEventListener('resize', this.boundHandleResize);
+    }
+
+    /**
+     * Handle window resize events
+     */
+    handleResize() {
+        // Use a debounce to avoid excessive recalculations
+        if (this.resizeTimeout) {
+            clearTimeout(this.resizeTimeout);
+        }
+        this.resizeTimeout = setTimeout(() => {
+            this.updateCellSizes();
+        }, 100);
+    }
+
+    /**
+     * Update cell sizes based on current viewport and grid size
+     */
+    updateCellSizes() {
+        const maxGridWidth = Math.min(window.innerWidth * 0.95, window.innerHeight * 0.95);
+        const gap = 3;
+        const padding = 6;
+        const maxCellSize = Math.floor((maxGridWidth - padding - (gap * (this.grid.size - 1))) / this.grid.size);
+        const cellSize = Math.max(20, Math.min(50, maxCellSize));
+        
+        this.gridElement.style.setProperty('--cell-size', `${cellSize}px`);
     }
 
     /**

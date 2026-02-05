@@ -221,6 +221,9 @@ button:active {
     display: flex;
     justify-content: center;
     margin-bottom: 20px;
+    width: 100%;
+    max-width: 100%;
+    overflow: hidden;
 }
 
 .grid {
@@ -230,16 +233,22 @@ button:active {
     padding: 3px;
     border-radius: 10px;
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    max-width: min(95vw, 95vh);
+    width: fit-content;
+    margin: 0 auto;
 }
 
 /* ========== Cell Styles ========== */
 .cell {
-    width: 50px;
-    height: 50px;
-    border-radius: 5px;
+    width: var(--cell-size, 50px);
+    height: var(--cell-size, 50px);
+    aspect-ratio: 1;
+    border-radius: max(2px, calc(var(--cell-size, 50px) * 0.1));
     cursor: pointer;
     transition: transform 0.1s, box-shadow 0.1s;
     position: relative;
+    min-width: 20px;
+    min-height: 20px;
 }
 
 .cell:hover {
@@ -280,7 +289,7 @@ button:active {
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.5em;
+    font-size: clamp(0.8em, calc(var(--cell-size, 50px) * 0.025), 1.5em);
 }
 
 .cell.water:hover {
@@ -300,7 +309,7 @@ button:active {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    font-size: 1.8em;
+    font-size: clamp(1em, calc(var(--cell-size, 50px) * 0.036), 1.8em);
     pointer-events: none;
 }
 
@@ -540,20 +549,6 @@ footer {
 }
 
 @media (max-width: 600px) {
-    .cell {
-        width: 40px;
-        height: 40px;
-        font-size: 0.9em;
-    }
-
-    .cell.home {
-        font-size: 1.2em;
-    }
-
-    .cell::after {
-        font-size: 1.5em;
-    }
-
     h1 {
         font-size: 1.5em;
     }
@@ -573,11 +568,6 @@ footer {
 }
 
 @media (max-width: 400px) {
-    .cell {
-        width: 32px;
-        height: 32px;
-    }
-
     .container {
         padding: 15px;
     }
