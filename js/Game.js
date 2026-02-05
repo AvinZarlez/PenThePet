@@ -300,7 +300,7 @@ class Game {
             const yellowTileCount = isPenned ? this.getAccessibleTiles().size : 0;
             
             if (isPenned) {
-                statusElement.innerHTML = `<span style="font-size: 0.6em;">Submit</span><br><span style="font-size: 0.8em;">✓</span><span style="font-size: 0.5em; display: block; margin-top: -8px;">${yellowTileCount}</span>`;
+                statusElement.innerHTML = `<span class="submit-label">Submit</span><span class="submit-check">✓</span><span class="submit-count">${yellowTileCount}</span>`;
                 statusElement.className = 'penned-status penned';
                 statusElement.title = `Pet is penned! Click to view area (${yellowTileCount} tiles)`;
                 statusElement.disabled = false;
@@ -343,7 +343,7 @@ class Game {
      * @param {number} newSize - The new grid size
      */
     changeGridSize(newSize) {
-        if (newSize >= 6 && newSize <= 32) {
+        if (newSize >= CONFIG.grid.minSize && newSize <= CONFIG.grid.maxSize) {
             this.grid = new Grid(newSize);
             this.newGame();
         }
@@ -379,7 +379,7 @@ class Game {
         if (gridSizeInput) {
             gridSizeInput.addEventListener('change', (e) => {
                 const newSize = parseInt(e.target.value);
-                if (newSize >= 6 && newSize <= 32) {
+                if (newSize >= CONFIG.grid.minSize && newSize <= CONFIG.grid.maxSize) {
                     this.changeGridSize(newSize);
                 } else {
                     e.target.value = this.grid.size;
