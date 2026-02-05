@@ -18,23 +18,15 @@ class Grid {
 
     /**
      * Generate a new random grid based on tile distribution
+     * Uses MapGenerator to ensure valid maps with paths to edge
      */
     generate(dateString = null) {
         // Note: dateString is accepted but not currently used for seeding
         // as implementing true seeded random would require additional library
         // For now, maps vary but this provides the framework for future enhancement
         
-        this.tiles = [];
-        for (let i = 0; i < this.size; i++) {
-            const row = [];
-            for (let j = 0; j < this.size; j++) {
-                row.push(this._generateRandomTile());
-            }
-            this.tiles.push(row);
-        }
-        
-        // Place home tile at center (never on edge)
-        this._placeHomeTile();
+        const generator = new MapGenerator(this.size, CONFIG.tileDistribution);
+        this.tiles = generator.generate(dateString);
     }
 
     /**
