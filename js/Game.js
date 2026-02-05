@@ -379,11 +379,9 @@ class Game {
         if (gridSizeInput) {
             gridSizeInput.addEventListener('change', (e) => {
                 const newSize = parseInt(e.target.value);
-                if (newSize >= CONFIG.grid.minSize && newSize <= CONFIG.grid.maxSize) {
-                    this.changeGridSize(newSize);
-                } else {
-                    e.target.value = this.grid.size;
-                }
+                this.changeGridSize(newSize);
+                // Update input to reflect actual grid size (in case validation failed)
+                e.target.value = this.grid.size;
             });
         }
 
