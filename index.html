@@ -44,12 +44,28 @@
                 <span class="counter-label">Walls Placed:</span>
                 <span id="wallCounter" class="counter-value">0 / 9</span>
             </div>
-            <div class="penned-status not-penned" id="pennedStatus" title="✗ = Path exists, ✓ = Pet is penned">
+            <button class="penned-status not-penned" id="pennedStatus" 
+                    title="Click when penned to see roaming area" 
+                    data-interactive="false">
                 ✗
-            </div>
+            </button>
         </div>
 
         <div id="notification" class="notification"></div>
+
+        <aside id="roamSpaceViewer" class="roam-viewer-sidebar">
+            <article class="viewer-card">
+                <header class="viewer-header">Pet Containment Summary</header>
+                <section class="metrics-display">
+                    <label class="metric-label">Roaming Area Score</label>
+                    <output class="metric-value" id="roamAreaMetric">0</output>
+                    <small class="metric-helper">yellow tiles counted</small>
+                </section>
+                <footer class="viewer-footer">
+                    <button id="exitViewer" class="exit-viewer-btn">Back to Game</button>
+                </footer>
+            </article>
+        </aside>
 
         <div class="grid-container">
             <div id="grid" class="grid"></div>

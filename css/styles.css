@@ -275,6 +275,22 @@ button:active {
     border: 2px solid #333;
     font-size: 2em;
     min-width: 60px;
+    transition: all 0.3s ease;
+}
+
+.penned-status:disabled {
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+.penned-status:not(:disabled) {
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(102, 126, 234, 0.4);
+}
+
+.penned-status:not(:disabled):hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.6);
 }
 
 .penned-status.penned {
@@ -283,6 +299,100 @@ button:active {
 
 .penned-status.not-penned {
     color: #ff5252;
+}
+
+/* ========== Roaming Area Viewer Sidebar ========== */
+.roam-viewer-sidebar {
+    position: fixed;
+    top: 0;
+    right: -400px;
+    width: 350px;
+    height: 100vh;
+    background: rgba(255, 255, 255, 0.98);
+    box-shadow: -5px 0 25px rgba(0, 0, 0, 0.5);
+    transition: right 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    z-index: 2000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.roam-viewer-sidebar.active {
+    right: 0;
+}
+
+.viewer-card {
+    padding: 40px 30px;
+    width: 100%;
+    text-align: center;
+}
+
+.viewer-header {
+    font-size: 1.8em;
+    font-weight: bold;
+    color: #667eea;
+    margin-bottom: 30px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.metrics-display {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    padding: 35px 25px;
+    border-radius: 15px;
+    margin: 25px 0;
+    box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+}
+
+.metric-label {
+    display: block;
+    color: white;
+    font-size: 1.1em;
+    margin-bottom: 15px;
+    opacity: 0.9;
+}
+
+.metric-value {
+    display: block;
+    font-size: 4em;
+    font-weight: bold;
+    color: #ffeb3b;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+    margin: 10px 0;
+}
+
+.metric-helper {
+    display: block;
+    color: white;
+    font-size: 0.9em;
+    margin-top: 10px;
+    opacity: 0.85;
+}
+
+.viewer-footer {
+    margin-top: 30px;
+}
+
+.exit-viewer-btn {
+    padding: 14px 32px;
+    font-size: 1.1em;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    background: linear-gradient(135deg, #ff6b6b 0%, #ff5252 100%);
+    color: white;
+    font-weight: bold;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 10px rgba(255, 107, 107, 0.3);
+}
+
+.exit-viewer-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 15px rgba(255, 107, 107, 0.5);
+}
+
+.exit-viewer-btn:active {
+    transform: translateY(0);
 }
 
 /* ========== Footer Styles ========== */

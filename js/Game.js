@@ -296,14 +296,22 @@ class Game {
     updatePennedStatus(isPenned) {
         const statusElement = document.getElementById('pennedStatus');
         if (statusElement) {
+            const yellowTileCount = isPenned ? this.getAccessibleTiles().size : 0;
+            
             if (isPenned) {
-                statusElement.textContent = '✓';
+                statusElement.innerHTML = `<span style="font-size: 0.8em;">✓</span><span style="font-size: 0.5em; display: block; margin-top: -8px;">${yellowTileCount}</span>`;
                 statusElement.className = 'penned-status penned';
-                statusElement.title = 'Pet is penned! ✓';
+                statusElement.title = `Pet is penned! Click to view area (${yellowTileCount} tiles)`;
+                statusElement.disabled = false;
+                statusElement.dataset.interactive = 'true';
+                statusElement.dataset.areaSize = yellowTileCount;
             } else {
                 statusElement.textContent = '✗';
                 statusElement.className = 'penned-status not-penned';
                 statusElement.title = 'Path exists - pet can escape! ✗';
+                statusElement.disabled = true;
+                statusElement.dataset.interactive = 'false';
+                statusElement.dataset.areaSize = '0';
             }
         }
     }
@@ -344,6 +352,8 @@ class Game {
     attachEventListeners() {
         const newGameBtn = document.getElementById('newGameBtn');
         const resetBtn = document.getElementById('resetBtn');
+        const statusBtn = document.getElementById('pennedStatus');
+        const exitViewerBtn = document.getElementById('exitViewer');
         
         if (newGameBtn) {
             newGameBtn.addEventListener('click', () => this.newGame());
@@ -353,8 +363,46 @@ class Game {
             resetBtn.addEventListener('click', () => this.reset());
         }
 
+        if (statusBtn) {
+            statusBtn.addEventListener('click', () => this.displayRoamingArea());
+        }
+
+        if (exitViewerBtn) {
+            exitViewerBtn.addEventListener('click', () => this.hideRoamingArea());
+        }
+
         // Add arrow key navigation (using bound function for potential cleanup)
         document.addEventListener('keydown', this.boundHandleArrowKeys);
+    }
+
+    /**
+     * Display the roaming area viewer with the current area size
+     */
+    displayRoamingArea() {
+        const statusBtn = document.getElementById('pennedStatus');
+        if (statusBtn && statusBtn.dataset.interactive === 'true') {
+            const areaCount = parseInt(statusBtn.dataset.areaSize || '0');
+            const viewerPanel = document.getElementById('roamSpaceViewer');
+            const metricOutput = document.getElementById('roamAreaMetric');
+            
+            if (metricOutput) {
+                metricOutput.textContent = areaCount;
+            }
+            
+            if (viewerPanel) {
+                viewerPanel.classList.add('active');
+            }
+        }
+    }
+
+    /**
+     * Hide the roaming area viewer
+     */
+    hideRoamingArea() {
+        const viewerPanel = document.getElementById('roamSpaceViewer');
+        if (viewerPanel) {
+            viewerPanel.classList.remove('active');
+        }
     }
 
     /**
