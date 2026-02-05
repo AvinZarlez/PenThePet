@@ -247,8 +247,6 @@ button:active {
     cursor: pointer;
     transition: transform 0.1s, box-shadow 0.1s;
     position: relative;
-    min-width: 20px;
-    min-height: 20px;
 }
 
 .cell:hover {

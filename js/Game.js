@@ -25,7 +25,7 @@ class Game {
         // Grid sizing constants
         this.CELL_GAP = 3;
         this.GRID_PADDING = 6;
-        this.MIN_CELL_SIZE = 20;
+        this.MIN_CELL_SIZE = 13; // Allow smaller cells for 21x21 on mobile
         this.MAX_CELL_SIZE = 50;
         this.AVAILABLE_HEIGHT_RATIO = 0.7; // Use 70% of viewport height to leave space for UI controls
         
