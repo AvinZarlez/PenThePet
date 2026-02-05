@@ -160,7 +160,7 @@ class MapGenerator {
         }
         
         // Now randomly place water, but not on the path
-        const waterThreshold = 1 - this.tileDistribution.grass;
+        const waterRatio = this.tileDistribution.water || (1 - this.tileDistribution.grass);
         for (let i = 0; i < this.size; i++) {
             for (let j = 0; j < this.size; j++) {
                 const coordKey = `${i},${j}`;
@@ -168,7 +168,7 @@ class MapGenerator {
                     continue;
                 }
                 
-                if (Math.random() < waterThreshold) {
+                if (Math.random() < waterRatio) {
                     map[i][j] = 'water';
                 }
             }

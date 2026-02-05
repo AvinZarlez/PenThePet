@@ -137,6 +137,17 @@ class Grid {
     getAllTiles() {
         return this.tiles;
     }
+
+    /**
+     * Load a pre-generated map into the grid
+     * @param {Array} map - 2D array of tile types
+     */
+    loadMap(map) {
+        if (!Array.isArray(map) || map.length !== this.size) {
+            throw new Error('Invalid map: must be a 2D array matching grid size');
+        }
+        this.tiles = map.map(row => [...row]); // Deep copy to avoid reference issues
+    }
 }
 
 // Export for use in other modules

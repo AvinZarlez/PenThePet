@@ -75,8 +75,8 @@ async function initGame() {
     // Create game with the map size from database
     game = new Game(mapData.size);
     
-    // Load the map into the grid
-    game.grid.tiles = mapData.map;
+    // Load the map into the grid using proper encapsulation
+    game.grid.loadMap(mapData.map);
     game.grid.saveInitialState();
     game.wallCount = 0;
     game.render();

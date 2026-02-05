@@ -484,12 +484,12 @@ class Game {
         const availableHeight = window.innerHeight * this.AVAILABLE_HEIGHT_RATIO;
         
         // Calculate total space needed for gaps and padding
-        const totalGapWidth = this.CELL_GAP * (this.grid.size - 1);
+        const totalGap = this.CELL_GAP * (this.grid.size - 1);
         const totalPadding = this.GRID_PADDING * 2; // padding on both sides
         
         // Calculate max cell size that fits in each dimension
-        const maxCellWidth = Math.floor((availableWidth - totalPadding - totalGapWidth) / this.grid.size);
-        const maxCellHeight = Math.floor((availableHeight - totalPadding - totalGapWidth) / this.grid.size);
+        const maxCellWidth = Math.floor((availableWidth - totalPadding - totalGap) / this.grid.size);
+        const maxCellHeight = Math.floor((availableHeight - totalPadding - totalGap) / this.grid.size);
         
         // Use the smaller of the two to ensure it fits in both dimensions
         const maxCellSize = Math.min(maxCellWidth, maxCellHeight);
