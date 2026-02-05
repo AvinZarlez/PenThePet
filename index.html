@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pen the Pet - A Logic Puzzle Game</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 600px;
+            width: 100%;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 2em;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 20px;
+            font-size: 0.9em;
+        }
+
+        .info {
+            background: #f0f0f0;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .info h3 {
+            margin-bottom: 8px;
+            color: #333;
+        }
+
+        .legend {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .legend-box {
+            width: 30px;
+            height: 30px;
+            border: 2px solid #333;
+            border-radius: 5px;
+        }
+
+        .legend-box.grass {
+            background: linear-gradient(135deg, #7ed957 0%, #4caf50 100%);
+        }
+
+        .legend-box.water {
+            background: linear-gradient(135deg, #4fc3f7 0%, #2196f3 100%);
+        }
+
+        .legend-box.wall {
+            background: linear-gradient(135deg, #8d6e63 0%, #5d4037 100%);
+        }
+
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        button {
+            padding: 12px 24px;
+            font-size: 1em;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            font-weight: bold;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .grid-container {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .grid {
+            display: grid;
+            gap: 3px;
+            background: #333;
+            padding: 3px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .cell {
+            width: 50px;
+            height: 50px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: transform 0.1s, box-shadow 0.1s;
+            position: relative;
+        }
+
+        .cell:hover {
+            transform: scale(1.05);
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .cell.grass {
+            background: linear-gradient(135deg, #7ed957 0%, #4caf50 100%);
+        }
+
+        .cell.water {
+            background: linear-gradient(135deg, #4fc3f7 0%, #2196f3 100%);
+            cursor: not-allowed;
+        }
+
+        .cell.wall {
+            background: linear-gradient(135deg, #8d6e63 0%, #5d4037 100%);
+            cursor: default;
+        }
+
+        .cell.water:hover {
+            transform: none;
+            box-shadow: none;
+        }
+
+        footer {
+            text-align: center;
+            color: #666;
+            font-size: 0.8em;
+            margin-top: 20px;
+        }
+
+        @media (max-width: 600px) {
+            .cell {
+                width: 40px;
+                height: 40px;
+            }
+
+            h1 {
+                font-size: 1.5em;
+            }
+
+            .container {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🐾 Pen the Pet</h1>
+        <p class="subtitle">A Logic Puzzle Game About Fencing</p>
+
+        <div class="info">
+            <h3>How to Play:</h3>
+            <p>Click on grass tiles to build walls and pen in your pet! Water tiles cannot be clicked.</p>
+            
+            <div class="legend">
+                <div class="legend-item">
+                    <div class="legend-box grass"></div>
+                    <span>Grass (clickable)</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-box water"></div>
+                    <span>Water (blocked)</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-box wall"></div>
+                    <span>Wall (placed)</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="controls">
+            <button id="newGameBtn">New Game</button>
+            <button id="resetBtn">Reset</button>
+        </div>
+
+        <div class="grid-container">
+            <div id="grid" class="grid"></div>
+        </div>
+
+        <footer>
+            <p>Built with HTML, CSS, and JavaScript</p>
+        </footer>
+    </div>
+
+    <script>
+        class GridGame {
+            constructor(size = 8) {
+                this.size = size;
+                this.grid = [];
+                this.initialGrid = [];
+                this.gridElement = document.getElementById('grid');
+                this.init();
+            }
+
+            init() {
+                this.generateGrid();
+                this.saveInitialState();
+                this.renderGrid();
+                this.attachEventListeners();
+            }
+
+            generateGrid() {
+                this.grid = [];
+                for (let i = 0; i < this.size; i++) {
+                    const row = [];
+                    for (let j = 0; j < this.size; j++) {
+                        // Randomly assign grass (70%) or water (30%)
+                        const type = Math.random() < 0.7 ? 'grass' : 'water';
+                        row.push(type);
+                    }
+                    this.grid.push(row);
+                }
+            }
+
+            saveInitialState() {
+                this.initialGrid = this.grid.map(row => [...row]);
+            }
+
+            renderGrid() {
+                this.gridElement.innerHTML = '';
+                this.gridElement.style.gridTemplateColumns = `repeat(${this.size}, 1fr)`;
+
+                for (let i = 0; i < this.size; i++) {
+                    for (let j = 0; j < this.size; j++) {
+                        const cell = document.createElement('div');
+                        cell.className = `cell ${this.grid[i][j]}`;
+                        cell.dataset.row = i;
+                        cell.dataset.col = j;
+                        
+                        cell.addEventListener('click', () => this.handleCellClick(i, j));
+                        
+                        this.gridElement.appendChild(cell);
+                    }
+                }
+            }
+
+            handleCellClick(row, col) {
+                const currentType = this.grid[row][col];
+                
+                // Only allow clicking on grass tiles
+                if (currentType === 'grass') {
+                    this.grid[row][col] = 'wall';
+                    this.renderGrid();
+                }
+            }
+
+            reset() {
+                this.grid = this.initialGrid.map(row => [...row]);
+                this.renderGrid();
+            }
+
+            newGame() {
+                this.generateGrid();
+                this.saveInitialState();
+                this.renderGrid();
+            }
+
+            attachEventListeners() {
+                document.getElementById('newGameBtn').addEventListener('click', () => this.newGame());
+                document.getElementById('resetBtn').addEventListener('click', () => this.reset());
+            }
+        }
+
+        // Initialize the game when the page loads
+        let game;
+        window.addEventListener('DOMContentLoaded', () => {
+            game = new GridGame(8);
+        });
+    </script>
+</body>
+</html>
