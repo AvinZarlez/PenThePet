@@ -436,6 +436,7 @@ class Game {
             petTypeSelect.addEventListener('change', (e) => {
                 this.petEmoji = e.target.value;
                 this.render();
+                this.updateLegend();
             });
         }
 
@@ -614,6 +615,16 @@ class Game {
         const cell = this.gridElement.querySelector(`[data-row="${row}"][data-col="${col}"]`);
         if (cell) {
             cell.focus();
+        }
+    }
+
+    /**
+     * Update the legend to show the current pet emoji
+     */
+    updateLegend() {
+        const homeLegend = document.getElementById('homeLegend');
+        if (homeLegend) {
+            homeLegend.textContent = `Home 🏠${this.petEmoji}`;
         }
     }
 
