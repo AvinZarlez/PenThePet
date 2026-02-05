@@ -1,0 +1,205 @@
+/**
+ * Game Styles
+ * 
+ * Contains all CSS styling for the game interface.
+ * Organized by component for easy maintenance and customization.
+ */
+
+/* ========== Global Styles ========== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+
+/* ========== Container Styles ========== */
+.container {
+    background: white;
+    border-radius: 20px;
+    padding: 30px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    max-width: 600px;
+    width: 100%;
+}
+
+/* ========== Typography ========== */
+h1 {
+    text-align: center;
+    color: #333;
+    margin-bottom: 10px;
+    font-size: 2em;
+}
+
+.subtitle {
+    text-align: center;
+    color: #666;
+    margin-bottom: 20px;
+    font-size: 0.9em;
+}
+
+/* ========== Info Panel ========== */
+.info {
+    background: #f0f0f0;
+    padding: 15px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+}
+
+.info h3 {
+    margin-bottom: 8px;
+    color: #333;
+}
+
+/* ========== Legend Styles ========== */
+.legend {
+    display: flex;
+    justify-content: space-around;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.legend-box {
+    width: 30px;
+    height: 30px;
+    border: 2px solid #333;
+    border-radius: 5px;
+}
+
+.legend-box.grass {
+    background: linear-gradient(135deg, #7ed957 0%, #4caf50 100%);
+}
+
+.legend-box.water {
+    background: linear-gradient(135deg, #4fc3f7 0%, #2196f3 100%);
+}
+
+.legend-box.wall {
+    background: linear-gradient(135deg, #8d6e63 0%, #5d4037 100%);
+}
+
+/* ========== Button Styles ========== */
+.controls {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+button {
+    padding: 12px 24px;
+    font-size: 1em;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    font-weight: bold;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+button:active {
+    transform: translateY(0);
+}
+
+/* ========== Grid Styles ========== */
+.grid-container {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+
+.grid {
+    display: grid;
+    gap: 3px;
+    background: #333;
+    padding: 3px;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+/* ========== Cell Styles ========== */
+.cell {
+    width: 50px;
+    height: 50px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: transform 0.1s, box-shadow 0.1s;
+    position: relative;
+}
+
+.cell:hover {
+    transform: scale(1.05);
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.3);
+}
+
+.cell:focus {
+    outline: 3px solid #fff;
+    outline-offset: 2px;
+    transform: scale(1.05);
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.3);
+}
+
+/* Tile Type Styles */
+.cell.grass {
+    background: linear-gradient(135deg, #7ed957 0%, #4caf50 100%);
+}
+
+.cell.water {
+    background: linear-gradient(135deg, #4fc3f7 0%, #2196f3 100%);
+    cursor: not-allowed;
+}
+
+.cell.wall {
+    background: linear-gradient(135deg, #8d6e63 0%, #5d4037 100%);
+    cursor: default;
+}
+
+.cell.water:hover {
+    transform: none;
+    box-shadow: none;
+}
+
+/* ========== Footer Styles ========== */
+footer {
+    text-align: center;
+    color: #666;
+    font-size: 0.8em;
+    margin-top: 20px;
+}
+
+/* ========== Responsive Styles ========== */
+@media (max-width: 600px) {
+    .cell {
+        width: 40px;
+        height: 40px;
+    }
+
+    h1 {
+        font-size: 1.5em;
+    }
+
+    .container {
+        padding: 20px;
+    }
+}
