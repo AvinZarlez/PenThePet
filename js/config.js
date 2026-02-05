@@ -9,8 +9,8 @@ const CONFIG = {
     // Grid settings
     grid: {
         defaultSize: 9,        // Default grid dimensions (9x9)
-        minSize: 4,            // Minimum allowed grid size
-        maxSize: 20,           // Maximum allowed grid size
+        minSize: 6,            // Minimum allowed grid size
+        maxSize: 32,           // Maximum allowed grid size
     },
 
     // Tile generation probabilities (should sum to 1.0)

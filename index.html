@@ -38,7 +38,6 @@
         </div>
 
         <div class="controls">
-            <button id="newGameBtn">New Game</button>
             <button id="resetBtn">Reset</button>
             <div class="wall-counter">
                 <span class="counter-label">Walls Placed:</span>
@@ -69,6 +68,50 @@
 
         <div class="grid-container">
             <div id="grid" class="grid"></div>
+        </div>
+
+        <div class="bottom-controls">
+            <button id="newGameBtn">New Game</button>
+        </div>
+
+        <div class="options-section">
+            <h3>Options</h3>
+            <div class="options-content">
+                <div class="option-item">
+                    <label for="gridSize">Grid Size:</label>
+                    <input type="number" id="gridSize" min="6" max="32" value="9">
+                </div>
+                <div class="option-item">
+                    <label for="petType">Pet Type:</label>
+                    <select id="petType">
+                        <option value="🐶">🐶 Dog</option>
+                        <option value="🐱">🐱 Cat</option>
+                        <option value="🐰">🐰 Rabbit</option>
+                        <option value="🐹">🐹 Hamster</option>
+                        <option value="🐀">🐀 Rat</option>
+                        <option value="🐇">🐇 Hare</option>
+                        <option value="🐕‍🦺">🐕‍🦺 Service Dog</option>
+                        <option value="🐦">🐦 Bird</option>
+                        <option value="🐢">🐢 Turtle</option>
+                        <option value="🐍">🐍 Snake</option>
+                        <option value="🐟">🐟 Fish</option>
+                        <option value="🐠">🐠 Tropical Fish</option>
+                        <option value="🕷️">🕷️ Spider</option>
+                        <option value="🐈‍⬛">🐈‍⬛ Black Cat</option>
+                        <option value="🦜">🦜 Parrot</option>
+                        <option value="🐕">🐕 Dog Face</option>
+                        <option value="🐩">🐩 Poodle</option>
+                        <option value="🦎">🦎 Lizard</option>
+                        <option value="🦮">🦮 Guide Dog</option>
+                        <option value="🐈">🐈 Cat Face</option>
+                        <option value="🐴">🐴 Horse Face</option>
+                        <option value="🐎">🐎 Horse</option>
+                        <option value="🐭">🐭 Mouse Face</option>
+                        <option value="🐁">🐁 Mouse</option>
+                        <option value="🪨">🪨 Rock</option>
+                    </select>
+                </div>
+            </div>
         </div>
 
         <footer>

@@ -128,6 +128,20 @@ button:active {
     transform: translateY(0);
 }
 
+/* ========== Reset Button Styles ========== */
+#resetBtn {
+    padding: 10px 20px;
+    font-size: 1em;
+    min-width: 100px;
+    background: linear-gradient(135deg, #f0f0f0 0%, #e0e0e0 100%);
+    color: #333;
+    border: 2px solid #333;
+}
+
+#resetBtn:hover {
+    background: linear-gradient(135deg, #e8e8e8 0%, #d8d8d8 100%);
+}
+
 /* ========== Wall Counter Styles ========== */
 .wall-counter {
     display: flex;
@@ -138,6 +152,8 @@ button:active {
     border-radius: 8px;
     font-weight: bold;
     border: 2px solid #333;
+    min-width: 100px;
+    justify-content: center;
 }
 
 .counter-label {
@@ -273,9 +289,10 @@ button:active {
     border-radius: 8px;
     font-weight: bold;
     border: 2px solid #333;
-    font-size: 2em;
-    min-width: 60px;
+    font-size: 1.5em;
+    min-width: 100px;
     transition: all 0.3s ease;
+    color: #333;
 }
 
 .penned-status:disabled {
@@ -396,6 +413,67 @@ button:active {
 }
 
 /* ========== Footer Styles ========== */
+.bottom-controls {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+
+#newGameBtn {
+    padding: 12px 32px;
+    font-size: 1.1em;
+}
+
+.options-section {
+    background: #f0f0f0;
+    padding: 20px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+}
+
+.options-section h3 {
+    margin-bottom: 15px;
+    color: #333;
+    text-align: center;
+}
+
+.options-content {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    flex-wrap: wrap;
+}
+
+.option-item {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    min-width: 200px;
+}
+
+.option-item label {
+    color: #333;
+    font-weight: bold;
+    font-size: 0.95em;
+}
+
+.option-item input,
+.option-item select {
+    padding: 8px 12px;
+    border: 2px solid #333;
+    border-radius: 5px;
+    font-size: 1em;
+    background: white;
+    cursor: pointer;
+}
+
+.option-item input:focus,
+.option-item select:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
+}
+
 footer {
     text-align: center;
     color: #666;
