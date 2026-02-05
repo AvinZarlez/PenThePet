@@ -13,7 +13,7 @@ PenThePet/
 │   ├── Grid.js         # Grid data structure and generation logic
 │   ├── Game.js         # Main game controller and interaction logic
 │   └── main.js         # Application entry point and initialization
-└── README.md           # This file
+└── CODE_STRUCTURE.md   # This file (developer documentation)
 ```
 
 ## 🎯 File Purposes
