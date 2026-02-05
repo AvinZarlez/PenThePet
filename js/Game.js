@@ -13,6 +13,8 @@ class Game {
     constructor(size = CONFIG.grid.defaultSize) {
         this.grid = new Grid(size);
         this.gridElement = document.getElementById('grid');
+        this.wallCount = 0;
+        this.maxWalls = 9;
         this.attachEventListeners();
         this.init();
     }
@@ -23,7 +25,9 @@ class Game {
     init() {
         this.grid.generate();
         this.grid.saveInitialState();
+        this.wallCount = 0;
         this.render();
+        this.updateWallCounter();
     }
 
     /**
@@ -81,14 +85,25 @@ class Game {
     handleCellClick(row, col) {
         const currentTileType = this.grid.getTile(row, col);
         
-        // Only allow clicking on grass tiles (convert to wall)
+        // Allow clicking on grass tiles (convert to wall)
         if (currentTileType === 'grass') {
+            // Check if wall limit reached
+            if (this.wallCount >= this.maxWalls) {
+                this.showNotification('All 9 walls have been placed!');
+                return;
+            }
             this.grid.setTile(row, col, 'wall');
+            this.wallCount++;
             this.render();
+            this.updateWallCounter();
         }
-        
-        // Future: Add more interaction logic here
-        // Example: if (CONFIG.gameplay.allowWallRemoval && currentTileType === 'wall') { ... }
+        // Allow clicking on walls to remove them
+        else if (currentTileType === 'wall') {
+            this.grid.setTile(row, col, 'grass');
+            this.wallCount--;
+            this.render();
+            this.updateWallCounter();
+        }
     }
 
     /**
@@ -109,7 +124,9 @@ class Game {
      */
     reset() {
         this.grid.reset();
+        this.wallCount = 0;
         this.render();
+        this.updateWallCounter();
     }
 
     /**
@@ -118,7 +135,9 @@ class Game {
     newGame() {
         this.grid.generate();
         this.grid.saveInitialState();
+        this.wallCount = 0;
         this.render();
+        this.updateWallCounter();
     }
 
     /**
@@ -143,6 +162,33 @@ class Game {
         
         if (resetBtn) {
             resetBtn.addEventListener('click', () => this.reset());
+        }
+    }
+
+    /**
+     * Update the wall counter display
+     */
+    updateWallCounter() {
+        const counterElement = document.getElementById('wallCounter');
+        if (counterElement) {
+            counterElement.textContent = `${this.wallCount} / ${this.maxWalls}`;
+        }
+    }
+
+    /**
+     * Show a notification message to the user
+     * @param {string} message - The message to display
+     */
+    showNotification(message) {
+        const notificationElement = document.getElementById('notification');
+        if (notificationElement) {
+            notificationElement.textContent = message;
+            notificationElement.classList.add('show');
+            
+            // Hide notification after 2 seconds
+            setTimeout(() => {
+                notificationElement.classList.remove('show');
+            }, 2000);
         }
     }
 }

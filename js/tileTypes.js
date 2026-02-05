@@ -30,10 +30,10 @@ const TILE_TYPES = {
         name: 'wall',
         displayName: 'Wall',
         description: 'Wall - placed by player',
-        clickable: false,
+        clickable: true,
         cssClass: 'wall',
         gradient: 'linear-gradient(135deg, #8d6e63 0%, #5d4037 100%)',
-        ariaLabel: (row, col) => `Wall at row ${row + 1}, column ${col + 1}.`,
+        ariaLabel: (row, col) => `Wall at row ${row + 1}, column ${col + 1}. Click to remove.`,
     },
 
     // Add more tile types here for future expansion
