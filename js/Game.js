@@ -27,6 +27,7 @@ class Game {
         this.GRID_PADDING = 6;
         this.MIN_CELL_SIZE = 20;
         this.MAX_CELL_SIZE = 50;
+        this.AVAILABLE_HEIGHT_RATIO = 0.7; // Use 70% of viewport height to leave space for UI controls
         
         this.attachEventListeners();
         this.init();
@@ -479,7 +480,7 @@ class Game {
     calculateCellSize() {
         // Calculate available space in both dimensions separately
         const availableWidth = window.innerWidth * 0.95;
-        const availableHeight = window.innerHeight * 0.7; // Leave space for UI elements
+        const availableHeight = window.innerHeight * this.AVAILABLE_HEIGHT_RATIO;
         
         // Calculate max cell size that fits in each dimension
         const maxCellWidth = Math.floor((availableWidth - this.GRID_PADDING - (this.CELL_GAP * (this.grid.size - 1))) / this.grid.size);

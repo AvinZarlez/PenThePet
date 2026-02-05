@@ -20,14 +20,9 @@ class Grid {
      * Generate a new random grid based on tile distribution
      */
     generate(dateString = null) {
-        // If date provided, use it to modify random seed
-        if (dateString) {
-            let hash = 0;
-            for (let char of dateString) {
-                hash = hash * 31 + char.charCodeAt(0);
-            }
-            Math.seedrandom = hash; // Store for reference
-        }
+        // Note: dateString is accepted but not currently used for seeding
+        // as implementing true seeded random would require additional library
+        // For now, maps vary but this provides the framework for future enhancement
         
         this.tiles = [];
         for (let i = 0; i < this.size; i++) {
