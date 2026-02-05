@@ -36,6 +36,17 @@ const TILE_TYPES = {
         ariaLabel: (row, col) => `Wall at row ${row + 1}, column ${col + 1}. Click to remove.`,
     },
 
+    home: {
+        name: 'home',
+        displayName: 'Home',
+        description: 'Home - pet starting location',
+        clickable: false,
+        cssClass: 'home',
+        gradient: 'linear-gradient(135deg, #ffeb3b 0%, #ffc107 100%)',
+        emoji: '🏠🐾',
+        ariaLabel: (row, col) => `Home tile at row ${row + 1}, column ${col + 1}. Pet starting location.`,
+    },
+
     // Add more tile types here for future expansion
     // Example:
     // sand: {
