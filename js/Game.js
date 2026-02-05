@@ -89,7 +89,7 @@ class Game {
         if (currentTileType === 'grass') {
             // Check if wall limit reached
             if (this.wallCount >= this.maxWalls) {
-                this.showNotification('All 9 walls have been placed!');
+                this.showNotification(`All ${this.maxWalls} walls have been placed!`);
                 return;
             }
             this.grid.setTile(row, col, 'wall');
@@ -100,7 +100,7 @@ class Game {
         // Allow clicking on walls to remove them
         else if (currentTileType === 'wall') {
             this.grid.setTile(row, col, 'grass');
-            this.wallCount--;
+            this.wallCount = Math.max(0, this.wallCount - 1);
             this.render();
             this.updateWallCounter();
         }
