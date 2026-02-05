@@ -97,8 +97,10 @@ h1 {
 .controls {
     display: flex;
     justify-content: center;
+    align-items: center;
     gap: 15px;
     margin-bottom: 20px;
+    flex-wrap: wrap;
 }
 
 button {
@@ -120,6 +122,53 @@ button:hover {
 
 button:active {
     transform: translateY(0);
+}
+
+/* ========== Wall Counter Styles ========== */
+.wall-counter {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    background: linear-gradient(135deg, #f0f0f0 0%, #e0e0e0 100%);
+    border-radius: 8px;
+    font-weight: bold;
+    border: 2px solid #333;
+}
+
+.counter-label {
+    color: #333;
+    font-size: 0.95em;
+}
+
+.counter-value {
+    color: #667eea;
+    font-size: 1.1em;
+    min-width: 50px;
+    text-align: center;
+}
+
+/* ========== Notification Styles ========== */
+.notification {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%) translateY(-100px);
+    background: linear-gradient(135deg, #ff6b6b 0%, #ff5252 100%);
+    color: white;
+    padding: 15px 30px;
+    border-radius: 10px;
+    font-weight: bold;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+    opacity: 0;
+    transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
+    z-index: 1000;
+    pointer-events: none;
+}
+
+.notification.show {
+    transform: translateX(-50%) translateY(0);
+    opacity: 1;
 }
 
 /* ========== Grid Styles ========== */
@@ -172,7 +221,7 @@ button:active {
 
 .cell.wall {
     background: linear-gradient(135deg, #8d6e63 0%, #5d4037 100%);
-    cursor: default;
+    cursor: pointer;
 }
 
 .cell.water:hover {
