@@ -15,6 +15,7 @@ class Game {
         this.gridElement = document.getElementById('grid');
         this.wallCount = 0;
         this.maxWalls = 9;
+        this.boundHandleArrowKeys = this.handleArrowKeys.bind(this);
         this.attachEventListeners();
         this.init();
     }
@@ -66,8 +67,9 @@ class Game {
         // Add accessibility attributes
         if (tileInfo.clickable) {
             cell.setAttribute('role', 'button');
-            cell.setAttribute('tabindex', '0');
         }
+        // Make all cells focusable for keyboard navigation
+        cell.setAttribute('tabindex', '0');
         cell.setAttribute('aria-label', tileInfo.ariaLabel(row, col));
         
         // Add event listeners
@@ -162,6 +164,56 @@ class Game {
         
         if (resetBtn) {
             resetBtn.addEventListener('click', () => this.reset());
+        }
+
+        // Add arrow key navigation (using bound function for potential cleanup)
+        document.addEventListener('keydown', this.boundHandleArrowKeys);
+    }
+
+    /**
+     * Handle arrow key navigation
+     * @param {KeyboardEvent} event - The keyboard event
+     */
+    handleArrowKeys(event) {
+        // Only handle arrow keys
+        if (!['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(event.key)) {
+            return;
+        }
+
+        const activeElement = document.activeElement;
+        
+        // Check if the focused element is a grid cell
+        if (!activeElement || !activeElement.classList.contains('cell')) {
+            return;
+        }
+
+        event.preventDefault();
+
+        const currentRow = parseInt(activeElement.dataset.row);
+        const currentCol = parseInt(activeElement.dataset.col);
+        let newRow = currentRow;
+        let newCol = currentCol;
+
+        // Calculate new position based on arrow key
+        switch (event.key) {
+            case 'ArrowUp':
+                newRow = Math.max(0, currentRow - 1);
+                break;
+            case 'ArrowDown':
+                newRow = Math.min(this.grid.size - 1, currentRow + 1);
+                break;
+            case 'ArrowLeft':
+                newCol = Math.max(0, currentCol - 1);
+                break;
+            case 'ArrowRight':
+                newCol = Math.min(this.grid.size - 1, currentCol + 1);
+                break;
+        }
+
+        // Focus the new cell
+        const newCell = this.gridElement.querySelector(`[data-row="${newRow}"][data-col="${newCol}"]`);
+        if (newCell) {
+            newCell.focus();
         }
     }
 
