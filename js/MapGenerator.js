@@ -263,6 +263,43 @@ class MapGenerator {
     }
     
     /**
+     * Generate a simple valid map for debugging (without goal calculation)
+     * This is much faster as it skips the expensive goal calculation step.
+     * @returns {Object|null} Object containing map only, or null if generation fails
+     */
+    generateSimple() {
+        let attempts = 0;
+        
+        // Try to generate a valid random map
+        while (attempts < this.maxAttempts) {
+            const map = this._generateRandomMap();
+            if (this._validateMap(map)) {
+                // Return map without calculating goal (much faster)
+                return { 
+                    map,
+                    goal: null,  // Not calculated for debug maps
+                    maxWalls: CONSTANTS.MAX_WALLS,  // Use default
+                    optimalSolution: null
+                };
+            }
+            attempts++;
+        }
+        
+        // If random generation failed, try guaranteed valid map
+        const map = this._generateGuaranteedValidMap();
+        if (this._validateMap(map)) {
+            return { 
+                map,
+                goal: null,
+                maxWalls: CONSTANTS.MAX_WALLS,
+                optimalSolution: null
+            };
+        }
+        
+        return null;
+    }
+    
+    /**
      * Convert walls 2D array to array of [row, col] coordinates
      * @private
      * @param {Array} walls - 2D array where 1 indicates wall position

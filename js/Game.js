@@ -479,12 +479,16 @@ class Game {
 
     /**
      * Generate a debug map with specified size (not saved, for testing)
+     * Uses simple generation without goal calculation to avoid browser freeze.
      * @param {number} size - The size of the debug map
      */
     generateDebugMap(size) {
         if (size >= CONFIG.grid.minSize && size <= CONFIG.grid.maxSize) {
             this.grid = new Grid(size);
-            const result = this.grid.generate(null);
+            
+            // Use generateSimple() instead of generate() to avoid expensive goal calculation
+            // This makes debug map generation much faster and prevents browser freezing
+            const result = this.grid.generateSimple();
             
             if (result === null) {
                 console.error('Failed to generate debug map');
@@ -492,10 +496,10 @@ class Game {
                 return;
             }
             
-            // Update goal and maxWalls from generation (uses optimal wall count)
-            this.goalAreaSize = result.goal;
-            this.maxWalls = result.maxWalls;  // Use optimal wall count from generator
-            console.log(`Generated debug map with goal: ${result.goal}, maxWalls: ${this.maxWalls}`);
+            // Set default values for debug maps (goal calculation skipped for performance)
+            this.goalAreaSize = CONSTANTS.MAX_WALLS;  // Default goal
+            this.maxWalls = CONSTANTS.MAX_WALLS;
+            console.log(`Generated debug map (size: ${size}x${size}, goal calculation skipped for performance)`);
             
             this.grid.saveInitialState();
             this.wallCount = 0;
@@ -513,8 +517,6 @@ class Game {
         const resetBtn = document.getElementById('resetBtn');
         const statusBtn = document.getElementById('pennedStatus');
         const exitViewerBtn = document.getElementById('exitViewer');
-        const petTypeSelect = document.getElementById('petType');
-        const hintModeSelect = document.getElementById('hintMode');
         const debugGridSizeSlider = document.getElementById('debugGridSize');
         const debugSizeValue = document.getElementById('debugSizeValue');
         const generateDebugMapBtn = document.getElementById('generateDebugMapBtn');
@@ -533,28 +535,6 @@ class Game {
 
         if (exitViewerBtn) {
             exitViewerBtn.addEventListener('click', () => this.hideRoamingArea());
-        }
-
-        if (petTypeSelect) {
-            petTypeSelect.addEventListener('change', (e) => {
-                this.petEmoji = e.target.value;
-                this._savePetToCookie(this.petEmoji);
-                this.render();
-                this.updateLegend();
-            });
-            
-            // Set initial value from loaded pet emoji
-            petTypeSelect.value = this.petEmoji;
-        }
-
-        if (hintModeSelect) {
-            hintModeSelect.addEventListener('change', (e) => {
-                this.hintMode = e.target.value;
-                // TODO: Implement hint functionality based on selected mode
-                // - checkOptimal: Show if current solution meets optimal criteria
-                // - revealTarget: Show the target/optimal area size or solution
-                this.render();
-            });
         }
 
         // Debug Tools event listeners

@@ -69,31 +69,6 @@ function showNoMapError() {
 }
 
 /**
- * Populate animal options in the pet type selector
- */
-function populateAnimalOptions() {
-    const petTypeSelect = document.getElementById('petType');
-    if (!petTypeSelect) return;
-    
-    // Clear existing options
-    petTypeSelect.innerHTML = '';
-    
-    // Add options from CONSTANTS.ANIMAL_OPTIONS
-    CONSTANTS.ANIMAL_OPTIONS.forEach(animal => {
-        const option = document.createElement('option');
-        option.value = animal.emoji;
-        option.textContent = `${animal.emoji} ${animal.name}`;
-        petTypeSelect.appendChild(option);
-    });
-    
-    // Load saved pet selection from cookie if available
-    const savedPet = getCookie('selectedPet');
-    if (savedPet) {
-        petTypeSelect.value = savedPet;
-    }
-}
-
-/**
  * Get a cookie value by name
  * @param {string} name - Cookie name
  * @returns {string|null} Cookie value or null if not found
@@ -144,8 +119,6 @@ function updateMapInfo(mapData) {
  * Initialize the game application
  */
 async function initGame() {
-    // Populate animal options from constants
-    populateAnimalOptions();
     // Load today's map from database
     const mapData = await loadTodayMap();
     
@@ -217,12 +190,6 @@ async function initGame() {
     // Load debug mode setting and apply visibility
     const debugMode = getCookie('debugMode') === 'true';
     menu.updateDebugToolsVisibility(debugMode);
-    
-    // Set hint mode selector value
-    const hintModeSelect = document.getElementById('hintMode');
-    if (hintModeSelect && savedHintMode) {
-        hintModeSelect.value = savedHintMode;
-    }
     
     // Set grid size input attributes from config
     const gridSizeInput = document.getElementById('gridSize');

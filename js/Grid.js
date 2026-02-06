@@ -40,6 +40,23 @@ class Grid {
     }
 
     /**
+     * Generate a simple debug map without goal calculation (much faster)
+     * @returns {Object|null} Object with {map: Array} or null if generation fails
+     */
+    generateSimple() {
+        const generator = new MapGenerator(this.size, CONFIG.tileDistribution);
+        const result = generator.generateSimple();
+        
+        if (result === null) {
+            console.error('Failed to generate simple map');
+            return null;
+        }
+        
+        this.tiles = result.map;
+        return result;
+    }
+
+    /**
      * Generate a random tile type based on configuration
      * @private
      * @returns {string} The tile type name
