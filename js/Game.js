@@ -37,6 +37,9 @@ class Game {
      * Initialize a new game
      */
     init() {
+        // Randomly pick wall count between 5 and 15
+        this.maxWalls = Math.floor(Math.random() * 11) + 5; // 5 to 15 inclusive
+        
         // Use today's date for consistent daily maps
         const today = new Date().toISOString().split('T')[0];
         const result = this.grid.generate(today, this.maxWalls);
@@ -401,6 +404,9 @@ class Game {
      * Start a new game with a fresh grid
      */
     newGame() {
+        // Randomly pick wall count between 5 and 15
+        this.maxWalls = Math.floor(Math.random() * 11) + 5; // 5 to 15 inclusive
+        
         const result = this.grid.generate(null, this.maxWalls);
         
         if (result === null) {
@@ -432,9 +438,15 @@ class Game {
     /**
      * Generate a debug map with specified size (not saved, for testing)
      * @param {number} size - The size of the debug map
+     * @param {number} maxWalls - Maximum number of walls (optional, default is current maxWalls)
      */
-    generateDebugMap(size) {
+    generateDebugMap(size, maxWalls = null) {
         if (size >= CONFIG.grid.minSize && size <= CONFIG.grid.maxSize) {
+            // Update maxWalls if provided
+            if (maxWalls !== null && maxWalls >= 5 && maxWalls <= 15) {
+                this.maxWalls = maxWalls;
+            }
+            
             this.grid = new Grid(size);
             const result = this.grid.generate(null, this.maxWalls);
             
@@ -446,7 +458,7 @@ class Game {
             
             // Update goal from generation
             this.goalAreaSize = result.goal;
-            console.log(`Generated debug map with goal: ${result.goal}`);
+            console.log(`Generated debug map with goal: ${result.goal}, maxWalls: ${this.maxWalls}`);
             
             this.grid.saveInitialState();
             this.wallCount = 0;
@@ -468,6 +480,8 @@ class Game {
         const hintModeSelect = document.getElementById('hintMode');
         const debugGridSizeSlider = document.getElementById('debugGridSize');
         const debugSizeValue = document.getElementById('debugSizeValue');
+        const debugMaxWallsSlider = document.getElementById('debugMaxWalls');
+        const debugMaxWallsValue = document.getElementById('debugMaxWallsValue');
         const generateDebugMapBtn = document.getElementById('generateDebugMapBtn');
         
         if (newGameBtn) {
@@ -511,10 +525,17 @@ class Game {
             });
         }
 
-        if (generateDebugMapBtn && debugGridSizeSlider) {
+        if (debugMaxWallsSlider && debugMaxWallsValue) {
+            debugMaxWallsSlider.addEventListener('input', (e) => {
+                debugMaxWallsValue.textContent = e.target.value;
+            });
+        }
+
+        if (generateDebugMapBtn && debugGridSizeSlider && debugMaxWallsSlider) {
             generateDebugMapBtn.addEventListener('click', () => {
                 const debugSize = parseInt(debugGridSizeSlider.value);
-                this.generateDebugMap(debugSize);
+                const debugMaxWalls = parseInt(debugMaxWallsSlider.value);
+                this.generateDebugMap(debugSize, debugMaxWalls);
             });
         }
 
