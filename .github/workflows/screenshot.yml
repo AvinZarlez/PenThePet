@@ -1,9 +1,6 @@
 name: PR Screenshot
 
 on:
-  pull_request:
-    branches: '**'
-    types: [opened, synchronize, reopened]
   push:
     branches: [main]
 
