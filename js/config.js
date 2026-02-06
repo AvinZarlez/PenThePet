@@ -7,6 +7,11 @@
  * NOTE: Many values now reference CONSTANTS from constants.js
  */
 
+// Import CONSTANTS if in Node.js environment
+if (typeof CONSTANTS === 'undefined' && typeof require !== 'undefined') {
+    global.CONSTANTS = require('./constants.js');
+}
+
 const CONFIG = {
     // Grid settings
     grid: {
