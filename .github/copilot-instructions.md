@@ -4,6 +4,8 @@
 
 **IMPORTANT: Before making ANY changes, read the relevant documentation:**
 
+**Full Documentation Index:** See [docs/README.md](../docs/README.md) for complete documentation guide with all topics and navigation.
+
 ### Required Reading for ALL Changes
 - **[docs/AGENT_GUIDELINES.md](../docs/AGENT_GUIDELINES.md)** - ⚠️ START HERE - Critical requirements for AI agents
 - **[docs/CODE_STRUCTURE.md](../docs/CODE_STRUCTURE.md)** - How the code is organized
@@ -13,6 +15,9 @@
 - **Map generation** → [docs/MAP_GENERATION.md](../docs/MAP_GENERATION.md)
 - **Adding tests** → [docs/TESTING.md](../docs/TESTING.md)  
 - **Development setup** → [docs/DEVELOPMENT.md](../docs/DEVELOPMENT.md)
+
+### Historical Context (if needed)
+- **Change summaries** → [docs/summaries/](../docs/summaries/) - PR and implementation summaries
 
 ### Post-Change Requirements
 ✅ Run tests: `npm test`  
