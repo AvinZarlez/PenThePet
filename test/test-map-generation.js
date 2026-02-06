@@ -10,7 +10,6 @@
 
 // Import required modules
 const CONFIG = require('../js/config.js');
-const Grid = require('../js/Grid.js');
 const MapGenerator = require('../js/MapGenerator.js');
 const MILPSolver = require('../js/MILPSolver.js');
 const BruteForceSolver = require('./BruteForceSolver.js');

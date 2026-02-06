@@ -17,7 +17,6 @@ const fs = require('fs');
 const path = require('path');
 
 // Load modules
-const CONSTANTS = require('../js/constants.js');
 const MapGenerator = require('../js/MapGenerator.js');
 const { getRandomWord } = require('../js/wordList.js');
 

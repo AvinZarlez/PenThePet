@@ -228,7 +228,7 @@ describe('Menu', () => {
     describe('Options Synchronization', () => {
         test('should sync pet type between modal and main selector', () => {
             const modalPetType = document.getElementById('modalPetType');
-            const petType = document.getElementById('petType');
+            document.getElementById('petType');
             
             // Add options to modal
             const option = document.createElement('option');

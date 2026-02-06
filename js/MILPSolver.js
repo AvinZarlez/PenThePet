@@ -121,7 +121,6 @@ class MILPSolver {
         
         let bestSolution = null;
         let bestArea = 0;
-        let combinationsChecked = 0;
         
         // Try all combinations from 1 to maxWalls
         for (let numWalls = 1; numWalls <= Math.min(maxWalls, grassTiles.length); numWalls++) {
@@ -134,7 +133,6 @@ class MILPSolver {
                 map, grassTiles, numWalls, homeRow, homeCol, bestArea
             );
             
-            combinationsChecked += result.checked;
             countForThisSize = result.checked;
             
             if (result.solution) {
@@ -421,7 +419,7 @@ class MILPSolver {
         
         // Find cells that are on paths to edges
         const criticalCells = [];
-        for (const [key, dist] of distances.entries()) {
+        for (const [key] of distances.entries()) {
             const [row, col] = key.split(',').map(Number);
             
             // Check if this cell is near an edge

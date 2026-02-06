@@ -1,6 +1,7 @@
 {
   "name": "penthepet",
   "version": "1.0.0",
+  "type": "module",
   "description": "Pen the Pet: A logic puzzle game about fencing in your pet",
   "main": "js/main.js",
   "scripts": {
