@@ -258,7 +258,7 @@ class MapGenerator {
         return {
             goalArea: solution.goalArea,
             optimalWallCount: solution.optimalWallCount || 0,
-            optimalSolution: this._convertWallsToCoordinates(solution.walls)
+            optimalSolution: solution.walls ? this._convertWallsToCoordinates(solution.walls) : []
         };
     }
     
