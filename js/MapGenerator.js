@@ -61,7 +61,8 @@ class MapGenerator {
                         return { 
                             map, 
                             goal: result.goalArea, 
-                            maxWalls: result.optimalWallCount  // Use optimal wall count
+                            maxWalls: result.optimalWallCount,  // Use optimal wall count
+                            optimalSolution: result.optimalSolution  // Include optimal wall positions
                         };
                     }
                     // If result is null or needs too many walls, try again
@@ -78,6 +79,7 @@ class MapGenerator {
                 return { 
                     map, 
                     goal: result.goalArea,
+                    optimalSolution: result.optimalSolution,
                     maxWalls: result.optimalWallCount
                 };
             }
@@ -255,8 +257,27 @@ class MapGenerator {
         
         return {
             goalArea: solution.goalArea,
-            optimalWallCount: solution.optimalWallCount || 0
+            optimalWallCount: solution.optimalWallCount || 0,
+            optimalSolution: solution.walls ? this._convertWallsToCoordinates(solution.walls) : []
         };
+    }
+    
+    /**
+     * Convert walls 2D array to array of [row, col] coordinates
+     * @private
+     * @param {Array} walls - 2D array where 1 indicates wall position
+     * @returns {Array} Array of [row, col] coordinates
+     */
+    _convertWallsToCoordinates(walls) {
+        const coordinates = [];
+        for (let i = 0; i < walls.length; i++) {
+            for (let j = 0; j < walls[i].length; j++) {
+                if (walls[i][j] === 1) {
+                    coordinates.push([i, j]);
+                }
+            }
+        }
+        return coordinates;
     }
 
 }

@@ -185,6 +185,26 @@ async function initGame() {
         console.warn('Map does not have a maxWalls value, using default');
     }
     
+    // Store current date and optimal solution
+    game.currentDate = mapData.date;
+    game.optimalSolution = mapData.optimalSolution || null;
+    
+    // Check if user has already submitted for this puzzle
+    const submission = game.loadSubmission(mapData.date);
+    if (submission) {
+        game.isSubmitted = true;
+        game.submittedScore = submission.score;
+        game.submittedWalls = submission.walls;
+        
+        // Restore submitted wall positions
+        for (const [row, col] of submission.walls) {
+            if (game.isValidPosition(row, col) && game.grid.getTile(row, col) === 'grass') {
+                game.grid.setTile(row, col, 'wall');
+                game.wallCount++;
+            }
+        }
+    }
+    
     game.render();
     game.updateWallCounter();
     game.updateAreaSizeDisplay();

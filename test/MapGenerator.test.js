@@ -475,7 +475,8 @@ describe('MapGenerator', () => {
             
             expect(result).toEqual({
                 goalArea: 12,
-                optimalWallCount: 6
+                optimalWallCount: 6,
+                optimalSolution: []
             });
             
             MILPSolver.solveMap.mockRestore();
