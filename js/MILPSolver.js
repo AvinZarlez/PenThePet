@@ -58,89 +58,63 @@ class MILPSolver {
         const verticalTiles = map.length;
         const horizontalTiles = map[0].length;
         
-        // Start with a greedy approach: find cells that, when walled, block the most paths
-        const pathCells = this._findPathCellsToEdges(map, homeRow, homeCol);
-        
-        if (pathCells.length === 0) {
-            // Already penned
-            const area = this._calculatePennedArea(map, [], homeRow, homeCol);
+        // Check if already penned
+        if (this._isPenned(map, homeRow, homeCol)) {
+            const area = this._calculatePennedArea(map, homeRow, homeCol);
             return { 
                 walls: Array(verticalTiles).fill(null).map(() => Array(horizontalTiles).fill(0)),
                 goalArea: area
             };
         }
         
-        // Score each potential wall location by how many paths it blocks
-        const cellScores = new Map();
-        for (const cell of pathCells) {
-            const key = `${cell[0]},${cell[1]}`;
-            cellScores.set(key, (cellScores.get(key) || 0) + 1);
-        }
-        
-        // Sort cells by score (highest first)
-        const sortedCells = Array.from(cellScores.entries())
-            .sort((a, b) => b[1] - a[1])
-            .map(([key, score]) => {
-                const [row, col] = key.split(',').map(Number);
-                return { row, col, score };
-            });
-        
-        // Try placing walls greedily
-        let bestWalls = null;
+        let bestSolution = null;
         let bestArea = Infinity;
         
-        // Try different combinations starting from the highest scored cells
-        const maxAttempts = Math.min(100, Math.pow(2, Math.min(sortedCells.length, 10)));
+        // Strategy 1: Try to create tight enclosures around home
+        // Start with immediate neighbors of home, then expand outward
+        const enclosures = this._generateEnclosureCandidates(map, homeRow, homeCol, maxWalls);
         
-        for (let attempt = 0; attempt < maxAttempts; attempt++) {
-            const walls = [];
+        for (const enclosure of enclosures) {
             const testMap = map.map(row => [...row]);
+            const walls = [];
             
-            // Use a combination of greedy and random selection
-            const cellsToTry = [...sortedCells];
-            let wallsPlaced = 0;
-            
-            while (wallsPlaced < maxWalls && cellsToTry.length > 0) {
-                // Pick cell (greedy for first few, then with some randomness)
-                let cellIdx;
-                if (wallsPlaced < maxWalls / 2) {
-                    // Greedy: pick highest scored
-                    cellIdx = 0;
-                } else {
-                    // Semi-random: pick from top few
-                    const topN = Math.min(5, cellsToTry.length);
-                    cellIdx = Math.floor(Math.random() * topN);
+            // Place walls for this enclosure
+            for (const [row, col] of enclosure) {
+                if (testMap[row][col] === 1) {
+                    testMap[row][col] = 5;
+                    walls.push([row, col]);
                 }
-                
-                const cell = cellsToTry[cellIdx];
-                cellsToTry.splice(cellIdx, 1);
-                
-                // Place wall if the cell is grass
-                if (testMap[cell.row][cell.col] === 1) {
-                    testMap[cell.row][cell.col] = 5; // 5 represents wall
-                    walls.push([cell.row, cell.col]);
-                    wallsPlaced++;
-                    
-                    // Check if penned
-                    if (this._isPenned(testMap, homeRow, homeCol)) {
-                        const area = this._calculatePennedArea(testMap, walls, homeRow, homeCol);
-                        if (area < bestArea) {
-                            bestArea = area;
-                            bestWalls = [...walls];
-                        }
-                        break;
-                    }
+            }
+            
+            // Check if this pens the home
+            if (this._isPenned(testMap, homeRow, homeCol)) {
+                const area = this._calculatePennedArea(testMap, homeRow, homeCol);
+                if (area < bestArea && walls.length <= maxWalls) {
+                    bestArea = area;
+                    bestSolution = walls;
                 }
             }
         }
         
-        if (bestWalls === null) {
+        // Strategy 2: Use BFS to find shortest paths to edge, then block them
+        // Try blocking combinations of these critical paths
+        if (bestArea > 5) { // Only if we haven't found a very small solution
+            const criticalCells = this._findCriticalPathCells(map, homeRow, homeCol);
+            const pathSolution = this._findBestPathBlocking(map, criticalCells, maxWalls, homeRow, homeCol);
+            
+            if (pathSolution && pathSolution.area < bestArea) {
+                bestArea = pathSolution.area;
+                bestSolution = pathSolution.walls;
+            }
+        }
+        
+        if (bestSolution === null) {
             return null;
         }
         
         // Convert wall list to 2D array
         const wallArray = Array(verticalTiles).fill(null).map(() => Array(horizontalTiles).fill(0));
-        for (const [row, col] of bestWalls) {
+        for (const [row, col] of bestSolution) {
             wallArray[row][col] = 1;
         }
         
@@ -148,34 +122,70 @@ class MILPSolver {
     }
     
     /**
-     * Find all cells that are part of paths from home to edges
+     * Generate candidate enclosures around the home
+     * Start with tight enclosures and expand outward
      * @private
      */
-    static _findPathCellsToEdges(map, homeRow, homeCol) {
+    static _generateEnclosureCandidates(map, homeRow, homeCol, maxWalls) {
+        const candidates = [];
         const verticalTiles = map.length;
         const horizontalTiles = map[0].length;
-        const pathCells = [];
         
-        // BFS to find all paths to edges
-        const queue = [[homeRow, homeCol, []]];
-        const visited = new Set([`${homeRow},${homeCol}`]);
-        const directions = [[-1, 0], [1, 0], [0, -1], [0, 1]];
-        
-        const maxPaths = 50; // Limit to avoid excessive computation
-        let pathsFound = 0;
-        
-        while (queue.length > 0 && pathsFound < maxPaths) {
-            const [row, col, path] = queue.shift();
-            
-            // Check if reached edge
-            if (row === 0 || row === verticalTiles - 1 || col === 0 || col === horizontalTiles - 1) {
-                pathCells.push(...path);
-                pathCells.push([row, col]);
-                pathsFound++;
-                continue;
+        // Generate enclosures at different distances from home
+        for (let distance = 1; distance <= Math.min(5, maxWalls); distance++) {
+            // Get all cells at this Manhattan distance
+            const ring = [];
+            for (let dr = -distance; dr <= distance; dr++) {
+                for (let dc = -distance; dc <= distance; dc++) {
+                    if (Math.abs(dr) + Math.abs(dc) !== distance) continue;
+                    
+                    const row = homeRow + dr;
+                    const col = homeCol + dc;
+                    
+                    if (row < 0 || row >= verticalTiles || col < 0 || col >= horizontalTiles) {
+                        continue;
+                    }
+                    
+                    ring.push([row, col]);
+                }
             }
             
-            // Explore neighbors
+            // Try full ring
+            candidates.push([...ring]);
+            
+            // Also try partial rings (useful when some positions have water)
+            if (ring.length <= maxWalls) {
+                // Try removing each cell from the ring
+                for (let i = 0; i < ring.length; i++) {
+                    const partial = ring.filter((_, idx) => idx !== i);
+                    candidates.push(partial);
+                }
+            }
+        }
+        
+        // Sort candidates by size (smallest first)
+        candidates.sort((a, b) => a.length - b.length);
+        
+        return candidates;
+    }
+    
+    /**
+     * Find critical cells that are on shortest paths to edges
+     * @private
+     */
+    static _findCriticalPathCells(map, homeRow, homeCol) {
+        const verticalTiles = map.length;
+        const horizontalTiles = map[0].length;
+        
+        // BFS to find all cells reachable from home
+        const distances = new Map();
+        const queue = [[homeRow, homeCol, 0]];
+        distances.set(`${homeRow},${homeCol}`, 0);
+        const directions = [[-1, 0], [1, 0], [0, -1], [0, 1]];
+        
+        while (queue.length > 0) {
+            const [row, col, dist] = queue.shift();
+            
             for (const [dr, dc] of directions) {
                 const newRow = row + dr;
                 const newCol = col + dc;
@@ -185,21 +195,126 @@ class MILPSolver {
                     continue;
                 }
                 
-                if (visited.has(key)) {
+                if (distances.has(key)) {
                     continue;
                 }
                 
                 const tileType = map[newRow][newCol];
-                if (tileType === 0 || tileType === 5) { // water or wall
+                if (tileType === 0 || tileType === 5) {
                     continue;
                 }
                 
-                visited.add(key);
-                queue.push([newRow, newCol, [...path, [newRow, newCol]]]);
+                distances.set(key, dist + 1);
+                queue.push([newRow, newCol, dist + 1]);
             }
         }
         
-        return pathCells;
+        // Find cells that are on paths to edges
+        const criticalCells = [];
+        for (const [key, dist] of distances.entries()) {
+            const [row, col] = key.split(',').map(Number);
+            
+            // Check if this cell is near an edge
+            if (row === 0 || row === verticalTiles - 1 || col === 0 || col === horizontalTiles - 1) {
+                // Backtrack to find cells on path
+                this._backtrackPath(map, distances, row, col, criticalCells);
+            }
+        }
+        
+        // Count frequency of each cell on critical paths
+        const cellCounts = new Map();
+        for (const [row, col] of criticalCells) {
+            const key = `${row},${col}`;
+            cellCounts.set(key, (cellCounts.get(key) || 0) + 1);
+        }
+        
+        // Return cells sorted by frequency (most critical first)
+        return Array.from(cellCounts.entries())
+            .sort((a, b) => b[1] - a[1])
+            .map(([key, count]) => {
+                const [row, col] = key.split(',').map(Number);
+                return [row, col, count];
+            });
+    }
+    
+    /**
+     * Backtrack from an edge cell to home to find path cells
+     * @private
+     */
+    static _backtrackPath(map, distances, startRow, startCol, result) {
+        const queue = [[startRow, startCol]];
+        const visited = new Set([`${startRow},${startCol}`]);
+        const directions = [[-1, 0], [1, 0], [0, -1], [0, 1]];
+        
+        while (queue.length > 0) {
+            const [row, col] = queue.shift();
+            const key = `${row},${col}`;
+            const currentDist = distances.get(key);
+            
+            result.push([row, col]);
+            
+            if (currentDist === 0) {
+                break; // Reached home
+            }
+            
+            // Look for neighbors with distance one less
+            for (const [dr, dc] of directions) {
+                const newRow = row + dr;
+                const newCol = col + dc;
+                const newKey = `${newRow},${newCol}`;
+                
+                if (visited.has(newKey)) continue;
+                
+                const newDist = distances.get(newKey);
+                if (newDist === currentDist - 1) {
+                    visited.add(newKey);
+                    queue.push([newRow, newCol]);
+                }
+            }
+        }
+    }
+    
+    /**
+     * Find best solution by blocking critical path cells
+     * @private
+     */
+    static _findBestPathBlocking(map, criticalCells, maxWalls, homeRow, homeCol) {
+        let bestSolution = null;
+        let bestArea = Infinity;
+        
+        // Try different combinations of blocking critical cells
+        const attempts = Math.min(100, Math.pow(2, Math.min(criticalCells.length, 7)));
+        
+        for (let attempt = 0; attempt < attempts; attempt++) {
+            const testMap = map.map(row => [...row]);
+            const walls = [];
+            
+            // Select cells to wall based on criticality
+            const candidates = [...criticalCells];
+            
+            for (let i = 0; i < maxWalls && candidates.length > 0; i++) {
+                // Pick from top candidates with some randomness
+                const idx = Math.floor(Math.random() * Math.min(5, candidates.length));
+                const [row, col] = candidates[idx];
+                candidates.splice(idx, 1);
+                
+                if (testMap[row][col] === 1) {
+                    testMap[row][col] = 5;
+                    walls.push([row, col]);
+                    
+                    if (this._isPenned(testMap, homeRow, homeCol)) {
+                        const area = this._calculatePennedArea(testMap, homeRow, homeCol);
+                        if (area < bestArea) {
+                            bestArea = area;
+                            bestSolution = [...walls];
+                        }
+                        break;
+                    }
+                }
+            }
+        }
+        
+        return bestSolution ? { walls: bestSolution, area: bestArea } : null;
     }
     
     /**

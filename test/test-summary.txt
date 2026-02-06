@@ -1,0 +1,20 @@
+Map Generation Test Summary
+================================================================================
+
+Total tests: 12
+Correct: 0 (0.0%)
+Incorrect: 12
+
+Incorrect results:
+  1. Size 5x5, 5 walls: Brute=1, MILP=6, Diff=5
+  2. Size 5x5, 5 walls: Brute=1, MILP=6, Diff=5
+  3. Size 5x5, 7 walls: Brute=1, MILP=6, Diff=5
+  4. Size 5x5, 7 walls: Brute=1, MILP=6, Diff=5
+  5. Size 6x6, 5 walls: Brute=1, MILP=7, Diff=6
+  6. Size 6x6, 5 walls: Brute=1, MILP=7, Diff=6
+  7. Size 6x6, 7 walls: Brute=1, MILP=7, Diff=6
+  8. Size 6x6, 7 walls: Brute=1, MILP=7, Diff=6
+  9. Size 7x7, 5 walls: Brute=1, MILP=8, Diff=7
+  10. Size 7x7, 5 walls: Brute=1, MILP=8, Diff=7
+  11. Size 7x7, 7 walls: Brute=1, MILP=8, Diff=7
+  12. Size 7x7, 7 walls: Brute=1, MILP=8, Diff=7
