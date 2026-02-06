@@ -108,6 +108,17 @@ function getCookie(name) {
 }
 
 /**
+ * Format date string for display
+ * @param {string} dateStr - ISO date string (YYYY-MM-DD)
+ * @returns {string} Formatted date (e.g., "Feb 6, 2026")
+ */
+function formatDate(dateStr) {
+    const date = new Date(dateStr + 'T00:00:00');
+    const options = { year: 'numeric', month: 'short', day: 'numeric' };
+    return date.toLocaleDateString('en-US', options);
+}
+
+/**
  * Update the map info display with day number, map name, and date
  * @param {Object} mapData - The map data object
  */
@@ -125,10 +136,7 @@ function updateMapInfo(mapData) {
     }
     
     if (mapDateElement && mapData.date) {
-        // Format date to be more readable (e.g., "Feb 6, 2026")
-        const dateObj = new Date(mapData.date + 'T00:00:00');
-        const options = { year: 'numeric', month: 'short', day: 'numeric' };
-        mapDateElement.textContent = dateObj.toLocaleDateString('en-US', options);
+        mapDateElement.textContent = formatDate(mapData.date);
     }
 }
 

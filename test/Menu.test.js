@@ -72,7 +72,7 @@ function mockFetch() {
                     map: []
                 },
                 '2026-02-05': {
-                    dayNumber: 0,
+                    dayNumber: 0,  // Day 0 is before the official launch
                     mapName: 'River',
                     date: '2026-02-05',
                     size: 7,
@@ -96,8 +96,8 @@ describe('Menu', () => {
         mockFetch();
         
         // Clear cookies
-        document.cookie.split(";").forEach((c) => {
-            document.cookie = c.trim().split("=")[0] + "=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/";
+        document.cookie.split(';').forEach((c) => {
+            document.cookie = c.trim().split('=')[0] + '=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/';
         });
     });
 

@@ -353,10 +353,19 @@ class Menu {
 
     /**
      * Format date string for display
+     * Uses formatDate from main.js if available, otherwise formats locally
      * @param {string} dateStr - ISO date string
      * @returns {string} Formatted date
      */
     _formatDate(dateStr) {
+        // Try to use global formatDate function from main.js
+        // eslint-disable-next-line no-undef
+        if (typeof formatDate === 'function') {
+            // eslint-disable-next-line no-undef
+            return formatDate(dateStr);
+        }
+        
+        // Fallback to local formatting
         const date = new Date(dateStr + 'T00:00:00');
         const options = { year: 'numeric', month: 'short', day: 'numeric' };
         return date.toLocaleDateString('en-US', options);
