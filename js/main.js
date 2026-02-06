@@ -6,6 +6,7 @@
  */
 
 let game;
+let menu;
 
 /**
  * Get today's date in ISO format (YYYY-MM-DD)
@@ -17,7 +18,7 @@ function getTodayDate() {
 }
 
 /**
- * Load today's map from the database
+ * Load today's map from the database or from cookie selection
  * @returns {Promise<Object|null>} Map data or null if not found
  */
 async function loadTodayMap() {
@@ -28,8 +29,15 @@ async function loadTodayMap() {
         }
         
         const mapsDb = await response.json();
-        const today = getTodayDate();
         
+        // Check if user has a selected level in cookie
+        const savedLevel = getCookie('currentLevel');
+        if (savedLevel && mapsDb[savedLevel]) {
+            return mapsDb[savedLevel];
+        }
+        
+        // Otherwise use today's map
+        const today = getTodayDate();
         return mapsDb[today] || null;
     } catch (error) {
         console.error('Error loading maps database:', error);
@@ -141,6 +149,12 @@ async function initGame() {
     // Create game with the map size from database
     game = new Game(mapData.size);
     
+    // Load hint mode from cookie if available
+    const savedHintMode = getCookie('hintMode');
+    if (savedHintMode) {
+        game.hintMode = savedHintMode;
+    }
+    
     // Update map info display
     updateMapInfo(mapData);
     
@@ -167,6 +181,20 @@ async function initGame() {
     game.updateWallCounter();
     game.updateAreaSizeDisplay();
     
+    // Initialize menu system
+    // eslint-disable-next-line no-undef
+    menu = new Menu(game);
+    
+    // Load debug mode setting and apply visibility
+    const debugMode = getCookie('debugMode') === 'true';
+    menu.updateDebugToolsVisibility(debugMode);
+    
+    // Set hint mode selector value
+    const hintModeSelect = document.getElementById('hintMode');
+    if (hintModeSelect && savedHintMode) {
+        hintModeSelect.value = savedHintMode;
+    }
+    
     // Set grid size input attributes from config
     const gridSizeInput = document.getElementById('gridSize');
     if (gridSizeInput) {
@@ -186,6 +214,7 @@ async function initGame() {
     // Export for potential use in console or testing
     if (typeof window !== 'undefined') {
         window.game = game;
+        window.menu = menu;
     }
 }
 
