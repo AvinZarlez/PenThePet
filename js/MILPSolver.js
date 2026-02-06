@@ -52,95 +52,101 @@ class MILPSolver {
     
     /**
      * Find the best wall placement using a search algorithm
+     * Goal: MAXIMIZE the penned area with available walls
      * @private
      */
     static _findBestWallPlacement(map, maxWalls, homeRow, homeCol) {
         const verticalTiles = map.length;
         const horizontalTiles = map[0].length;
         
-        // Start with a greedy approach: find cells that, when walled, block the most paths
-        const pathCells = this._findPathCellsToEdges(map, homeRow, homeCol);
-        
-        if (pathCells.length === 0) {
-            // Already penned
-            const area = this._calculatePennedArea(map, [], homeRow, homeCol);
+        // Check if already penned
+        if (this._isPenned(map, homeRow, homeCol)) {
+            const area = this._calculatePennedArea(map, homeRow, homeCol);
             return { 
                 walls: Array(verticalTiles).fill(null).map(() => Array(horizontalTiles).fill(0)),
                 goalArea: area
             };
         }
         
-        // Score each potential wall location by how many paths it blocks
-        const cellScores = new Map();
-        for (const cell of pathCells) {
-            const key = `${cell[0]},${cell[1]}`;
-            cellScores.set(key, (cellScores.get(key) || 0) + 1);
+        // Get all grass tiles
+        const grassTiles = [];
+        for (let i = 0; i < verticalTiles; i++) {
+            for (let j = 0; j < horizontalTiles; j++) {
+                if (map[i][j] === 1) {
+                    grassTiles.push([i, j]);
+                }
+            }
         }
         
-        // Sort cells by score (highest first)
-        const sortedCells = Array.from(cellScores.entries())
-            .sort((a, b) => b[1] - a[1])
-            .map(([key, score]) => {
-                const [row, col] = key.split(',').map(Number);
-                return { row, col, score };
-            });
+        // For maps where we can reasonably check all combinations, use brute force
+        // Estimate total combinations
+        const estimatedCombinations = this._estimateCombinations(grassTiles.length, maxWalls);
+        // Use exhaustive search only for small maps that can be solved quickly (<200k combinations ≈ <500ms)
+        const useExhaustive = estimatedCombinations <= 200000;
         
-        // Try placing walls greedily
-        let bestWalls = null;
-        let bestArea = Infinity;
+        if (useExhaustive) {
+            return this._exhaustiveSearch(map, maxWalls, homeRow, homeCol, grassTiles);
+        } else {
+            return this._heuristicSearch(map, maxWalls, homeRow, homeCol);
+        }
+    }
+    
+    /**
+     * Estimate total combinations to check
+     * @private
+     */
+    static _estimateCombinations(n, maxK) {
+        let total = 0;
+        for (let k = 1; k <= Math.min(maxK, n); k++) {
+            // Approximate C(n, k)
+            let comb = 1;
+            for (let i = 0; i < k; i++) {
+                comb = comb * (n - i) / (i + 1);
+            }
+            total += comb;
+            if (total > 200000) break; // Early exit if already too large
+        }
+        return total;
+    }
+    
+    /**
+     * Exhaustive search for small/medium maps
+     * @private
+     */
+    static _exhaustiveSearch(map, maxWalls, homeRow, homeCol, grassTiles) {
+        const verticalTiles = map.length;
+        const horizontalTiles = map[0].length;
         
-        // Try different combinations starting from the highest scored cells
-        const maxAttempts = Math.min(100, Math.pow(2, Math.min(sortedCells.length, 10)));
+        let bestSolution = null;
+        let bestArea = 0;
         
-        for (let attempt = 0; attempt < maxAttempts; attempt++) {
-            const walls = [];
-            const testMap = map.map(row => [...row]);
+        // Try all combinations from 1 to maxWalls
+        for (let numWalls = 1; numWalls <= Math.min(maxWalls, grassTiles.length); numWalls++) {
+            const combinations = [];
+            this._generateAllCombinations(grassTiles, numWalls, 0, [], combinations);
             
-            // Use a combination of greedy and random selection
-            const cellsToTry = [...sortedCells];
-            let wallsPlaced = 0;
-            
-            while (wallsPlaced < maxWalls && cellsToTry.length > 0) {
-                // Pick cell (greedy for first few, then with some randomness)
-                let cellIdx;
-                if (wallsPlaced < maxWalls / 2) {
-                    // Greedy: pick highest scored
-                    cellIdx = 0;
-                } else {
-                    // Semi-random: pick from top few
-                    const topN = Math.min(5, cellsToTry.length);
-                    cellIdx = Math.floor(Math.random() * topN);
+            for (const wallPositions of combinations) {
+                const testMap = map.map(row => [...row]);
+                for (const [row, col] of wallPositions) {
+                    testMap[row][col] = 5;
                 }
                 
-                const cell = cellsToTry[cellIdx];
-                cellsToTry.splice(cellIdx, 1);
-                
-                // Place wall if the cell is grass
-                if (testMap[cell.row][cell.col] === 1) {
-                    testMap[cell.row][cell.col] = 5; // 5 represents wall
-                    walls.push([cell.row, cell.col]);
-                    wallsPlaced++;
-                    
-                    // Check if penned
-                    if (this._isPenned(testMap, homeRow, homeCol)) {
-                        const area = this._calculatePennedArea(testMap, walls, homeRow, homeCol);
-                        if (area < bestArea) {
-                            bestArea = area;
-                            bestWalls = [...walls];
-                        }
-                        break;
+                if (this._isPenned(testMap, homeRow, homeCol)) {
+                    const area = this._calculatePennedArea(testMap, homeRow, homeCol);
+                    if (area > bestArea) {
+                        bestArea = area;
+                        bestSolution = wallPositions;
                     }
                 }
             }
         }
         
-        if (bestWalls === null) {
+        if (bestSolution === null) {
             return null;
         }
         
-        // Convert wall list to 2D array
         const wallArray = Array(verticalTiles).fill(null).map(() => Array(horizontalTiles).fill(0));
-        for (const [row, col] of bestWalls) {
+        for (const [row, col] of bestSolution) {
             wallArray[row][col] = 1;
         }
         
@@ -148,34 +154,174 @@ class MILPSolver {
     }
     
     /**
-     * Find all cells that are part of paths from home to edges
+     * Generate all combinations of size k from array
      * @private
      */
-    static _findPathCellsToEdges(map, homeRow, homeCol) {
+    static _generateAllCombinations(array, k, start, current, result) {
+        if (current.length === k) {
+            result.push([...current]);
+            return;
+        }
+        
+        for (let i = start; i < array.length; i++) {
+            current.push(array[i]);
+            this._generateAllCombinations(array, k, i + 1, current, result);
+            current.pop();
+        }
+    }
+    
+    /**
+     * Heuristic search for larger maps
+     * @private
+     */
+    static _heuristicSearch(map, maxWalls, homeRow, homeCol) {
         const verticalTiles = map.length;
         const horizontalTiles = map[0].length;
-        const pathCells = [];
         
-        // BFS to find all paths to edges
-        const queue = [[homeRow, homeCol, []]];
-        const visited = new Set([`${homeRow},${homeCol}`]);
-        const directions = [[-1, 0], [1, 0], [0, -1], [0, 1]];
+        let bestSolution = null;
+        let bestArea = 0;
         
-        const maxPaths = 50; // Limit to avoid excessive computation
-        let pathsFound = 0;
+        // Get all grass tiles with metrics
+        const grassTiles = [];
+        for (let i = 0; i < verticalTiles; i++) {
+            for (let j = 0; j < horizontalTiles; j++) {
+                if (map[i][j] === 1) {
+                    const distToEdge = Math.min(
+                        i, verticalTiles - 1 - i,
+                        j, horizontalTiles - 1 - j
+                    );
+                    const distFromHome = Math.abs(i - homeRow) + Math.abs(j - homeCol);
+                    grassTiles.push({ row: i, col: j, distToEdge, distFromHome });
+                }
+            }
+        }
         
-        while (queue.length > 0 && pathsFound < maxPaths) {
-            const [row, col, path] = queue.shift();
+        // Try multiple strategies
+        const attempts = 500;
+        
+        for (let attempt = 0; attempt < attempts; attempt++) {
+            const testMap = map.map(row => [...row]);
+            const walls = [];
             
-            // Check if reached edge
-            if (row === 0 || row === verticalTiles - 1 || col === 0 || col === horizontalTiles - 1) {
-                pathCells.push(...path);
-                pathCells.push([row, col]);
-                pathsFound++;
-                continue;
+            // Create candidate list with different sorting strategies
+            let candidates = [...grassTiles];
+            
+            if (attempt % 4 === 0) {
+                // Strategy 1: Prioritize edges
+                candidates.sort((a, b) => a.distToEdge - b.distToEdge);
+            } else if (attempt % 4 === 1) {
+                // Strategy 2: Prioritize distance from home
+                candidates.sort((a, b) => b.distFromHome - a.distFromHome);
+            } else if (attempt % 4 === 2) {
+                // Strategy 3: Balanced
+                candidates.sort((a, b) => (a.distToEdge - a.distFromHome / 2) - (b.distToEdge - b.distFromHome / 2));
+            } else {
+                // Strategy 4: Random with bias
+                for (let i = 0; i < candidates.length; i++) {
+                    const range = Math.min(10, candidates.length - i);
+                    const j = i + Math.floor(Math.random() * range);
+                    [candidates[i], candidates[j]] = [candidates[j], candidates[i]];
+                }
             }
             
-            // Explore neighbors
+            // Place walls
+            for (const candidate of candidates) {
+                if (walls.length >= maxWalls) break;
+                
+                const { row, col } = candidate;
+                if (testMap[row][col] !== 1) continue;
+                
+                testMap[row][col] = 5;
+                walls.push([row, col]);
+                
+                if (this._isPenned(testMap, homeRow, homeCol)) {
+                    const area = this._calculatePennedArea(testMap, homeRow, homeCol);
+                    if (area > bestArea) {
+                        bestArea = area;
+                        bestSolution = [...walls];
+                    }
+                    break;
+                }
+            }
+        }
+        
+        if (bestSolution === null) {
+            return null;
+        }
+        
+        const wallArray = Array(verticalTiles).fill(null).map(() => Array(horizontalTiles).fill(0));
+        for (const [row, col] of bestSolution) {
+            wallArray[row][col] = 1;
+        }
+        
+        return { walls: wallArray, goalArea: bestArea };
+    }
+    
+    /**
+     * Generate candidate enclosures around the home
+     * Start with tight enclosures and expand outward
+     * @private
+     */
+    static _generateEnclosureCandidates(map, homeRow, homeCol, maxWalls) {
+        const candidates = [];
+        const verticalTiles = map.length;
+        const horizontalTiles = map[0].length;
+        
+        // Generate enclosures at different distances from home
+        for (let distance = 1; distance <= Math.min(5, maxWalls); distance++) {
+            // Get all cells at this Manhattan distance
+            const ring = [];
+            for (let dr = -distance; dr <= distance; dr++) {
+                for (let dc = -distance; dc <= distance; dc++) {
+                    if (Math.abs(dr) + Math.abs(dc) !== distance) continue;
+                    
+                    const row = homeRow + dr;
+                    const col = homeCol + dc;
+                    
+                    if (row < 0 || row >= verticalTiles || col < 0 || col >= horizontalTiles) {
+                        continue;
+                    }
+                    
+                    ring.push([row, col]);
+                }
+            }
+            
+            // Try full ring
+            candidates.push([...ring]);
+            
+            // Also try partial rings (useful when some positions have water)
+            if (ring.length <= maxWalls) {
+                // Try removing each cell from the ring
+                for (let i = 0; i < ring.length; i++) {
+                    const partial = ring.filter((_, idx) => idx !== i);
+                    candidates.push(partial);
+                }
+            }
+        }
+        
+        // Sort candidates by size (smallest first)
+        candidates.sort((a, b) => a.length - b.length);
+        
+        return candidates;
+    }
+    
+    /**
+     * Find critical cells that are on shortest paths to edges
+     * @private
+     */
+    static _findCriticalPathCells(map, homeRow, homeCol) {
+        const verticalTiles = map.length;
+        const horizontalTiles = map[0].length;
+        
+        // BFS to find all cells reachable from home
+        const distances = new Map();
+        const queue = [[homeRow, homeCol, 0]];
+        distances.set(`${homeRow},${homeCol}`, 0);
+        const directions = [[-1, 0], [1, 0], [0, -1], [0, 1]];
+        
+        while (queue.length > 0) {
+            const [row, col, dist] = queue.shift();
+            
             for (const [dr, dc] of directions) {
                 const newRow = row + dr;
                 const newCol = col + dc;
@@ -185,21 +331,126 @@ class MILPSolver {
                     continue;
                 }
                 
-                if (visited.has(key)) {
+                if (distances.has(key)) {
                     continue;
                 }
                 
                 const tileType = map[newRow][newCol];
-                if (tileType === 0 || tileType === 5) { // water or wall
+                if (tileType === 0 || tileType === 5) {
                     continue;
                 }
                 
-                visited.add(key);
-                queue.push([newRow, newCol, [...path, [newRow, newCol]]]);
+                distances.set(key, dist + 1);
+                queue.push([newRow, newCol, dist + 1]);
             }
         }
         
-        return pathCells;
+        // Find cells that are on paths to edges
+        const criticalCells = [];
+        for (const [key, dist] of distances.entries()) {
+            const [row, col] = key.split(',').map(Number);
+            
+            // Check if this cell is near an edge
+            if (row === 0 || row === verticalTiles - 1 || col === 0 || col === horizontalTiles - 1) {
+                // Backtrack to find cells on path
+                this._backtrackPath(map, distances, row, col, criticalCells);
+            }
+        }
+        
+        // Count frequency of each cell on critical paths
+        const cellCounts = new Map();
+        for (const [row, col] of criticalCells) {
+            const key = `${row},${col}`;
+            cellCounts.set(key, (cellCounts.get(key) || 0) + 1);
+        }
+        
+        // Return cells sorted by frequency (most critical first)
+        return Array.from(cellCounts.entries())
+            .sort((a, b) => b[1] - a[1])
+            .map(([key, count]) => {
+                const [row, col] = key.split(',').map(Number);
+                return [row, col, count];
+            });
+    }
+    
+    /**
+     * Backtrack from an edge cell to home to find path cells
+     * @private
+     */
+    static _backtrackPath(map, distances, startRow, startCol, result) {
+        const queue = [[startRow, startCol]];
+        const visited = new Set([`${startRow},${startCol}`]);
+        const directions = [[-1, 0], [1, 0], [0, -1], [0, 1]];
+        
+        while (queue.length > 0) {
+            const [row, col] = queue.shift();
+            const key = `${row},${col}`;
+            const currentDist = distances.get(key);
+            
+            result.push([row, col]);
+            
+            if (currentDist === 0) {
+                break; // Reached home
+            }
+            
+            // Look for neighbors with distance one less
+            for (const [dr, dc] of directions) {
+                const newRow = row + dr;
+                const newCol = col + dc;
+                const newKey = `${newRow},${newCol}`;
+                
+                if (visited.has(newKey)) continue;
+                
+                const newDist = distances.get(newKey);
+                if (newDist === currentDist - 1) {
+                    visited.add(newKey);
+                    queue.push([newRow, newCol]);
+                }
+            }
+        }
+    }
+    
+    /**
+     * Find best solution by blocking critical path cells
+     * @private
+     */
+    static _findBestPathBlocking(map, criticalCells, maxWalls, homeRow, homeCol) {
+        let bestSolution = null;
+        let bestArea = 0; // Start with 0 to find MAXIMUM (returns null if no solution pens the pet)
+        
+        // Try different combinations of blocking critical cells
+        const attempts = Math.min(100, Math.pow(2, Math.min(criticalCells.length, 7)));
+        
+        for (let attempt = 0; attempt < attempts; attempt++) {
+            const testMap = map.map(row => [...row]);
+            const walls = [];
+            
+            // Select cells to wall based on criticality
+            const candidates = [...criticalCells];
+            
+            for (let i = 0; i < maxWalls && candidates.length > 0; i++) {
+                // Pick from top candidates with some randomness
+                const idx = Math.floor(Math.random() * Math.min(5, candidates.length));
+                const [row, col] = candidates[idx];
+                candidates.splice(idx, 1);
+                
+                if (testMap[row][col] === 1) {
+                    testMap[row][col] = 5;
+                    walls.push([row, col]);
+                    
+                    if (this._isPenned(testMap, homeRow, homeCol)) {
+                        const area = this._calculatePennedArea(testMap, homeRow, homeCol);
+                        if (area > bestArea) { // MAXIMIZE area!
+                            bestArea = area;
+                            bestSolution = [...walls];
+                        }
+                        break;
+                    }
+                }
+            }
+        }
+        
+        return bestSolution ? { walls: bestSolution, area: bestArea } : null;
     }
     
     /**
