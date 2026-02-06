@@ -2,7 +2,7 @@
 
 ## Overview
 
-This document explains the map generation system for PenThePet, including the algorithms, metadata structure, and requirements for future development.
+This document explains the map generation system for PenThePet, including the algorithms, validation rules, metadata structure, and requirements for future development.
 
 ## Map Generation Process
 
@@ -21,27 +21,38 @@ The map generation system finds the **MAXIMUM** achievable penned area for each 
 The map generation uses a memory-efficient exhaustive search algorithm that:
 
 1. **Generates combinations on-the-fly** instead of storing all combinations in memory
-2. **Checks up to 100,000 combinations per wall count** (safety limit for performance)
+2. **Checks up to 50 million combinations per wall count** (safety limit for performance)
 3. **Tries wall counts from 1 to 15** (CONSTANTS.MAX_WALLS)
 4. **Finds the maximum penned area** by testing each combination
-5. **Uses early stopping** after finding a solution with 8+ walls
+5. **Uses MapValidator to ensure quality standards**
 
 #### Why Exhaustive Search?
 
-User requirement: *"Remove any alternate calculation paths no matter how complex the problem is. Accuracy is far more important than speed, levels can take as long as they need to generate."*
+User requirement: *"Accuracy is far more important than speed, levels can take as long as they need to generate."*
 
-The exhaustive search ensures we find the true optimal solution (within the 100k combination limit per wall count) rather than using heuristics that might miss the best solution.
+The exhaustive search ensures we find the true optimal solution (within the 50M combination limit per wall count) rather than using heuristics that might miss the best solution.
+
+### Map Quality Validation
+
+**All generated maps must pass these validation rules:**
+
+1. **Path to edge exists**: Pet can reach edge from home when no walls are placed
+2. **Goal area >= 5**: Maps with smaller goals are too easy and rejected
+3. **Walls <= 15**: Maximum walls that can be used is CONSTANTS.MAX_WALLS (15)
+4. **Not all walls on edges**: At least one optimal wall must be placed on a non-edge tile (prevents trivial solutions)
+
+Maps that fail any validation rule are discarded and regeneration is attempted.
 
 ### Retry Logic
 
-If a map cannot be solved with ≤15 walls (CONSTANTS.MAX_WALLS), the generation:
+If a map cannot meet quality standards, the generation:
 
-1. **Does NOT return an error**
+1. **Does NOT return an error immediately**
 2. **Discards the current map**
 3. **Generates a new random map**
-4. **Repeats until a valid map is found**
+4. **Repeats until a valid map is found** (up to 1000 attempts)
 
-This ensures all maps in the game are solvable with the maximum wall limit.
+This ensures all maps in the game meet quality standards.
 
 ## Map Metadata Structure
 
@@ -94,11 +105,85 @@ const CONSTANTS = {
 
 **Important:** Never hardcode these values in game logic. Always reference `CONSTANTS`.
 
+## Map Quality Standards
+
+### Validation Rules
+
+Every generated map must pass these quality checks (implemented in `js/MapValidator.js`):
+
+#### 1. Path to Edge (Required)
+- Pet must be able to reach at least one edge tile from home
+- Checked using BFS pathfinding
+- Maps without a valid path are discarded
+
+#### 2. Minimum Goal Area (goalArea >= 5)
+- Goal area must be at least 5 tiles
+- Prevents maps that are too easy or trivial
+- Example: A 3x3 pen would fail (only 1-2 tiles achievable)
+
+#### 3. Maximum Walls (optimalWallCount <= 15)
+- Solution must use at most CONSTANTS.MAX_WALLS (15) walls
+- Ensures maps are solvable within player constraints
+- Maps requiring more walls are discarded
+
+#### 4. Strategic Wall Placement (Not All on Edges)
+- At least one optimal wall must be placed on a non-edge tile
+- Prevents trivial solutions (just blocking edge exits)
+- Encourages strategic thinking about interior placement
+
+### Validation in Practice
+
+```javascript
+const MapValidator = require('./js/MapValidator.js');
+
+const validation = MapValidator.validate(map, {
+    goalArea: result.goal,
+    optimalWallCount: result.maxWalls,
+    optimalSolution: result.optimalSolution
+});
+
+if (!validation.valid) {
+    console.log('Map failed validation:', validation.errors);
+    // Discard map and generate a new one
+}
+```
+
 ## Generating New Maps
 
-### Using the Script
+### Method 1: GitHub Actions (Recommended for Production)
 
-The `scripts/generate-maps.js` script generates maps with proper metadata:
+Use the GitHub Actions workflow to generate and commit a single daily map:
+
+1. Go to the **Actions** tab in the GitHub repository
+2. Select **"Generate Daily Map"** workflow
+3. Click **"Run workflow"**
+4. Fill in parameters:
+   - **date**: Date in YYYY-MM-DD format (e.g., `2026-02-15`)
+   - **size**: Map size (7, 9, 11, etc.)
+   - **max_walls**: Maximum walls to try (default: 15)
+5. Click **"Run workflow"**
+
+The workflow will:
+- Generate a map using exhaustive search
+- Validate it meets quality standards
+- For small maps (≤7x7), verify with brute force
+- Automatically commit the new map to `maps.json`
+- Assign next day number and random name
+
+### Method 2: Local Script for Single Map
+
+Generate a single map locally and add it to maps.json:
+
+```bash
+node scripts/generate-single-map.js --date 2026-02-15 --size 9
+
+# With custom max walls
+node scripts/generate-single-map.js --date 2026-02-15 --size 11 --max-walls 12
+```
+
+### Method 3: Batch Generation
+
+The `scripts/generate-maps.js` script generates multiple maps:
 
 ```bash
 # Generate 10 fresh maps (replace existing)
@@ -107,6 +192,16 @@ node scripts/generate-maps.js --fresh --count 10 --start-date 2026-02-06 --sizes
 # Add 5 new maps (append to existing)
 node scripts/generate-maps.js --count 5 --start-date 2026-02-16 --sizes 9,11
 ```
+
+### Auditing Existing Maps
+
+Check if all maps in maps.json meet validation standards:
+
+```bash
+node scripts/audit-maps.js
+```
+
+This will report any maps that fail validation rules.
 
 ### Script Options
 
@@ -137,10 +232,14 @@ Each generated map is validated to ensure:
 ### Key Files
 
 1. **js/constants.js**: All configurable constants
-2. **js/MapGenerator.js**: Main map generation logic
-3. **js/MILPSolver.js**: Exhaustive search solver for finding optimal wall placements
-4. **js/wordList.js**: Random English words for map names
-5. **scripts/generate-maps.js**: CLI script for batch map generation
+2. **js/MapValidator.js**: Quality validation rules (NEW)
+3. **js/MapGenerator.js**: Main map generation logic
+4. **js/MILPSolver.js**: Exhaustive search solver for finding optimal wall placements
+5. **js/wordList.js**: Random English words for map names
+6. **test/BruteForceSolver.js**: Ground truth verification for small maps
+7. **scripts/generate-single-map.js**: Generate one map (used by GitHub Actions)
+8. **scripts/generate-maps.js**: CLI script for batch map generation
+9. **scripts/audit-maps.js**: Validate existing maps
 
 ### Generation Flow
 
@@ -152,7 +251,19 @@ MapGenerator.generate()
       → MILPSolver.solveMap()
           → _exhaustiveSearch() [memory-efficient]
               → _checkCombinationsIteratively()
-  → Return { map, goal, maxWalls }
+  → MapValidator.validate() [NEW - quality checks]
+  → Return { map, goal, maxWalls } or retry
+```
+
+### Validation Flow (NEW)
+
+```
+MapValidator.validate(map, solution)
+  → _hasPathToEdge() [BFS check]
+  → Check goalArea >= 5
+  → Check optimalWallCount <= MAX_WALLS
+  → _allWallsOnEdge() [strategic placement check]
+  → Return {valid, errors}
 ```
 
 ### Solver Algorithm Pseudocode
@@ -229,23 +340,39 @@ node scripts/generate-maps.js --count 3 --sizes 7
 
 **When generating maps:**
 
-1. Use `scripts/generate-maps.js` with appropriate options
-2. Ensure CONSTANTS.MAX_WALLS = 15 (never change this without regenerating all maps)
-3. All maps MUST have dayNumber and mapName metadata
-4. Verify maps.json has correct JSON format after generation
-5. Test at least one generated map in the game to ensure it works
+1. Use GitHub Actions workflow for production daily maps (preferred)
+2. Use `scripts/generate-single-map.js` for local testing
+3. Use `scripts/generate-maps.js` for batch generation
+4. Run `scripts/audit-maps.js` to validate existing maps
+5. Ensure CONSTANTS.MAX_WALLS = 15 (never change without regenerating all maps)
+6. All maps MUST pass MapValidator checks (goal >= 5, not all walls on edges, etc.)
+7. Verify maps.json has correct JSON format after generation
+8. Test at least one generated map in the game to ensure it works
 
 **When modifying generation:**
 
 1. Changes to the solver algorithm require regenerating all existing maps
 2. Always prioritize accuracy over speed (user requirement)
-3. Update this documentation when making significant changes
-4. Test thoroughly with maps of different sizes (7x7, 9x9, 11x11, 21x21)
+3. Update MapValidator.js if adding new quality rules
+4. Update this documentation when making significant changes
+5. Test thoroughly with maps of different sizes (7x7, 9x9, 11x11, 21x21)
+6. Run full test suite to ensure no regressions
 
 **Key Invariants:**
 
 - MAX_WALLS = 15 (constant across all maps)
 - Goal = maximum achievable area
 - maxWalls = minimum walls needed for goal
+- goalArea >= 5 (minimum difficulty)
+- At least one wall not on edge (strategic placement)
 - All maps solvable with ≤ 15 walls
 - Maps validated to have path to edge initially
+
+**Three Generation Paths (All Use Same Method):**
+
+1. **Test Setup**: Uses BruteForceSolver for ground truth verification (≤7x7 only)
+2. **Production Maps**: Uses MILPSolver exhaustive search + MapValidator
+3. **Debug Maps**: Uses MILPSolver exhaustive search + MapValidator (same as production)
+
+All three paths now use the same exhaustive search algorithm and validation rules.
+Time-limited generation has been removed to ensure consistent quality.

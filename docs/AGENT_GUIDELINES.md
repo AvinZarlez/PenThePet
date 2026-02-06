@@ -21,6 +21,7 @@ This document provides clear requirements and expectations for AI coding agents 
    - [ ] No build tools - Code runs directly in browser
    - [ ] Changes must be minimal and surgical
    - [ ] All configuration uses CONSTANTS - no magic numbers
+   - [ ] Map generation must use MapValidator for quality checks
 
 3. ✅ **Check existing patterns**
    - [ ] Look at similar existing code
@@ -267,9 +268,19 @@ git commit -m "changes" # without running npm test
 ```javascript
 // If you change CONSTANTS.MAX_WALLS, you MUST:
 // 1. Update the constant
-// 2. Regenerate ALL maps
-// 3. Update tests
-// 4. Update documentation
+// 2. Regenerate ALL maps with scripts/generate-maps.js --fresh
+// 3. Run scripts/audit-maps.js to verify
+// 4. Update tests
+// 5. Update documentation
+```
+
+❌ **Skip map validation**
+```javascript
+// DON'T skip MapValidator checks
+const result = generator.generate();
+// DO validate before using
+const validation = MapValidator.validate(map, result);
+if (!validation.valid) { /* handle errors */ }
 ```
 
 ❌ **Leave debug code**
@@ -494,6 +505,7 @@ Before submitting changes, review:
 6. ✋ **Never hardcode config** (use CONSTANTS)
 7. ✋ **Never change script order** (breaks loading)
 8. ✋ **Never commit without testing** (must verify)
+9. ✋ **Never skip map validation** (use MapValidator for all generation)
 
 Breaking these rules will cause issues and may require reverting changes.
 
@@ -539,3 +551,79 @@ Make the smallest, highest-quality change that solves the problem while maintain
 ---
 
 Thank you for helping maintain PenThePet! 🐕
+
+
+## 🗺️ Map Generation Guidelines
+
+**CRITICAL: All map generation paths use the same method and validation.**
+
+### Three Generation Paths
+
+1. **Production Maps** (GitHub Actions or local script)
+   - Use: GitHub Actions workflow or `scripts/generate-single-map.js`
+   - Method: MILPSolver exhaustive search
+   - Validation: MapValidator (all rules)
+   - Verification: BruteForceSolver for ≤7x7 maps
+
+2. **Test Maps** (test setup)
+   - Use: BruteForceSolver for ground truth
+   - Only for maps ≤7x7 with ≤15 walls
+   - Provides verified optimal solutions
+
+3. **Debug Maps** (in-browser testing)
+   - Use: Same as production (no time limit)
+   - Method: MILPSolver exhaustive search
+   - Validation: MapValidator (all rules)
+
+### Map Quality Rules
+
+**Every generated map MUST pass these checks:**
+
+✅ **Path to edge exists** - Pet can reach edge when no walls placed  
+✅ **Goal area >= 5** - Prevents maps that are too easy  
+✅ **Walls <= 15** - Must be solvable with CONSTANTS.MAX_WALLS  
+✅ **Strategic placement** - At least one optimal wall not on edge  
+
+Maps failing any rule are discarded and regenerated.
+
+### Adding New Maps
+
+**Option 1: GitHub Actions (Recommended)**
+1. Go to Actions → "Generate Daily Map"
+2. Fill in date, size, max_walls
+3. Workflow auto-commits to maps.json
+
+**Option 2: Local Script**
+```bash
+node scripts/generate-single-map.js --date 2026-02-15 --size 9
+```
+
+**Option 3: Batch Generation**
+```bash
+node scripts/generate-maps.js --count 10 --start-date 2026-02-15
+```
+
+### Auditing Maps
+
+Check existing maps meet standards:
+```bash
+node scripts/audit-maps.js
+```
+
+### When Modifying Generation
+
+- [ ] Update MapValidator.js if changing quality rules
+- [ ] Run `node scripts/audit-maps.js` after changes
+- [ ] Regenerate maps that fail new validation
+- [ ] Update MAP_GENERATION.md documentation
+- [ ] Run full test suite (`npm test`)
+
+### DO NOT
+
+❌ Use time-limited generation (removed for quality)  
+❌ Skip MapValidator checks  
+❌ Generate maps without validation  
+❌ Change CONSTANTS.MAX_WALLS without regenerating all maps  
+❌ Allow goalArea < 5 (too easy)  
+❌ Allow all walls on edges only (too easy)  
+

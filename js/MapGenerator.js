@@ -14,6 +14,9 @@
         if (typeof MILPSolver === 'undefined' && typeof global !== 'undefined') {
             global.MILPSolver = require('./MILPSolver.js');
         }
+        if (typeof MapValidator === 'undefined' && typeof global !== 'undefined') {
+            global.MapValidator = require('./MapValidator.js');
+        }
     }
 })();
 
@@ -31,18 +34,19 @@ class MapGenerator {
 
     /**
      * Generate a valid map with guaranteed path to edge and goal calculation
-     * Uses CONSTANTS.MAX_WALLS for maximum wall count (or override for debug)
-     * Retries generation if no solution exists with <= MAX_WALLS
+     * Uses CONSTANTS.MAX_WALLS for maximum wall count
+     * Retries generation if map doesn't meet quality standards
      * @param {string} _dateString - Optional date string for seeded generation (unused)
-     * @param {boolean} useTimeLimit - If true, use time-limited solver (for debug maps)
      * @returns {Object} Object containing map and goal, or throws error if unable to generate
      */
-    generate(_dateString = null, useTimeLimit = false) {
+    generate(_dateString = null) {
         const maxWalls = CONSTANTS.MAX_WALLS;
         
-        // Keep trying until we get a valid map that can be solved
+        // Keep trying until we get a valid map that meets quality standards
         let totalAttempts = 0;
         const maxTotalAttempts = 1000; // Safety limit to prevent infinite loops
+        const maxRandomRounds = 10; // Try random generation this many times before falling back
+        let randomRounds = 0;
         
         while (totalAttempts < maxTotalAttempts) {
             let attempts = 0;
@@ -53,53 +57,65 @@ class MapGenerator {
             while (attempts < this.maxAttempts) {
                 map = this._generateRandomMap();
                 if (this._validateMap(map)) {
-                    // Calculate the goal using appropriate solver
-                    if (useTimeLimit) {
-                        // For debug maps: use time-limited solver to find best solution within ~3 seconds
-                        result = this.calculateGoalWithTimeLimit(map);
-                    } else {
-                        // For production maps: use full exhaustive search with maxWalls limit
-                        result = this.calculateGoal(map, maxWalls);
-                    }
+                    // Calculate the goal using exhaustive search (accuracy over speed)
+                    result = this.calculateGoal(map, maxWalls);
                     
                     // Check if we got a valid result
-                    if (result !== null) {
-                        // For production maps, ensure it uses <= MAX_WALLS
-                        if (!useTimeLimit && result.optimalWallCount > maxWalls) {
-                            // Try again
-                        } else {
+                    if (result !== null && result.optimalWallCount <= maxWalls) {
+                        // Validate the map meets quality standards
+                        const validation = MapValidator.validate(map, result);
+                        
+                        if (validation.valid) {
                             return { 
                                 map, 
                                 goal: result.goalArea, 
                                 maxWalls: result.optimalWallCount,
                                 optimalSolution: result.optimalSolution
                             };
+                        } else {
+                            // Log validation failures for debugging
+                            if (totalAttempts % 10 === 0) {
+                                console.log(`Validation failed: ${validation.errors.join(', ')}`);
+                            }
                         }
                     }
                 }
                 attempts++;
             }
             
-            // If random generation failed, try guaranteed valid map
-            map = this._generateGuaranteedValidMap();
-            if (useTimeLimit) {
-                result = this.calculateGoalWithTimeLimit(map);
-            } else {
-                result = this.calculateGoal(map, maxWalls);
-            }
+            randomRounds++;
             
-            // Check if this map is solvable
-            if (result !== null && (useTimeLimit || result.optimalWallCount <= maxWalls)) {
-                return { 
-                    map, 
-                    goal: result.goalArea,
-                    optimalSolution: result.optimalSolution,
-                    maxWalls: result.optimalWallCount
-                };
+            // Only fall back to guaranteed valid map after trying random generation multiple times
+            if (randomRounds >= maxRandomRounds) {
+                if (totalAttempts % 10 === 0) {
+                    console.log(`Tried random generation ${maxRandomRounds} times, falling back to guaranteed valid map...`);
+                }
+                
+                map = this._generateGuaranteedValidMap();
+                result = this.calculateGoal(map, maxWalls);
+                
+                // Check if this map is solvable and meets quality standards
+                if (result !== null && result.optimalWallCount <= maxWalls) {
+                    const validation = MapValidator.validate(map, result);
+                    
+                    if (validation.valid) {
+                        return { 
+                            map, 
+                            goal: result.goalArea,
+                            optimalSolution: result.optimalSolution,
+                            maxWalls: result.optimalWallCount
+                        };
+                    }
+                }
+                
+                // Reset random rounds counter for next iteration
+                randomRounds = 0;
             }
             
             totalAttempts++;
-            console.log(`Generation attempt ${totalAttempts}: No valid solution found, retrying...`);
+            if (totalAttempts % 10 === 0) {
+                console.log(`Generation attempt ${totalAttempts}: No valid solution found, retrying...`);
+            }
         }
         
         // Should never reach here, but throw error if we do
@@ -276,37 +292,7 @@ class MapGenerator {
         };
     }
     
-    /**
-     * Calculate goal with time limit (for debug maps)
-     * Finds the largest achievable area within time constraints
-     * @param {Array} map - 2D array of tile types
-     * @param {number} timeLimit - Max milliseconds (default 3000)
-     * @returns {Object|null} Object with {goalArea, optimalWallCount}, or null if pet cannot be penned
-     */
-    calculateGoalWithTimeLimit(map, timeLimit = 3000) {
-        // Convert map from tile type strings to numbers for the solver
-        const numericMap = map.map(row => row.map(tile => {
-            if (tile === 'water') return 0;
-            if (tile === 'grass') return 1;
-            if (tile === 'home') return 2;
-            if (tile === 'wall') return 5;
-            return 1;
-        }));
-        
-        // Use time-limited solver
-        const solution = MILPSolver.solveMapWithTimeLimit(numericMap, timeLimit);
-        
-        if (solution === null) {
-            return null;
-        }
-        
-        return {
-            goalArea: solution.goalArea,
-            optimalWallCount: solution.optimalWallCount || 0,
-            optimalSolution: solution.walls ? this._convertWallsToCoordinates(solution.walls) : []
-        };
-    }
-    
+
     /**
      * Convert walls 2D array to array of [row, col] coordinates
      * @private
