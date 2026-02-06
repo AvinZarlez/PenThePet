@@ -20,6 +20,7 @@ export default [
                 Grid: 'readonly',
                 Game: 'readonly',
                 MapGenerator: 'readonly',
+                MapValidator: 'readonly',
                 MILPSolver: 'readonly',
                 PathfindingUtils: 'readonly',
                 getRandomWord: 'readonly',

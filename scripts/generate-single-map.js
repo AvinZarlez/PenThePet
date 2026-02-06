@@ -125,7 +125,7 @@ async function generateSingleMap(date, size, maxWalls) {
     // Get a random name for the map
     const mapName = getRandomWord();
     
-    console.log(`\n✓ Map generated successfully!`);
+    console.log('\n✓ Map generated successfully!');
     console.log(`  Name: "${mapName}"`);
     console.log(`  Goal: ${result.goal}`);
     console.log(`  Max Walls: ${result.maxWalls}`);
@@ -217,7 +217,7 @@ async function main() {
     fs.writeFileSync(mapsPath, JSON.stringify(sortedMaps, null, 2));
     
     console.log(`\n${'='.repeat(60)}`);
-    console.log(`✓ Successfully added map to maps.json`);
+    console.log('✓ Successfully added map to maps.json');
     console.log(`  Day Number: ${dayNumber}`);
     console.log(`  Date: ${date}`);
     console.log(`  Name: "${mapData.mapName}"`);

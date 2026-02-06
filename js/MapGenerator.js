@@ -45,6 +45,8 @@ class MapGenerator {
         // Keep trying until we get a valid map that meets quality standards
         let totalAttempts = 0;
         const maxTotalAttempts = 1000; // Safety limit to prevent infinite loops
+        const maxRandomRounds = 10; // Try random generation this many times before falling back
+        let randomRounds = 0;
         
         while (totalAttempts < maxTotalAttempts) {
             let attempts = 0;
@@ -81,22 +83,33 @@ class MapGenerator {
                 attempts++;
             }
             
-            // If random generation failed, try guaranteed valid map
-            map = this._generateGuaranteedValidMap();
-            result = this.calculateGoal(map, maxWalls);
+            randomRounds++;
             
-            // Check if this map is solvable and meets quality standards
-            if (result !== null && result.optimalWallCount <= maxWalls) {
-                const validation = MapValidator.validate(map, result);
-                
-                if (validation.valid) {
-                    return { 
-                        map, 
-                        goal: result.goalArea,
-                        optimalSolution: result.optimalSolution,
-                        maxWalls: result.optimalWallCount
-                    };
+            // Only fall back to guaranteed valid map after trying random generation multiple times
+            if (randomRounds >= maxRandomRounds) {
+                if (totalAttempts % 10 === 0) {
+                    console.log(`Tried random generation ${maxRandomRounds} times, falling back to guaranteed valid map...`);
                 }
+                
+                map = this._generateGuaranteedValidMap();
+                result = this.calculateGoal(map, maxWalls);
+                
+                // Check if this map is solvable and meets quality standards
+                if (result !== null && result.optimalWallCount <= maxWalls) {
+                    const validation = MapValidator.validate(map, result);
+                    
+                    if (validation.valid) {
+                        return { 
+                            map, 
+                            goal: result.goalArea,
+                            optimalSolution: result.optimalSolution,
+                            maxWalls: result.optimalWallCount
+                        };
+                    }
+                }
+                
+                // Reset random rounds counter for next iteration
+                randomRounds = 0;
             }
             
             totalAttempts++;
