@@ -9,7 +9,7 @@ const CONFIG = {
     // Grid settings
     grid: {
         defaultSize: 9,        // Default grid dimensions (9x9)
-        minSize: 6,            // Minimum allowed grid size
+        minSize: 7,            // Minimum allowed grid size
         maxSize: 21,           // Maximum allowed grid size
     },
 

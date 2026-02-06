@@ -348,15 +348,28 @@ class Game {
             
             if (isPenned) {
                 const areaSize = this.getAccessibleTiles().size;
-                areaSizeElement.textContent = areaSize.toString();
                 
-                // Apply color based on goal comparison
-                areaSizeDisplay.classList.remove('penned-yellow', 'penned-green');
-                if (areaSize < this.goalAreaSize) {
-                    areaSizeDisplay.classList.add('penned-yellow');
+                // Display area size based on hint mode
+                if (this.hintMode === 'revealTarget') {
+                    // In reveal mode, show "areaSize / goal"
+                    areaSizeElement.textContent = `${areaSize} / ${this.goalAreaSize}`;
                 } else {
-                    areaSizeDisplay.classList.add('penned-green');
+                    // In disabled and checkOptimal modes, show just the area size
+                    areaSizeElement.textContent = areaSize.toString();
                 }
+                
+                // Apply color based on hint mode
+                areaSizeDisplay.classList.remove('penned-yellow', 'penned-green');
+                
+                if (this.hintMode === 'checkOptimal' || this.hintMode === 'revealTarget') {
+                    // In checkOptimal and revealTarget modes, show colors
+                    if (areaSize < this.goalAreaSize) {
+                        areaSizeDisplay.classList.add('penned-yellow');
+                    } else {
+                        areaSizeDisplay.classList.add('penned-green');
+                    }
+                }
+                // In disabled mode, no color classes are added
             } else {
                 areaSizeElement.textContent = '∞';
                 areaSizeDisplay.classList.remove('penned-yellow', 'penned-green');
