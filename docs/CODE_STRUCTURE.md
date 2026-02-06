@@ -1,28 +1,46 @@
 # Pen the Pet - Code Structure Guide
 
+**For comprehensive documentation, see the [docs/](.) directory:**
+- **[ARCHITECTURE.md](ARCHITECTURE.md)** - Design decisions and philosophy
+- **[TESTING.md](TESTING.md)** - Testing guide and coverage
+- **[DEVELOPMENT.md](DEVELOPMENT.md)** - Developer workflow and setup
+- **[MAP_GENERATION.md](MAP_GENERATION.md)** - Algorithm details
+- **[AGENT_GUIDELINES.md](AGENT_GUIDELINES.md)** - Requirements for AI agents
+
+---
+
 ## 📁 Project Structure
 
 ```
 PenThePet/
-├── index.html          # Main HTML file (minimal, references external files)
+├── index.html              # Main HTML file (minimal, references external files)
 ├── css/
-│   └── styles.css      # All game styling
+│   └── styles.css          # All game styling
 ├── js/
-│   ├── constants.js    # Centralized constants for game parameters
-│   ├── config.js       # Game configuration (references constants)
-│   ├── tileTypes.js    # Tile type definitions and properties
-│   ├── wordList.js     # Random English words for map naming
-│   ├── PathfindingUtils.js  # Shared pathfinding utilities
-│   ├── MILPSolver.js   # Exhaustive search solver for optimal wall placement
-│   ├── MapGenerator.js # Map generation and validation logic
-│   ├── Grid.js         # Grid data structure and operations
-│   ├── Game.js         # Main game controller and interaction logic
-│   └── main.js         # Application entry point and initialization
+│   ├── constants.js        # Centralized constants for game parameters
+│   ├── config.js           # Game configuration (references constants)
+│   ├── tileTypes.js        # Tile type definitions and properties
+│   ├── wordList.js         # Random English words for map naming
+│   ├── PathfindingUtils.js # Shared pathfinding utilities
+│   ├── MILPSolver.js       # Exhaustive search solver for optimal wall placement
+│   ├── MapGenerator.js     # Map generation and validation logic
+│   ├── Grid.js             # Grid data structure and operations
+│   ├── Game.js             # Main game controller and interaction logic
+│   └── main.js             # Application entry point and initialization
 ├── scripts/
-│   └── generate-maps.js  # CLI script for batch map generation with metadata
-├── maps.json           # Generated maps with metadata (dayNumber, mapName, etc.)
-├── CODE_STRUCTURE.md   # This file (developer documentation)
-└── MAP_GENERATION.md   # Detailed map generation documentation
+│   └── generate-maps.js    # CLI script for batch map generation with metadata
+├── test/                   # Test suite (240 tests, 77% coverage)
+│   ├── *.test.js           # Unit tests for each module
+│   ├── BruteForceSolver.js # Exhaustive solver for test verification
+│   └── utility scripts     # Map generation and validation utilities
+├── docs/                   # 📚 Comprehensive documentation
+│   ├── CODE_STRUCTURE.md   # This file
+│   ├── ARCHITECTURE.md     # Design decisions
+│   ├── TESTING.md          # Testing guide
+│   ├── DEVELOPMENT.md      # Developer guide
+│   ├── MAP_GENERATION.md   # Algorithm details
+│   └── AGENT_GUIDELINES.md # AI agent requirements
+└── maps.json               # Generated maps with metadata (dayNumber, mapName, etc.)
 ```
 
 ## 🎯 File Purposes
@@ -341,3 +359,14 @@ Cookies work seamlessly with GitHub Pages because:
 The game is ready for GitHub Pages! Just push to your repository and enable GitHub Pages in Settings → Pages.
 
 No build step required - everything runs in the browser.
+
+---
+
+## 📚 Related Documentation
+
+- **[ARCHITECTURE.md](ARCHITECTURE.md)** - Design philosophy and decisions
+- **[TESTING.md](TESTING.md)** - Complete testing guide
+- **[DEVELOPMENT.md](DEVELOPMENT.md)** - Development workflow and setup
+- **[MAP_GENERATION.md](MAP_GENERATION.md)** - Algorithm and map generation details
+- **[AGENT_GUIDELINES.md](AGENT_GUIDELINES.md)** - Requirements for AI coding agents
+- **[../README.md](../README.md)** - Project overview and quick start
