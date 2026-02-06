@@ -25,7 +25,7 @@ class Game {
         // Grid sizing constants
         this.CELL_GAP = 3;
         this.GRID_PADDING = 6;
-        this.MIN_CELL_SIZE = 13; // Allow smaller cells for 21x21 on mobile
+        this.MIN_CELL_SIZE = 6; // Allow very small cells for 21x21 on mobile portrait
         this.MAX_CELL_SIZE = 50;
         this.AVAILABLE_HEIGHT_RATIO = 0.7; // Use 70% of viewport height to leave space for UI controls
         
@@ -478,10 +478,25 @@ class Game {
      * @returns {number} The calculated cell size in pixels
      */
     calculateCellSize() {
-        // Calculate available space in both dimensions separately
-        // Use slightly less width to account for container padding and ensure no overflow
+        // Calculate available width
         const availableWidth = window.innerWidth * 0.90;
-        const availableHeight = window.innerHeight * this.AVAILABLE_HEIGHT_RATIO;
+        
+        // Calculate available height by measuring actual space
+        // Get grid container position to determine how much vertical space is left
+        const gridContainer = this.gridElement.parentElement;
+        let availableHeight;
+        
+        if (gridContainer) {
+            const containerRect = gridContainer.getBoundingClientRect();
+            // Space from container top to bottom of viewport, minus some margin
+            availableHeight = window.innerHeight - containerRect.top - 20;
+        } else {
+            // Fallback to percentage-based calculation
+            availableHeight = window.innerHeight * this.AVAILABLE_HEIGHT_RATIO;
+        }
+        
+        // Ensure minimum available height
+        availableHeight = Math.max(availableHeight, 200);
         
         // Calculate total space needed for gaps and padding
         const totalGap = this.CELL_GAP * (this.grid.size - 1);
