@@ -82,10 +82,6 @@
             <h3>Options</h3>
             <div class="options-content">
                 <div class="option-item">
-                    <label for="gridSize">Grid Size:</label>
-                    <input type="number" id="gridSize" min="6" max="21" value="9">
-                </div>
-                <div class="option-item">
                     <label for="petType">Pet Type:</label>
                     <select id="petType">
                         <option value="🐶">🐶 Dog</option>
@@ -122,6 +118,19 @@
                         <option value="checkOptimal">Check Optimal</option>
                         <option value="revealTarget">Reveal Target</option>
                     </select>
+                </div>
+            </div>
+        </div>
+
+        <div class="debug-section">
+            <h3>Debug Tools</h3>
+            <div class="debug-content">
+                <div class="debug-item">
+                    <label for="debugGridSize">Map Size: <span id="debugSizeValue">9</span></label>
+                    <input type="range" id="debugGridSize" min="5" max="21" value="9">
+                </div>
+                <div class="debug-item">
+                    <button id="generateDebugMapBtn">Generate Debug Map</button>
                 </div>
             </div>
         </div>

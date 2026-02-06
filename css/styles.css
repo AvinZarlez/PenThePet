@@ -539,6 +539,96 @@ button:active {
     box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
 }
 
+/* ========== Debug Tools Section ========== */
+.debug-section {
+    background: #ffe0f0;
+    padding: 20px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    border: 2px dashed #ff6b9d;
+}
+
+.debug-section h3 {
+    margin-bottom: 15px;
+    color: #c2185b;
+    text-align: center;
+}
+
+.debug-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+}
+
+.debug-item {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    width: 100%;
+    max-width: 300px;
+}
+
+.debug-item label {
+    color: #c2185b;
+    font-weight: bold;
+    font-size: 0.95em;
+    text-align: center;
+}
+
+.debug-item input[type="range"] {
+    width: 100%;
+    height: 8px;
+    border-radius: 5px;
+    background: #ffc0cb;
+    outline: none;
+    -webkit-appearance: none;
+}
+
+.debug-item input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #c2185b;
+    cursor: pointer;
+    border: 2px solid white;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.debug-item input[type="range"]::-moz-range-thumb {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #c2185b;
+    cursor: pointer;
+    border: 2px solid white;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.debug-item button {
+    padding: 10px 20px;
+    background: linear-gradient(135deg, #ff6b9d 0%, #c2185b 100%);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 1em;
+    font-weight: bold;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    box-shadow: 0 2px 8px rgba(194, 24, 91, 0.3);
+}
+
+.debug-item button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(194, 24, 91, 0.5);
+}
+
+.debug-item button:active {
+    transform: translateY(0);
+}
+
 footer {
     text-align: center;
     color: #666;
