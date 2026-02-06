@@ -31,15 +31,16 @@ class MapGenerator {
 
     /**
      * Generate a valid map with guaranteed path to edge and goal calculation
-     * Uses CONSTANTS.MAX_WALLS for maximum wall count
+     * Uses CONSTANTS.MAX_WALLS for maximum wall count (or override for debug)
      * Retries generation if no solution exists with <= MAX_WALLS
      * @param {string} _dateString - Optional date string for seeded generation (unused)
+     * @param {number} customMaxWalls - Optional custom maxWalls (for debug/testing)
      * @returns {Object} Object containing map and goal, or throws error if unable to generate
      */
-    generate(_dateString = null) {
-        const maxWalls = CONSTANTS.MAX_WALLS; // Always use constant max walls
+    generate(_dateString = null, customMaxWalls = null) {
+        const maxWalls = customMaxWalls !== null ? customMaxWalls : CONSTANTS.MAX_WALLS;
         
-        // Keep trying until we get a valid map that can be solved with <= MAX_WALLS
+        // Keep trying until we get a valid map that can be solved with <= maxWalls
         let totalAttempts = 0;
         const maxTotalAttempts = 1000; // Safety limit to prevent infinite loops
         
@@ -56,7 +57,7 @@ class MapGenerator {
                     // This uses ONLY accurate exhaustive search - no heuristics
                     result = this.calculateGoal(map, maxWalls);
                     
-                    // If result is not null and uses <= MAX_WALLS, we have a valid map
+                    // If result is not null and uses <= maxWalls, we have a valid map
                     if (result !== null && result.optimalWallCount <= maxWalls) {
                         return { 
                             map, 
@@ -74,7 +75,7 @@ class MapGenerator {
             map = this._generateGuaranteedValidMap();
             result = this.calculateGoal(map, maxWalls);
             
-            // Check if this map is solvable with <= MAX_WALLS
+            // Check if this map is solvable with <= maxWalls
             if (result !== null && result.optimalWallCount <= maxWalls) {
                 return { 
                     map, 
@@ -260,43 +261,6 @@ class MapGenerator {
             optimalWallCount: solution.optimalWallCount || 0,
             optimalSolution: solution.walls ? this._convertWallsToCoordinates(solution.walls) : []
         };
-    }
-    
-    /**
-     * Generate a simple valid map for debugging (without goal calculation)
-     * This is much faster as it skips the expensive goal calculation step.
-     * @returns {Object|null} Object containing map only, or null if generation fails
-     */
-    generateSimple() {
-        let attempts = 0;
-        
-        // Try to generate a valid random map
-        while (attempts < this.maxAttempts) {
-            const map = this._generateRandomMap();
-            if (this._validateMap(map)) {
-                // Return map without calculating goal (much faster)
-                return { 
-                    map,
-                    goal: null,  // Not calculated for debug maps
-                    maxWalls: CONSTANTS.MAX_WALLS,  // Use default
-                    optimalSolution: null
-                };
-            }
-            attempts++;
-        }
-        
-        // If random generation failed, try guaranteed valid map
-        const map = this._generateGuaranteedValidMap();
-        if (this._validateMap(map)) {
-            return { 
-                map,
-                goal: null,
-                maxWalls: CONSTANTS.MAX_WALLS,
-                optimalSolution: null
-            };
-        }
-        
-        return null;
     }
     
     /**

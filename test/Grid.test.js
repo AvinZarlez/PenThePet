@@ -143,50 +143,21 @@ describe('Grid', () => {
                 MILPSolver.solveMap.mockRestore();
             });
         });
-    });
 
-    describe('generateSimple()', () => {
-        test('should generate a map without goal calculation', () => {
+        test('should accept custom maxWalls parameter', () => {
+            jest.spyOn(MILPSolver, 'solveMap').mockReturnValue({
+                walls: Array(7).fill(null).map(() => Array(7).fill(0)),
+                goalArea: 10,
+                optimalWallCount: 5
+            });
+
             const grid = new Grid(7);
-            const result = grid.generateSimple();
+            const result = grid.generate(null, 5);
 
             expect(result).not.toBeNull();
-            expect(result).toHaveProperty('map');
-            expect(result.goal).toBeNull();
-            expect(result.optimalSolution).toBeNull();
-        });
-
-        test('should set tiles to generated map', () => {
-            const grid = new Grid(5);
-            grid.generateSimple();
-
-            expect(grid.tiles).not.toBeNull();
-            expect(grid.tiles.length).toBe(5);
-            expect(grid.tiles[0].length).toBe(5);
-        });
-
-        test('should not call MILPSolver', () => {
-            const solveSpy = jest.spyOn(MILPSolver, 'solveMap');
+            expect(result.maxWalls).toBeLessThanOrEqual(5);
             
-            const grid = new Grid(7);
-            grid.generateSimple();
-
-            expect(solveSpy).not.toHaveBeenCalled();
-            
-            solveSpy.mockRestore();
-        });
-
-        test('should handle generation failure gracefully', () => {
-            const MapGenerator = require('../js/MapGenerator.js');
-            const originalGenerateSimple = MapGenerator.prototype.generateSimple;
-            MapGenerator.prototype.generateSimple = jest.fn(() => null);
-
-            const grid = new Grid(3);
-            const result = grid.generateSimple();
-
-            expect(result).toBeNull();
-            
-            MapGenerator.prototype.generateSimple = originalGenerateSimple;
+            MILPSolver.solveMap.mockRestore();
         });
     });
 

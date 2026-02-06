@@ -479,16 +479,26 @@ class Game {
 
     /**
      * Generate a debug map with specified size (not saved, for testing)
-     * Uses simple generation without goal calculation to avoid browser freeze.
+     * Uses very limited wall count to make goal calculation fast enough for browser.
      * @param {number} size - The size of the debug map
      */
     generateDebugMap(size) {
         if (size >= CONFIG.grid.minSize && size <= CONFIG.grid.maxSize) {
             this.grid = new Grid(size);
             
-            // Use generateSimple() instead of generate() to avoid expensive goal calculation
-            // This makes debug map generation much faster and prevents browser freezing
-            const result = this.grid.generateSimple();
+            // For debug maps, use minimal walls to keep generation time under ~5 seconds
+            // This prevents browser freezing while still providing a valid goal
+            // Note: Larger maps get simpler puzzles (fewer walls) for performance
+            let debugMaxWalls;
+            if (size <= 9) {
+                debugMaxWalls = Math.min(3, CONSTANTS.MAX_WALLS);
+            } else {
+                // For maps larger than 9x9, use only 2 walls to keep it fast
+                debugMaxWalls = Math.min(2, CONSTANTS.MAX_WALLS);
+            }
+            
+            console.log(`Generating debug map ${size}x${size} with max ${debugMaxWalls} walls...`);
+            const result = this.grid.generate(null, debugMaxWalls);
             
             if (result === null) {
                 console.error('Failed to generate debug map');
@@ -496,10 +506,10 @@ class Game {
                 return;
             }
             
-            // Set default values for debug maps (goal calculation skipped for performance)
-            this.goalAreaSize = CONSTANTS.MAX_WALLS;  // Default goal
-            this.maxWalls = CONSTANTS.MAX_WALLS;
-            console.log(`Generated debug map (size: ${size}x${size}, goal calculation skipped for performance)`);
+            // Update goal and maxWalls from generation
+            this.goalAreaSize = result.goal;
+            this.maxWalls = result.maxWalls;
+            console.log(`Generated debug map (size: ${size}x${size}, goal: ${result.goal}, maxWalls: ${this.maxWalls})`);
             
             this.grid.saveInitialState();
             this.wallCount = 0;
