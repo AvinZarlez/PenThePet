@@ -760,7 +760,7 @@ class Game {
      */
     _loadPetFromCookie() {
         const value = `; ${document.cookie}`;
-        const parts = value.split(`; selectedPet=`);
+        const parts = value.split('; selectedPet=');
         if (parts.length === 2) {
             return decodeURIComponent(parts.pop().split(';').shift());
         }

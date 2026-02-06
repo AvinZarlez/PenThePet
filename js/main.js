@@ -100,19 +100,6 @@ function getCookie(name) {
 }
 
 /**
- * Set a cookie
- * @param {string} name - Cookie name
- * @param {string} value - Cookie value
- * @param {number} days - Expiration in days (default: 365)
- */
-function setCookie(name, value, days = 365) {
-    const date = new Date();
-    date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
-    const expires = `expires=${date.toUTCString()}`;
-    document.cookie = `${name}=${encodeURIComponent(value)};${expires};path=/;SameSite=Lax`;
-}
-
-/**
  * Initialize the game application
  */
 async function initGame() {
