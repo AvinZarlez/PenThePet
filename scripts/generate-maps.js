@@ -109,6 +109,100 @@ function getNextDayNumber(filePath) {
 }
 
 /**
+ * Validate maps database for consistency
+ * @param {Object} maps - Maps object keyed by date
+ * @returns {Object} Validation results with issues array and fixed flag
+ */
+function validateMapsDatabase(maps) {
+    const issues = [];
+    const dates = Object.keys(maps).sort();
+    
+    // Check A: Only one map per calendar day
+    const dateSet = new Set();
+    for (const date of dates) {
+        if (dateSet.has(date)) {
+            issues.push({
+                type: 'duplicate_date',
+                message: `Duplicate map for date: ${date}`,
+                date: date
+            });
+        }
+        dateSet.add(date);
+    }
+    
+    // Check B: No gaps in map numbers
+    const dayNumbers = dates.map(date => maps[date].dayNumber).sort((a, b) => a - b);
+    for (let i = 0; i < dayNumbers.length; i++) {
+        const expected = i + 1;
+        if (dayNumbers[i] !== expected) {
+            issues.push({
+                type: 'gap_in_numbers',
+                message: `Gap in day numbers: expected ${expected}, got ${dayNumbers[i]}`,
+                expected: expected,
+                actual: dayNumbers[i]
+            });
+            break; // Only report the first gap
+        }
+    }
+    
+    // Check C: No two maps have the same name
+    const nameMap = new Map();
+    for (const date of dates) {
+        const mapName = maps[date].mapName;
+        if (nameMap.has(mapName)) {
+            issues.push({
+                type: 'duplicate_name',
+                message: `Duplicate map name "${mapName}" found on ${date} and ${nameMap.get(mapName)}`,
+                name: mapName,
+                dates: [nameMap.get(mapName), date]
+            });
+        }
+        nameMap.set(mapName, date);
+    }
+    
+    return {
+        valid: issues.length === 0,
+        issues: issues
+    };
+}
+
+/**
+ * Fix issues in maps database
+ * @param {Object} maps - Maps object keyed by date
+ * @returns {Object} Fixed maps object
+ */
+function fixMapsDatabase(maps) {
+    const fixed = { ...maps };
+    const dates = Object.keys(fixed).sort();
+    
+    // Fix day numbers (no gaps, sequential)
+    dates.forEach((date, index) => {
+        fixed[date].dayNumber = index + 1;
+    });
+    
+    // Fix duplicate names by appending a number
+    const usedNames = new Set();
+    for (const date of dates) {
+        let mapName = fixed[date].mapName;
+        let counter = 1;
+        
+        while (usedNames.has(mapName)) {
+            mapName = `${fixed[date].mapName}-${counter}`;
+            counter++;
+        }
+        
+        if (mapName !== fixed[date].mapName) {
+            console.log(`  Renamed "${fixed[date].mapName}" to "${mapName}" for ${date}`);
+            fixed[date].mapName = mapName;
+        }
+        
+        usedNames.add(mapName);
+    }
+    
+    return fixed;
+}
+
+/**
  * Main function to regenerate all maps
  */
 function main() {
@@ -175,6 +269,33 @@ function main() {
         });
     }
     
+    // Validate and fix database before saving
+    console.log('\nValidating maps database...');
+    let validation = validateMapsDatabase(maps);
+    
+    if (!validation.valid) {
+        console.log(`\n⚠ Found ${validation.issues.length} issue(s):`);
+        validation.issues.forEach(issue => {
+            console.log(`  - ${issue.message}`);
+        });
+        
+        console.log('\nFixing issues...');
+        maps = fixMapsDatabase(maps);
+        
+        // Validate again
+        validation = validateMapsDatabase(maps);
+        if (validation.valid) {
+            console.log('✓ All issues fixed successfully!');
+        } else {
+            console.error('✗ Some issues could not be fixed automatically:');
+            validation.issues.forEach(issue => {
+                console.error(`  - ${issue.message}`);
+            });
+        }
+    } else {
+        console.log('✓ Database validation passed!');
+    }
+    
     // Save to file
     fs.writeFileSync(outputPath, JSON.stringify(maps, null, 2));
     
@@ -196,4 +317,10 @@ if (require.main === module) {
     main();
 }
 
-module.exports = { generateMapWithMetadata, generateMaps };
+module.exports = { 
+    generateMapWithMetadata, 
+    generateMaps, 
+    validateMapsDatabase, 
+    fixMapsDatabase, 
+    getNextDayNumber 
+};

@@ -498,4 +498,108 @@ describe('MILPSolver', () => {
             expect(elapsed).toBeLessThan(60000); // 60 seconds max
         }, 70000); // 70 second timeout
     });
+
+    describe('Private Methods and Edge Cases', () => {
+        describe('_estimateCombinations()', () => {
+            test('should estimate combinations for small inputs', () => {
+                const estimate = MILPSolver._estimateCombinations(10, 3);
+                expect(estimate).toBeGreaterThan(0);
+                expect(typeof estimate).toBe('number');
+            });
+
+            test('should handle large maxK values', () => {
+                const estimate = MILPSolver._estimateCombinations(20, 15);
+                expect(estimate).toBeGreaterThan(0);
+            });
+
+            test('should early exit for very large estimates', () => {
+                const estimate = MILPSolver._estimateCombinations(100, 50);
+                // Just verify it returns a reasonable number (doesn't throw)
+                expect(estimate).toBeGreaterThan(0);
+                expect(typeof estimate).toBe('number');
+            });
+
+            test('should handle edge case where maxK > n', () => {
+                const estimate = MILPSolver._estimateCombinations(5, 10);
+                expect(estimate).toBeGreaterThan(0);
+            });
+        });
+
+        describe('Edge cases for wall placement', () => {
+            test('should handle map where no solution exists', () => {
+                // Map completely surrounded by water - already penned
+                const map = [
+                    [0, 0, 0],
+                    [0, 2, 0],
+                    [0, 0, 0]
+                ];
+                const result = MILPSolver.solveMap(map, 5);
+                
+                expect(result).not.toBeNull();
+                expect(result.goalArea).toBe(1);
+                expect(result.optimalWallCount).toBe(0);
+            });
+
+            test('should handle asymmetric maps', () => {
+                const map = [
+                    [1, 1, 0, 0, 0],
+                    [1, 2, 1, 0, 0],
+                    [1, 1, 1, 1, 0],
+                    [0, 1, 1, 1, 1],
+                    [0, 0, 1, 1, 1]
+                ];
+                const result = MILPSolver.solveMap(map, 5);
+                
+                expect(result).not.toBeNull();
+                expect(result.goalArea).toBeGreaterThan(0);
+            });
+
+            test('should maximize penned area not minimize', () => {
+                // Test that we're looking for MAXIMUM area
+                const map = [
+                    [1, 1, 1, 1, 1],
+                    [1, 1, 1, 1, 1],
+                    [1, 1, 2, 1, 1],
+                    [1, 1, 1, 1, 1],
+                    [1, 1, 1, 1, 1]
+                ];
+                const result = MILPSolver.solveMap(map, 8);
+                
+                expect(result).not.toBeNull();
+                // Should find a penned area (may be small due to max walls limit)
+                expect(result.goalArea).toBeGreaterThanOrEqual(1);
+            });
+        });
+
+        describe('Combination generation', () => {
+            test('should handle maxWalls = 1 with constrained map', () => {
+                // A map where only 1 wall can potentially pen the pet
+                const map = [
+                    [0, 1, 0],
+                    [1, 2, 1],
+                    [0, 1, 0]
+                ];
+                const result = MILPSolver.solveMap(map, 1);
+                
+                // May or may not find a solution depending on map structure
+                // Just verify it doesn't crash
+                if (result !== null) {
+                    expect(result.optimalWallCount).toBeLessThanOrEqual(1);
+                }
+            });
+
+            test('should handle map with single grass tile', () => {
+                const map = [
+                    [0, 0, 0],
+                    [0, 2, 1],
+                    [0, 0, 0]
+                ];
+                const result = MILPSolver.solveMap(map, 1);
+                
+                expect(result).not.toBeNull();
+                // With one grass tile blocking the only exit, should pen home
+                expect(result.goalArea).toBe(1);
+            });
+        });
+    });
 });

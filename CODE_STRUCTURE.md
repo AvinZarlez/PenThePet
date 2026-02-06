@@ -119,6 +119,14 @@ Main game controller that ties everything together:
 - UI updates and DOM manipulation
 - Game state transitions (new game, reset)
 - Dynamic cell sizing for responsive layout
+- **Cookie Management**: Stores and retrieves user preferences (selected pet animal)
+
+**Cookie Storage:**
+- `selectedPet`: Stores the user's selected animal emoji
+- Expires after 1 year
+- Path: `/` (accessible across the entire site)
+- SameSite: `Lax` (secure against CSRF)
+- Future settings can be added (e.g., `hintMode`, `gridSize`)
 
 **To add gameplay features:** Extend this class with new methods for character movement, scoring, etc.
 
@@ -273,6 +281,60 @@ document.addEventListener('keydown', (e) => {
 - **Configuration first:** Always check `config.js` before hardcoding values
 - **Keep separation:** HTML for structure, CSS for style, JS for behavior
 - **Comment your code:** Especially when adding new features
+
+## 🍪 User Preferences and Cookies
+
+The game uses browser cookies to remember user preferences across sessions. This works perfectly with GitHub Pages hosting.
+
+### Currently Stored Preferences
+
+- **selectedPet**: The user's chosen animal emoji (expires after 1 year)
+  - Cookie name: `selectedPet`
+  - Format: URL-encoded emoji string
+  - Path: `/` (accessible across entire site)
+  - SameSite: `Lax` (secure against CSRF attacks)
+
+### How It Works
+
+1. **On Selection**: When user selects an animal from the dropdown, `Game._savePetToCookie()` stores it
+2. **On Load**: When game initializes, `Game._loadPetFromCookie()` retrieves the saved preference
+3. **Fallback**: If no cookie exists, defaults to 🐶 (Dog)
+
+### Adding New Preferences
+
+To store additional settings (e.g., hint mode, grid size):
+
+1. **Add cookie save function** in `Game.js`:
+```javascript
+_saveHintModeToCookie(mode) {
+    const date = new Date();
+    date.setTime(date.getTime() + (365 * 24 * 60 * 60 * 1000));
+    const expires = `expires=${date.toUTCString()}`;
+    document.cookie = `hintMode=${encodeURIComponent(mode)};${expires};path=/;SameSite=Lax`;
+}
+```
+
+2. **Add cookie load function** in `Game.js`:
+```javascript
+_loadHintModeFromCookie() {
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; hintMode=`);
+    if (parts.length === 2) {
+        return decodeURIComponent(parts.pop().split(';').shift());
+    }
+    return null;
+}
+```
+
+3. **Call in constructor** and **event handlers** appropriately
+
+### Cookie Compatibility with GitHub Pages
+
+Cookies work seamlessly with GitHub Pages because:
+- They are stored in the user's browser (client-side)
+- No server-side processing required
+- Compatible with static hosting
+- Persist across page reloads and browser sessions (until expiration)
 
 ## 📦 Deployment
 
