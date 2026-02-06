@@ -23,11 +23,11 @@ class Game {
         this.goalAreaSize = CONFIG.gameplay.goalAreaSize;
         
         // Grid sizing constants
-        this.CELL_GAP = 3;
-        this.GRID_PADDING = 6;
-        this.MIN_CELL_SIZE = 6; // Allow very small cells for 21x21 on mobile portrait
-        this.MAX_CELL_SIZE = 50;
-        this.AVAILABLE_HEIGHT_RATIO = 0.7; // Use 70% of viewport height to leave space for UI controls
+        this.CELL_GAP = CONSTANTS.CELL.GAP;
+        this.GRID_PADDING = CONSTANTS.GRID_PADDING;
+        this.MIN_CELL_SIZE = CONSTANTS.CELL.MIN_SIZE;
+        this.MAX_CELL_SIZE = CONSTANTS.CELL.MAX_SIZE;
+        this.AVAILABLE_HEIGHT_RATIO = CONSTANTS.AVAILABLE_HEIGHT_RATIO;
         
         this.attachEventListeners();
         this.init();
@@ -37,12 +37,9 @@ class Game {
      * Initialize a new game
      */
     init() {
-        // Randomly pick wall count between 5 and 15
-        this.maxWalls = Math.floor(Math.random() * 11) + 5; // 5 to 15 inclusive (initial max)
-        
         // Use today's date for consistent daily maps
         const today = new Date().toISOString().split('T')[0];
-        const result = this.grid.generate(today, this.maxWalls);
+        const result = this.grid.generate(today);
         
         if (result === null) {
             console.error('Failed to initialize game - could not generate valid map');
@@ -51,9 +48,7 @@ class Game {
         
         // Update goal and maxWalls from generation (uses optimal wall count)
         this.goalAreaSize = result.goal;
-        if (result.maxWalls !== undefined) {
-            this.maxWalls = result.maxWalls;  // Use optimal wall count from generator
-        }
+        this.maxWalls = result.maxWalls;  // Use optimal wall count from generator
         
         this.grid.saveInitialState();
         this.wallCount = 0;
@@ -407,10 +402,7 @@ class Game {
      * Start a new game with a fresh grid
      */
     newGame() {
-        // Randomly pick wall count between 5 and 15
-        this.maxWalls = Math.floor(Math.random() * 11) + 5; // 5 to 15 inclusive (initial max)
-        
-        const result = this.grid.generate(null, this.maxWalls);
+        const result = this.grid.generate(null);
         
         if (result === null) {
             console.error('Failed to generate new game');
@@ -419,9 +411,7 @@ class Game {
         
         // Update goal and maxWalls from generation (uses optimal wall count)
         this.goalAreaSize = result.goal;
-        if (result.maxWalls !== undefined) {
-            this.maxWalls = result.maxWalls;  // Use optimal wall count from generator
-        }
+        this.maxWalls = result.maxWalls;  // Use optimal wall count from generator
         
         this.grid.saveInitialState();
         this.wallCount = 0;
@@ -444,17 +434,11 @@ class Game {
     /**
      * Generate a debug map with specified size (not saved, for testing)
      * @param {number} size - The size of the debug map
-     * @param {number} maxWalls - Maximum number of walls (optional, default is current maxWalls)
      */
-    generateDebugMap(size, maxWalls = null) {
+    generateDebugMap(size) {
         if (size >= CONFIG.grid.minSize && size <= CONFIG.grid.maxSize) {
-            // Update maxWalls if provided
-            if (maxWalls !== null && maxWalls >= 5 && maxWalls <= 15) {
-                this.maxWalls = maxWalls;
-            }
-            
             this.grid = new Grid(size);
-            const result = this.grid.generate(null, this.maxWalls);
+            const result = this.grid.generate(null);
             
             if (result === null) {
                 console.error('Failed to generate debug map');
@@ -464,9 +448,7 @@ class Game {
             
             // Update goal and maxWalls from generation (uses optimal wall count)
             this.goalAreaSize = result.goal;
-            if (result.maxWalls !== undefined) {
-                this.maxWalls = result.maxWalls;  // Use optimal wall count from generator
-            }
+            this.maxWalls = result.maxWalls;  // Use optimal wall count from generator
             console.log(`Generated debug map with goal: ${result.goal}, maxWalls: ${this.maxWalls}`);
             
             this.grid.saveInitialState();
@@ -489,8 +471,6 @@ class Game {
         const hintModeSelect = document.getElementById('hintMode');
         const debugGridSizeSlider = document.getElementById('debugGridSize');
         const debugSizeValue = document.getElementById('debugSizeValue');
-        const debugMaxWallsSlider = document.getElementById('debugMaxWalls');
-        const debugMaxWallsValue = document.getElementById('debugMaxWallsValue');
         const generateDebugMapBtn = document.getElementById('generateDebugMapBtn');
         
         if (newGameBtn) {
@@ -534,17 +514,10 @@ class Game {
             });
         }
 
-        if (debugMaxWallsSlider && debugMaxWallsValue) {
-            debugMaxWallsSlider.addEventListener('input', (e) => {
-                debugMaxWallsValue.textContent = e.target.value;
-            });
-        }
-
-        if (generateDebugMapBtn && debugGridSizeSlider && debugMaxWallsSlider) {
+        if (generateDebugMapBtn && debugGridSizeSlider) {
             generateDebugMapBtn.addEventListener('click', () => {
                 const debugSize = parseInt(debugGridSizeSlider.value);
-                const debugMaxWalls = parseInt(debugMaxWallsSlider.value);
-                this.generateDebugMap(debugSize, debugMaxWalls);
+                this.generateDebugMap(debugSize);
             });
         }
 

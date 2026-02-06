@@ -130,10 +130,6 @@
                     <input type="range" id="debugGridSize" min="7" max="21" value="9">
                 </div>
                 <div class="debug-item">
-                    <label for="debugMaxWalls">Max Walls: <span id="debugMaxWallsValue">9</span></label>
-                    <input type="range" id="debugMaxWalls" min="5" max="15" value="9">
-                </div>
-                <div class="debug-item">
                     <button id="generateDebugMapBtn">Generate Debug Map</button>
                 </div>
             </div>
@@ -144,7 +140,8 @@
         </footer>
     </div>
 
-    <!-- Game Scripts (Load in order: config -> types -> pathfinding -> solver -> mapgen -> grid -> game -> main) -->
+    <!-- Game Scripts (Load in order: constants -> config -> types -> pathfinding -> solver -> mapgen -> grid -> game -> main) -->
+    <script src="js/constants.js"></script>
     <script src="js/config.js"></script>
     <script src="js/tileTypes.js"></script>
     <script src="js/PathfindingUtils.js"></script>

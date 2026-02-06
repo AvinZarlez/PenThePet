@@ -20,16 +20,15 @@ class Grid {
      * Generate a new random grid based on tile distribution
      * Uses MapGenerator to ensure valid maps with paths to edge
      * @param {string} dateString - Optional date string for seeded generation
-     * @param {number} maxWalls - Maximum number of walls available (default: 9)
      * @returns {Object|null} Object with {map: Array, goal: number} or null if generation fails
      */
-    generate(dateString = null, maxWalls = 9) {
+    generate(dateString = null) {
         // Note: dateString is accepted but not currently used for seeding
         // as implementing true seeded random would require additional library
         // For now, maps vary but this provides the framework for future enhancement
         
         const generator = new MapGenerator(this.size, CONFIG.tileDistribution);
-        const result = generator.generate(dateString, maxWalls);
+        const result = generator.generate(dateString);
         
         if (result === null) {
             console.error('Failed to generate valid map');
@@ -37,7 +36,7 @@ class Grid {
         }
         
         this.tiles = result.map;
-        return result; // Return both map and goal
+        return result; // Return map, goal, and maxWalls
     }
 
     /**

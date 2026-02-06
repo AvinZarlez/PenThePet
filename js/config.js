@@ -3,39 +3,38 @@
  * 
  * Centralized configuration for easy customization of game parameters.
  * Modify these values to change game behavior without touching game logic.
+ * 
+ * NOTE: Many values now reference CONSTANTS from constants.js
  */
 
 const CONFIG = {
     // Grid settings
     grid: {
-        defaultSize: 9,        // Default grid dimensions (9x9)
-        minSize: 7,            // Minimum allowed grid size
-        maxSize: 21,           // Maximum allowed grid size
+        defaultSize: CONSTANTS.DEFAULT_GRID_SIZE,  // Default grid dimensions
+        minSize: CONSTANTS.MIN_GRID_SIZE,          // Minimum allowed grid size
+        maxSize: CONSTANTS.MAX_GRID_SIZE,          // Maximum allowed grid size
     },
 
     // Tile generation probabilities (should sum to 1.0)
-    tileDistribution: {
-        grass: 0.7,            // 70% chance of grass tiles
-        water: 0.3,            // 30% chance of water tiles
-    },
+    tileDistribution: CONSTANTS.TILE_DISTRIBUTION,
 
     // Cell visual settings
     cell: {
-        size: 50,              // Cell size in pixels (desktop)
-        sizeSmall: 40,         // Cell size in pixels (mobile)
-        gap: 3,                // Gap between cells in pixels
+        size: CONSTANTS.CELL.MAX_SIZE,       // Cell size in pixels (desktop)
+        sizeSmall: 40,                       // Cell size in pixels (mobile) - deprecated, dynamic sizing used
+        gap: CONSTANTS.CELL.GAP,             // Gap between cells in pixels
     },
 
     // Game behavior
     gameplay: {
-        allowWallRemoval: false,    // If true, clicking walls removes them
-        autoSaveState: false,        // If true, saves game state to localStorage
-        goalAreaSize: 10,            // Goal area size threshold (TODO: calculate based on grid size/difficulty)
+        allowWallRemoval: CONSTANTS.ALLOW_WALL_REMOVAL,  // If true, clicking walls removes them
+        autoSaveState: CONSTANTS.AUTO_SAVE_STATE,        // If true, saves game state to localStorage
+        goalAreaSize: 10,                                 // Goal area size threshold (calculated during generation)
     },
 
     // Hint system
     hints: {
-        mode: 'disabled',            // Options: 'disabled', 'checkOptimal', 'revealTarget'
+        mode: CONSTANTS.HINT_MODE_DEFAULT,  // Options: 'disabled', 'checkOptimal', 'revealTarget'
     }
 };
 
