@@ -499,6 +499,52 @@ if (DEBUG) {
 }
 ```
 
+## CI/CD and Automation
+
+### GitHub Actions Workflows
+
+The project uses GitHub Actions for automated testing and deployment:
+
+**test.yml** - Runs on every push and PR:
+- Lints code with ESLint
+- Runs Jest tests with coverage
+- Posts coverage report to Codecov
+- Comments test results on PRs
+
+**static.yml** - Deploys to GitHub Pages on main branch:
+- Uploads entire repository as artifact
+- Deploys to GitHub Pages automatically
+
+### Dependabot Configuration
+
+**Purpose:** Dependabot is configured to monitor dependencies and create PRs for updates.
+
+**Configuration** (`.github/dependabot.yml`):
+```yaml
+version: 2
+updates:
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+```
+
+**Important Notes:**
+- ⚠️ **GitHub Actions monitoring is intentionally disabled**
+- Monitoring GitHub Actions in Copilot agent environments causes network/permission errors
+- This leads to ~2 minute delays when agents complete their work
+- Error: "snapshots_unavailable_graph_error" and SSL handshake failures
+- Solution: Only monitor npm packages (which we actually need)
+
+**If you need to update Actions manually:**
+- actions/checkout@v4
+- actions/setup-node@v4
+- codecov/codecov-action@v3
+- actions/github-script@v7
+- actions/configure-pages@v5
+- actions/upload-pages-artifact@v3
+- actions/deploy-pages@v4
+
 ## Deployment
 
 ### GitHub Pages
