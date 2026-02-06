@@ -698,15 +698,19 @@ class Game {
         const metricOutput = document.getElementById('roamAreaMetric');
         if (!metricOutput) return;
         
+        // Ensure both values are numbers for comparison
+        const userScoreNum = Number(userScore);
+        const goalScoreNum = Number(this.goalAreaSize);
+        
         // Check if perfect score
-        const isPerfect = userScore === this.goalAreaSize;
+        const isPerfect = userScoreNum === goalScoreNum;
         
         // Build the display text
         let displayText = '';
         if (isPerfect) {
-            displayText = `🎉 ${userScore} 🎉`;
+            displayText = `🎉 ${userScoreNum} 🎉`;
         } else {
-            displayText = userScore.toString();
+            displayText = userScoreNum.toString();
         }
         
         metricOutput.innerHTML = displayText;
@@ -715,9 +719,9 @@ class Game {
         const helperElement = document.querySelector('.metric-helper');
         if (helperElement) {
             if (isPerfect) {
-                helperElement.innerHTML = `<strong>PERFECT!</strong><br>You achieved the optimal score of ${this.goalAreaSize}!`;
+                helperElement.innerHTML = `<strong>PERFECT!</strong><br>You achieved the optimal score of ${goalScoreNum}!`;
             } else {
-                helperElement.innerHTML = `Your score<br>Optimal: ${this.goalAreaSize} tiles`;
+                helperElement.innerHTML = `Your score<br>Optimal: ${goalScoreNum} tiles`;
             }
         }
         
@@ -786,6 +790,8 @@ class Game {
     
     /**
      * Load wall positions onto the grid
+     * Note: Uses clear-and-rebuild approach for simplicity and clarity.
+     * Performance impact is minimal given typical grid sizes (7x7 to 11x11).
      * @param {Array} wallPositions - Array of [row, col] positions
      */
     loadWallPositions(wallPositions) {
