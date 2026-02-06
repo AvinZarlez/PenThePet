@@ -79,6 +79,14 @@ async function initGame() {
     game.grid.loadMap(mapData.map);
     game.grid.saveInitialState();
     game.wallCount = 0;
+    
+    // Set goal from database (or use default if not present)
+    if (mapData.goal !== undefined) {
+        game.goalAreaSize = mapData.goal;
+    } else {
+        console.warn('Map does not have a goal value, using default');
+    }
+    
     game.render();
     game.updateWallCounter();
     game.updateAreaSizeDisplay();
