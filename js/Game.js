@@ -39,7 +39,16 @@ class Game {
     init() {
         // Use today's date for consistent daily maps
         const today = new Date().toISOString().split('T')[0];
-        this.grid.generate(today);
+        const result = this.grid.generate(today, this.maxWalls);
+        
+        if (result === null) {
+            console.error('Failed to initialize game - could not generate valid map');
+            return;
+        }
+        
+        // Update goal from generation
+        this.goalAreaSize = result.goal;
+        
         this.grid.saveInitialState();
         this.wallCount = 0;
         this.render();
@@ -392,7 +401,16 @@ class Game {
      * Start a new game with a fresh grid
      */
     newGame() {
-        this.grid.generate();
+        const result = this.grid.generate(null, this.maxWalls);
+        
+        if (result === null) {
+            console.error('Failed to generate new game');
+            return;
+        }
+        
+        // Update goal from generation
+        this.goalAreaSize = result.goal;
+        
         this.grid.saveInitialState();
         this.wallCount = 0;
         this.render();
@@ -418,7 +436,18 @@ class Game {
     generateDebugMap(size) {
         if (size >= CONFIG.grid.minSize && size <= CONFIG.grid.maxSize) {
             this.grid = new Grid(size);
-            this.grid.generate();
+            const result = this.grid.generate(null, this.maxWalls);
+            
+            if (result === null) {
+                console.error('Failed to generate debug map');
+                this.showNotification('Failed to generate a valid map. Try again.');
+                return;
+            }
+            
+            // Update goal from generation
+            this.goalAreaSize = result.goal;
+            console.log(`Generated debug map with goal: ${result.goal}`);
+            
             this.grid.saveInitialState();
             this.wallCount = 0;
             this.render();
