@@ -32,7 +32,7 @@
                 </div>
                 <div class="legend-item">
                     <div class="legend-box home"></div>
-                    <span>Home 🏠🐾</span>
+                    <span id="homeLegend">Home 🏠🐶</span>
                 </div>
             </div>
         </div>
@@ -131,9 +131,10 @@
         </footer>
     </div>
 
-    <!-- Game Scripts (Load in order: config -> types -> grid -> game -> main) -->
+    <!-- Game Scripts (Load in order: config -> types -> mapgen -> grid -> game -> main) -->
     <script src="js/config.js"></script>
     <script src="js/tileTypes.js"></script>
+    <script src="js/MapGenerator.js"></script>
     <script src="js/Grid.js"></script>
     <script src="js/Game.js"></script>
     <script src="js/main.js"></script>

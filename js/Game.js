@@ -17,16 +17,17 @@ class Game {
         this.maxWalls = 9;
         this.boundHandleArrowKeys = this.handleArrowKeys.bind(this);
         this.boundHandleResize = this.handleResize.bind(this);
-        this.lastFocusedCell = null; // Track last focused cell for keyboard persistence
-        this.petEmoji = '🐶'; // Default pet emoji
-        this.hintMode = CONFIG.hints.mode; // Hint mode: disabled, checkOptimal, revealTarget (UI ready, logic TBD)
-        this.goalAreaSize = CONFIG.gameplay.goalAreaSize; // Goal area size threshold (hardcoded, future: calculate per map)
+        this.lastFocusedCell = null;
+        this.petEmoji = '🐶';
+        this.hintMode = CONFIG.hints.mode;
+        this.goalAreaSize = CONFIG.gameplay.goalAreaSize;
         
         // Grid sizing constants
-        this.CELL_GAP = 3;       // Gap between cells in pixels
-        this.GRID_PADDING = 6;   // Grid padding (3px * 2)
-        this.MIN_CELL_SIZE = 20; // Minimum cell size for usability
-        this.MAX_CELL_SIZE = 50; // Maximum cell size for aesthetics
+        this.CELL_GAP = 3;
+        this.GRID_PADDING = 6;
+        this.MIN_CELL_SIZE = 6; // Allow very small cells for 21x21 on mobile portrait
+        this.MAX_CELL_SIZE = 50;
+        this.AVAILABLE_HEIGHT_RATIO = 0.7; // Use 70% of viewport height to leave space for UI controls
         
         this.attachEventListeners();
         this.init();
@@ -36,7 +37,9 @@ class Game {
      * Initialize a new game
      */
     init() {
-        this.grid.generate();
+        // Use today's date for consistent daily maps
+        const today = new Date().toISOString().split('T')[0];
+        this.grid.generate(today);
         this.grid.saveInitialState();
         this.wallCount = 0;
         this.render();
@@ -436,6 +439,7 @@ class Game {
             petTypeSelect.addEventListener('change', (e) => {
                 this.petEmoji = e.target.value;
                 this.render();
+                this.updateLegend();
             });
         }
 
@@ -474,8 +478,37 @@ class Game {
      * @returns {number} The calculated cell size in pixels
      */
     calculateCellSize() {
-        const maxGridWidth = Math.min(window.innerWidth * 0.95, window.innerHeight * 0.95);
-        const maxCellSize = Math.floor((maxGridWidth - this.GRID_PADDING - (this.CELL_GAP * (this.grid.size - 1))) / this.grid.size);
+        // Calculate available width
+        const availableWidth = window.innerWidth * 0.90;
+        
+        // Calculate available height by measuring actual space
+        // Get grid container position to determine how much vertical space is left
+        const gridContainer = this.gridElement.parentElement;
+        let availableHeight;
+        
+        if (gridContainer) {
+            const containerRect = gridContainer.getBoundingClientRect();
+            // Space from container top to bottom of viewport, minus some margin
+            availableHeight = window.innerHeight - containerRect.top - 20;
+        } else {
+            // Fallback to percentage-based calculation
+            availableHeight = window.innerHeight * this.AVAILABLE_HEIGHT_RATIO;
+        }
+        
+        // Ensure minimum available height
+        availableHeight = Math.max(availableHeight, 200);
+        
+        // Calculate total space needed for gaps and padding
+        const totalGap = this.CELL_GAP * (this.grid.size - 1);
+        const totalPadding = this.GRID_PADDING * 2; // padding on both sides
+        
+        // Calculate max cell size that fits in each dimension
+        const maxCellWidth = Math.floor((availableWidth - totalPadding - totalGap) / this.grid.size);
+        const maxCellHeight = Math.floor((availableHeight - totalPadding - totalGap) / this.grid.size);
+        
+        // Use the smaller of the two to ensure it fits in both dimensions
+        const maxCellSize = Math.min(maxCellWidth, maxCellHeight);
+        
         return Math.max(this.MIN_CELL_SIZE, Math.min(this.MAX_CELL_SIZE, maxCellSize));
     }
 
@@ -605,6 +638,16 @@ class Game {
         const cell = this.gridElement.querySelector(`[data-row="${row}"][data-col="${col}"]`);
         if (cell) {
             cell.focus();
+        }
+    }
+
+    /**
+     * Update the legend to show the current pet emoji
+     */
+    updateLegend() {
+        const homeLegend = document.getElementById('homeLegend');
+        if (homeLegend) {
+            homeLegend.textContent = `Home 🏠${this.petEmoji}`;
         }
     }
 

@@ -223,7 +223,7 @@ button:active {
     margin-bottom: 20px;
     width: 100%;
     max-width: 100%;
-    overflow: hidden;
+    overflow: visible;
 }
 
 .grid {
@@ -233,7 +233,7 @@ button:active {
     padding: 3px;
     border-radius: 10px;
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-    max-width: min(95vw, 95vh);
+    max-width: 90vw;
     width: fit-content;
     margin: 0 auto;
 }
@@ -247,8 +247,6 @@ button:active {
     cursor: pointer;
     transition: transform 0.1s, box-shadow 0.1s;
     position: relative;
-    min-width: 20px;
-    min-height: 20px;
 }
 
 .cell:hover {
@@ -466,6 +464,29 @@ button:active {
 #newGameBtn {
     padding: 12px 32px;
     font-size: 1.1em;
+}
+
+/* ========== Error Message Styles ========== */
+.error-message {
+    background: linear-gradient(135deg, #ff6b6b 0%, #ff5252 100%);
+    color: white;
+    padding: 40px;
+    border-radius: 15px;
+    text-align: center;
+    margin: 30px 0;
+    box-shadow: 0 10px 30px rgba(255, 82, 82, 0.3);
+}
+
+.error-message h2 {
+    font-size: 2em;
+    margin-bottom: 20px;
+    color: white;
+}
+
+.error-message p {
+    font-size: 1.1em;
+    line-height: 1.6;
+    margin-bottom: 10px;
 }
 
 .options-section {
