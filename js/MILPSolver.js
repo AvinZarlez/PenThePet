@@ -81,7 +81,8 @@ class MILPSolver {
         // For maps where we can reasonably check all combinations, use brute force
         // Estimate total combinations
         const estimatedCombinations = this._estimateCombinations(grassTiles.length, maxWalls);
-        const useExhaustive = estimatedCombinations <= 500000; // Up to 500k combinations (should run in ~1 second)
+        // Use exhaustive search only for small maps that can be solved quickly (<200k combinations ≈ <500ms)
+        const useExhaustive = estimatedCombinations <= 200000;
         
         if (useExhaustive) {
             return this._exhaustiveSearch(map, maxWalls, homeRow, homeCol, grassTiles);
