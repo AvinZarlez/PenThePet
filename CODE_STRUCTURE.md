@@ -8,13 +8,21 @@ PenThePet/
 ├── css/
 │   └── styles.css      # All game styling
 ├── js/
-│   ├── config.js       # Game configuration and settings
+│   ├── constants.js    # Centralized constants for game parameters
+│   ├── config.js       # Game configuration (references constants)
 │   ├── tileTypes.js    # Tile type definitions and properties
+│   ├── wordList.js     # Random English words for map naming
+│   ├── PathfindingUtils.js  # Shared pathfinding utilities
+│   ├── MILPSolver.js   # Exhaustive search solver for optimal wall placement
 │   ├── MapGenerator.js # Map generation and validation logic
 │   ├── Grid.js         # Grid data structure and operations
 │   ├── Game.js         # Main game controller and interaction logic
 │   └── main.js         # Application entry point and initialization
-└── CODE_STRUCTURE.md   # This file (developer documentation)
+├── scripts/
+│   └── generate-maps.js  # CLI script for batch map generation with metadata
+├── maps.json           # Generated maps with metadata (dayNumber, mapName, etc.)
+├── CODE_STRUCTURE.md   # This file (developer documentation)
+└── MAP_GENERATION.md   # Detailed map generation documentation
 ```
 
 ## 🎯 File Purposes
@@ -33,14 +41,46 @@ Contains all visual styling for the game:
 
 **To customize the look:** Modify colors, sizes, or add new CSS classes here.
 
-### `js/config.js`
-Centralized configuration for easy game customization:
-- **Grid settings:** Default size, min/max size limits
-- **Tile distribution:** Probability ratios for tile generation
-- **Cell visuals:** Size in pixels, gap between cells
-- **Gameplay options:** Toggle features like wall removal
+### `js/constants.js`
+**NEW**: Centralized constants for all game parameters:
+- **MAX_WALLS**: Maximum walls allowed (15)
+- **MAX_GRID_SIZE**: Maximum grid size (21)
+- **Tile distribution**: Probability ratios for tile generation
+- **Cell sizing**: Min/max cell sizes
+- **Grid configuration**: Default sizes, padding, etc.
 
-**To change game parameters:** Modify values in the CONFIG object.
+**IMPORTANT**: Always reference these constants instead of hardcoding values!
+
+### `js/config.js`
+Game configuration that references constants from constants.js:
+- **Grid settings**: Default size, min/max size limits
+- **Tile distribution**: Uses CONSTANTS.TILE_DISTRIBUTION
+- **Cell visuals**: Size in pixels, gap between cells
+- **Gameplay options**: Toggle features like wall removal
+- **Hint modes**: Configuration for hint system
+
+**To change game parameters:** Check constants.js first, then modify CONFIG if needed.
+
+### `js/wordList.js`
+Collection of random English words used for map naming:
+- Contains ~150 nature, color, and concept words
+- Used by map generation script to give each map a memorable name
+- Exported function `getRandomWord()` for easy access
+
+### `js/PathfindingUtils.js`
+Shared pathfinding utilities used by solvers and game logic:
+- BFS pathfinding algorithms
+- Pet penning detection
+- Penned area calculation
+- Used by both MILPSolver and MapGenerator
+
+### `js/MILPSolver.js`
+Exhaustive search solver for finding optimal wall placements:
+- **Goal**: Find MAXIMUM achievable penned area
+- **Algorithm**: Memory-efficient exhaustive search
+- **Accuracy over speed**: Checks up to 100k combinations per wall count
+- **Returns**: Optimal wall positions and goal area
+- See MAP_GENERATION.md for detailed algorithm explanation
 
 ### `js/tileTypes.js`
 Defines all tile types and their properties:
@@ -53,12 +93,14 @@ Defines all tile types and their properties:
 
 ### `js/MapGenerator.js`
 Handles map generation and validation:
-- Generates random maps with tile distribution based on config
+- Generates random maps with tile distribution based on constants
 - Validates maps to ensure there's a path from home to edge
-- Uses BFS (Breadth-First Search) pathfinding for validation
-- Creates guaranteed valid maps if random generation fails
+- Uses MILPSolver to calculate optimal goal and wall count
+- Retries generation if map can't be solved with ≤15 walls
+- Returns map with metadata (goal, maxWalls)
 
-**To modify map generation:** Edit the generation or validation logic in this class.
+**Important**: Uses ONLY exhaustive search for accuracy (user requirement).
+See MAP_GENERATION.md for complete documentation.
 
 ### `js/Grid.js`
 Manages the grid data structure:
@@ -76,6 +118,7 @@ Main game controller that ties everything together:
 - User interaction handling (clicks, keyboard)
 - UI updates and DOM manipulation
 - Game state transitions (new game, reset)
+- Dynamic cell sizing for responsive layout
 
 **To add gameplay features:** Extend this class with new methods for character movement, scoring, etc.
 
@@ -84,6 +127,35 @@ Application entry point:
 - Initializes the game when the page loads
 - Sets up global event handlers (if needed)
 - Future: Can add game state persistence, analytics, etc.
+
+### `scripts/generate-maps.js`
+CLI script for batch map generation:
+- Generates maps with metadata (dayNumber, mapName, date)
+- Supports fresh generation or appending to existing maps
+- Configurable sizes, dates, and count
+- Saves to maps.json with proper formatting
+
+**Usage:**
+```bash
+node scripts/generate-maps.js --fresh --count 10 --sizes 7,9,11
+```
+
+### `maps.json`
+Generated maps with complete metadata:
+- Key: Date string (YYYY-MM-DD)
+- Value: Map object with dayNumber, mapName, size, goal, maxWalls, map
+- Generated by scripts/generate-maps.js
+- See MAP_GENERATION.md for metadata structure
+
+### `MAP_GENERATION.md`
+**NEW**: Comprehensive documentation for map generation:
+- Algorithm explanation and pseudocode
+- Metadata structure and field descriptions
+- Generation process and requirements
+- Instructions for future agents
+- Testing and validation procedures
+
+**Read this file before modifying map generation!**
 
 ## 🔧 How to Extend the Game
 
