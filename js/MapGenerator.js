@@ -5,11 +5,13 @@
  * when no walls are placed. Uses BFS pathfinding to validate connectivity.
  */
 
-// For Node.js environment - import MILPSolver if not in browser
+// For Node.js environment - import dependencies if not in browser
 (function() {
-    if (typeof MILPSolver === 'undefined' && typeof require !== 'undefined') {
-        // In Node.js, MILPSolver needs to be loaded
-        if (typeof global !== 'undefined') {
+    if (typeof require !== 'undefined') {
+        if (typeof CONSTANTS === 'undefined' && typeof global !== 'undefined') {
+            global.CONSTANTS = require('./constants.js');
+        }
+        if (typeof MILPSolver === 'undefined' && typeof global !== 'undefined') {
             global.MILPSolver = require('./MILPSolver.js');
         }
     }
@@ -21,58 +23,71 @@ class MapGenerator {
      * @param {number} size - The size of the grid (size x size)
      * @param {Object} tileDistribution - Object with tile type probabilities
      */
-    constructor(size, tileDistribution = { grass: 0.7, water: 0.3 }) {
+    constructor(size, tileDistribution = null) {
         this.size = size;
-        this.tileDistribution = tileDistribution;
-        this.maxAttempts = 100; // Maximum attempts to generate a valid map
+        this.tileDistribution = tileDistribution || CONSTANTS.TILE_DISTRIBUTION;
+        this.maxAttempts = CONSTANTS.MAX_GENERATION_ATTEMPTS; // Maximum attempts to generate a valid map
     }
 
     /**
      * Generate a valid map with guaranteed path to edge and goal calculation
+     * Uses CONSTANTS.MAX_WALLS for maximum wall count
+     * Retries generation if no solution exists with <= MAX_WALLS
      * @param {string} dateString - Optional date string for seeded generation
-     * @param {number} maxWalls - Maximum number of walls available to the player
-     * @returns {Object} Object containing map and goal, or null if unable to generate valid map
+     * @returns {Object} Object containing map and goal, or throws error if unable to generate
      */
-    generate(dateString = null, maxWalls = 9) {
-        let attempts = 0;
-        let map = null;
-        let result = null;
+    generate(dateString = null) {
+        const maxWalls = CONSTANTS.MAX_WALLS; // Always use constant max walls
         
-        while (attempts < this.maxAttempts) {
-            map = this._generateRandomMap();
-            if (this._validateMap(map)) {
-                // Calculate the goal (maximum achievable area) and optimal wall count
-                result = this.calculateGoal(map, maxWalls);
-                
-                // If result is null, the pet cannot be penned with available walls
-                // Try generating a new map
-                if (result !== null) {
-                    return { 
-                        map, 
-                        goal: result.goalArea, 
-                        maxWalls: result.optimalWallCount  // Use optimal wall count, not maxWalls
-                    };
+        // Keep trying until we get a valid map that can be solved with <= MAX_WALLS
+        let totalAttempts = 0;
+        const maxTotalAttempts = 1000; // Safety limit to prevent infinite loops
+        
+        while (totalAttempts < maxTotalAttempts) {
+            let attempts = 0;
+            let map = null;
+            let result = null;
+            
+            // Try to generate a valid random map
+            while (attempts < this.maxAttempts) {
+                map = this._generateRandomMap();
+                if (this._validateMap(map)) {
+                    // Calculate the goal (maximum achievable area) and optimal wall count
+                    // This uses ONLY accurate exhaustive search - no heuristics
+                    result = this.calculateGoal(map, maxWalls);
+                    
+                    // If result is not null and uses <= MAX_WALLS, we have a valid map
+                    if (result !== null && result.optimalWallCount <= maxWalls) {
+                        return { 
+                            map, 
+                            goal: result.goalArea, 
+                            maxWalls: result.optimalWallCount  // Use optimal wall count
+                        };
+                    }
+                    // If result is null or needs too many walls, try again
                 }
+                attempts++;
             }
-            attempts++;
+            
+            // If random generation failed, try guaranteed valid map
+            map = this._generateGuaranteedValidMap();
+            result = this.calculateGoal(map, maxWalls);
+            
+            // Check if this map is solvable with <= MAX_WALLS
+            if (result !== null && result.optimalWallCount <= maxWalls) {
+                return { 
+                    map, 
+                    goal: result.goalArea,
+                    maxWalls: result.optimalWallCount
+                };
+            }
+            
+            totalAttempts++;
+            console.log(`Generation attempt ${totalAttempts}: No valid solution found, retrying...`);
         }
         
-        // If we couldn't generate a valid random map, generate a guaranteed valid one
-        console.warn('Could not generate valid random map, creating guaranteed valid map');
-        map = this._generateGuaranteedValidMap();
-        result = this.calculateGoal(map, maxWalls);
-        
-        // If even the guaranteed map can't be penned, return null
-        if (result === null) {
-            console.error('Unable to generate a map that can be penned with available walls');
-            return null;
-        }
-        
-        return { 
-            map, 
-            goal: result.goalArea,
-            maxWalls: result.optimalWallCount  // Use optimal wall count, not maxWalls
-        };
+        // Should never reach here, but throw error if we do
+        throw new Error(`Failed to generate valid map after ${maxTotalAttempts} attempts`);
     }
 
     /**

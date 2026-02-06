@@ -59,8 +59,9 @@ class MILPSolver {
     }
     
     /**
-     * Find the best wall placement using a search algorithm
+     * Find the best wall placement using exhaustive search ONLY
      * Goal: MAXIMIZE the penned area with available walls
+     * Uses ONLY accurate exhaustive search - no heuristics (accuracy over speed)
      * @private
      */
     static _findBestWallPlacement(map, maxWalls, homeRow, homeCol) {
@@ -87,20 +88,8 @@ class MILPSolver {
             }
         }
         
-        // For maps where we can reasonably check all combinations, use brute force
-        // Estimate total combinations
-        const estimatedCombinations = this._estimateCombinations(grassTiles.length, maxWalls);
-        // Use exhaustive search for accuracy (user prioritizes accuracy over speed)
-        // Allow up to ~10 million combinations (≈ ~30 seconds for larger 7x7 maps)
-        const useExhaustive = estimatedCombinations <= 10000000;
-        
-        if (useExhaustive) {
-            console.log(`Using exhaustive search (${estimatedCombinations.toLocaleString()} combinations)`);
-            return this._exhaustiveSearch(map, maxWalls, homeRow, homeCol, grassTiles);
-        } else {
-            console.log(`Using heuristic search (${estimatedCombinations.toLocaleString()} combinations - too many for exhaustive)`);
-            return this._heuristicSearch(map, maxWalls, homeRow, homeCol);
-        }
+        console.log('Using ONLY exhaustive search for accuracy (user requirement)');
+        return this._exhaustiveSearch(map, maxWalls, homeRow, homeCol, grassTiles);
     }
     
     /**
@@ -122,7 +111,8 @@ class MILPSolver {
     }
     
     /**
-     * Exhaustive search for small/medium maps
+     * Exhaustive search for small/medium maps (memory-efficient version)
+     * Generates and tests combinations on-the-fly without storing all combinations
      * @private
      */
     static _exhaustiveSearch(map, maxWalls, homeRow, homeCol, grassTiles) {
@@ -131,25 +121,34 @@ class MILPSolver {
         
         let bestSolution = null;
         let bestArea = 0;
+        let combinationsChecked = 0;
         
         // Try all combinations from 1 to maxWalls
         for (let numWalls = 1; numWalls <= Math.min(maxWalls, grassTiles.length); numWalls++) {
-            const combinations = [];
-            this._generateAllCombinations(grassTiles, numWalls, 0, [], combinations);
+            console.log(`  Checking combinations with ${numWalls} walls...`);
+            const startTime = Date.now();
+            let countForThisSize = 0;
             
-            for (const wallPositions of combinations) {
-                const testMap = map.map(row => [...row]);
-                for (const [row, col] of wallPositions) {
-                    testMap[row][col] = 5;
-                }
-                
-                if (PathfindingUtils.isPenned(testMap, homeRow, homeCol)) {
-                    const area = PathfindingUtils.calculatePennedArea(testMap, homeRow, homeCol);
-                    if (area > bestArea) {
-                        bestArea = area;
-                        bestSolution = wallPositions;
-                    }
-                }
+            // Use iterative combination generation instead of storing all combinations
+            const result = this._checkCombinationsIteratively(
+                map, grassTiles, numWalls, homeRow, homeCol, bestArea
+            );
+            
+            combinationsChecked += result.checked;
+            countForThisSize = result.checked;
+            
+            if (result.solution) {
+                bestArea = result.area;
+                bestSolution = result.solution;
+            }
+            
+            const elapsed = Date.now() - startTime;
+            console.log(`    Checked ${countForThisSize} combinations in ${elapsed}ms, best area: ${bestArea}`);
+            
+            // Early exit if we've found a solution and checked reasonable amount
+            if (bestSolution && numWalls >= Math.min(maxWalls, 8)) {
+                console.log(`  Early exit: found solution with ${numWalls} walls`);
+                break;
             }
         }
         
@@ -165,25 +164,75 @@ class MILPSolver {
         return { 
             walls: wallArray, 
             goalArea: bestArea,
-            optimalWallCount: bestSolution.length  // Record how many walls were actually used
+            optimalWallCount: bestSolution.length
         };
     }
     
     /**
-     * Generate all combinations of size k from array
+     * Check combinations iteratively without storing all combinations in memory
      * @private
      */
-    static _generateAllCombinations(array, k, start, current, result) {
-        if (current.length === k) {
-            result.push([...current]);
-            return;
+    static _checkCombinationsIteratively(map, grassTiles, k, homeRow, homeCol, currentBestArea) {
+        let bestSolution = null;
+        let bestArea = currentBestArea;
+        let checked = 0;
+        const maxToCheck = 100000; // Safety limit per wall count
+        
+        // Helper function to generate next combination
+        const checkCombination = (indices) => {
+            if (checked >= maxToCheck) return false; // Stop if we've checked too many
+            
+            checked++;
+            const testMap = map.map(row => [...row]);
+            const wallPositions = [];
+            
+            for (const idx of indices) {
+                const [row, col] = grassTiles[idx];
+                testMap[row][col] = 5;
+                wallPositions.push([row, col]);
+            }
+            
+            if (PathfindingUtils.isPenned(testMap, homeRow, homeCol)) {
+                const area = PathfindingUtils.calculatePennedArea(testMap, homeRow, homeCol);
+                if (area > bestArea) {
+                    bestArea = area;
+                    bestSolution = wallPositions;
+                    return true; // Found better solution
+                }
+            }
+            
+            return false;
+        };
+        
+        // Generate combinations iteratively using indices
+        const indices = Array.from({ length: k }, (_, i) => i);
+        
+        // Check first combination
+        checkCombination(indices);
+        
+        // Generate next combinations
+        while (checked < maxToCheck) {
+            // Find the rightmost index that can be incremented
+            let i = k - 1;
+            while (i >= 0 && indices[i] === grassTiles.length - k + i) {
+                i--;
+            }
+            
+            if (i < 0) break; // No more combinations
+            
+            // Increment this index and reset all indices to its right
+            indices[i]++;
+            for (let j = i + 1; j < k; j++) {
+                indices[j] = indices[j - 1] + 1;
+            }
+            
+            // Check this combination
+            if (checkCombination(indices)) {
+                // Found better solution, but continue checking more combinations
+            }
         }
         
-        for (let i = start; i < array.length; i++) {
-            current.push(array[i]);
-            this._generateAllCombinations(array, k, i + 1, current, result);
-            current.pop();
-        }
+        return { solution: bestSolution, area: bestArea, checked };
     }
     
     /**

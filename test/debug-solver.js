@@ -6,11 +6,11 @@ const MILPSolver = require('../js/MILPSolver.js');
 
 // Test map from test-maps-db.json (first one)
 const stringMap = [
-    ["water", "grass", "grass", "grass", "grass"],
-    ["grass", "water", "water", "grass", "grass"],
-    ["water", "grass", "home", "grass", "grass"],
-    ["grass", "water", "grass", "grass", "water"],
-    ["grass", "water", "grass", "grass", "grass"]
+    ['water', 'grass', 'grass', 'grass', 'grass'],
+    ['grass', 'water', 'water', 'grass', 'grass'],
+    ['water', 'grass', 'home', 'grass', 'grass'],
+    ['grass', 'water', 'grass', 'grass', 'water'],
+    ['grass', 'water', 'grass', 'grass', 'grass']
 ];
 
 // Convert to numeric
@@ -60,7 +60,7 @@ for (let distance = 1; distance <= Math.min(5, maxWalls); distance++) {
     }
     
     console.log(`\nDistance ${distance} ring (${ring.length} cells):`, ring);
-    console.log(`  Tiles:`, ring.map(([r, c]) => `[${r},${c}]=${stringMap[r][c]}`).join(', '));
+    console.log('  Tiles:', ring.map(([r, c]) => `[${r},${c}]=${stringMap[r][c]}`).join(', '));
     
     // Check what would happen if we tried to pen with this ring
     const testMap = numericMap.map(row => [...row]);

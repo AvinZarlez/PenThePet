@@ -27,7 +27,7 @@ for (let i = 0; i < sizes.length; i++) {
     const duration = Date.now() - start;
     
     if (!result) {
-        console.log(`  ✗ FAILED: Could not generate map\n`);
+        console.log('  ✗ FAILED: Could not generate map\n');
         results.push({ size, success: false });
         continue;
     }

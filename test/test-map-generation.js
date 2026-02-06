@@ -177,7 +177,7 @@ class MapGenerationTester {
         const avgBruteDuration = this.testResults.reduce((sum, r) => sum + r.bruteForceDuration, 0) / total;
         const avgMilpDuration = this.testResults.reduce((sum, r) => sum + r.milpDuration, 0) / total;
         
-        console.log(`\nAverage durations:`);
+        console.log('\nAverage durations:');
         console.log(`  Brute Force: ${avgBruteDuration.toFixed(0)}ms`);
         console.log(`  MILP: ${avgMilpDuration.toFixed(0)}ms`);
         console.log(`  Speed up: ${(avgBruteDuration / avgMilpDuration).toFixed(1)}x`);

@@ -6,11 +6,11 @@ const MILPSolver = require('../js/MILPSolver.js');
 
 // Test map from test-maps-db.json (first one)
 const stringMap = [
-    ["water", "grass", "grass", "grass", "grass"],
-    ["grass", "water", "water", "grass", "grass"],
-    ["water", "grass", "home", "grass", "grass"],
-    ["grass", "water", "grass", "grass", "water"],
-    ["grass", "water", "grass", "grass", "grass"]
+    ['water', 'grass', 'grass', 'grass', 'grass'],
+    ['grass', 'water', 'water', 'grass', 'grass'],
+    ['water', 'grass', 'home', 'grass', 'grass'],
+    ['grass', 'water', 'grass', 'grass', 'water'],
+    ['grass', 'water', 'grass', 'grass', 'grass']
 ];
 
 // Convert to numeric

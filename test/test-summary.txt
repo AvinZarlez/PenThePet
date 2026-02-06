@@ -1,7 +1,0 @@
-Map Generation Test Summary
-================================================================================
-
-Total tests: 12
-Correct: 12 (100.0%)
-Incorrect: 0
-
