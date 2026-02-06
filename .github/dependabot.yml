@@ -1,0 +1,43 @@
+# Dependabot configuration to prevent agent hang issues
+# 
+# This configuration explicitly controls what Dependabot monitors.
+# By default, GitHub enables Dependabot which tries to scan GitHub Actions
+# dependencies, but this causes errors in Copilot agent environments where
+# network access is restricted, leading to ~2 minute delays.
+#
+# Solution: Only enable npm monitoring (which we actually need) and disable
+# GitHub Actions monitoring (which causes the permission/network errors).
+
+version: 2
+updates:
+  # Monitor npm dependencies
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    open-pull-requests-limit: 5
+    # Group minor and patch updates together to reduce PR noise
+    groups:
+      development-dependencies:
+        dependency-type: "development"
+        update-types:
+          - "minor"
+          - "patch"
+    # Allow Dependabot to update locked dependencies
+    versioning-strategy: increase
+
+  # NOTE: GitHub Actions ecosystem is intentionally NOT included
+  # Monitoring GitHub Actions in this project causes errors in Copilot agent
+  # environments due to network/permission restrictions when trying to submit
+  # dependency graphs to GitHub's API. Since our Actions use stable versions
+  # with minimal security concerns, we can safely skip automated monitoring.
+  #
+  # If you want to manually update Actions, check:
+  # - actions/checkout@v4
+  # - actions/setup-node@v4
+  # - codecov/codecov-action@v3
+  # - actions/github-script@v7
+  # - actions/configure-pages@v5
+  # - actions/upload-pages-artifact@v3
+  # - actions/deploy-pages@v4
