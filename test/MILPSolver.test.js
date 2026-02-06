@@ -290,8 +290,9 @@ describe('MILPSolver', () => {
         });
 
         // Skipped: This test uses a 7x7 map which is slow (checks 1.7M+ combinations).
-        // The safety limit is now 50M for accuracy, so this test would take too long.
-        // The limit behavior is still tested indirectly by other tests.
+        // When the code's maxToCheck was 100K, this test verified the limit was respected.
+        // The limit is now 50M for accuracy, making this test take too long to run.
+        // If you re-enable this test, update the assertion to: toBeLessThanOrEqual(50000000)
         test.skip('should respect safety limit', () => {
             const map = [
                 [1, 1, 1, 1, 1, 1, 1],
@@ -315,8 +316,8 @@ describe('MILPSolver', () => {
                 map, grassTiles, 5, 3, 3, 0
             );
             
-            // Note: maxToCheck is now 50,000,000 for accuracy (was 100,000)
-            expect(result.checked).toBeLessThanOrEqual(50000000);
+            // Original assertion when limit was 100,000
+            expect(result.checked).toBeLessThanOrEqual(100000);
         });
     });
 
