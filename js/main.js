@@ -61,9 +61,63 @@ function showNoMapError() {
 }
 
 /**
+ * Populate animal options in the pet type selector
+ */
+function populateAnimalOptions() {
+    const petTypeSelect = document.getElementById('petType');
+    if (!petTypeSelect) return;
+    
+    // Clear existing options
+    petTypeSelect.innerHTML = '';
+    
+    // Add options from CONSTANTS.ANIMAL_OPTIONS
+    CONSTANTS.ANIMAL_OPTIONS.forEach(animal => {
+        const option = document.createElement('option');
+        option.value = animal.emoji;
+        option.textContent = `${animal.emoji} ${animal.name}`;
+        petTypeSelect.appendChild(option);
+    });
+    
+    // Load saved pet selection from cookie if available
+    const savedPet = getCookie('selectedPet');
+    if (savedPet) {
+        petTypeSelect.value = savedPet;
+    }
+}
+
+/**
+ * Get a cookie value by name
+ * @param {string} name - Cookie name
+ * @returns {string|null} Cookie value or null if not found
+ */
+function getCookie(name) {
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) {
+        return decodeURIComponent(parts.pop().split(';').shift());
+    }
+    return null;
+}
+
+/**
+ * Set a cookie
+ * @param {string} name - Cookie name
+ * @param {string} value - Cookie value
+ * @param {number} days - Expiration in days (default: 365)
+ */
+function setCookie(name, value, days = 365) {
+    const date = new Date();
+    date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+    const expires = `expires=${date.toUTCString()}`;
+    document.cookie = `${name}=${encodeURIComponent(value)};${expires};path=/;SameSite=Lax`;
+}
+
+/**
  * Initialize the game application
  */
 async function initGame() {
+    // Populate animal options from constants
+    populateAnimalOptions();
     // Load today's map from database
     const mapData = await loadTodayMap();
     

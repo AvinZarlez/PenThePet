@@ -18,7 +18,10 @@ class Game {
         this.boundHandleArrowKeys = this.handleArrowKeys.bind(this);
         this.boundHandleResize = this.handleResize.bind(this);
         this.lastFocusedCell = null;
-        this.petEmoji = '🐶';
+        
+        // Load pet emoji from cookie, or default to dog
+        this.petEmoji = this._loadPetFromCookie() || '🐶';
+        
         this.hintMode = CONFIG.hints.mode;
         this.goalAreaSize = CONFIG.gameplay.goalAreaSize;
         
@@ -492,9 +495,13 @@ class Game {
         if (petTypeSelect) {
             petTypeSelect.addEventListener('change', (e) => {
                 this.petEmoji = e.target.value;
+                this._savePetToCookie(this.petEmoji);
                 this.render();
                 this.updateLegend();
             });
+            
+            // Set initial value from loaded pet emoji
+            petTypeSelect.value = this.petEmoji;
         }
 
         if (hintModeSelect) {
@@ -744,6 +751,32 @@ class Game {
                 notificationElement.classList.remove('show');
             }, 2000);
         }
+    }
+
+    /**
+     * Load pet emoji from cookie
+     * @private
+     * @returns {string|null} Saved pet emoji or null if not found
+     */
+    _loadPetFromCookie() {
+        const value = `; ${document.cookie}`;
+        const parts = value.split(`; selectedPet=`);
+        if (parts.length === 2) {
+            return decodeURIComponent(parts.pop().split(';').shift());
+        }
+        return null;
+    }
+
+    /**
+     * Save pet emoji to cookie
+     * @private
+     * @param {string} petEmoji - Pet emoji to save
+     */
+    _savePetToCookie(petEmoji) {
+        const date = new Date();
+        date.setTime(date.getTime() + (365 * 24 * 60 * 60 * 1000)); // 1 year
+        const expires = `expires=${date.toUTCString()}`;
+        document.cookie = `selectedPet=${encodeURIComponent(petEmoji)};${expires};path=/;SameSite=Lax`;
     }
 }
 

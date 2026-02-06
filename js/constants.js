@@ -40,6 +40,36 @@ const CONSTANTS = {
     
     // Hints
     HINT_MODE_DEFAULT: 'disabled', // Default hint mode: 'disabled', 'checkOptimal', 'revealTarget'
+    
+    // Animal options for pet selection
+    ANIMAL_OPTIONS: [
+        { emoji: '🐶', name: 'Dog' },
+        { emoji: '🐱', name: 'Cat' },
+        { emoji: '🐰', name: 'Rabbit' },
+        { emoji: '🐹', name: 'Hamster' },
+        { emoji: '🐀', name: 'Rat' },
+        { emoji: '🐇', name: 'Hare' },
+        { emoji: '🐕‍🦺', name: 'Service Dog' },
+        { emoji: '🐦', name: 'Bird' },
+        { emoji: '🐢', name: 'Turtle' },
+        { emoji: '🐍', name: 'Snake' },
+        { emoji: '🐟', name: 'Fish' },
+        { emoji: '🐠', name: 'Tropical Fish' },
+        { emoji: '🕷️', name: 'Spider' },
+        { emoji: '🐈‍⬛', name: 'Black Cat' },
+        { emoji: '🦜', name: 'Parrot' },
+        { emoji: '🐕', name: 'Dog Face' },
+        { emoji: '🐩', name: 'Poodle' },
+        { emoji: '🦎', name: 'Lizard' },
+        { emoji: '🦮', name: 'Guide Dog' },
+        { emoji: '🐈', name: 'Cat Face' },
+        { emoji: '🐴', name: 'Horse Face' },
+        { emoji: '🐎', name: 'Horse' },
+        { emoji: '🐭', name: 'Mouse Face' },
+        { emoji: '🐁', name: 'Mouse' },
+        { emoji: '🐿️', name: 'Squirrel' },
+        { emoji: '🪨', name: 'Rock' }
+    ]
 };
 
 // Export for use in other modules

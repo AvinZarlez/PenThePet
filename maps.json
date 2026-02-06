@@ -217,5 +217,78 @@
         "grass"
       ]
     ]
+  },
+  "2026-02-06": {
+    "dayNumber": 4,
+    "mapName": "Canyon",
+    "date": "2026-02-06",
+    "size": 7,
+    "goal": 13,
+    "maxWalls": 8,
+    "map": [
+      [
+        "water",
+        "grass",
+        "water",
+        "grass",
+        "grass",
+        "grass",
+        "grass"
+      ],
+      [
+        "grass",
+        "grass",
+        "grass",
+        "water",
+        "grass",
+        "grass",
+        "grass"
+      ],
+      [
+        "grass",
+        "grass",
+        "water",
+        "grass",
+        "grass",
+        "grass",
+        "grass"
+      ],
+      [
+        "water",
+        "grass",
+        "grass",
+        "home",
+        "water",
+        "grass",
+        "water"
+      ],
+      [
+        "grass",
+        "water",
+        "grass",
+        "water",
+        "water",
+        "grass",
+        "water"
+      ],
+      [
+        "grass",
+        "grass",
+        "water",
+        "grass",
+        "grass",
+        "grass",
+        "water"
+      ],
+      [
+        "water",
+        "water",
+        "grass",
+        "grass",
+        "grass",
+        "grass",
+        "grass"
+      ]
+    ]
   }
 }
