@@ -326,7 +326,7 @@ class MapGenerator {
                 if (tileType === 'grass') {
                     wallsNeeded++;
                 } else if (tileType !== 'water') {
-                    // Can't form complete boundary (home or already blocked)
+                    // Cannot form complete boundary - home tile or existing wall blocks it
                     wallsNeeded = Infinity;
                     break;
                 }
@@ -352,6 +352,8 @@ class MapGenerator {
 
     /**
      * Find all paths from home to any edge (limited search for performance)
+     * Limits to 10 paths to balance accuracy with performance - typically sufficient
+     * to identify key choke points without excessive computation on large maps
      * @private
      * @param {Array} map - The map to search
      * @param {number} startRow - Starting row

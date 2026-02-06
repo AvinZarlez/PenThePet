@@ -21,7 +21,7 @@ class Grid {
      * Uses MapGenerator to ensure valid maps with paths to edge
      * @param {string} dateString - Optional date string for seeded generation
      * @param {number} maxWalls - Maximum number of walls available (default: 9)
-     * @returns {Object} Object with map and goal, or null if generation fails
+     * @returns {Object|null} Object with {map: Array, goal: number} or null if generation fails
      */
     generate(dateString = null, maxWalls = 9) {
         // Note: dateString is accepted but not currently used for seeding
