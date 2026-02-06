@@ -52,6 +52,7 @@ class MILPSolver {
     
     /**
      * Find the best wall placement using a search algorithm
+     * Goal: MAXIMIZE the penned area with available walls
      * @private
      */
     static _findBestWallPlacement(map, maxWalls, homeRow, homeCol) {
@@ -67,44 +68,75 @@ class MILPSolver {
             };
         }
         
-        let bestSolution = null;
-        let bestArea = Infinity;
-        
-        // Strategy 1: Try to create tight enclosures around home
-        // Start with immediate neighbors of home, then expand outward
-        const enclosures = this._generateEnclosureCandidates(map, homeRow, homeCol, maxWalls);
-        
-        for (const enclosure of enclosures) {
-            const testMap = map.map(row => [...row]);
-            const walls = [];
-            
-            // Place walls for this enclosure
-            for (const [row, col] of enclosure) {
-                if (testMap[row][col] === 1) {
-                    testMap[row][col] = 5;
-                    walls.push([row, col]);
-                }
-            }
-            
-            // Check if this pens the home
-            if (this._isPenned(testMap, homeRow, homeCol)) {
-                const area = this._calculatePennedArea(testMap, homeRow, homeCol);
-                if (area < bestArea && walls.length <= maxWalls) {
-                    bestArea = area;
-                    bestSolution = walls;
+        // Get all grass tiles
+        const grassTiles = [];
+        for (let i = 0; i < verticalTiles; i++) {
+            for (let j = 0; j < horizontalTiles; j++) {
+                if (map[i][j] === 1) {
+                    grassTiles.push([i, j]);
                 }
             }
         }
         
-        // Strategy 2: Use BFS to find shortest paths to edge, then block them
-        // Try blocking combinations of these critical paths
-        if (bestArea > 5) { // Only if we haven't found a very small solution
-            const criticalCells = this._findCriticalPathCells(map, homeRow, homeCol);
-            const pathSolution = this._findBestPathBlocking(map, criticalCells, maxWalls, homeRow, homeCol);
+        // For maps where we can reasonably check all combinations, use brute force
+        // Estimate total combinations
+        const estimatedCombinations = this._estimateCombinations(grassTiles.length, maxWalls);
+        const useExhaustive = estimatedCombinations <= 500000; // Up to 500k combinations (should run in ~1 second)
+        
+        if (useExhaustive) {
+            return this._exhaustiveSearch(map, maxWalls, homeRow, homeCol, grassTiles);
+        } else {
+            return this._heuristicSearch(map, maxWalls, homeRow, homeCol);
+        }
+    }
+    
+    /**
+     * Estimate total combinations to check
+     * @private
+     */
+    static _estimateCombinations(n, maxK) {
+        let total = 0;
+        for (let k = 1; k <= Math.min(maxK, n); k++) {
+            // Approximate C(n, k)
+            let comb = 1;
+            for (let i = 0; i < k; i++) {
+                comb = comb * (n - i) / (i + 1);
+            }
+            total += comb;
+            if (total > 200000) break; // Early exit if already too large
+        }
+        return total;
+    }
+    
+    /**
+     * Exhaustive search for small/medium maps
+     * @private
+     */
+    static _exhaustiveSearch(map, maxWalls, homeRow, homeCol, grassTiles) {
+        const verticalTiles = map.length;
+        const horizontalTiles = map[0].length;
+        
+        let bestSolution = null;
+        let bestArea = 0;
+        
+        // Try all combinations from 1 to maxWalls
+        for (let numWalls = 1; numWalls <= Math.min(maxWalls, grassTiles.length); numWalls++) {
+            const combinations = [];
+            this._generateAllCombinations(grassTiles, numWalls, 0, [], combinations);
             
-            if (pathSolution && pathSolution.area < bestArea) {
-                bestArea = pathSolution.area;
-                bestSolution = pathSolution.walls;
+            for (const wallPositions of combinations) {
+                const testMap = map.map(row => [...row]);
+                for (const [row, col] of wallPositions) {
+                    testMap[row][col] = 5;
+                }
+                
+                if (this._isPenned(testMap, homeRow, homeCol)) {
+                    const area = this._calculatePennedArea(testMap, homeRow, homeCol);
+                    if (area > bestArea) {
+                        bestArea = area;
+                        bestSolution = wallPositions;
+                    }
+                }
             }
         }
         
@@ -112,7 +144,110 @@ class MILPSolver {
             return null;
         }
         
-        // Convert wall list to 2D array
+        const wallArray = Array(verticalTiles).fill(null).map(() => Array(horizontalTiles).fill(0));
+        for (const [row, col] of bestSolution) {
+            wallArray[row][col] = 1;
+        }
+        
+        return { walls: wallArray, goalArea: bestArea };
+    }
+    
+    /**
+     * Generate all combinations of size k from array
+     * @private
+     */
+    static _generateAllCombinations(array, k, start, current, result) {
+        if (current.length === k) {
+            result.push([...current]);
+            return;
+        }
+        
+        for (let i = start; i < array.length; i++) {
+            current.push(array[i]);
+            this._generateAllCombinations(array, k, i + 1, current, result);
+            current.pop();
+        }
+    }
+    
+    /**
+     * Heuristic search for larger maps
+     * @private
+     */
+    static _heuristicSearch(map, maxWalls, homeRow, homeCol) {
+        const verticalTiles = map.length;
+        const horizontalTiles = map[0].length;
+        
+        let bestSolution = null;
+        let bestArea = 0;
+        
+        // Get all grass tiles with metrics
+        const grassTiles = [];
+        for (let i = 0; i < verticalTiles; i++) {
+            for (let j = 0; j < horizontalTiles; j++) {
+                if (map[i][j] === 1) {
+                    const distToEdge = Math.min(
+                        i, verticalTiles - 1 - i,
+                        j, horizontalTiles - 1 - j
+                    );
+                    const distFromHome = Math.abs(i - homeRow) + Math.abs(j - homeCol);
+                    grassTiles.push({ row: i, col: j, distToEdge, distFromHome });
+                }
+            }
+        }
+        
+        // Try multiple strategies
+        const attempts = 500;
+        
+        for (let attempt = 0; attempt < attempts; attempt++) {
+            const testMap = map.map(row => [...row]);
+            const walls = [];
+            
+            // Create candidate list with different sorting strategies
+            let candidates = [...grassTiles];
+            
+            if (attempt % 4 === 0) {
+                // Strategy 1: Prioritize edges
+                candidates.sort((a, b) => a.distToEdge - b.distToEdge);
+            } else if (attempt % 4 === 1) {
+                // Strategy 2: Prioritize distance from home
+                candidates.sort((a, b) => b.distFromHome - a.distFromHome);
+            } else if (attempt % 4 === 2) {
+                // Strategy 3: Balanced
+                candidates.sort((a, b) => (a.distToEdge - a.distFromHome / 2) - (b.distToEdge - b.distFromHome / 2));
+            } else {
+                // Strategy 4: Random with bias
+                for (let i = 0; i < candidates.length; i++) {
+                    const range = Math.min(10, candidates.length - i);
+                    const j = i + Math.floor(Math.random() * range);
+                    [candidates[i], candidates[j]] = [candidates[j], candidates[i]];
+                }
+            }
+            
+            // Place walls
+            for (const candidate of candidates) {
+                if (walls.length >= maxWalls) break;
+                
+                const { row, col } = candidate;
+                if (testMap[row][col] !== 1) continue;
+                
+                testMap[row][col] = 5;
+                walls.push([row, col]);
+                
+                if (this._isPenned(testMap, homeRow, homeCol)) {
+                    const area = this._calculatePennedArea(testMap, homeRow, homeCol);
+                    if (area > bestArea) {
+                        bestArea = area;
+                        bestSolution = [...walls];
+                    }
+                    break;
+                }
+            }
+        }
+        
+        if (bestSolution === null) {
+            return null;
+        }
+        
         const wallArray = Array(verticalTiles).fill(null).map(() => Array(horizontalTiles).fill(0));
         for (const [row, col] of bestSolution) {
             wallArray[row][col] = 1;
@@ -280,7 +415,7 @@ class MILPSolver {
      */
     static _findBestPathBlocking(map, criticalCells, maxWalls, homeRow, homeCol) {
         let bestSolution = null;
-        let bestArea = Infinity;
+        let bestArea = 0; // Start with 0 to find MAXIMUM
         
         // Try different combinations of blocking critical cells
         const attempts = Math.min(100, Math.pow(2, Math.min(criticalCells.length, 7)));
@@ -304,7 +439,7 @@ class MILPSolver {
                     
                     if (this._isPenned(testMap, homeRow, homeCol)) {
                         const area = this._calculatePennedArea(testMap, homeRow, homeCol);
-                        if (area < bestArea) {
+                        if (area > bestArea) { // MAXIMIZE area!
                             bestArea = area;
                             bestSolution = [...walls];
                         }

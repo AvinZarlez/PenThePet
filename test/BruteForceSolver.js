@@ -49,7 +49,7 @@ class BruteForceSolver {
         console.log(`Brute force solver: ${grassTiles.length} grass tiles, max ${maxWalls} walls`);
         
         let bestSolution = null;
-        let bestArea = Infinity;
+        let bestArea = 0; // Start with 0 to find MAXIMUM
         let combinationsChecked = 0;
         
         // Generate all combinations of wall placements
@@ -68,7 +68,7 @@ class BruteForceSolver {
             // Check if penned
             if (this._isPenned(testMap, homeRow, homeCol)) {
                 const area = this._calculatePennedArea(testMap, homeRow, homeCol);
-                if (area < bestArea) {
+                if (area > bestArea) { // MAXIMIZE area, not minimize!
                     bestArea = area;
                     bestSolution = wallPositions;
                 }
