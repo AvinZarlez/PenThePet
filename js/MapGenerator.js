@@ -5,10 +5,15 @@
  * when no walls are placed. Uses BFS pathfinding to validate connectivity.
  */
 
-// For Node.js environment
-if (typeof MILPSolver === 'undefined' && typeof require !== 'undefined') {
-    var MILPSolver = require('./MILPSolver.js');
-}
+// For Node.js environment - import MILPSolver if not in browser
+(function() {
+    if (typeof MILPSolver === 'undefined' && typeof require !== 'undefined') {
+        // In Node.js, MILPSolver needs to be loaded
+        if (typeof global !== 'undefined') {
+            global.MILPSolver = require('./MILPSolver.js');
+        }
+    }
+})();
 
 class MapGenerator {
     /**
