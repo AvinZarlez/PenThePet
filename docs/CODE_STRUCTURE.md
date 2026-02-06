@@ -26,10 +26,11 @@ PenThePet/
 │   ├── MapGenerator.js     # Map generation and validation logic
 │   ├── Grid.js             # Grid data structure and operations
 │   ├── Game.js             # Main game controller and interaction logic
+│   ├── Menu.js             # Menu system (level selector, options, etc.)
 │   └── main.js             # Application entry point and initialization
 ├── scripts/
 │   └── generate-maps.js    # CLI script for batch map generation with metadata
-├── test/                   # Test suite (240 tests, 77% coverage)
+├── test/                   # Test suite (262 tests, coverage TBD)
 │   ├── *.test.js           # Unit tests for each module
 │   ├── BruteForceSolver.js # Exhaustive solver for test verification
 │   └── utility scripts     # Map generation and validation utilities
@@ -38,7 +39,7 @@ PenThePet/
 │   ├── ARCHITECTURE.md     # Design decisions
 │   ├── TESTING.md          # Testing guide
 │   ├── DEVELOPMENT.md      # Developer guide
-│   ├── MAP_GENERATION.md   # Algorithm details
+│   ├── MAP_GENERATION.MD   # Algorithm details
 │   └── AGENT_GUIDELINES.md # AI agent requirements
 └── maps.json               # Generated maps with metadata (dayNumber, mapName, etc.)
 ```
@@ -46,12 +47,26 @@ PenThePet/
 ## 🎯 File Purposes
 
 ### `index.html`
-The main entry point for the game. Contains only the HTML structure and references to external CSS and JavaScript files. Keep this minimal.
+The main entry point for the game. Contains the HTML structure:
+- **Header**: Title, subtitle, and menu button (top-right corner)
+- **Map Info Display**: Shows Day number, map name, and date
+- **Legend**: Explains tile types
+- **Controls**: Reset button, wall counter, area size, penned status
+- **Grid**: Main game area
+- **Options**: Pet type and hint mode selectors
+- **Debug Tools**: Optional debug section (hidden by default)
+- **Modals**: Menu, level selector, instructions, about, and options popups
+
+**Keep this minimal** - structure only, no inline styles or scripts.
 
 ### `css/styles.css`
 Contains all visual styling for the game:
 - Global styles (body, container)
 - Typography (headings, text)
+- Map info display (Day, name, date)
+- Menu button (top-right circular button)
+- Modal system (overlay, content, animations)
+- Level list (selectable level items)
 - Info panel and legend
 - Button styles
 - Grid and cell styles
@@ -148,11 +163,39 @@ Main game controller that ties everything together:
 
 **To add gameplay features:** Extend this class with new methods for character movement, scoring, etc.
 
+### `js/Menu.js`
+Menu system for navigation and settings:
+- **Modal Management**: Opens/closes menu, level selector, instructions, about, and options modals
+- **Level Selector**: Displays available maps from maps.json, allows switching between different day's puzzles
+- **Options Management**: Syncs pet type, hint mode, and debug mode settings
+- **Cookie Persistence**: Saves and loads all user preferences
+  - `selectedPet`: User's chosen animal emoji
+  - `hintMode`: Selected hint mode (disabled, checkOptimal, revealTarget)
+  - `debugMode`: Debug tools visibility toggle
+  - `currentLevel`: Currently selected level date
+- **Debug Tools**: Controls visibility of debug section based on user preference
+- **Level Loading**: Dynamically loads selected map from maps.json into the game
+
+**Cookie Storage Details:**
+- All cookies expire after 1 year
+- Path: `/` (accessible across entire site)
+- SameSite: `Lax` (secure against CSRF)
+- Values are URL-encoded for safety
+
+**To add new menu options:** Extend the Menu class with new modal types and cookie storage.
+
 ### `js/main.js`
 Application entry point:
 - Initializes the game when the page loads
-- Sets up global event handlers (if needed)
-- Future: Can add game state persistence, analytics, etc.
+- Loads maps from maps.json
+- Checks for saved level selection in cookies
+- Displays map information (day, name, date)
+- Initializes Menu system
+- Applies saved settings (hint mode, debug mode)
+- Sets up global event handlers
+- Exports game and menu to window for console debugging
+
+**To customize initialization:** Modify the `initGame()` function.
 
 ### `scripts/generate-maps.js`
 CLI script for batch map generation:
