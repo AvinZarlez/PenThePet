@@ -1,0 +1,13 @@
+nohup: ignoring input
+127.0.0.1 - - [06/Feb/2026 18:17:51] "GET / HTTP/1.1" 200 -
+127.0.0.1 - - [06/Feb/2026 18:17:51] "GET /css/styles.css HTTP/1.1" 200 -
+127.0.0.1 - - [06/Feb/2026 18:17:51] "GET /js/constants.js HTTP/1.1" 200 -
+127.0.0.1 - - [06/Feb/2026 18:17:51] "GET /js/config.js HTTP/1.1" 200 -
+127.0.0.1 - - [06/Feb/2026 18:17:51] "GET /js/tileTypes.js HTTP/1.1" 200 -
+127.0.0.1 - - [06/Feb/2026 18:17:51] "GET /js/PathfindingUtils.js HTTP/1.1" 200 -
+127.0.0.1 - - [06/Feb/2026 18:17:51] "GET /js/MILPSolver.js HTTP/1.1" 200 -
+127.0.0.1 - - [06/Feb/2026 18:17:51] "GET /js/MapGenerator.js HTTP/1.1" 200 -
+127.0.0.1 - - [06/Feb/2026 18:17:51] "GET /js/Grid.js HTTP/1.1" 200 -
+127.0.0.1 - - [06/Feb/2026 18:17:51] "GET /js/Game.js HTTP/1.1" 200 -
+127.0.0.1 - - [06/Feb/2026 18:17:51] "GET /js/main.js HTTP/1.1" 200 -
+127.0.0.1 - - [06/Feb/2026 18:17:51] "GET /maps.json HTTP/1.1" 200 -

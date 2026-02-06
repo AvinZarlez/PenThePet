@@ -47,6 +47,37 @@ h1 {
     font-size: 0.9em;
 }
 
+/* ========== Map Info Display ========== */
+.map-info {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 20px;
+    padding: 15px;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border-radius: 10px;
+    flex-wrap: wrap;
+}
+
+.map-info-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.map-info-label {
+    color: #666;
+    font-weight: bold;
+    font-size: 0.9em;
+}
+
+.map-info-value {
+    color: #667eea;
+    font-weight: bold;
+    font-size: 1em;
+}
+
 /* ========== Info Panel ========== */
 .info {
     background: #f0f0f0;

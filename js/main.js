@@ -100,6 +100,31 @@ function getCookie(name) {
 }
 
 /**
+ * Update the map info display with day number, map name, and date
+ * @param {Object} mapData - The map data object
+ */
+function updateMapInfo(mapData) {
+    const mapDayElement = document.getElementById('mapDay');
+    const mapNameElement = document.getElementById('mapName');
+    const mapDateElement = document.getElementById('mapDate');
+    
+    if (mapDayElement && mapData.dayNumber !== undefined) {
+        mapDayElement.textContent = mapData.dayNumber;
+    }
+    
+    if (mapNameElement && mapData.mapName) {
+        mapNameElement.textContent = mapData.mapName;
+    }
+    
+    if (mapDateElement && mapData.date) {
+        // Format date to be more readable (e.g., "Feb 6, 2026")
+        const dateObj = new Date(mapData.date + 'T00:00:00');
+        const options = { year: 'numeric', month: 'short', day: 'numeric' };
+        mapDateElement.textContent = dateObj.toLocaleDateString('en-US', options);
+    }
+}
+
+/**
  * Initialize the game application
  */
 async function initGame() {
@@ -116,6 +141,9 @@ async function initGame() {
     // Create game with the map size from database
     game = new Game(mapData.size);
     
+    // Update map info display
+    updateMapInfo(mapData);
+    
     // Load the map into the grid using proper encapsulation
     game.grid.loadMap(mapData.map);
     game.grid.saveInitialState();
@@ -126,6 +154,13 @@ async function initGame() {
         game.goalAreaSize = mapData.goal;
     } else {
         console.warn('Map does not have a goal value, using default');
+    }
+    
+    // Set maxWalls from database (or use default if not present)
+    if (mapData.maxWalls !== undefined) {
+        game.maxWalls = mapData.maxWalls;
+    } else {
+        console.warn('Map does not have a maxWalls value, using default');
     }
     
     game.render();
