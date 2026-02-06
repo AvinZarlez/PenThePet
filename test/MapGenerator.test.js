@@ -367,13 +367,15 @@ describe('MapGenerator', () => {
         });
     });
 
-    // Note: _generateGuaranteedValidMap() has been removed per requirements
-    // Map generation now throws error instead of falling back to guaranteed valid maps
-    describe.skip('_generateGuaranteedValidMap() - REMOVED', () => {
-        test('Method removed - map generation now throws error instead of falling back', () => {
-            // These tests are skipped because the method has been removed
-        });
-    });
+    /*
+     * Note: _generateGuaranteedValidMap() method has been removed (2026-02-06)
+     * 
+     * Reason: Per requirements, map generation must not fall back to simplified
+     * map generation methods. If generation fails, it should throw an error
+     * instead of falling back to a guaranteed valid but potentially lower-quality map.
+     * 
+     * This ensures all generated maps meet the same quality standards consistently.
+     */
 
     describe('calculateGoal()', () => {
         test('should convert string map to numeric format', () => {

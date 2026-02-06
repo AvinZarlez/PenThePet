@@ -187,6 +187,9 @@ class MapGenerator {
 
     /**
      * Convert map from string format to numeric format
+     * @param {Array} stringMap - 2D array of tile type strings
+     * @returns {Array} 2D array of numeric tile values (0=water, 1=grass, 2=home, 5=wall)
+     * @private
      */
     _mapToNumeric(stringMap) {
         return stringMap.map(row => row.map(tile => {
