@@ -123,7 +123,7 @@ See [CODE_STRUCTURE.md](docs/CODE_STRUCTURE.md) for detailed architecture.
 
 The project has comprehensive test coverage with Jest:
 
-- **262 tests** across 8 test suites (including Menu tests)
+- **262 tests** across 8 test suites
 - Unit tests for all core modules
 - Integration tests for map generation
 - Cookie persistence tests
