@@ -328,7 +328,7 @@ class Game {
             const yellowTileCount = isPenned ? this.getAccessibleTiles().size : 0;
             
             if (isPenned) {
-                statusElement.innerHTML = `<span class="submit-label">Submit</span><span class="submit-check">✓</span>`;
+                statusElement.innerHTML = '<span class="submit-label">Submit</span><span class="submit-check">✓</span>';
                 statusElement.className = 'penned-status penned';
                 statusElement.title = `Pet is penned! Click to view area (${yellowTileCount} tiles)`;
                 statusElement.disabled = false;
@@ -648,18 +648,18 @@ class Game {
 
         // Calculate new position based on arrow key
         switch (event.key) {
-            case 'ArrowUp':
-                newRow = Math.max(0, currentRow - 1);
-                break;
-            case 'ArrowDown':
-                newRow = Math.min(this.grid.size - 1, currentRow + 1);
-                break;
-            case 'ArrowLeft':
-                newCol = Math.max(0, currentCol - 1);
-                break;
-            case 'ArrowRight':
-                newCol = Math.min(this.grid.size - 1, currentCol + 1);
-                break;
+        case 'ArrowUp':
+            newRow = Math.max(0, currentRow - 1);
+            break;
+        case 'ArrowDown':
+            newRow = Math.min(this.grid.size - 1, currentRow + 1);
+            break;
+        case 'ArrowLeft':
+            newCol = Math.max(0, currentCol - 1);
+            break;
+        case 'ArrowRight':
+            newCol = Math.min(this.grid.size - 1, currentCol + 1);
+            break;
         }
 
         // Focus the new cell
@@ -679,28 +679,28 @@ class Game {
         const mid = Math.floor(size / 2);
 
         switch (arrowKey) {
-            case 'ArrowUp':
-                // Highlight top edge, middle column
-                row = 0;
-                col = mid;
-                break;
-            case 'ArrowDown':
-                // Highlight bottom edge, middle column
-                row = size - 1;
-                col = mid;
-                break;
-            case 'ArrowLeft':
-                // Highlight left edge, middle row
-                row = mid;
-                col = 0;
-                break;
-            case 'ArrowRight':
-                // Highlight right edge, middle row
-                row = mid;
-                col = size - 1;
-                break;
-            default:
-                return;
+        case 'ArrowUp':
+            // Highlight top edge, middle column
+            row = 0;
+            col = mid;
+            break;
+        case 'ArrowDown':
+            // Highlight bottom edge, middle column
+            row = size - 1;
+            col = mid;
+            break;
+        case 'ArrowLeft':
+            // Highlight left edge, middle row
+            row = mid;
+            col = 0;
+            break;
+        case 'ArrowRight':
+            // Highlight right edge, middle row
+            row = mid;
+            col = size - 1;
+            break;
+        default:
+            return;
         }
 
         const cell = this.gridElement.querySelector(`[data-row="${row}"][data-col="${col}"]`);

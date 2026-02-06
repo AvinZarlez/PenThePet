@@ -258,11 +258,11 @@ class MILPSolverDebug {
 
 // Test map
 const stringMap = [
-    ["water", "grass", "grass", "grass", "grass"],
-    ["grass", "water", "water", "grass", "grass"],
-    ["water", "grass", "home", "grass", "grass"],
-    ["grass", "water", "grass", "grass", "water"],
-    ["grass", "water", "grass", "grass", "grass"]
+    ['water', 'grass', 'grass', 'grass', 'grass'],
+    ['grass', 'water', 'water', 'grass', 'grass'],
+    ['water', 'grass', 'home', 'grass', 'grass'],
+    ['grass', 'water', 'grass', 'grass', 'water'],
+    ['grass', 'water', 'grass', 'grass', 'grass']
 ];
 
 const numericMap = stringMap.map(row => row.map(tile => {

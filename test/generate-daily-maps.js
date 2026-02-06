@@ -59,7 +59,7 @@ async function generateDailyMap(size, maxWalls, date) {
             console.warn('  Brute force could not find solution, using MILP result');
         }
     } else {
-        console.log(`  Using MILP solver (map too large for brute force)`);
+        console.log('  Using MILP solver (map too large for brute force)');
         console.log(`  Goal: ${result.goal}, Walls: ${optimalWallCount} (not verified)`);
     }
     

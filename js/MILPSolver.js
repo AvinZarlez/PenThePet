@@ -88,7 +88,7 @@ class MILPSolver {
             }
         }
         
-        console.log(`Using ONLY exhaustive search for accuracy (user requirement)`);
+        console.log('Using ONLY exhaustive search for accuracy (user requirement)');
         return this._exhaustiveSearch(map, maxWalls, homeRow, homeCol, grassTiles);
     }
     
