@@ -1,236 +1,128 @@
 # PenThePet Test Suite
 
-This directory contains test infrastructure for validating map generation and goal calculation.
+This directory contains tests and utilities for the PenThePet game.
 
-## Overview
+## 📚 Full Testing Documentation
 
-PenThePet generates puzzle maps where the goal is to achieve the **MAXIMUM** penned area by placing walls optimally. The test suite ensures this calculation is correct.
+**For comprehensive testing information, see [../docs/TESTING.md](../docs/TESTING.md)**
 
-## Files
+That document includes:
+- Complete testing guide
+- Test coverage details
+- How to write tests
+- Debugging strategies
+- CI/CD information
 
-### Solvers
+## Quick Reference
 
-**BruteForceSolver.js**
-- Exhaustively checks ALL possible wall placements
-- Always finds the true optimal solution (ground truth)
-- Slow but 100% accurate
-- Used only for testing and verification
+### Running Tests
 
-**MILPSolver.js** (in `js/`)
-- Production solver used in the game
-- Uses exhaustive search for small maps (<200k combinations)
-- Uses heuristic search for larger maps
-- Goal: Find MAXIMUM penned area
-
-### Test Scripts
-
-**test-map-generation.js**
-- Comprehensive testing of map generation
-- Compares MILPSolver vs BruteForceSolver
-- Generates test maps and saves to `test-maps-db.json`
-- Reports accuracy statistics
-
-Usage:
 ```bash
-node test-map-generation.js
+# Run all tests with coverage
+npm test
+
+# Run in watch mode
+npm run test:watch
+
+# Run specific test file
+npx jest test/Grid.test.js
+
+# Check linting
+npm run lint
 ```
 
-Output:
-- `test-maps-db.json` - Maps with verified optimal solutions
-- `test-results.json` - Detailed comparison results
-- `test-summary.txt` - Human-readable summary
+### Test Files
 
-**validate-generation.js**
-- Quick validation of map generation
-- Checks goals are reasonable (not ultra-small)
-- Verifies generation completes in reasonable time
-- Exit code 0 = pass, 1 = fail
+**Unit Tests** (`.test.js`):
+- `constants.test.js` - CONSTANTS validation (38 tests)
+- `wordList.test.js` - Word list testing (24 tests)
+- `PathfindingUtils.test.js` - Pathfinding algorithms (35 tests)
+- `Grid.test.js` - Grid class functionality (45 tests)
+- `MILPSolver.test.js` - Wall placement solver (40 tests)
+- `MapGenerator.test.js` - Map generation (27 tests)
+- `generate-maps.test.js` - Map generation script (31 tests)
 
-Usage:
-```bash
-node validate-generation.js
-```
+**Total: 240 tests, 77% coverage**
 
-**generate-daily-maps.js**
-- Generates maps for `maps.json` (daily levels)
-- Uses brute force verification for small maps (≤7x7)
-- Creates production-ready maps with verified goals
+### Utility Files
 
-Usage:
-```bash
-node generate-daily-maps.js
-```
+**Test Utilities:**
+- `setup.js` - Jest configuration and global mocks
+- `BruteForceSolver.js` - Exhaustive solver for test verification
 
-### Debug Scripts
+**Map Generation Utilities:**
+- `generate-daily-maps.js` - Generate maps for maps.json with verification
+- `test-map-generation.js` - Compare solvers and generate test data
+- `validate-generation.js` - Quick smoke test for generation
 
-**debug-solver.js**, **debug-candidates.js**, **debug-solver-detailed.js**, **debug-direct-comparison.js**
-- Various debugging utilities
-- Used during development to trace solver behavior
-- Can be deleted or kept for future debugging
+## Test Coverage
 
-## Map Format
+Current coverage (77% overall):
 
-### String Format (display/storage)
+| File | Coverage | Status |
+|------|----------|--------|
+| Grid.js | 100% | ✅ Excellent |
+| PathfindingUtils.js | 97.82% | ✅ Excellent |
+| MapGenerator.js | 95.53% | ✅ Excellent |
+| constants.js | 100% | ✅ Excellent |
+| wordList.js | 100% | ✅ Excellent |
+| MILPSolver.js | 60.71% | ⚠️ Complex algorithm |
+
+**Note:** Some files (Game.js, main.js, config.js, tileTypes.js) are tested manually in browser and excluded from coverage.
+
+## Adding Tests
+
+When adding tests:
+
+1. Create or open appropriate `.test.js` file
+2. Use describe/test pattern with clear names
+3. Follow Arrange-Act-Assert pattern
+4. Test edge cases and error conditions
+5. Keep tests independent and fast
+6. Document test purpose with comments
+
+Example:
 ```javascript
-{
-  "2026-02-06": {
-    "size": 7,
-    "goal": 12,  // Maximum achievable penned area
-    "map": [
-      ["grass", "water", "grass", ...],
-      ["water", "grass", "home", ...],
-      ...
-    ]
-  }
-}
+describe('MyFunction', () => {
+    test('should handle basic case', () => {
+        // Arrange
+        const input = { ... };
+        
+        // Act
+        const result = myFunction(input);
+        
+        // Assert
+        expect(result).toBe(expected);
+    });
+});
 ```
 
-### Numeric Format (internal)
-- `0` = water (blocking)
-- `1` = grass (walkable)
-- `2` = home (pet starting position)
-- `5` = wall (player-placed, blocking)
-
-## Understanding Goals
-
-The **goal** is the MAXIMUM penned area achievable with optimal wall placement:
-
-- **Penned**: Pet cannot reach any edge of the map
-- **Area**: Number of tiles the pet can access (flood fill from home)
-- **Optimal**: Best possible result with available walls
-
-Example: If goal is 10, the player should be able to pen the pet in an area of 10 tiles by placing walls strategically.
-
-### Reasonable Goal Ranges
-
-- 5x5 map: 3-10 tiles
-- 7x7 map: 5-16 tiles
-- 9x9 map: 8-25 tiles
-
-Goals of 1-2 are suspicious (likely a bug).
-
-## Test Map Database
-
-**test-maps-db.json**
-- Contains maps with **verified** optimal solutions
-- Each map has been solved by brute force
-- Used as ground truth for testing
-
-Format:
-```json
-[
-  {
-    "size": 5,
-    "maxWalls": 5,
-    "goal": 8,  // Verified by brute force
-    "optimalWallCount": 4,  // Walls needed to achieve goal
-    "map": [...]
-  }
-]
-```
-
-## Common Tasks
-
-### Verify MILP Solver Accuracy
-
-```bash
-node test-map-generation.js
-```
-
-Check the summary at the end:
-- `Correct: X (Y%)` - Percentage of maps where MILP matched brute force
-- Goal: 100% for small maps, >90% for larger maps
-
-### Generate New Test Maps
-
-```bash
-# Edit test-map-generation.js to configure:
-# - mapSizes: [5, 6, 7]
-# - wallCounts: [5, 7, 9]
-# - mapsPerConfig: 2
-
-node test-map-generation.js
-```
-
-### Create Daily Levels
-
-```bash
-# Edit generate-daily-maps.js dates array:
-# { date: '2026-02-07', size: 9, walls: 9 }
-
-node generate-daily-maps.js
-```
-
-This updates `maps.json` with new verified maps.
+## Map Generation Testing
 
 ### Quick Validation
 
 ```bash
-node validate-generation.js
+# Quick smoke test
+node test/validate-generation.js
 ```
 
-Returns exit code 0 if all tests pass.
+### Comprehensive Testing
 
-## Troubleshooting
+```bash
+# Generate test maps and compare solvers
+node test/test-map-generation.js
+```
 
-### "Failed to find solution" messages
+### Generate Daily Maps
 
-Normal during map generation. The generator tries multiple random maps until it finds one that can be penned with available walls.
+```bash
+# Generate maps for the game with verification
+node test/generate-daily-maps.js
+```
 
-### MILP solver accuracy < 100%
+## More Information
 
-For small maps (≤7x7), MILP should match brute force exactly.
-For larger maps, some variance is expected due to heuristic search.
-
-If accuracy is very low (<50%), check:
-1. Is the solver maximizing instead of minimizing?
-2. Is the threshold for exhaustive search set correctly?
-3. Are the heuristics working properly?
-
-### Map generation takes too long
-
-- Reduce map size
-- Reduce maxWalls
-- Check if MILPSolver is using heuristic search for large maps
-- Exhaustive search threshold should be ~200k combinations
-
-### Goals are always 1 or very small
-
-This was the original bug! Goals should be MAXIMIZED, not minimized.
-
-Check:
-- `bestArea` starts at 0 (not Infinity)
-- Comparison is `area > bestArea` (not `area < bestArea`)
-
-## Development Notes
-
-### Critical Learnings
-
-1. **Goal = MAXIMUM area**, not minimum
-   - Game objective: Create largest possible pen
-   - Fixed by changing minimize logic to maximize
-
-2. **Two solver modes**:
-   - Exhaustive: <200k combinations, 100% accurate
-   - Heuristic: >200k combinations, fast but may miss optimal
-
-3. **Test process**:
-   - Generate → Brute force (ground truth) → Save
-   - Later: Generate → MILP → Compare to ground truth
-
-4. **Brute force verification**:
-   - Only feasible for maps ≤7x7 with ≤7 walls
-   - Larger maps use MILP without verification
-
-### Future Improvements
-
-- Implement better heuristics for large maps
-- Add more diverse test cases
-- Create visual diff tool for comparing solutions
-- Add performance benchmarks
-
-## References
-
-- Main game code: `js/Grid.js`, `js/MapGenerator.js`, `js/MILPSolver.js`
-- Agent instructions: `.github/copilot-instructions.md`
-- Game documentation: `CODE_STRUCTURE.md`
+- **Full testing guide**: [../docs/TESTING.md](../docs/TESTING.md)
+- **Code structure**: [../docs/CODE_STRUCTURE.md](../docs/CODE_STRUCTURE.md)
+- **Map generation algorithm**: [../docs/MAP_GENERATION.md](../docs/MAP_GENERATION.md)
+- **Development workflow**: [../docs/DEVELOPMENT.md](../docs/DEVELOPMENT.md)
