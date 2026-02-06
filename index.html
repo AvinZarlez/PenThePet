@@ -10,8 +10,26 @@
 </head>
 <body>
     <div class="container">
+        <!-- Menu Button -->
+        <button id="menuBtn" class="menu-btn" aria-label="Open menu">☰</button>
+        
         <h1><span aria-hidden="true">🐾</span> Pen the Pet</h1>
         <p class="subtitle">A Logic Puzzle Game About Fencing</p>
+        
+        <div class="map-info">
+            <div class="map-info-item">
+                <span class="map-info-label">Day:</span>
+                <span id="mapDay" class="map-info-value">1</span>
+            </div>
+            <div class="map-info-item">
+                <span class="map-info-label">Map:</span>
+                <span id="mapName" class="map-info-value">Canyon</span>
+            </div>
+            <div class="map-info-item">
+                <span class="map-info-label">Date:</span>
+                <span id="mapDate" class="map-info-value">2026-02-06</span>
+            </div>
+        </div>
 
         <div class="info">
             <h3>How to Play:</h3>
@@ -116,7 +134,134 @@
         </footer>
     </div>
 
-    <!-- Game Scripts (Load in order: constants -> config -> types -> pathfinding -> solver -> mapgen -> grid -> game -> main) -->
+    <!-- Menu Modal -->
+    <div id="menuModal" class="modal">
+        <div class="modal-content menu-modal-content">
+            <button class="modal-close" aria-label="Close menu">&times;</button>
+            <h2>Menu</h2>
+            <div class="menu-options">
+                <button id="levelSelectorBtn" class="menu-option-btn">📅 Level Selector</button>
+                <button id="instructionsBtn" class="menu-option-btn">📖 Instructions</button>
+                <button id="aboutBtn" class="menu-option-btn">ℹ️ About</button>
+                <button id="optionsBtn" class="menu-option-btn">⚙️ Options</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Level Selector Modal -->
+    <div id="levelSelectorModal" class="modal">
+        <div class="modal-content">
+            <button class="modal-close" aria-label="Close level selector">&times;</button>
+            <h2>Level Selector</h2>
+            <p class="modal-description">Choose a previous day's puzzle to play</p>
+            <div id="levelList" class="level-list">
+                <!-- Levels will be populated dynamically -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Instructions Modal -->
+    <div id="instructionsModal" class="modal">
+        <div class="modal-content">
+            <button class="modal-close" aria-label="Close instructions">&times;</button>
+            <h2>How to Play</h2>
+            <div class="modal-section">
+                <h3>Objective</h3>
+                <p>Build walls to pen in your pet! The goal is to create the largest enclosed area possible.</p>
+            </div>
+            <div class="modal-section">
+                <h3>Gameplay</h3>
+                <ul>
+                    <li>Click on grass tiles (green) to place walls</li>
+                    <li>Water tiles (blue) are blocked and cannot be clicked</li>
+                    <li>Click on walls to remove them</li>
+                    <li>Your pet starts at the home tile (🏠)</li>
+                    <li>You have a limited number of walls to place</li>
+                </ul>
+            </div>
+            <div class="modal-section">
+                <h3>Scoring</h3>
+                <ul>
+                    <li>The game checks if your pet can escape (reach the edge)</li>
+                    <li>When penned (✓), your area size shows the enclosed space</li>
+                    <li>Try to match or exceed the goal area size</li>
+                    <li>Larger penned areas score better!</li>
+                </ul>
+            </div>
+            <div class="modal-section">
+                <h3>Hint System</h3>
+                <ul>
+                    <li><strong>Disabled:</strong> No hints, full challenge mode</li>
+                    <li><strong>Check Optimal:</strong> Area size turns yellow/green based on goal</li>
+                    <li><strong>Reveal Target:</strong> Shows your current area vs. goal (e.g., "8 / 11")</li>
+                </ul>
+            </div>
+            <div class="modal-section">
+                <h3>Options</h3>
+                <p>You can customize your pet type and hint level in the Options menu. Your preferences are saved automatically.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- About Modal -->
+    <div id="aboutModal" class="modal">
+        <div class="modal-content">
+            <button class="modal-close" aria-label="Close about">&times;</button>
+            <h2>About Pen the Pet</h2>
+            <div class="modal-section">
+                <p><strong>Pen the Pet</strong> is a logic puzzle game where you fence in your pet by strategically placing walls to create the largest enclosed area.</p>
+                <p>Each day features a new hand-crafted puzzle with a unique layout and challenge.</p>
+            </div>
+            <div class="modal-section">
+                <h3>Features</h3>
+                <ul>
+                    <li>Daily puzzles with unique maps</li>
+                    <li>Multiple pet types to choose from</li>
+                    <li>Configurable hint system</li>
+                    <li>Accessible keyboard navigation</li>
+                    <li>Mobile-friendly design</li>
+                </ul>
+            </div>
+            <div class="modal-section">
+                <h3>Credits</h3>
+                <p>Built with HTML, CSS, and vanilla JavaScript - no frameworks needed!</p>
+                <p>© 2026 Pen the Pet</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Options Modal -->
+    <div id="optionsModal" class="modal">
+        <div class="modal-content">
+            <button class="modal-close" aria-label="Close options">&times;</button>
+            <h2>Options</h2>
+            <div class="modal-section">
+                <div class="option-item">
+                    <label for="modalPetType">Pet Type:</label>
+                    <select id="modalPetType">
+                        <!-- Options populated dynamically from CONSTANTS.ANIMAL_OPTIONS -->
+                    </select>
+                </div>
+                <div class="option-item">
+                    <label for="modalHintMode">Hint:</label>
+                    <select id="modalHintMode">
+                        <option value="disabled">Disabled</option>
+                        <option value="checkOptimal">Check Optimal</option>
+                        <option value="revealTarget">Reveal Target</option>
+                    </select>
+                </div>
+                <div class="option-item">
+                    <label for="debugModeCheckbox">
+                        <input type="checkbox" id="debugModeCheckbox">
+                        Enable Debug Mode
+                    </label>
+                    <small class="option-help">Shows debug tools at the bottom of the page</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Game Scripts (Load in order: constants -> config -> types -> pathfinding -> solver -> mapgen -> grid -> game -> menu -> main) -->
     <script src="js/constants.js"></script>
     <script src="js/config.js"></script>
     <script src="js/tileTypes.js"></script>
@@ -125,6 +270,7 @@
     <script src="js/MapGenerator.js"></script>
     <script src="js/Grid.js"></script>
     <script src="js/Game.js"></script>
+    <script src="js/Menu.js"></script>
     <script src="js/main.js"></script>
 </body>
 </html>

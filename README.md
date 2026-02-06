@@ -11,9 +11,22 @@ The game is deployed on GitHub Pages: [Play PenThePet](https://avinzarlez.github
 ## 📖 About
 
 PenThePet is a daily logic puzzle game where you place walls to create the largest possible fenced area for your pet. Each day features a new puzzle with:
-- Unique randomly-generated maps with grass and water tiles
+- Unique maps with grass and water tiles
 - A home tile where your pet starts
 - A goal to achieve the maximum penned area with optimal wall placement
+- Daily map with a unique name and day number
+
+## ✨ Features
+
+- **Daily Puzzles**: New map every day with unique challenges
+- **Level Selector**: Play previous days' puzzles at any time
+- **Customizable**: Choose your favorite pet from 26 animals
+- **Hint System**: Three modes (disabled, check optimal, reveal target)
+- **Instructions**: Comprehensive in-game guide
+- **Settings Persistence**: All preferences saved in cookies
+- **Debug Mode**: Optional developer tools
+- **Keyboard Navigation**: Full accessibility support
+- **Mobile-Friendly**: Responsive design for all screen sizes
 
 ## 🚀 Quick Start
 
@@ -95,10 +108,11 @@ PenThePet/
 │   ├── MapGenerator.js     # Map generation and validation
 │   ├── Grid.js             # Grid data structure
 │   ├── Game.js             # Game controller
+│   ├── Menu.js             # Menu system (NEW)
 │   └── main.js             # Application entry point
 ├── scripts/
 │   └── generate-maps.js    # CLI for generating daily maps
-├── test/                   # Test suite (240 tests, 77% coverage)
+├── test/                   # Test suite (262 tests)
 ├── docs/                   # Documentation
 └── maps.json               # Daily puzzle maps
 
@@ -109,11 +123,10 @@ See [CODE_STRUCTURE.md](docs/CODE_STRUCTURE.md) for detailed architecture.
 
 The project has comprehensive test coverage with Jest:
 
-- **240 tests** across 7 test suites (3 slow tests skipped by default)
-- **77% code coverage** (statements, branches, functions)
+- **262 tests** across 8 test suites
 - Unit tests for all core modules
 - Integration tests for map generation
-- **Fast test suite**: <6 seconds for full run
+- Cookie persistence tests
 
 Run tests with `npm test`. See [TESTING.md](docs/TESTING.md) for details.
 

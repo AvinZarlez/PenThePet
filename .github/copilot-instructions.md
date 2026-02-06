@@ -42,6 +42,7 @@ PenThePet/
 │   ├── MapGenerator.js     # Map generation and validation
 │   ├── Grid.js             # Grid data structure and generation logic
 │   ├── Game.js             # Main game controller and interaction logic
+│   ├── Menu.js             # Menu system (level selector, options, etc.)
 │   └── main.js             # Application entry point and initialization
 ├── scripts/
 │   └── generate-maps.js    # CLI for batch map generation
@@ -52,7 +53,7 @@ PenThePet/
 │   ├── MAP_GENERATION.md   # Algorithm details
 │   ├── TESTING.md          # Testing guide
 │   └── DEVELOPMENT.md      # Developer guide
-└── test/                   # Test suite (240 tests, 77% coverage)
+└── test/                   # Test suite (262 tests)
 ```
 
 **See [docs/CODE_STRUCTURE.md](../docs/CODE_STRUCTURE.md) for detailed architecture.**
@@ -61,22 +62,28 @@ PenThePet/
 
 ### File Responsibilities
 
-- **index.html**: Keep minimal with only HTML structure and script/stylesheet references
-- **css/styles.css**: Contains all visual styling, organized by component
+- **index.html**: HTML structure with map info display, menu button, modals (level selector, instructions, about, options)
+- **css/styles.css**: All visual styling including menu system, modals, and map info display
 - **js/config.js**: Centralized configuration for easy customization (grid settings, tile distribution, cell visuals, gameplay options)
 - **js/tileTypes.js**: Defines tile types with properties (name, displayName, description, clickable, cssClass, gradient, ariaLabel)
 - **js/Grid.js**: Grid class managing data structure, generation, state management, and tile operations
 - **js/Game.js**: Game class controlling initialization, rendering, user interactions, UI updates, and state transitions
-- **js/main.js**: Application entry point that initializes the game on page load
+- **js/Menu.js**: Menu system managing modals, level selection, options, and cookie-based settings persistence
+- **js/main.js**: Application entry point that initializes game and menu, loads maps from maps.json
 
 ### Script Loading Order
 
 Scripts must be loaded in this specific order (already configured in index.html):
-1. config.js
-2. tileTypes.js
-3. Grid.js
-4. Game.js
-5. main.js
+1. constants.js
+2. config.js
+3. tileTypes.js
+4. PathfindingUtils.js
+5. MILPSolver.js
+6. MapGenerator.js
+7. Grid.js
+8. Game.js
+9. Menu.js
+10. main.js
 
 ## Coding Standards
 

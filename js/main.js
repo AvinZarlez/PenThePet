@@ -6,6 +6,7 @@
  */
 
 let game;
+let menu;
 
 /**
  * Get today's date in ISO format (YYYY-MM-DD)
@@ -17,7 +18,7 @@ function getTodayDate() {
 }
 
 /**
- * Load today's map from the database
+ * Load today's map from the database or from cookie selection
  * @returns {Promise<Object|null>} Map data or null if not found
  */
 async function loadTodayMap() {
@@ -28,8 +29,15 @@ async function loadTodayMap() {
         }
         
         const mapsDb = await response.json();
-        const today = getTodayDate();
         
+        // Check if user has a selected level in cookie
+        const savedLevel = getCookie('currentLevel');
+        if (savedLevel && mapsDb[savedLevel]) {
+            return mapsDb[savedLevel];
+        }
+        
+        // Otherwise use today's map
+        const today = getTodayDate();
         return mapsDb[today] || null;
     } catch (error) {
         console.error('Error loading maps database:', error);
@@ -100,6 +108,39 @@ function getCookie(name) {
 }
 
 /**
+ * Format date string for display
+ * @param {string} dateStr - ISO date string (YYYY-MM-DD)
+ * @returns {string} Formatted date (e.g., "Feb 6, 2026")
+ */
+function formatDate(dateStr) {
+    const date = new Date(dateStr + 'T00:00:00');
+    const options = { year: 'numeric', month: 'short', day: 'numeric' };
+    return date.toLocaleDateString('en-US', options);
+}
+
+/**
+ * Update the map info display with day number, map name, and date
+ * @param {Object} mapData - The map data object
+ */
+function updateMapInfo(mapData) {
+    const mapDayElement = document.getElementById('mapDay');
+    const mapNameElement = document.getElementById('mapName');
+    const mapDateElement = document.getElementById('mapDate');
+    
+    if (mapDayElement && mapData.dayNumber !== undefined) {
+        mapDayElement.textContent = mapData.dayNumber;
+    }
+    
+    if (mapNameElement && mapData.mapName) {
+        mapNameElement.textContent = mapData.mapName;
+    }
+    
+    if (mapDateElement && mapData.date) {
+        mapDateElement.textContent = formatDate(mapData.date);
+    }
+}
+
+/**
  * Initialize the game application
  */
 async function initGame() {
@@ -116,6 +157,15 @@ async function initGame() {
     // Create game with the map size from database
     game = new Game(mapData.size);
     
+    // Load hint mode from cookie if available
+    const savedHintMode = getCookie('hintMode');
+    if (savedHintMode) {
+        game.hintMode = savedHintMode;
+    }
+    
+    // Update map info display
+    updateMapInfo(mapData);
+    
     // Load the map into the grid using proper encapsulation
     game.grid.loadMap(mapData.map);
     game.grid.saveInitialState();
@@ -128,9 +178,30 @@ async function initGame() {
         console.warn('Map does not have a goal value, using default');
     }
     
+    // Set maxWalls from database (or use default if not present)
+    if (mapData.maxWalls !== undefined) {
+        game.maxWalls = mapData.maxWalls;
+    } else {
+        console.warn('Map does not have a maxWalls value, using default');
+    }
+    
     game.render();
     game.updateWallCounter();
     game.updateAreaSizeDisplay();
+    
+    // Initialize menu system
+    // eslint-disable-next-line no-undef
+    menu = new Menu(game);
+    
+    // Load debug mode setting and apply visibility
+    const debugMode = getCookie('debugMode') === 'true';
+    menu.updateDebugToolsVisibility(debugMode);
+    
+    // Set hint mode selector value
+    const hintModeSelect = document.getElementById('hintMode');
+    if (hintModeSelect && savedHintMode) {
+        hintModeSelect.value = savedHintMode;
+    }
     
     // Set grid size input attributes from config
     const gridSizeInput = document.getElementById('gridSize');
@@ -151,6 +222,7 @@ async function initGame() {
     // Export for potential use in console or testing
     if (typeof window !== 'undefined') {
         window.game = game;
+        window.menu = menu;
     }
 }
 
