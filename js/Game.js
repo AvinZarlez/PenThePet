@@ -58,6 +58,7 @@ class Game {
         this.render();
         this.updateWallCounter();
         this.updateAreaSizeDisplay();
+        this.updateLegend();  // Update legend to show loaded pet emoji
     }
 
     /**
