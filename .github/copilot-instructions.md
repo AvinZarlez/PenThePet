@@ -1,5 +1,26 @@
 # Copilot Instructions for PenThePet
 
+## 📚 Documentation Structure
+
+**IMPORTANT: Before making ANY changes, read the relevant documentation:**
+
+### Required Reading for ALL Changes
+- **[docs/AGENT_GUIDELINES.md](../docs/AGENT_GUIDELINES.md)** - ⚠️ START HERE - Critical requirements for AI agents
+- **[docs/CODE_STRUCTURE.md](../docs/CODE_STRUCTURE.md)** - How the code is organized
+- **[docs/ARCHITECTURE.md](../docs/ARCHITECTURE.md)** - Why design decisions were made
+
+### Read for Specific Changes
+- **Map generation** → [docs/MAP_GENERATION.md](../docs/MAP_GENERATION.md)
+- **Adding tests** → [docs/TESTING.md](../docs/TESTING.md)  
+- **Development setup** → [docs/DEVELOPMENT.md](../docs/DEVELOPMENT.md)
+
+### Post-Change Requirements
+✅ Run tests: `npm test`  
+✅ Update documentation in sync with code changes  
+✅ Follow patterns in [docs/AGENT_GUIDELINES.md](../docs/AGENT_GUIDELINES.md)
+
+---
+
 ## Project Overview
 
 PenThePet is a browser-based logic puzzle game about fencing in your pet. The game is built with vanilla HTML, CSS, and JavaScript without any frameworks or build tools. It's designed to run directly in the browser and can be hosted on GitHub Pages.
@@ -8,17 +29,33 @@ PenThePet is a browser-based logic puzzle game about fencing in your pet. The ga
 
 ```
 PenThePet/
-├── index.html          # Main HTML file (minimal, references external files)
+├── index.html              # Main HTML file (minimal, references external files)
 ├── css/
-│   └── styles.css      # All game styling
+│   └── styles.css          # All game styling
 ├── js/
-│   ├── config.js       # Game configuration and settings
-│   ├── tileTypes.js    # Tile type definitions and properties
-│   ├── Grid.js         # Grid data structure and generation logic
-│   ├── Game.js         # Main game controller and interaction logic
-│   └── main.js         # Application entry point and initialization
-└── CODE_STRUCTURE.md   # Developer documentation
+│   ├── constants.js        # Configuration constants
+│   ├── config.js           # Game configuration and settings
+│   ├── tileTypes.js        # Tile type definitions and properties
+│   ├── wordList.js         # Random words for map naming
+│   ├── PathfindingUtils.js # Shared pathfinding algorithms
+│   ├── MILPSolver.js       # Optimal wall placement solver
+│   ├── MapGenerator.js     # Map generation and validation
+│   ├── Grid.js             # Grid data structure and generation logic
+│   ├── Game.js             # Main game controller and interaction logic
+│   └── main.js             # Application entry point and initialization
+├── scripts/
+│   └── generate-maps.js    # CLI for batch map generation
+├── docs/                   # 📚 Comprehensive documentation
+│   ├── AGENT_GUIDELINES.md # ⚠️ CRITICAL - Read this first!
+│   ├── CODE_STRUCTURE.md   # Code organization
+│   ├── ARCHITECTURE.md     # Design decisions
+│   ├── MAP_GENERATION.md   # Algorithm details
+│   ├── TESTING.md          # Testing guide
+│   └── DEVELOPMENT.md      # Developer guide
+└── test/                   # Test suite (240 tests, 77% coverage)
 ```
+
+**See [docs/CODE_STRUCTURE.md](../docs/CODE_STRUCTURE.md) for detailed architecture.**
 
 ## Code Architecture
 
@@ -363,3 +400,96 @@ When asked to work on map generation:
 5. **Verify in browser**: Always test in actual game to ensure goals work correctly
 
 Remember: The goal should be a challenging but achievable target, representing the MAXIMUM area the player can create with optimal wall placement.
+
+---
+
+## 📋 Documentation Maintenance Requirements
+
+**CRITICAL: All agents MUST maintain documentation in sync with code changes.**
+
+### Documentation Update Checklist
+
+After making ANY code changes, you MUST verify and update:
+
+#### Always Update
+- [ ] **JSDoc comments** - In any modified .js files
+- [ ] **Inline comments** - For any complex logic added/changed
+
+#### Update When Applicable
+
+| If You Changed... | Update These Docs... |
+|------------------|---------------------|
+| Architecture/file organization | `docs/CODE_STRUCTURE.md` |
+| Design decisions/approach | `docs/ARCHITECTURE.md` |
+| Map generation logic | `docs/MAP_GENERATION.md` |
+| Test structure/coverage | `docs/TESTING.md` |
+| Development workflow | `docs/DEVELOPMENT.md` |
+| User-facing features | `README.md` |
+| Agent requirements | `docs/AGENT_GUIDELINES.md` |
+| Critical patterns | This file (`.github/copilot-instructions.md`) |
+
+### How to Verify Documentation Is Current
+
+Before committing:
+```bash
+# 1. Review what documentation might be affected
+git status  # Check which files changed
+
+# 2. For each changed file, ask:
+#    - Does this change affect how the code works?
+#    - Is this change documented in relevant docs?
+#    - Would a new developer understand this change?
+
+# 3. Update documentation accordingly
+
+# 4. Review the diff to ensure docs are accurate
+git diff docs/
+```
+
+### Documentation Quality Standards
+
+✅ **Good documentation:**
+- Matches current code behavior
+- Includes examples where helpful
+- Explains WHY, not just WHAT
+- Uses consistent formatting
+- Links to related documentation
+
+❌ **Bad documentation:**
+- Describes old/removed features
+- Missing for new features
+- No examples for complex features
+- Inconsistent with code
+- Broken links
+
+### Special Documentation Rules
+
+1. **Never delete documentation without replacing it**
+   - If removing a feature, document WHY it was removed
+   - Update architecture docs to reflect new design
+
+2. **Always update version numbers**
+   - Update README.md test counts if tests added/removed
+   - Update coverage numbers if significant change
+
+3. **Keep copilot-instructions.md in sync**
+   - This file should reflect current critical patterns
+   - Update if fundamental architecture changes
+   - Add new sections for new major features
+
+4. **Test documentation changes**
+   - Read through updated docs
+   - Follow any instructions to verify they work
+   - Check all links are valid
+
+### Documentation as First-Class Code
+
+Treat documentation with the same care as code:
+- Review it like you review code
+- Test that instructions work
+- Keep it DRY (Don't Repeat Yourself)
+- Refactor when it gets messy
+- Version control it properly
+
+**Remember:** Documentation is how future you, future developers, and future AI agents will understand your changes. Keep it excellent!
+
