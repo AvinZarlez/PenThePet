@@ -144,20 +144,22 @@ describe('Grid', () => {
             });
         });
 
-        test('should accept custom maxWalls parameter', () => {
-            jest.spyOn(MILPSolver, 'solveMap').mockReturnValue({
+        test('should accept useTimeLimit parameter for debug generation', () => {
+            jest.spyOn(MILPSolver, 'solveMapWithTimeLimit').mockReturnValue({
                 walls: Array(7).fill(null).map(() => Array(7).fill(0)),
-                goalArea: 10,
-                optimalWallCount: 5
+                goalArea: 15,
+                optimalWallCount: 7
             });
 
             const grid = new Grid(7);
-            const result = grid.generate(null, 5);
+            const result = grid.generate(null, true); // true = use time limit
 
             expect(result).not.toBeNull();
-            expect(result.maxWalls).toBeLessThanOrEqual(5);
+            expect(result.goal).toBe(15);
+            expect(result.maxWalls).toBe(7);
+            expect(MILPSolver.solveMapWithTimeLimit).toHaveBeenCalled();
             
-            MILPSolver.solveMap.mockRestore();
+            MILPSolver.solveMapWithTimeLimit.mockRestore();
         });
     });
 

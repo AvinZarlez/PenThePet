@@ -530,6 +530,127 @@ class MILPSolver {
     }
     
     /**
+     * Find optimal solution with incremental wall search (for debug maps)
+     * Searches incrementally from 1 wall up, stopping when:
+     * 1. A solution is found AND checking next level would take too long
+     * 2. OR we reach a reasonable limit
+     * @param {Array} map - 2D array where 0=water, 1=grass, 2=home
+     * @param {number} timeLimit - Max milliseconds to spend (default 3000)
+     * @returns {Object} Object with {walls, goalArea, optimalWallCount} or null
+     */
+    static solveMapWithTimeLimit(map, timeLimit = 3000) {
+        const verticalTiles = map.length;
+        const horizontalTiles = map[0].length;
+        
+        // Find home position
+        let homeRow = -1, homeCol = -1;
+        for (let i = 0; i < verticalTiles; i++) {
+            for (let j = 0; j < horizontalTiles; j++) {
+                if (map[i][j] === 2) {
+                    homeRow = i;
+                    homeCol = j;
+                    break;
+                }
+            }
+            if (homeRow >= 0) break;
+        }
+        
+        if (homeRow < 0 || homeCol < 0) {
+            console.error('No home position found in map');
+            return null;
+        }
+        
+        // Check if already penned
+        if (PathfindingUtils.isPenned(map, homeRow, homeCol)) {
+            const area = PathfindingUtils.calculatePennedArea(map, homeRow, homeCol);
+            return { 
+                walls: Array(verticalTiles).fill(null).map(() => Array(horizontalTiles).fill(0)),
+                goalArea: area,
+                optimalWallCount: 0
+            };
+        }
+        
+        // Get all grass tiles
+        const grassTiles = [];
+        for (let i = 0; i < verticalTiles; i++) {
+            for (let j = 0; j < horizontalTiles; j++) {
+                if (map[i][j] === 1) {
+                    grassTiles.push([i, j]);
+                }
+            }
+        }
+        
+        console.log(`Time-limited search (max ${timeLimit}ms) for best solution`);
+        const startTime = Date.now();
+        let bestSolution = null;
+        let bestArea = 0;
+        let bestWallCount = 0;
+        
+        // Try increasing numbers of walls until we run out of time or find a good solution
+        for (let wallCount = 1; wallCount <= Math.min(grassTiles.length, 20); wallCount++) {
+            // Estimate combinations for this wallCount
+            let combinations = 1;
+            for (let i = 0; i < wallCount; i++) {
+                combinations = combinations * (grassTiles.length - i) / (i + 1);
+            }
+            
+            // Estimate time based on ~100 combinations per ms (conservative for larger maps)
+            const estimatedTime = combinations / 100;
+            const elapsed = Date.now() - startTime;
+            
+            // Skip this level entirely if estimated time would exceed limit
+            if (elapsed + estimatedTime > timeLimit) {
+                console.log(`  Skipping ${wallCount}+ walls (would exceed time limit)`);
+                break;
+            }
+            
+            // If we already have a solution and next level would take too long, stop
+            if (bestSolution !== null && combinations > 200000) {
+                console.log(`  Stopping at ${wallCount-1} walls (next level has too many combinations)`);
+                break;
+            }
+            
+            console.log(`  Checking combinations with ${wallCount} walls...`);
+            const checkStart = Date.now();
+            
+            // Check all combinations for this wall count
+            const result = this._checkCombinationsIteratively(map, grassTiles, wallCount, homeRow, homeCol, bestArea);
+            
+            const checkElapsed = Date.now() - checkStart;
+            console.log(`    Checked ${result.checked} combinations in ${checkElapsed}ms, best area: ${result.area}`);
+            
+            if (result.area > bestArea) {
+                bestArea = result.area;
+                bestSolution = result.solution;
+                bestWallCount = wallCount;
+            }
+            
+            // If we've spent too much time, stop
+            if (Date.now() - startTime > timeLimit) {
+                console.log(`  Time limit reached after ${wallCount} wall levels`);
+                break;
+            }
+        }
+        
+        if (bestSolution === null) {
+            console.error('Failed to find solution within time limit');
+            return null;
+        }
+        
+        // Convert solution to wall array
+        const wallArray = Array(verticalTiles).fill(null).map(() => Array(horizontalTiles).fill(0));
+        for (const [row, col] of bestSolution) {
+            wallArray[row][col] = 1;
+        }
+        
+        return {
+            walls: wallArray,
+            goalArea: bestArea,
+            optimalWallCount: bestWallCount
+        };
+    }
+    
+    /**
      * Check if home is penned in (delegated to shared PathfindingUtils)
      * @deprecated Use PathfindingUtils.isPenned() directly
      * @private
