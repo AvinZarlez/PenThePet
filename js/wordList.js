@@ -24,18 +24,18 @@ const WORD_LIST = [
     
     // Abstract concepts
     "Harmony", "Serenity", "Tranquil", "Mystic", "Enigma", "Paradox", "Infinity", "Eternity",
-    "Cascade", "Horizon", "Zenith", "Vertex", "Apex", "Pinnacle", "Summit", "Peak",
+    "Rapids", "Horizon", "Zenith", "Vertex", "Apex", "Pinnacle", "Summit", "Peak",
     
     // Elements/Materials
     "Crystal", "Diamond", "Steel", "Bronze", "Iron", "Gold", "Copper", "Marble",
-    "Granite", "Quartz", "Obsidian", "Coral", "Amber", "Slate", "Flint", "Stone",
+    "Granite", "Quartz", "Obsidian", "Coral", "Beryl", "Slate", "Flint", "Stone",
     
     // Time periods
     "Dawn", "Dusk", "Noon", "Midnight", "Autumn", "Spring", "Summer", "Winter",
     "Solstice", "Equinox", "Century", "Millennium", "Era", "Epoch", "Eon", "Age",
     
     // Directions/Positions
-    "North", "South", "East", "West", "Zenith", "Nadir", "Frontier", "Border",
+    "North", "South", "East", "West", "Polar", "Nadir", "Frontier", "Border",
     "Edge", "Core", "Center", "Periphery", "Margin", "Boundary", "Limit", "Threshold",
     
     // Mythological/Fantasy
@@ -43,23 +43,41 @@ const WORD_LIST = [
     "Asgard", "Sanctuary", "Haven", "Refuge", "Citadel", "Fortress", "Bastion", "Stronghold",
     
     // Natural phenomena
-    "Cascade", "Torrent", "Geyser", "Volcano", "Quake", "Avalanche", "Blizzard", "Hurricane",
-    "Typhoon", "Cyclone", "Tempest", "Maelstrom", "Whirlpool", "Rapids", "Falls", "Cataract",
+    "Vortex", "Torrent", "Geyser", "Volcano", "Quake", "Avalanche", "Blizzard", "Hurricane",
+    "Typhoon", "Cyclone", "Tempest", "Maelstrom", "Whirlpool", "Cascade", "Falls", "Cataract",
     
     // Terrain features
     "Plateau", "Mesa", "Butte", "Ridge", "Gorge", "Ravine", "Cliff", "Crag",
-    "Summit", "Crest", "Knoll", "Hillock", "Mound", "Dune", "Outcrop", "Bluff"
+    "Spire", "Crest", "Knoll", "Hillock", "Mound", "Dune", "Outcrop", "Bluff"
 ];
 
 /**
  * Get a random word from the word list
+ * Uses Math.random() to select a random word from WORD_LIST array.
  * @returns {string} A random English word
  */
 function getRandomWord() {
     return WORD_LIST[Math.floor(Math.random() * WORD_LIST.length)];
 }
 
+/**
+ * Get the total number of words in the word list
+ * @returns {number} The total count of words in WORD_LIST
+ */
+function getWordCount() {
+    return WORD_LIST.length;
+}
+
+/**
+ * Get a word at a specific index from the word list
+ * @param {number} index - The index of the word to retrieve
+ * @returns {string|undefined} The word at the specified index, or undefined if out of bounds
+ */
+function getWordAtIndex(index) {
+    return WORD_LIST[index];
+}
+
 // Export for use in other modules
 if (typeof module !== 'undefined' && module.exports) {
-    module.exports = { WORD_LIST, getRandomWord };
+    module.exports = { WORD_LIST, getRandomWord, getWordCount, getWordAtIndex };
 }
