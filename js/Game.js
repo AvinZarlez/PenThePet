@@ -399,6 +399,22 @@ class Game {
     }
 
     /**
+     * Generate a debug map with specified size (not saved, for testing)
+     * @param {number} size - The size of the debug map
+     */
+    generateDebugMap(size) {
+        if (size >= CONFIG.grid.minSize && size <= CONFIG.grid.maxSize) {
+            this.grid = new Grid(size);
+            this.grid.generate();
+            this.grid.saveInitialState();
+            this.wallCount = 0;
+            this.render();
+            this.updateWallCounter();
+            this.updateAreaSizeDisplay();
+        }
+    }
+
+    /**
      * Attach event listeners to UI controls
      */
     attachEventListeners() {
@@ -406,9 +422,11 @@ class Game {
         const resetBtn = document.getElementById('resetBtn');
         const statusBtn = document.getElementById('pennedStatus');
         const exitViewerBtn = document.getElementById('exitViewer');
-        const gridSizeInput = document.getElementById('gridSize');
         const petTypeSelect = document.getElementById('petType');
         const hintModeSelect = document.getElementById('hintMode');
+        const debugGridSizeSlider = document.getElementById('debugGridSize');
+        const debugSizeValue = document.getElementById('debugSizeValue');
+        const generateDebugMapBtn = document.getElementById('generateDebugMapBtn');
         
         if (newGameBtn) {
             newGameBtn.addEventListener('click', () => this.newGame());
@@ -426,15 +444,6 @@ class Game {
             exitViewerBtn.addEventListener('click', () => this.hideRoamingArea());
         }
 
-        if (gridSizeInput) {
-            gridSizeInput.addEventListener('change', (e) => {
-                const newSize = parseInt(e.target.value);
-                this.changeGridSize(newSize);
-                // Update input to reflect actual grid size (in case validation failed)
-                e.target.value = this.grid.size;
-            });
-        }
-
         if (petTypeSelect) {
             petTypeSelect.addEventListener('change', (e) => {
                 this.petEmoji = e.target.value;
@@ -450,6 +459,20 @@ class Game {
                 // - checkOptimal: Show if current solution meets optimal criteria
                 // - revealTarget: Show the target/optimal area size or solution
                 this.render();
+            });
+        }
+
+        // Debug Tools event listeners
+        if (debugGridSizeSlider && debugSizeValue) {
+            debugGridSizeSlider.addEventListener('input', (e) => {
+                debugSizeValue.textContent = e.target.value;
+            });
+        }
+
+        if (generateDebugMapBtn && debugGridSizeSlider) {
+            generateDebugMapBtn.addEventListener('click', () => {
+                const debugSize = parseInt(debugGridSizeSlider.value);
+                this.generateDebugMap(debugSize);
             });
         }
 

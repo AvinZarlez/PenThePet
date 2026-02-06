@@ -10,7 +10,8 @@ PenThePet/
 ├── js/
 │   ├── config.js       # Game configuration and settings
 │   ├── tileTypes.js    # Tile type definitions and properties
-│   ├── Grid.js         # Grid data structure and generation logic
+│   ├── MapGenerator.js # Map generation and validation logic
+│   ├── Grid.js         # Grid data structure and operations
 │   ├── Game.js         # Main game controller and interaction logic
 │   └── main.js         # Application entry point and initialization
 └── CODE_STRUCTURE.md   # This file (developer documentation)
@@ -50,14 +51,24 @@ Defines all tile types and their properties:
 
 **To add new tile types:** Add a new entry to the TILE_TYPES object with all required properties.
 
+### `js/MapGenerator.js`
+Handles map generation and validation:
+- Generates random maps with tile distribution based on config
+- Validates maps to ensure there's a path from home to edge
+- Uses BFS (Breadth-First Search) pathfinding for validation
+- Creates guaranteed valid maps if random generation fails
+
+**To modify map generation:** Edit the generation or validation logic in this class.
+
 ### `js/Grid.js`
 Manages the grid data structure:
-- Grid generation with random tile placement
+- Grid initialization and tile storage
+- Uses MapGenerator for creating valid maps
 - Grid state management (current state, initial state)
 - Tile getter/setter methods
 - Grid resizing functionality
 
-**To modify grid behavior:** Edit methods in this class to change how the grid generates or updates.
+**To modify grid behavior:** Edit methods in this class to change how the grid stores or manages tiles.
 
 ### `js/Game.js`
 Main game controller that ties everything together:
