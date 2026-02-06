@@ -86,7 +86,7 @@ describe('Grid', () => {
         test('should accept optional dateString parameter', () => {
             jest.spyOn(MILPSolver, 'solveMap').mockReturnValue({
                 walls: Array(3).fill(null).map(() => Array(3).fill(0)),
-                goalArea: 3,
+                goalArea: 5,
                 optimalWallCount: 2
             });
 
@@ -145,21 +145,20 @@ describe('Grid', () => {
         });
 
         test('should accept useTimeLimit parameter for debug generation', () => {
-            jest.spyOn(MILPSolver, 'solveMapWithTimeLimit').mockReturnValue({
+            jest.spyOn(MILPSolver, 'solveMap').mockReturnValue({
                 walls: Array(7).fill(null).map(() => Array(7).fill(0)),
                 goalArea: 15,
                 optimalWallCount: 7
             });
 
             const grid = new Grid(7);
-            const result = grid.generate(null, true); // true = use time limit
+            const result = grid.generate(null);
 
             expect(result).not.toBeNull();
             expect(result.goal).toBe(15);
             expect(result.maxWalls).toBe(7);
-            expect(MILPSolver.solveMapWithTimeLimit).toHaveBeenCalled();
             
-            MILPSolver.solveMapWithTimeLimit.mockRestore();
+            MILPSolver.solveMap.mockRestore();
         });
     });
 

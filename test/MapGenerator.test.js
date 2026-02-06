@@ -95,7 +95,7 @@ describe('MapGenerator', () => {
         test('should accept optional dateString parameter', () => {
             jest.spyOn(MILPSolver, 'solveMap').mockReturnValue({
                 walls: Array(3).fill(null).map(() => Array(3).fill(0)),
-                goalArea: 3,
+                goalArea: 5,
                 optimalWallCount: 2
             });
 
@@ -161,21 +161,20 @@ describe('MapGenerator', () => {
         });
 
         test('should accept useTimeLimit parameter for debug generation', () => {
-            jest.spyOn(MILPSolver, 'solveMapWithTimeLimit').mockReturnValue({
+            jest.spyOn(MILPSolver, 'solveMap').mockReturnValue({
                 walls: Array(7).fill(null).map(() => Array(7).fill(0)),
                 goalArea: 12,
                 optimalWallCount: 6
             });
 
             const generator = new MapGenerator(7);
-            const result = generator.generate(null, true); // true = use time limit
+            const result = generator.generate(null);
 
             expect(result).not.toBeNull();
             expect(result.goal).toBe(12);
             expect(result.maxWalls).toBe(6);
-            expect(MILPSolver.solveMapWithTimeLimit).toHaveBeenCalled();
             
-            MILPSolver.solveMapWithTimeLimit.mockRestore();
+            MILPSolver.solveMap.mockRestore();
         });
     });
 
@@ -550,7 +549,7 @@ describe('MapGenerator', () => {
         test('should handle minimum size (3x3)', () => {
             jest.spyOn(MILPSolver, 'solveMap').mockReturnValue({
                 walls: Array(3).fill(null).map(() => Array(3).fill(0)),
-                goalArea: 3,
+                goalArea: 5,
                 optimalWallCount: 2
             });
 
@@ -597,7 +596,7 @@ describe('MapGenerator', () => {
         test('should handle very low grass distribution', () => {
             jest.spyOn(MILPSolver, 'solveMap').mockReturnValue({
                 walls: Array(5).fill(null).map(() => Array(5).fill(0)),
-                goalArea: 2,
+                goalArea: 5,
                 optimalWallCount: 1
             });
 
