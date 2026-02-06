@@ -9,14 +9,12 @@
  * Available under AGPL 3.0 license
  */
 
-// Import shared pathfinding utilities
-const PathfindingUtils = (function() {
-    if (typeof require !== 'undefined') {
-        return require('./PathfindingUtils.js');
-    } else if (typeof window !== 'undefined' && window.PathfindingUtils) {
-        return window.PathfindingUtils;
+// Import shared pathfinding utilities (only in Node.js environment)
+// In browser, PathfindingUtils is already loaded via script tag
+(function() {
+    if (typeof module !== 'undefined' && typeof require !== 'undefined' && typeof PathfindingUtils === 'undefined') {
+        global.PathfindingUtils = require('./PathfindingUtils.js');
     }
-    throw new Error('PathfindingUtils not found');
 })();
 
 class MILPSolver {
@@ -93,8 +91,8 @@ class MILPSolver {
         // Estimate total combinations
         const estimatedCombinations = this._estimateCombinations(grassTiles.length, maxWalls);
         // Use exhaustive search for accuracy (user prioritizes accuracy over speed)
-        // Allow up to ~5 million combinations (≈ ~15 seconds for 7x7 with 7 walls)
-        const useExhaustive = estimatedCombinations <= 5000000;
+        // Allow up to ~10 million combinations (≈ ~30 seconds for larger 7x7 maps)
+        const useExhaustive = estimatedCombinations <= 10000000;
         
         if (useExhaustive) {
             console.log(`Using exhaustive search (${estimatedCombinations.toLocaleString()} combinations)`);
@@ -118,7 +116,7 @@ class MILPSolver {
                 comb = comb * (n - i) / (i + 1);
             }
             total += comb;
-            if (total > 5000000) break; // Early exit if already too large
+            if (total > 10000000) break; // Early exit if already too large
         }
         return Math.floor(total);
     }

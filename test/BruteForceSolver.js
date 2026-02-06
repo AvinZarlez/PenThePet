@@ -7,10 +7,13 @@
  * This is intended for testing and validation, not production use.
  */
 
-// Import shared pathfinding utilities
-const PathfindingUtils = (typeof require !== 'undefined') 
-    ? require('../js/PathfindingUtils.js')
-    : window.PathfindingUtils;
+// Import shared pathfinding utilities (only in Node.js environment)
+// In browser, PathfindingUtils is already loaded via script tag
+(function() {
+    if (typeof module !== 'undefined' && typeof require !== 'undefined' && typeof PathfindingUtils === 'undefined') {
+        global.PathfindingUtils = require('../js/PathfindingUtils.js');
+    }
+})();
 
 class BruteForceSolver {
     /**

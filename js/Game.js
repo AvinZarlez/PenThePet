@@ -38,7 +38,7 @@ class Game {
      */
     init() {
         // Randomly pick wall count between 5 and 15
-        this.maxWalls = Math.floor(Math.random() * 11) + 5; // 5 to 15 inclusive
+        this.maxWalls = Math.floor(Math.random() * 11) + 5; // 5 to 15 inclusive (initial max)
         
         // Use today's date for consistent daily maps
         const today = new Date().toISOString().split('T')[0];
@@ -49,8 +49,11 @@ class Game {
             return;
         }
         
-        // Update goal from generation
+        // Update goal and maxWalls from generation (uses optimal wall count)
         this.goalAreaSize = result.goal;
+        if (result.maxWalls !== undefined) {
+            this.maxWalls = result.maxWalls;  // Use optimal wall count from generator
+        }
         
         this.grid.saveInitialState();
         this.wallCount = 0;
@@ -405,7 +408,7 @@ class Game {
      */
     newGame() {
         // Randomly pick wall count between 5 and 15
-        this.maxWalls = Math.floor(Math.random() * 11) + 5; // 5 to 15 inclusive
+        this.maxWalls = Math.floor(Math.random() * 11) + 5; // 5 to 15 inclusive (initial max)
         
         const result = this.grid.generate(null, this.maxWalls);
         
@@ -414,8 +417,11 @@ class Game {
             return;
         }
         
-        // Update goal from generation
+        // Update goal and maxWalls from generation (uses optimal wall count)
         this.goalAreaSize = result.goal;
+        if (result.maxWalls !== undefined) {
+            this.maxWalls = result.maxWalls;  // Use optimal wall count from generator
+        }
         
         this.grid.saveInitialState();
         this.wallCount = 0;
@@ -456,8 +462,11 @@ class Game {
                 return;
             }
             
-            // Update goal from generation
+            // Update goal and maxWalls from generation (uses optimal wall count)
             this.goalAreaSize = result.goal;
+            if (result.maxWalls !== undefined) {
+                this.maxWalls = result.maxWalls;  // Use optimal wall count from generator
+            }
             console.log(`Generated debug map with goal: ${result.goal}, maxWalls: ${this.maxWalls}`);
             
             this.grid.saveInitialState();

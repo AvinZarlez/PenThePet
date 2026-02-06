@@ -1,13 +1,36 @@
 {
   "2026-02-05": {
     "size": 9,
-    "goal": 10,
+    "goal": 20,
+    "maxWalls": 7,
     "map": [
       [
+        "water",
+        "water",
         "grass",
         "water",
         "grass",
         "grass",
+        "water",
+        "water",
+        "water"
+      ],
+      [
+        "grass",
+        "grass",
+        "grass",
+        "grass",
+        "grass",
+        "grass",
+        "water",
+        "grass",
+        "grass"
+      ],
+      [
+        "grass",
+        "grass",
+        "grass",
+        "water",
         "grass",
         "grass",
         "grass",
@@ -16,67 +39,34 @@
       ],
       [
         "water",
-        "water",
+        "grass",
+        "grass",
+        "grass",
         "grass",
         "water",
         "water",
-        "grass",
-        "grass",
-        "grass",
-        "water"
+        "water",
+        "grass"
       ],
       [
-        "grass",
         "water",
-        "grass",
-        "grass",
-        "grass",
         "water",
-        "grass",
-        "grass",
-        "water"
-      ],
-      [
-        "grass",
-        "grass",
         "water",
-        "grass",
-        "water",
-        "grass",
-        "grass",
-        "grass",
-        "water"
-      ],
-      [
-        "grass",
-        "grass",
-        "grass",
         "water",
         "home",
         "grass",
         "water",
-        "water",
-        "grass"
-      ],
-      [
         "grass",
-        "water",
-        "grass",
-        "grass",
-        "water",
-        "water",
-        "water",
-        "grass",
-        "grass"
+        "water"
       ],
       [
         "water",
-        "grass",
-        "grass",
-        "grass",
+        "water",
         "grass",
         "water",
         "grass",
+        "grass",
+        "water",
         "water",
         "grass"
       ],
@@ -85,40 +75,61 @@
         "grass",
         "grass",
         "grass",
+        "water",
+        "water",
+        "grass",
+        "grass",
+        "grass"
+      ],
+      [
+        "grass",
+        "grass",
+        "water",
+        "water",
+        "grass",
         "grass",
         "water",
         "grass",
-        "water",
         "grass"
       ],
       [
         "grass",
         "grass",
         "grass",
-        "grass",
-        "grass",
-        "grass",
         "water",
         "grass",
-        "grass"
+        "water",
+        "water",
+        "water",
+        "water"
       ]
     ]
   },
   "2026-02-06": {
     "size": 7,
-    "goal": 4,
+    "goal": 17,
+    "maxWalls": 5,
     "map": [
       [
         "water",
-        "grass",
         "water",
         "water",
-        "grass",
-        "grass",
-        "water"
+        "water",
+        "water",
+        "water",
+        "grass"
       ],
       [
         "grass",
+        "grass",
+        "water",
+        "grass",
+        "grass",
+        "water",
+        "grass"
+      ],
+      [
+        "water",
         "water",
         "grass",
         "grass",
@@ -130,27 +141,9 @@
         "grass",
         "grass",
         "grass",
-        "water",
-        "grass",
-        "grass",
-        "grass"
-      ],
-      [
-        "grass",
-        "grass",
-        "water",
         "home",
         "grass",
-        "water",
-        "water"
-      ],
-      [
         "grass",
-        "grass",
-        "water",
-        "water",
-        "water",
-        "water",
         "grass"
       ],
       [
@@ -166,9 +159,124 @@
         "grass",
         "grass",
         "grass",
+        "grass",
+        "water",
+        "grass",
+        "water"
+      ],
+      [
+        "grass",
+        "water",
+        "grass",
+        "grass",
+        "grass",
+        "water",
+        "water"
+      ]
+    ]
+  },
+  "2026-02-07": {
+    "size": 9,
+    "goal": 12,
+    "maxWalls": 9,
+    "map": [
+      [
+        "grass",
+        "grass",
+        "water",
+        "water",
+        "grass",
         "water",
         "water",
         "water",
+        "water"
+      ],
+      [
+        "water",
+        "water",
+        "grass",
+        "grass",
+        "water",
+        "grass",
+        "water",
+        "grass",
+        "grass"
+      ],
+      [
+        "grass",
+        "grass",
+        "grass",
+        "grass",
+        "grass",
+        "grass",
+        "grass",
+        "grass",
+        "water"
+      ],
+      [
+        "grass",
+        "water",
+        "grass",
+        "grass",
+        "water",
+        "grass",
+        "water",
+        "water",
+        "water"
+      ],
+      [
+        "grass",
+        "water",
+        "water",
+        "water",
+        "home",
+        "water",
+        "grass",
+        "water",
+        "grass"
+      ],
+      [
+        "grass",
+        "grass",
+        "grass",
+        "water",
+        "grass",
+        "grass",
+        "grass",
+        "grass",
+        "water"
+      ],
+      [
+        "water",
+        "water",
+        "grass",
+        "water",
+        "grass",
+        "grass",
+        "grass",
+        "water",
+        "grass"
+      ],
+      [
+        "water",
+        "grass",
+        "water",
+        "grass",
+        "water",
+        "grass",
+        "grass",
+        "grass",
+        "grass"
+      ],
+      [
+        "water",
+        "water",
+        "grass",
+        "grass",
+        "grass",
+        "water",
+        "grass",
+        "grass",
         "water"
       ]
     ]
