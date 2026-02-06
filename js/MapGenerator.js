@@ -45,8 +45,6 @@ class MapGenerator {
         // Keep trying until we get a valid map that meets quality standards
         let totalAttempts = 0;
         const maxTotalAttempts = 1000; // Safety limit to prevent infinite loops
-        const maxRandomRounds = 10; // Try random generation this many times before falling back
-        let randomRounds = 0;
         
         while (totalAttempts < maxTotalAttempts) {
             let attempts = 0;
@@ -83,43 +81,17 @@ class MapGenerator {
                 attempts++;
             }
             
-            randomRounds++;
-            
-            // Only fall back to guaranteed valid map after trying random generation multiple times
-            if (randomRounds >= maxRandomRounds) {
-                if (totalAttempts % 10 === 0) {
-                    console.log(`Tried random generation ${maxRandomRounds} times, falling back to guaranteed valid map...`);
-                }
-                
-                map = this._generateGuaranteedValidMap();
-                result = this.calculateGoal(map, maxWalls);
-                
-                // Check if this map is solvable and meets quality standards
-                if (result !== null && result.optimalWallCount <= maxWalls) {
-                    const validation = MapValidator.validate(map, result);
-                    
-                    if (validation.valid) {
-                        return { 
-                            map, 
-                            goal: result.goalArea,
-                            optimalSolution: result.optimalSolution,
-                            maxWalls: result.optimalWallCount
-                        };
-                    }
-                }
-                
-                // Reset random rounds counter for next iteration
-                randomRounds = 0;
-            }
-            
             totalAttempts++;
             if (totalAttempts % 10 === 0) {
                 console.log(`Generation attempt ${totalAttempts}: No valid solution found, retrying...`);
             }
         }
         
-        // Should never reach here, but throw error if we do
-        throw new Error(`Failed to generate valid map after ${maxTotalAttempts} attempts`);
+        // If we reach here, we failed to generate a valid map
+        // Do NOT fall back to any alternative method - throw an error as required
+        throw new Error(`Failed to generate valid map after ${maxTotalAttempts} attempts. ` +
+            `This indicates either the solver is not finding solutions, or the quality ` +
+            `constraints are too strict for the given parameters.`);
     }
 
     /**
@@ -214,69 +186,28 @@ class MapGenerator {
     }
 
     /**
-     * Generate a guaranteed valid map with a clear path to edge
-     * Creates a path from center to an edge, then fills remaining tiles
-     * @private
-     * @returns {Array} 2D array of tile types
+     * Convert map from string format to numeric format
      */
-    _generateGuaranteedValidMap() {
-        const map = [];
-        
-        // Initialize with all grass
-        for (let i = 0; i < this.size; i++) {
-            const row = [];
-            for (let j = 0; j < this.size; j++) {
-                row.push('grass');
-            }
-            map.push(row);
-        }
-        
-        // Place home at center
-        const centerRow = Math.floor(this.size / 2);
-        const centerCol = Math.floor(this.size / 2);
-        map[centerRow][centerCol] = 'home';
-        
-        // Create a guaranteed path from center to top edge
-        const pathCells = new Set();
-        for (let row = 0; row <= centerRow; row++) {
-            pathCells.add(`${row},${centerCol}`);
-        }
-        
-        // Now randomly place water, but not on the path
-        const waterRatio = this.tileDistribution.water || (1 - this.tileDistribution.grass);
-        for (let i = 0; i < this.size; i++) {
-            for (let j = 0; j < this.size; j++) {
-                const coordKey = `${i},${j}`;
-                if (map[i][j] === 'home' || pathCells.has(coordKey)) {
-                    continue;
-                }
-                
-                if (Math.random() < waterRatio) {
-                    map[i][j] = 'water';
-                }
-            }
-        }
-        
-        return map;
-    }
-
-    /**
-     * Calculate the maximum achievable area (goal) for a given map
-     * Uses the MILP solver to find the optimal wall placements
-     * @param {Array} map - 2D array of tile types
-     * @param {number} maxWalls - Maximum number of walls that can be placed
-     * @returns {Object|null} Object with {goalArea, optimalWallCount}, or null if pet cannot be penned
-     */
-    calculateGoal(map, maxWalls) {
-        // Convert map from tile type strings to numbers for the solver
-        // 0 = water, 1 = grass, 2 = home, 5 = wall (though we won't have walls initially)
-        const numericMap = map.map(row => row.map(tile => {
+    _mapToNumeric(stringMap) {
+        return stringMap.map(row => row.map(tile => {
             if (tile === 'water') return 0;
             if (tile === 'grass') return 1;
             if (tile === 'home') return 2;
             if (tile === 'wall') return 5;
             return 1; // default to grass
         }));
+    }
+    
+    /**
+     * Calculate the maximum achievable area (goal) for a given map
+     * Uses the MILP solver to find the optimal wall placements
+     * @param {Array} map - 2D array of tile types (strings)
+     * @param {number} maxWalls - Maximum number of walls that can be placed
+     * @returns {Object|null} Object with {goalArea, optimalWallCount, optimalSolution}, or null if pet cannot be penned
+     */
+    calculateGoal(map, maxWalls) {
+        // Convert map from tile type strings to numbers for the solver
+        const numericMap = this._mapToNumeric(map);
         
         // Use the MILP solver to find optimal solution
         const solution = MILPSolver.solveMap(numericMap, maxWalls);
@@ -291,7 +222,6 @@ class MapGenerator {
             optimalSolution: solution.walls ? this._convertWallsToCoordinates(solution.walls) : []
         };
     }
-    
 
     /**
      * Convert walls 2D array to array of [row, col] coordinates
