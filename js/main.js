@@ -208,6 +208,7 @@ async function initGame() {
     game.render();
     game.updateWallCounter();
     game.updateAreaSizeDisplay();
+    game.updateLegend();  // Update legend to show loaded pet emoji
     
     // Initialize menu system
     // eslint-disable-next-line no-undef

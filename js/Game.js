@@ -41,7 +41,9 @@ class Game {
         this.viewingOptimal = false;  // Track if user is viewing optimal solution
         
         this.attachEventListeners();
-        this.init();
+        // Note: init() is NOT called here automatically
+        // Instead, main.js loads the map from maps.json and calls render() directly
+        // init() is only used for debug map generation
     }
 
     /**
