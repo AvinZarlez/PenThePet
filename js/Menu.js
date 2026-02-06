@@ -85,12 +85,6 @@ class Menu {
                 this._savePetToCookie(this.game.petEmoji);
                 this.game.render();
                 this.game.updateLegend();
-                
-                // Also update main pet selector
-                const petTypeSelect = document.getElementById('petType');
-                if (petTypeSelect) {
-                    petTypeSelect.value = e.target.value;
-                }
             });
         }
 
@@ -99,12 +93,6 @@ class Menu {
                 this.game.hintMode = e.target.value;
                 this._saveHintModeToCookie(this.game.hintMode);
                 this.game.render();
-                
-                // Also update main hint selector
-                const hintModeSelect = document.getElementById('hintMode');
-                if (hintModeSelect) {
-                    hintModeSelect.value = e.target.value;
-                }
             });
         }
 

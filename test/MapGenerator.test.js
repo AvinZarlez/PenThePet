@@ -161,6 +161,61 @@ describe('MapGenerator', () => {
         });
     });
 
+    describe('generateSimple()', () => {
+        test('should generate a valid map without goal calculation', () => {
+            const generator = new MapGenerator(7);
+            const result = generator.generateSimple();
+
+            expect(result).not.toBeNull();
+            expect(result).toHaveProperty('map');
+            expect(result).toHaveProperty('goal');
+            expect(result).toHaveProperty('maxWalls');
+            expect(result).toHaveProperty('optimalSolution');
+            expect(result.goal).toBeNull();
+            expect(result.optimalSolution).toBeNull();
+            expect(result.maxWalls).toBe(CONSTANTS.MAX_WALLS);
+        });
+
+        test('should generate map of correct size', () => {
+            const generator = new MapGenerator(9);
+            const result = generator.generateSimple();
+
+            expect(result.map.length).toBe(9);
+            expect(result.map[0].length).toBe(9);
+        });
+
+        test('should place home tile at center', () => {
+            const generator = new MapGenerator(5);
+            const result = generator.generateSimple();
+
+            const centerRow = Math.floor(5 / 2);
+            const centerCol = Math.floor(5 / 2);
+            expect(result.map[centerRow][centerCol]).toBe('home');
+        });
+
+        test('should not call MILPSolver', () => {
+            const solveSpy = jest.spyOn(MILPSolver, 'solveMap');
+            
+            const generator = new MapGenerator(7);
+            generator.generateSimple();
+
+            expect(solveSpy).not.toHaveBeenCalled();
+            
+            solveSpy.mockRestore();
+        });
+
+        test('should return null if unable to generate valid map', () => {
+            const generator = new MapGenerator(3);
+            
+            // Mock _validateMap to always return false
+            jest.spyOn(generator, '_validateMap').mockReturnValue(false);
+            
+            const result = generator.generateSimple();
+            
+            expect(result).toBeNull();
+        });
+    });
+
     describe('_generateRandomMap()', () => {
         test('should generate map of correct size', () => {
             const generator = new MapGenerator(5);
