@@ -367,66 +367,11 @@ describe('MapGenerator', () => {
         });
     });
 
-    describe('_generateGuaranteedValidMap()', () => {
-        test('should generate a valid map', () => {
-            const generator = new MapGenerator(7);
-            const map = generator._generateGuaranteedValidMap();
-
-            expect(generator._validateMap(map)).toBe(true);
-        });
-
-        test('should generate map of correct size', () => {
-            const generator = new MapGenerator(9);
-            const map = generator._generateGuaranteedValidMap();
-
-            expect(map.length).toBe(9);
-            expect(map[0].length).toBe(9);
-        });
-
-        test('should place home at center', () => {
-            const generator = new MapGenerator(5);
-            const map = generator._generateGuaranteedValidMap();
-
-            const centerRow = Math.floor(5 / 2);
-            const centerCol = Math.floor(5 / 2);
-            expect(map[centerRow][centerCol]).toBe('home');
-        });
-
-        test('should create a clear path to edge', () => {
-            const generator = new MapGenerator(7);
-            const map = generator._generateGuaranteedValidMap();
-
-            const centerRow = Math.floor(7 / 2);
-            const centerCol = Math.floor(7 / 2);
-
-            // Check vertical path to top edge
-            for (let row = 0; row <= centerRow; row++) {
-                expect(map[row][centerCol]).not.toBe('water');
-            }
-        });
-
-        test('should include some water tiles', () => {
-            const generator = new MapGenerator(9);
-            const map = generator._generateGuaranteedValidMap();
-
-            let waterCount = 0;
-            map.forEach(row => {
-                row.forEach(tile => {
-                    if (tile === 'water') waterCount++;
-                });
-            });
-
-            // Should have some water (with reasonable probability)
-            expect(waterCount).toBeGreaterThan(0);
-        });
-
-        test('should always be valid', () => {
-            const generator = new MapGenerator(11);
-            
-            for (let i = 0; i < 10; i++) {
-                const map = generator._generateGuaranteedValidMap();
-                expect(generator._validateMap(map)).toBe(true);
-            }
+    // Note: _generateGuaranteedValidMap() has been removed per requirements
+    // Map generation now throws error instead of falling back to guaranteed valid maps
+    describe.skip('_generateGuaranteedValidMap() - REMOVED', () => {
+        test('Method removed - map generation now throws error instead of falling back', () => {
+            // These tests are skipped because the method has been removed
         });
     });
 

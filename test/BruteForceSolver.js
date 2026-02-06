@@ -1,10 +1,31 @@
 /**
  * Brute Force Solver for Pen the Pet
  * 
+ * ⚠️ TESTING AND VALIDATION ONLY - DO NOT USE IN PRODUCTION ⚠️
+ * 
  * This solver exhaustively searches all possible wall placements
  * to find the true optimal solution (maximum penned area).
  * 
- * This is intended for testing and validation, not production use.
+ * **Usage Policy:**
+ * - ✅ ONLY for generating test maps with verified optimal solutions
+ * - ✅ ONLY for validating MILPSolver accuracy on small maps (≤7x7)
+ * - ✅ ONLY in test/development contexts
+ * - ❌ NEVER in production code
+ * - ❌ NEVER in MapGenerator for live map generation
+ * - ❌ NEVER as a fallback for failed solver attempts
+ * 
+ * **Why separate from production:**
+ * - Exhaustive search is computationally expensive (factorial complexity)
+ * - Only practical for small maps with few walls
+ * - Production uses MILPSolver which is faster and equally accurate
+ * 
+ * **When to use:**
+ * - Creating ground truth test data in test-maps-db.json
+ * - Verifying MILPSolver produces correct results
+ * - Comparing solver performance in benchmarks
+ * 
+ * This file must remain in test/ directory to make it clear
+ * it is not part of the production solver architecture.
  */
 
 // Import shared pathfinding utilities (only in Node.js environment)
