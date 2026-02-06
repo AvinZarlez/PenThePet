@@ -479,15 +479,15 @@ class Game {
 
     /**
      * Generate a debug map with specified size (not saved, for testing)
-     * Uses time-limited solver to find optimal solution within ~3 seconds.
+     * Uses full exhaustive search to ensure quality (accuracy over speed).
      * @param {number} size - The size of the debug map
      */
     generateDebugMap(size) {
         if (size >= CONFIG.grid.minSize && size <= CONFIG.grid.maxSize) {
             this.grid = new Grid(size);
             
-            console.log(`Generating debug map ${size}x${size} with time-limited solver...`);
-            const result = this.grid.generate(null, true); // true = use time limit
+            console.log(`Generating debug map ${size}x${size} with exhaustive search...`);
+            const result = this.grid.generate(null); // Use same method as production
             
             if (result === null) {
                 console.error('Failed to generate debug map');

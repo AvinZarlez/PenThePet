@@ -1,14 +1,15 @@
 /**
  * Generate Daily Maps for maps.json
  * 
- * This script generates verified daily maps for the game using the corrected
- * map generation system (maximizing area, not minimizing).
+ * This script generates verified daily maps for the game using exhaustive search.
+ * All maps are validated to meet quality standards before being saved.
  * 
- * For small maps, it uses brute force verification to ensure accuracy.
+ * For small maps (≤7x7), it uses brute force verification to ensure accuracy.
  */
 
 const MapGenerator = require('../js/MapGenerator.js');
 const BruteForceSolver = require('./BruteForceSolver.js');
+const MapValidator = require('../js/MapValidator.js');
 const fs = require('fs');
 const path = require('path');
 
@@ -25,15 +26,30 @@ async function generateDailyMap(size, maxWalls, date) {
     console.log(`\nGenerating ${size}x${size} map for ${date}...`);
     
     const generator = new MapGenerator(size, { grass: 0.7, water: 0.3 });
-    const result = generator.generate(null, maxWalls);
+    const result = generator.generate(null);
     
     if (!result) {
         console.error('Failed to generate map');
         return null;
     }
     
+    // Validate the map meets quality standards
+    const validation = MapValidator.validate(result.map, {
+        goalArea: result.goal,
+        optimalWallCount: result.maxWalls,
+        optimalSolution: result.optimalSolution
+    });
+    
+    if (!validation.valid) {
+        console.error('  Generated map failed validation:');
+        validation.errors.forEach(err => console.error(`    - ${err}`));
+        return null;
+    }
+    
+    console.log('  Map passed validation ✓');
+    
     let verifiedGoal = result.goal;
-    let optimalWallCount = result.maxWalls;  // MapGenerator now returns optimal wall count
+    let optimalWallCount = result.maxWalls;
     
     // For maps up to 7x7, verify with brute force for accuracy
     if (size <= 7) {
@@ -67,7 +83,7 @@ async function generateDailyMap(size, maxWalls, date) {
         [date]: {
             size: size,
             goal: result.goal,
-            maxWalls: optimalWallCount,  // Use the optimal wall count, not the input maxWalls
+            maxWalls: optimalWallCount,
             map: result.map
         }
     };
