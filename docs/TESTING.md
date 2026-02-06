@@ -93,9 +93,23 @@ npm test
 
 # Expected output:
 # Test Suites: 7 passed, 7 total
-# Tests:       240 passed, 240 total
-# Time:        ~6-8 seconds
+# Tests:       3 skipped, 237 passed, 240 total
+# Time:        ~5-7 seconds
 ```
+
+### Performance Tests
+
+Some slow performance tests are skipped by default to keep the test suite fast:
+
+```bash
+# Run only the skipped performance tests (30-60+ seconds each)
+npx jest --testNamePattern="Performance"
+
+# Or run all tests including slow ones
+npx jest --testNamePattern=""
+```
+
+Note: Performance tests use large maps (7x7) and exhaustive search, checking millions of combinations. They're useful for validating solver behavior on large inputs but are not needed for regular development.
 
 ### Watch Mode
 

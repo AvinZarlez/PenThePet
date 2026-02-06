@@ -109,10 +109,11 @@ See [CODE_STRUCTURE.md](docs/CODE_STRUCTURE.md) for detailed architecture.
 
 The project has comprehensive test coverage with Jest:
 
-- **240 tests** across 7 test suites
+- **240 tests** across 7 test suites (3 slow tests skipped by default)
 - **77% code coverage** (statements, branches, functions)
 - Unit tests for all core modules
 - Integration tests for map generation
+- **Fast test suite**: <6 seconds for full run
 
 Run tests with `npm test`. See [TESTING.md](docs/TESTING.md) for details.
 
