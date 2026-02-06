@@ -110,6 +110,21 @@ describe('Grid', () => {
             MILPSolver.solveMap.mockRestore();
         });
 
+        test('should handle generation failure gracefully', () => {
+            // Mock MapGenerator to return null
+            const MapGenerator = require('../js/MapGenerator.js');
+            const originalGenerate = MapGenerator.prototype.generate;
+            MapGenerator.prototype.generate = jest.fn(() => null);
+
+            const grid = new Grid(3);
+            const result = grid.generate();
+
+            expect(result).toBeNull();
+            
+            // Restore
+            MapGenerator.prototype.generate = originalGenerate;
+        });
+
         test('should handle generation with different sizes', () => {
             const sizes = [7, 9, 11];
             
@@ -584,6 +599,121 @@ describe('Grid', () => {
             expect(allTiles.length).toBe(3);
             
             MILPSolver.solveMap.mockRestore();
+        });
+    });
+
+    describe('Private Methods Coverage', () => {
+        describe('_generateRandomTile()', () => {
+            test('should generate grass or water tile', () => {
+                const grid = new Grid(3);
+                grid.tiles = [
+                    ['grass', 'grass', 'grass'],
+                    ['grass', 'grass', 'grass'],
+                    ['grass', 'grass', 'grass']
+                ];
+                
+                const tile = grid._generateRandomTile();
+                expect(['grass', 'water']).toContain(tile);
+            });
+
+            test('should respect tile distribution probabilities', () => {
+                const grid = new Grid(3);
+                const samples = 1000;
+                let grassCount = 0;
+                
+                for (let i = 0; i < samples; i++) {
+                    if (grid._generateRandomTile() === 'grass') {
+                        grassCount++;
+                    }
+                }
+                
+                // With 70% grass probability, expect roughly 700 grass tiles (with some margin)
+                const grassRatio = grassCount / samples;
+                expect(grassRatio).toBeGreaterThan(0.6);
+                expect(grassRatio).toBeLessThan(0.8);
+            });
+        });
+
+        describe('_placeHomeTile()', () => {
+            test('should place home tile at center', () => {
+                const grid = new Grid(5);
+                grid.tiles = [
+                    ['grass', 'grass', 'grass', 'grass', 'grass'],
+                    ['grass', 'grass', 'grass', 'grass', 'grass'],
+                    ['grass', 'grass', 'grass', 'grass', 'grass'],
+                    ['grass', 'grass', 'grass', 'grass', 'grass'],
+                    ['grass', 'grass', 'grass', 'grass', 'grass']
+                ];
+                
+                grid._placeHomeTile();
+                
+                const centerRow = Math.floor(5 / 2);
+                const centerCol = Math.floor(5 / 2);
+                expect(grid.tiles[centerRow][centerCol]).toBe('home');
+            });
+
+            test('should remove existing home tiles before placing new one', () => {
+                const grid = new Grid(5);
+                grid.tiles = [
+                    ['grass', 'home', 'grass', 'grass', 'grass'],
+                    ['grass', 'grass', 'home', 'grass', 'grass'],
+                    ['grass', 'grass', 'grass', 'grass', 'grass'],
+                    ['grass', 'grass', 'grass', 'grass', 'grass'],
+                    ['grass', 'grass', 'grass', 'grass', 'grass']
+                ];
+                
+                grid._placeHomeTile();
+                
+                // Count home tiles
+                let homeCount = 0;
+                for (let i = 0; i < grid.size; i++) {
+                    for (let j = 0; j < grid.size; j++) {
+                        if (grid.tiles[i][j] === 'home') {
+                            homeCount++;
+                        }
+                    }
+                }
+                
+                expect(homeCount).toBe(1);
+                
+                const centerRow = Math.floor(5 / 2);
+                const centerCol = Math.floor(5 / 2);
+                expect(grid.tiles[centerRow][centerCol]).toBe('home');
+            });
+
+            test('should work with odd-sized grids', () => {
+                const sizes = [3, 5, 7, 9, 11];
+                
+                sizes.forEach(size => {
+                    const grid = new Grid(size);
+                    grid.tiles = Array(size).fill(null).map(() => 
+                        Array(size).fill('grass')
+                    );
+                    
+                    grid._placeHomeTile();
+                    
+                    const centerRow = Math.floor(size / 2);
+                    const centerCol = Math.floor(size / 2);
+                    expect(grid.tiles[centerRow][centerCol]).toBe('home');
+                });
+            });
+
+            test('should work with even-sized grids', () => {
+                const sizes = [8, 10, 12];
+                
+                sizes.forEach(size => {
+                    const grid = new Grid(size);
+                    grid.tiles = Array(size).fill(null).map(() => 
+                        Array(size).fill('grass')
+                    );
+                    
+                    grid._placeHomeTile();
+                    
+                    const centerRow = Math.floor(size / 2);
+                    const centerCol = Math.floor(size / 2);
+                    expect(grid.tiles[centerRow][centerCol]).toBe('home');
+                });
+            });
         });
     });
 });
