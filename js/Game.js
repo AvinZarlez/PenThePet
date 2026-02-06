@@ -32,6 +32,14 @@ class Game {
         this.MAX_CELL_SIZE = CONSTANTS.CELL.MAX_SIZE;
         this.AVAILABLE_HEIGHT_RATIO = CONSTANTS.AVAILABLE_HEIGHT_RATIO;
         
+        // Submission state
+        this.currentDate = null;
+        this.isSubmitted = false;
+        this.submittedScore = null;
+        this.submittedWalls = null;
+        this.optimalSolution = null;
+        this.viewingOptimal = false;  // Track if user is viewing optimal solution
+        
         this.attachEventListeners();
         this.init();
     }
@@ -147,6 +155,16 @@ class Game {
      * @param {number} col - Column index
      */
     handleCellClick(row, col) {
+        // Prevent changes if already submitted (unless viewing optimal solution)
+        if (this.isSubmitted && !this.viewingOptimal) {
+            return;
+        }
+        
+        // If viewing optimal solution, don't allow changes
+        if (this.viewingOptimal) {
+            return;
+        }
+        
         const currentTileType = this.grid.getTile(row, col);
         
         // Allow clicking on grass tiles (convert to wall)
@@ -332,19 +350,38 @@ class Game {
             const yellowTileCount = isPenned ? this.getAccessibleTiles().size : 0;
             
             if (isPenned) {
-                statusElement.innerHTML = '<span class="submit-label">Submit</span><span class="submit-check">✓</span>';
+                // Change button text based on submission state
+                if (this.isSubmitted) {
+                    statusElement.innerHTML = '<span class="submit-label">View Result</span>';
+                    statusElement.title = `View your submitted score (${yellowTileCount} tiles)`;
+                } else {
+                    statusElement.innerHTML = '<span class="submit-label">Submit</span><span class="submit-check">✓</span>';
+                    statusElement.title = `Pet is penned! Click to submit your score (${yellowTileCount} tiles)`;
+                }
                 statusElement.className = 'penned-status penned';
-                statusElement.title = `Pet is penned! Click to view area (${yellowTileCount} tiles)`;
                 statusElement.disabled = false;
                 statusElement.dataset.interactive = 'true';
                 statusElement.dataset.areaSize = yellowTileCount;
             } else {
-                statusElement.textContent = '✗';
-                statusElement.className = 'penned-status not-penned';
-                statusElement.title = 'Path exists - pet can escape! ✗';
-                statusElement.disabled = true;
-                statusElement.dataset.interactive = 'false';
-                statusElement.dataset.areaSize = '0';
+                // If submitted, still allow viewing result even if not currently penned
+                if (this.isSubmitted && this.submittedScore) {
+                    statusElement.innerHTML = '<span class="submit-label">View Result</span>';
+                    statusElement.className = 'penned-status submitted';
+                    statusElement.title = 'View your submitted score';
+                    statusElement.disabled = false;
+                    statusElement.dataset.interactive = 'true';
+                    statusElement.dataset.areaSize = this.submittedScore;
+                } else {
+                    statusElement.textContent = '✗';
+                    statusElement.className = 'penned-status not-penned';
+                    statusElement.title = 'Path exists - pet can escape! ✗';
+                    statusElement.disabled = true;
+                    statusElement.dataset.interactive = 'false';
+                    statusElement.dataset.areaSize = '0';
+                }
+            }
+        }
+    }
             }
         }
     }
@@ -607,14 +644,167 @@ class Game {
             const viewerPanel = document.getElementById('roamSpaceViewer');
             const metricOutput = document.getElementById('roamAreaMetric');
             
-            if (metricOutput) {
-                metricOutput.textContent = areaCount;
+            // If not yet submitted, save the submission
+            if (!this.isSubmitted) {
+                this.handleSubmission(areaCount);
             }
+            
+            // Update the score screen display
+            this.updateScoreScreen(areaCount);
             
             if (viewerPanel) {
                 viewerPanel.classList.add('active');
             }
         }
+    }
+    
+    /**
+     * Handle score submission (first time only)
+     * @param {number} score - The user's score
+     */
+    handleSubmission(score) {
+        if (this.isSubmitted || !this.currentDate) {
+            return;
+        }
+        
+        // Get current wall positions
+        const wallPositions = [];
+        for (let i = 0; i < this.grid.size; i++) {
+            for (let j = 0; j < this.grid.size; j++) {
+                if (this.grid.getTile(i, j) === 'wall') {
+                    wallPositions.push([i, j]);
+                }
+            }
+        }
+        
+        // Save to cookie
+        this.saveSubmission(this.currentDate, score, wallPositions);
+        this.isSubmitted = true;
+        this.submittedScore = score;
+        this.submittedWalls = wallPositions;
+        
+        // Update the submit button text
+        this.updatePennedStatus(true);
+    }
+    
+    /**
+     * Update the score screen with user's score and optimal comparison
+     * @param {number} userScore - The user's score
+     */
+    updateScoreScreen(userScore) {
+        const metricOutput = document.getElementById('roamAreaMetric');
+        if (!metricOutput) return;
+        
+        // Check if perfect score
+        const isPerfect = userScore === this.goalAreaSize;
+        
+        // Build the display text
+        let displayText = '';
+        if (isPerfect) {
+            displayText = `🎉 ${userScore} 🎉`;
+        } else {
+            displayText = userScore.toString();
+        }
+        
+        metricOutput.innerHTML = displayText;
+        
+        // Update the helper text to show optimal score
+        const helperElement = document.querySelector('.metric-helper');
+        if (helperElement) {
+            if (isPerfect) {
+                helperElement.innerHTML = `<strong>PERFECT!</strong><br>You achieved the optimal score of ${this.goalAreaSize}!`;
+            } else {
+                helperElement.innerHTML = `Your score<br>Optimal: ${this.goalAreaSize} tiles`;
+            }
+        }
+        
+        // Add/update toggle button for optimal solution
+        this.addOptimalSolutionToggle();
+    }
+    
+    /**
+     * Add toggle button to switch between user and optimal solutions
+     */
+    addOptimalSolutionToggle() {
+        if (!this.optimalSolution || !this.isSubmitted) {
+            return;
+        }
+        
+        const footer = document.querySelector('#roamSpaceViewer .viewer-footer');
+        if (!footer) return;
+        
+        // Check if toggle button already exists
+        let toggleBtn = document.getElementById('toggleSolutionBtn');
+        if (!toggleBtn) {
+            toggleBtn = document.createElement('button');
+            toggleBtn.id = 'toggleSolutionBtn';
+            toggleBtn.className = 'toggle-solution-btn';
+            
+            // Insert before the exit button
+            const exitBtn = document.getElementById('exitViewer');
+            if (exitBtn) {
+                footer.insertBefore(toggleBtn, exitBtn);
+            } else {
+                footer.appendChild(toggleBtn);
+            }
+            
+            // Add event listener
+            toggleBtn.addEventListener('click', () => this.toggleSolution());
+        }
+        
+        // Update button text based on current state
+        toggleBtn.textContent = this.viewingOptimal ? 'View Your Solution' : 'View Optimal Solution';
+    }
+    
+    /**
+     * Toggle between user's solution and optimal solution
+     */
+    toggleSolution() {
+        if (!this.optimalSolution || !this.submittedWalls) {
+            return;
+        }
+        
+        if (this.viewingOptimal) {
+            // Switch to user's solution
+            this.loadWallPositions(this.submittedWalls);
+            this.viewingOptimal = false;
+        } else {
+            // Switch to optimal solution
+            this.loadWallPositions(this.optimalSolution);
+            this.viewingOptimal = true;
+        }
+        
+        // Update button text
+        this.addOptimalSolutionToggle();
+        
+        // Re-render
+        this.render();
+    }
+    
+    /**
+     * Load wall positions onto the grid
+     * @param {Array} wallPositions - Array of [row, col] positions
+     */
+    loadWallPositions(wallPositions) {
+        // Clear all existing walls first
+        for (let i = 0; i < this.grid.size; i++) {
+            for (let j = 0; j < this.grid.size; j++) {
+                if (this.grid.getTile(i, j) === 'wall') {
+                    this.grid.setTile(i, j, 'grass');
+                }
+            }
+        }
+        
+        // Place new walls
+        this.wallCount = 0;
+        for (const [row, col] of wallPositions) {
+            if (this.grid.tiles[row] && this.grid.tiles[row][col] === 'grass') {
+                this.grid.setTile(row, col, 'wall');
+                this.wallCount++;
+            }
+        }
+        
+        this.updateWallCounter();
     }
 
     /**
@@ -624,6 +814,13 @@ class Game {
         const viewerPanel = document.getElementById('roamSpaceViewer');
         if (viewerPanel) {
             viewerPanel.classList.remove('active');
+        }
+        
+        // If viewing optimal, switch back to user's solution
+        if (this.viewingOptimal && this.submittedWalls) {
+            this.loadWallPositions(this.submittedWalls);
+            this.viewingOptimal = false;
+            this.render();
         }
     }
 
@@ -778,6 +975,80 @@ class Game {
         date.setTime(date.getTime() + (365 * 24 * 60 * 60 * 1000)); // 1 year
         const expires = `expires=${date.toUTCString()}`;
         document.cookie = `selectedPet=${encodeURIComponent(petEmoji)};${expires};path=/;SameSite=Lax`;
+    }
+    
+    /**
+     * Helper method to get a cookie value
+     * @private
+     * @param {string} name - Cookie name
+     * @returns {string|null} Cookie value or null
+     */
+    _getCookie(name) {
+        const value = `; ${document.cookie}`;
+        const parts = value.split(`; ${name}=`);
+        if (parts.length === 2) {
+            return decodeURIComponent(parts.pop().split(';').shift());
+        }
+        return null;
+    }
+    
+    /**
+     * Helper method to set a cookie
+     * @private
+     * @param {string} name - Cookie name
+     * @param {string} value - Cookie value
+     * @param {number} days - Expiration in days
+     */
+    _setCookie(name, value, days) {
+        const date = new Date();
+        date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+        const expires = `expires=${date.toUTCString()}`;
+        document.cookie = `${name}=${encodeURIComponent(value)};${expires};path=/;SameSite=Lax`;
+    }
+    
+    /**
+     * Save submitted score and wall positions to cookie
+     * Cookie name format: submission_YYYY-MM-DD
+     * @param {string} dateString - Date of the puzzle
+     * @param {number} score - The user's score
+     * @param {Array} wallPositions - Array of [row, col] wall positions
+     */
+    saveSubmission(dateString, score, wallPositions) {
+        const cookieName = `submission_${dateString}`;
+        const submissionData = {
+            score: score,
+            walls: wallPositions,
+            timestamp: new Date().toISOString()
+        };
+        this._setCookie(cookieName, JSON.stringify(submissionData), 365);
+    }
+    
+    /**
+     * Load submitted score data from cookie
+     * @param {string} dateString - Date of the puzzle
+     * @returns {Object|null} Object with {score, walls, timestamp} or null
+     */
+    loadSubmission(dateString) {
+        const cookieName = `submission_${dateString}`;
+        const value = this._getCookie(cookieName);
+        if (value) {
+            try {
+                return JSON.parse(value);
+            } catch (e) {
+                console.error('Failed to parse submission cookie:', e);
+                return null;
+            }
+        }
+        return null;
+    }
+    
+    /**
+     * Check if user has submitted score for this puzzle
+     * @param {string} dateString - Date of the puzzle
+     * @returns {boolean} True if submitted
+     */
+    hasSubmission(dateString) {
+        return this.loadSubmission(dateString) !== null;
     }
 }
 
