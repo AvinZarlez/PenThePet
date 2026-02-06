@@ -198,7 +198,7 @@ async function initGame() {
         
         // Restore submitted wall positions
         for (const [row, col] of submission.walls) {
-            if (game.grid.tiles[row] && game.grid.tiles[row][col] === 'grass') {
+            if (game.isValidPosition(row, col) && game.grid.getTile(row, col) === 'grass') {
                 game.grid.setTile(row, col, 'wall');
                 game.wallCount++;
             }

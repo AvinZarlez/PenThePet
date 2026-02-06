@@ -148,6 +148,17 @@ class Game {
         
         return cell;
     }
+    
+    /**
+     * Check if a position is valid on the grid
+     * @param {number} row - Row index
+     * @param {number} col - Column index
+     * @returns {boolean} True if position is valid
+     */
+    isValidPosition(row, col) {
+        return this.grid.tiles[row] !== undefined && 
+               this.grid.tiles[row][col] !== undefined;
+    }
 
     /**
      * Handle click events on cells
@@ -155,13 +166,8 @@ class Game {
      * @param {number} col - Column index
      */
     handleCellClick(row, col) {
-        // Prevent changes if already submitted (unless viewing optimal solution)
-        if (this.isSubmitted && !this.viewingOptimal) {
-            return;
-        }
-        
-        // If viewing optimal solution, don't allow changes
-        if (this.viewingOptimal) {
+        // Prevent changes if already submitted or viewing optimal solution
+        if (this.isSubmitted || this.viewingOptimal) {
             return;
         }
         
@@ -795,7 +801,7 @@ class Game {
         // Place new walls
         this.wallCount = 0;
         for (const [row, col] of wallPositions) {
-            if (this.grid.tiles[row] && this.grid.tiles[row][col] === 'grass') {
+            if (this.isValidPosition(row, col) && this.grid.getTile(row, col) === 'grass') {
                 this.grid.setTile(row, col, 'wall');
                 this.wallCount++;
             }
