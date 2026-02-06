@@ -31,15 +31,16 @@ class MapGenerator {
 
     /**
      * Generate a valid map with guaranteed path to edge and goal calculation
-     * Uses CONSTANTS.MAX_WALLS for maximum wall count
+     * Uses CONSTANTS.MAX_WALLS for maximum wall count (or override for debug)
      * Retries generation if no solution exists with <= MAX_WALLS
      * @param {string} _dateString - Optional date string for seeded generation (unused)
+     * @param {boolean} useTimeLimit - If true, use time-limited solver (for debug maps)
      * @returns {Object} Object containing map and goal, or throws error if unable to generate
      */
-    generate(_dateString = null) {
-        const maxWalls = CONSTANTS.MAX_WALLS; // Always use constant max walls
+    generate(_dateString = null, useTimeLimit = false) {
+        const maxWalls = CONSTANTS.MAX_WALLS;
         
-        // Keep trying until we get a valid map that can be solved with <= MAX_WALLS
+        // Keep trying until we get a valid map that can be solved
         let totalAttempts = 0;
         const maxTotalAttempts = 1000; // Safety limit to prevent infinite loops
         
@@ -52,30 +53,43 @@ class MapGenerator {
             while (attempts < this.maxAttempts) {
                 map = this._generateRandomMap();
                 if (this._validateMap(map)) {
-                    // Calculate the goal (maximum achievable area) and optimal wall count
-                    // This uses ONLY accurate exhaustive search - no heuristics
-                    result = this.calculateGoal(map, maxWalls);
-                    
-                    // If result is not null and uses <= MAX_WALLS, we have a valid map
-                    if (result !== null && result.optimalWallCount <= maxWalls) {
-                        return { 
-                            map, 
-                            goal: result.goalArea, 
-                            maxWalls: result.optimalWallCount,  // Use optimal wall count
-                            optimalSolution: result.optimalSolution  // Include optimal wall positions
-                        };
+                    // Calculate the goal using appropriate solver
+                    if (useTimeLimit) {
+                        // For debug maps: use time-limited solver to find best solution within ~3 seconds
+                        result = this.calculateGoalWithTimeLimit(map);
+                    } else {
+                        // For production maps: use full exhaustive search with maxWalls limit
+                        result = this.calculateGoal(map, maxWalls);
                     }
-                    // If result is null or needs too many walls, try again
+                    
+                    // Check if we got a valid result
+                    if (result !== null) {
+                        // For production maps, ensure it uses <= MAX_WALLS
+                        if (!useTimeLimit && result.optimalWallCount > maxWalls) {
+                            // Try again
+                        } else {
+                            return { 
+                                map, 
+                                goal: result.goalArea, 
+                                maxWalls: result.optimalWallCount,
+                                optimalSolution: result.optimalSolution
+                            };
+                        }
+                    }
                 }
                 attempts++;
             }
             
             // If random generation failed, try guaranteed valid map
             map = this._generateGuaranteedValidMap();
-            result = this.calculateGoal(map, maxWalls);
+            if (useTimeLimit) {
+                result = this.calculateGoalWithTimeLimit(map);
+            } else {
+                result = this.calculateGoal(map, maxWalls);
+            }
             
-            // Check if this map is solvable with <= MAX_WALLS
-            if (result !== null && result.optimalWallCount <= maxWalls) {
+            // Check if this map is solvable
+            if (result !== null && (useTimeLimit || result.optimalWallCount <= maxWalls)) {
                 return { 
                     map, 
                     goal: result.goalArea,
@@ -250,6 +264,37 @@ class MapGenerator {
         
         // Use the MILP solver to find optimal solution
         const solution = MILPSolver.solveMap(numericMap, maxWalls);
+        
+        if (solution === null) {
+            return null;
+        }
+        
+        return {
+            goalArea: solution.goalArea,
+            optimalWallCount: solution.optimalWallCount || 0,
+            optimalSolution: solution.walls ? this._convertWallsToCoordinates(solution.walls) : []
+        };
+    }
+    
+    /**
+     * Calculate goal with time limit (for debug maps)
+     * Finds the largest achievable area within time constraints
+     * @param {Array} map - 2D array of tile types
+     * @param {number} timeLimit - Max milliseconds (default 3000)
+     * @returns {Object|null} Object with {goalArea, optimalWallCount}, or null if pet cannot be penned
+     */
+    calculateGoalWithTimeLimit(map, timeLimit = 3000) {
+        // Convert map from tile type strings to numbers for the solver
+        const numericMap = map.map(row => row.map(tile => {
+            if (tile === 'water') return 0;
+            if (tile === 'grass') return 1;
+            if (tile === 'home') return 2;
+            if (tile === 'wall') return 5;
+            return 1;
+        }));
+        
+        // Use time-limited solver
+        const solution = MILPSolver.solveMapWithTimeLimit(numericMap, timeLimit);
         
         if (solution === null) {
             return null;

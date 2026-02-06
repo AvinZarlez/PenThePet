@@ -159,6 +159,24 @@ describe('MapGenerator', () => {
             
             MILPSolver.solveMap.mockRestore();
         });
+
+        test('should accept useTimeLimit parameter for debug generation', () => {
+            jest.spyOn(MILPSolver, 'solveMapWithTimeLimit').mockReturnValue({
+                walls: Array(7).fill(null).map(() => Array(7).fill(0)),
+                goalArea: 12,
+                optimalWallCount: 6
+            });
+
+            const generator = new MapGenerator(7);
+            const result = generator.generate(null, true); // true = use time limit
+
+            expect(result).not.toBeNull();
+            expect(result.goal).toBe(12);
+            expect(result.maxWalls).toBe(6);
+            expect(MILPSolver.solveMapWithTimeLimit).toHaveBeenCalled();
+            
+            MILPSolver.solveMapWithTimeLimit.mockRestore();
+        });
     });
 
     describe('_generateRandomMap()', () => {
