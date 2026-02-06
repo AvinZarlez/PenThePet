@@ -4,10 +4,12 @@ on:
   pull_request:
     branches: '**'
     types: [opened, synchronize, reopened]
+  push:
+    branches: [main]
 
-# Cancel in-progress runs when a new commit is pushed to the same PR
+# Cancel in-progress runs when a new commit is pushed to the same PR or branch
 concurrency:
-  group: ${{ github.workflow }}-${{ github.event.pull_request.number }}
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -67,6 +69,7 @@ jobs:
           retention-days: 30
       
       - name: Comment PR with instructions
+        if: github.event_name == 'pull_request'
         uses: actions/github-script@v7
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
@@ -75,18 +78,18 @@ jobs:
             
             const body = `## 📸 Screenshot Preview
 
-A screenshot of the game after applying PR changes has been generated!
+            A screenshot of the game after applying PR changes has been generated!
 
-**How to view:**
-1. Visit the [workflow run](${runUrl})
-2. Scroll to the bottom to find "Artifacts"
-3. Download the \`pr-screenshot\` artifact
-4. Extract and view \`screenshot.png\`
+            **How to view:**
+            1. Visit the [workflow run](${runUrl})
+            2. Scroll to the bottom to find "Artifacts"
+            3. Download the pr-screenshot artifact
+            4. Extract and view screenshot.png
 
-**Note:** Screenshot shows the game loaded in a headless browser after all changes are applied.
+            **Note:** Screenshot shows the game loaded in a headless browser after all changes are applied.
 
----
-*This screenshot is automatically generated for every PR to help reviewers visualize UI changes.*`;
+            ---
+            *This screenshot is automatically generated for every PR to help reviewers visualize UI changes.*`;
             
             // Find existing screenshot comment
             const { data: comments } = await github.rest.issues.listComments({

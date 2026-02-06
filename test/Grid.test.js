@@ -6,7 +6,6 @@
 
 const Grid = require('../js/Grid.js');
 const MILPSolver = require('../js/MILPSolver.js');
-const CONSTANTS = require('../js/constants.js');
 
 // Mock CONFIG if not available
 if (typeof global.CONFIG === 'undefined') {

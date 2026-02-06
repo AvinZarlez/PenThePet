@@ -10,7 +10,6 @@ const {
     getNextDayNumber 
 } = require('../scripts/generate-maps.js');
 const fs = require('fs');
-const path = require('path');
 
 describe('Map Database Validation', () => {
     describe('validateMapsDatabase', () => {

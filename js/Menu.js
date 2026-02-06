@@ -228,9 +228,7 @@ class Menu {
      */
     async loadLevel(mapData) {
         // Update map info display
-        // eslint-disable-next-line no-undef
         if (typeof updateMapInfo === 'function') {
-            // eslint-disable-next-line no-undef
             updateMapInfo(mapData);
         }
 
@@ -359,9 +357,7 @@ class Menu {
      */
     _formatDate(dateStr) {
         // Try to use global formatDate function from main.js
-        // eslint-disable-next-line no-undef
         if (typeof formatDate === 'function') {
-            // eslint-disable-next-line no-undef
             return formatDate(dateStr);
         }
         

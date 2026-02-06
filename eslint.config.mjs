@@ -24,6 +24,8 @@ export default [
                 PathfindingUtils: 'readonly',
                 getRandomWord: 'readonly',
                 WORD_LIST: 'readonly',
+                updateMapInfo: 'readonly',
+                formatDate: 'readonly',
             },
         },
         rules: {

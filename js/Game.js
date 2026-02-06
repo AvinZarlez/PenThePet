@@ -647,7 +647,6 @@ class Game {
         if (statusBtn && statusBtn.dataset.interactive === 'true') {
             const areaCount = parseInt(statusBtn.dataset.areaSize || '0');
             const viewerPanel = document.getElementById('roamSpaceViewer');
-            const metricOutput = document.getElementById('roamAreaMetric');
             
             // If not yet submitted, save the submission
             if (!this.isSubmitted) {

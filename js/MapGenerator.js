@@ -33,10 +33,10 @@ class MapGenerator {
      * Generate a valid map with guaranteed path to edge and goal calculation
      * Uses CONSTANTS.MAX_WALLS for maximum wall count
      * Retries generation if no solution exists with <= MAX_WALLS
-     * @param {string} dateString - Optional date string for seeded generation
+     * @param {string} _dateString - Optional date string for seeded generation (unused)
      * @returns {Object} Object containing map and goal, or throws error if unable to generate
      */
-    generate(dateString = null) {
+    generate(_dateString = null) {
         const maxWalls = CONSTANTS.MAX_WALLS; // Always use constant max walls
         
         // Keep trying until we get a valid map that can be solved with <= MAX_WALLS

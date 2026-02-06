@@ -429,7 +429,7 @@ describe('MapGenerator', () => {
                 ['water', 'water', 'grass', 'grass', 'water']
             ];
 
-            const result = generator.calculateGoal(map, 10);
+            generator.calculateGoal(map, 10);
 
             expect(spy).toHaveBeenCalled();
             const calledMap = spy.mock.calls[0][0];
@@ -519,7 +519,7 @@ describe('MapGenerator', () => {
                 ['grass', 'grass', 'grass']
             ];
 
-            const result = generator.calculateGoal(map, 5);
+            generator.calculateGoal(map, 5);
             
             const calledMap = spy.mock.calls[0][0];
             expect(calledMap[0][0]).toBe(5); // wall converts to 5

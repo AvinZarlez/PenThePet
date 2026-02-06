@@ -343,7 +343,7 @@ describe('MILPSolver', () => {
             map[center][center] = 2;
             
             const startTime = Date.now();
-            const result = MILPSolver._heuristicSearch(map, 8, center, center);
+            MILPSolver._heuristicSearch(map, 8, center, center);
             const elapsed = Date.now() - startTime;
             
             expect(elapsed).toBeLessThan(30000); // Should complete in 30 seconds
@@ -487,7 +487,7 @@ describe('MILPSolver', () => {
             ];
             
             const startTime = Date.now();
-            const result = MILPSolver.solveMap(map, 8);
+            MILPSolver.solveMap(map, 8);
             const elapsed = Date.now() - startTime;
             
             expect(elapsed).toBeLessThan(30000); // 30 seconds max
@@ -504,7 +504,7 @@ describe('MILPSolver', () => {
             map[6][6] = 0;
             
             const startTime = Date.now();
-            const result = MILPSolver.solveMap(map, 10);
+            MILPSolver.solveMap(map, 10);
             const elapsed = Date.now() - startTime;
             
             expect(elapsed).toBeLessThan(60000); // 60 seconds max
