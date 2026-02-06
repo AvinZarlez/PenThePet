@@ -145,11 +145,7 @@ class MILPSolver {
             const elapsed = Date.now() - startTime;
             console.log(`    Checked ${countForThisSize} combinations in ${elapsed}ms, best area: ${bestArea}`);
             
-            // Early exit if we've found a solution and checked reasonable amount
-            if (bestSolution && numWalls >= Math.min(maxWalls, 8)) {
-                console.log(`  Early exit: found solution with ${numWalls} walls`);
-                break;
-            }
+            // Note: No early exit - we check all wall counts to find true optimal
         }
         
         if (bestSolution === null) {
@@ -176,7 +172,16 @@ class MILPSolver {
         let bestSolution = null;
         let bestArea = currentBestArea;
         let checked = 0;
-        const maxToCheck = 100000; // Safety limit per wall count
+        // Calculate actual combinations for this k to determine if we should limit
+        let totalCombinations = 1;
+        for (let i = 0; i < k; i++) {
+            totalCombinations = totalCombinations * (grassTiles.length - i) / (i + 1);
+        }
+        totalCombinations = Math.floor(totalCombinations);
+        
+        // For accuracy, allow checking all combinations up to 50 million
+        // This ensures we find the true optimal solution for maps up to 9x9
+        const maxToCheck = Math.min(totalCombinations, 50000000);
         
         // Helper function to generate next combination
         const checkCombination = (indices) => {
