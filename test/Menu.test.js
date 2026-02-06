@@ -272,5 +272,158 @@ describe('Menu', () => {
             const savedLevel = menu._getCookie('currentLevel');
             expect(savedLevel).toBe('2026-02-06');
         });
+
+        test('should handle level not found gracefully', async () => {
+            await menu.loadMapsDatabase();
+            const consoleSpy = jest.spyOn(console, 'error').mockImplementation();
+            
+            await menu.selectLevel('2026-01-01');
+            
+            expect(consoleSpy).toHaveBeenCalledWith('Level not found:', '2026-01-01');
+            consoleSpy.mockRestore();
+        });
+
+        test('should handle missing goal in level data', async () => {
+            await menu.loadMapsDatabase();
+            
+            const mapData = { ...menu.mapsDatabase['2026-02-06'] };
+            delete mapData.goal;
+            
+            await menu.loadLevel(mapData);
+            
+            // Should still load without crashing
+            expect(game.grid.loadMap).toHaveBeenCalled();
+        });
+
+        test('should handle missing maxWalls in level data', async () => {
+            await menu.loadMapsDatabase();
+            
+            const mapData = { ...menu.mapsDatabase['2026-02-06'] };
+            delete mapData.maxWalls;
+            
+            await menu.loadLevel(mapData);
+            
+            // Should still load without crashing
+            expect(game.grid.loadMap).toHaveBeenCalled();
+        });
+    });
+
+    describe('Error Handling', () => {
+        test('should handle fetch failure gracefully', async () => {
+            global.fetch = jest.fn(() => Promise.reject(new Error('Network error')));
+            const consoleSpy = jest.spyOn(console, 'error').mockImplementation();
+            
+            await menu.loadMapsDatabase();
+            
+            expect(menu.mapsDatabase).toEqual({});
+            expect(consoleSpy).toHaveBeenCalled();
+            consoleSpy.mockRestore();
+        });
+
+        test('should handle fetch not ok response', async () => {
+            global.fetch = jest.fn(() =>
+                Promise.resolve({
+                    ok: false
+                })
+            );
+            const consoleSpy = jest.spyOn(console, 'error').mockImplementation();
+            
+            await menu.loadMapsDatabase();
+            
+            expect(menu.mapsDatabase).toEqual({});
+            expect(consoleSpy).toHaveBeenCalled();
+            consoleSpy.mockRestore();
+        });
+
+        test('should handle null modal element gracefully', () => {
+            // Remove modal from DOM
+            const modal = document.getElementById('menuModal');
+            if (modal) modal.remove();
+            
+            // Should not throw error
+            expect(() => menu.closeModal(null)).not.toThrow();
+        });
+
+        test('should handle missing elements in openOptions', () => {
+            // Remove modal pet type element
+            const modalPetType = document.getElementById('modalPetType');
+            if (modalPetType) modalPetType.remove();
+            
+            // Should not throw error
+            expect(() => menu.openOptions()).not.toThrow();
+        });
+    });
+
+    describe('Date Formatting', () => {
+        test('should use global formatDate if available', () => {
+            // Mock global formatDate
+            global.formatDate = jest.fn(() => 'Mocked Date');
+            
+            const result = menu._formatDate('2026-02-06');
+            
+            expect(result).toBe('Mocked Date');
+            expect(global.formatDate).toHaveBeenCalledWith('2026-02-06');
+            
+            // Clean up
+            delete global.formatDate;
+        });
+
+        test('should fallback to local formatting if no global formatDate', () => {
+            // Ensure no global formatDate
+            delete global.formatDate;
+            
+            const result = menu._formatDate('2026-02-06');
+            
+            expect(result).toMatch(/Feb.*6.*2026/);
+        });
+    });
+
+    describe('Modal Close Events', () => {
+        test('should close modal on backdrop click', () => {
+            const modal = document.getElementById('menuModal');
+            modal.classList.add('show');
+            
+            // Simulate click on backdrop (modal itself, not content)
+            const event = new MouseEvent('click', { bubbles: true });
+            Object.defineProperty(event, 'target', { value: modal, writable: false });
+            modal.dispatchEvent(event);
+            
+            expect(modal.classList.contains('show')).toBe(false);
+        });
+
+        test('should close modal via closeModal method', () => {
+            const modal = document.getElementById('menuModal');
+            modal.classList.add('show');
+            
+            // Directly call closeModal
+            menu.closeModal(modal);
+            
+            expect(modal.classList.contains('show')).toBe(false);
+        });
+    });
+
+    describe('Level Selector Edge Cases', () => {
+        test('should populate animal options when opening options', () => {
+            const modalPetType = document.getElementById('modalPetType');
+            
+            menu.openOptions();
+            
+            expect(modalPetType.children.length).toBeGreaterThan(0);
+        });
+
+        test('should handle empty level list', async () => {
+            global.fetch = jest.fn(() =>
+                Promise.resolve({
+                    ok: true,
+                    json: () => Promise.resolve({})
+                })
+            );
+            
+            await menu.loadMapsDatabase();
+            menu.populateLevelList();
+            
+            const levelList = document.getElementById('levelList');
+            expect(levelList.children.length).toBe(0);
+        });
     });
 });
