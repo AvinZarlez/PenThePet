@@ -382,9 +382,6 @@ class Game {
             }
         }
     }
-            }
-        }
-    }
 
     /**
      * Update the area size display with current area size and goal coloring
