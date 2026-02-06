@@ -416,7 +416,7 @@ class MILPSolver {
      */
     static _findBestPathBlocking(map, criticalCells, maxWalls, homeRow, homeCol) {
         let bestSolution = null;
-        let bestArea = 0; // Start with 0 to find MAXIMUM
+        let bestArea = 0; // Start with 0 to find MAXIMUM (returns null if no solution pens the pet)
         
         // Try different combinations of blocking critical cells
         const attempts = Math.min(100, Math.pow(2, Math.min(criticalCells.length, 7)));

@@ -2,7 +2,7 @@
  * Brute Force Solver for Pen the Pet
  * 
  * This solver exhaustively searches all possible wall placements
- * to find the true optimal solution (minimum penned area).
+ * to find the true optimal solution (maximum penned area).
  * 
  * This is intended for testing and validation, not production use.
  */
@@ -49,7 +49,7 @@ class BruteForceSolver {
         console.log(`Brute force solver: ${grassTiles.length} grass tiles, max ${maxWalls} walls`);
         
         let bestSolution = null;
-        let bestArea = 0; // Start with 0 to find MAXIMUM
+        let bestArea = 0; // Start with 0 to find MAXIMUM (returns null if no solution pens the pet)
         let combinationsChecked = 0;
         
         // Generate all combinations of wall placements
