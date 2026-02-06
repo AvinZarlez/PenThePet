@@ -36,18 +36,22 @@ class MapGenerator {
     generate(dateString = null, maxWalls = 9) {
         let attempts = 0;
         let map = null;
-        let goal = null;
+        let result = null;
         
         while (attempts < this.maxAttempts) {
             map = this._generateRandomMap();
             if (this._validateMap(map)) {
-                // Calculate the goal (minimum achievable area)
-                goal = this.calculateGoal(map, maxWalls);
+                // Calculate the goal (maximum achievable area) and optimal wall count
+                result = this.calculateGoal(map, maxWalls);
                 
-                // If goal is null, the pet cannot be penned with available walls
+                // If result is null, the pet cannot be penned with available walls
                 // Try generating a new map
-                if (goal !== null) {
-                    return { map, goal };
+                if (result !== null) {
+                    return { 
+                        map, 
+                        goal: result.goalArea, 
+                        maxWalls: result.optimalWallCount  // Use optimal wall count, not maxWalls
+                    };
                 }
             }
             attempts++;
@@ -56,15 +60,19 @@ class MapGenerator {
         // If we couldn't generate a valid random map, generate a guaranteed valid one
         console.warn('Could not generate valid random map, creating guaranteed valid map');
         map = this._generateGuaranteedValidMap();
-        goal = this.calculateGoal(map, maxWalls);
+        result = this.calculateGoal(map, maxWalls);
         
         // If even the guaranteed map can't be penned, return null
-        if (goal === null) {
+        if (result === null) {
             console.error('Unable to generate a map that can be penned with available walls');
             return null;
         }
         
-        return { map, goal };
+        return { 
+            map, 
+            goal: result.goalArea,
+            maxWalls: result.optimalWallCount  // Use optimal wall count, not maxWalls
+        };
     }
 
     /**
@@ -206,11 +214,11 @@ class MapGenerator {
     }
 
     /**
-     * Calculate the minimum achievable area (goal) for a given map
+     * Calculate the maximum achievable area (goal) for a given map
      * Uses the MILP solver to find the optimal wall placements
      * @param {Array} map - 2D array of tile types
      * @param {number} maxWalls - Maximum number of walls that can be placed
-     * @returns {number|null} The minimum area size, or null if pet cannot be penned
+     * @returns {Object|null} Object with {goalArea, optimalWallCount}, or null if pet cannot be penned
      */
     calculateGoal(map, maxWalls) {
         // Convert map from tile type strings to numbers for the solver
@@ -230,7 +238,10 @@ class MapGenerator {
             return null;
         }
         
-        return solution.goalArea;
+        return {
+            goalArea: solution.goalArea,
+            optimalWallCount: solution.optimalWallCount || 0
+        };
     }
 
 }

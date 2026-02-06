@@ -3,11 +3,19 @@
  * 
  * Based on the Python solver using scipy.optimize.milp
  * This implements a solver to find the optimal wall placement 
- * that minimizes the penned area.
+ * that maximizes the penned area.
  * 
  * Copyright 2026 - Adapted from dynomight's Python implementation
  * Available under AGPL 3.0 license
  */
+
+// Import shared pathfinding utilities (only in Node.js environment)
+// In browser, PathfindingUtils is already loaded via script tag
+(function() {
+    if (typeof module !== 'undefined' && typeof require !== 'undefined' && typeof PathfindingUtils === 'undefined') {
+        global.PathfindingUtils = require('./PathfindingUtils.js');
+    }
+})();
 
 class MILPSolver {
     /**
@@ -60,11 +68,12 @@ class MILPSolver {
         const horizontalTiles = map[0].length;
         
         // Check if already penned
-        if (this._isPenned(map, homeRow, homeCol)) {
-            const area = this._calculatePennedArea(map, homeRow, homeCol);
+        if (PathfindingUtils.isPenned(map, homeRow, homeCol)) {
+            const area = PathfindingUtils.calculatePennedArea(map, homeRow, homeCol);
             return { 
                 walls: Array(verticalTiles).fill(null).map(() => Array(horizontalTiles).fill(0)),
-                goalArea: area
+                goalArea: area,
+                optimalWallCount: 0  // No walls needed
             };
         }
         
@@ -81,12 +90,15 @@ class MILPSolver {
         // For maps where we can reasonably check all combinations, use brute force
         // Estimate total combinations
         const estimatedCombinations = this._estimateCombinations(grassTiles.length, maxWalls);
-        // Use exhaustive search only for small maps that can be solved quickly (<200k combinations ≈ <500ms)
-        const useExhaustive = estimatedCombinations <= 200000;
+        // Use exhaustive search for accuracy (user prioritizes accuracy over speed)
+        // Allow up to ~10 million combinations (≈ ~30 seconds for larger 7x7 maps)
+        const useExhaustive = estimatedCombinations <= 10000000;
         
         if (useExhaustive) {
+            console.log(`Using exhaustive search (${estimatedCombinations.toLocaleString()} combinations)`);
             return this._exhaustiveSearch(map, maxWalls, homeRow, homeCol, grassTiles);
         } else {
+            console.log(`Using heuristic search (${estimatedCombinations.toLocaleString()} combinations - too many for exhaustive)`);
             return this._heuristicSearch(map, maxWalls, homeRow, homeCol);
         }
     }
@@ -104,9 +116,9 @@ class MILPSolver {
                 comb = comb * (n - i) / (i + 1);
             }
             total += comb;
-            if (total > 200000) break; // Early exit if already too large
+            if (total > 10000000) break; // Early exit if already too large
         }
-        return total;
+        return Math.floor(total);
     }
     
     /**
@@ -131,8 +143,8 @@ class MILPSolver {
                     testMap[row][col] = 5;
                 }
                 
-                if (this._isPenned(testMap, homeRow, homeCol)) {
-                    const area = this._calculatePennedArea(testMap, homeRow, homeCol);
+                if (PathfindingUtils.isPenned(testMap, homeRow, homeCol)) {
+                    const area = PathfindingUtils.calculatePennedArea(testMap, homeRow, homeCol);
                     if (area > bestArea) {
                         bestArea = area;
                         bestSolution = wallPositions;
@@ -150,7 +162,11 @@ class MILPSolver {
             wallArray[row][col] = 1;
         }
         
-        return { walls: wallArray, goalArea: bestArea };
+        return { 
+            walls: wallArray, 
+            goalArea: bestArea,
+            optimalWallCount: bestSolution.length  // Record how many walls were actually used
+        };
     }
     
     /**
@@ -234,8 +250,8 @@ class MILPSolver {
                 testMap[row][col] = 5;
                 walls.push([row, col]);
                 
-                if (this._isPenned(testMap, homeRow, homeCol)) {
-                    const area = this._calculatePennedArea(testMap, homeRow, homeCol);
+                if (PathfindingUtils.isPenned(testMap, homeRow, homeCol)) {
+                    const area = PathfindingUtils.calculatePennedArea(testMap, homeRow, homeCol);
                     if (area > bestArea) {
                         bestArea = area;
                         bestSolution = [...walls];
@@ -254,7 +270,11 @@ class MILPSolver {
             wallArray[row][col] = 1;
         }
         
-        return { walls: wallArray, goalArea: bestArea };
+        return { 
+            walls: wallArray, 
+            goalArea: bestArea,
+            optimalWallCount: bestSolution.length  // Record how many walls were actually used
+        };
     }
     
     /**
@@ -438,8 +458,8 @@ class MILPSolver {
                     testMap[row][col] = 5;
                     walls.push([row, col]);
                     
-                    if (this._isPenned(testMap, homeRow, homeCol)) {
-                        const area = this._calculatePennedArea(testMap, homeRow, homeCol);
+                    if (PathfindingUtils.isPenned(testMap, homeRow, homeCol)) {
+                        const area = PathfindingUtils.calculatePennedArea(testMap, homeRow, homeCol);
                         if (area > bestArea) { // MAXIMIZE area!
                             bestArea = area;
                             bestSolution = [...walls];
@@ -450,96 +470,29 @@ class MILPSolver {
             }
         }
         
-        return bestSolution ? { walls: bestSolution, area: bestArea } : null;
+        return bestSolution ? { 
+            walls: bestSolution, 
+            area: bestArea,
+            optimalWallCount: bestSolution.length  // Record how many walls were actually used
+        } : null;
     }
     
     /**
-     * Check if home is penned in
+     * Check if home is penned in (delegated to shared PathfindingUtils)
+     * @deprecated Use PathfindingUtils.isPenned() directly
      * @private
      */
     static _isPenned(map, homeRow, homeCol) {
-        const verticalTiles = map.length;
-        const horizontalTiles = map[0].length;
-        
-        const visited = new Set([`${homeRow},${homeCol}`]);
-        const queue = [[homeRow, homeCol]];
-        const directions = [[-1, 0], [1, 0], [0, -1], [0, 1]];
-        
-        while (queue.length > 0) {
-            const [row, col] = queue.shift();
-            
-            // Check if reached edge
-            if (row === 0 || row === verticalTiles - 1 || col === 0 || col === horizontalTiles - 1) {
-                return false; // Can escape
-            }
-            
-            // Explore neighbors
-            for (const [dr, dc] of directions) {
-                const newRow = row + dr;
-                const newCol = col + dc;
-                const key = `${newRow},${newCol}`;
-                
-                if (newRow < 0 || newRow >= verticalTiles || newCol < 0 || newCol >= horizontalTiles) {
-                    continue;
-                }
-                
-                if (visited.has(key)) {
-                    continue;
-                }
-                
-                const tileType = map[newRow][newCol];
-                if (tileType === 0 || tileType === 5) { // water or wall
-                    continue;
-                }
-                
-                visited.add(key);
-                queue.push([newRow, newCol]);
-            }
-        }
-        
-        return true; // Penned
+        return PathfindingUtils.isPenned(map, homeRow, homeCol);
     }
     
     /**
-     * Calculate the penned area size
+     * Calculate the penned area size (delegated to shared PathfindingUtils)
+     * @deprecated Use PathfindingUtils.calculatePennedArea() directly
      * @private
      */
-    static _calculatePennedArea(map, walls, homeRow, homeCol) {
-        const verticalTiles = map.length;
-        const horizontalTiles = map[0].length;
-        
-        const visited = new Set([`${homeRow},${homeCol}`]);
-        const queue = [[homeRow, homeCol]];
-        const directions = [[-1, 0], [1, 0], [0, -1], [0, 1]];
-        
-        while (queue.length > 0) {
-            const [row, col] = queue.shift();
-            
-            // Explore neighbors
-            for (const [dr, dc] of directions) {
-                const newRow = row + dr;
-                const newCol = col + dc;
-                const key = `${newRow},${newCol}`;
-                
-                if (newRow < 0 || newRow >= verticalTiles || newCol < 0 || newCol >= horizontalTiles) {
-                    continue;
-                }
-                
-                if (visited.has(key)) {
-                    continue;
-                }
-                
-                const tileType = map[newRow][newCol];
-                if (tileType === 0 || tileType === 5) { // water or wall
-                    continue;
-                }
-                
-                visited.add(key);
-                queue.push([newRow, newCol]);
-            }
-        }
-        
-        return visited.size;
+    static _calculatePennedArea(map, homeRow, homeCol) {
+        return PathfindingUtils.calculatePennedArea(map, homeRow, homeCol);
     }
 }
 

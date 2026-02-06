@@ -33,6 +33,7 @@ async function generateDailyMap(size, maxWalls, date) {
     }
     
     let verifiedGoal = result.goal;
+    let optimalWallCount = result.maxWalls;  // MapGenerator now returns optimal wall count
     
     // For maps up to 7x7, verify with brute force for accuracy
     if (size <= 7) {
@@ -44,25 +45,29 @@ async function generateDailyMap(size, maxWalls, date) {
         
         if (bruteResult) {
             verifiedGoal = bruteResult.goalArea;
+            optimalWallCount = bruteResult.wallPositions.length;
             const match = verifiedGoal === result.goal;
             console.log(`  MILP goal: ${result.goal}, Brute force goal: ${verifiedGoal}`);
+            console.log(`  MILP walls: ${result.maxWalls}, Brute force walls: ${optimalWallCount}`);
             console.log(`  Match: ${match ? 'YES ✓' : 'NO ✗'}`);
             console.log(`  Verification took ${bruteDuration}ms`);
             
             // Use brute force result as it's guaranteed accurate
             result.goal = verifiedGoal;
+            result.maxWalls = optimalWallCount;
         } else {
             console.warn('  Brute force could not find solution, using MILP result');
         }
     } else {
         console.log(`  Using MILP solver (map too large for brute force)`);
-        console.log(`  Goal: ${result.goal} (not verified)`);
+        console.log(`  Goal: ${result.goal}, Walls: ${optimalWallCount} (not verified)`);
     }
     
     return {
         [date]: {
             size: size,
             goal: result.goal,
+            maxWalls: optimalWallCount,  // Use the optimal wall count, not the input maxWalls
             map: result.map
         }
     };
@@ -100,7 +105,7 @@ async function main() {
     // Display summary
     console.log('\nGenerated Maps:');
     for (const [date, data] of Object.entries(maps)) {
-        console.log(`  ${date}: ${data.size}x${data.size}, goal=${data.goal}`);
+        console.log(`  ${date}: ${data.size}x${data.size}, goal=${data.goal}, maxWalls=${data.maxWalls}`);
     }
     
     console.log('\n✓ Map generation complete!');

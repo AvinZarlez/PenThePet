@@ -7,6 +7,14 @@
  * This is intended for testing and validation, not production use.
  */
 
+// Import shared pathfinding utilities (only in Node.js environment)
+// In browser, PathfindingUtils is already loaded via script tag
+(function() {
+    if (typeof module !== 'undefined' && typeof require !== 'undefined' && typeof PathfindingUtils === 'undefined') {
+        global.PathfindingUtils = require('../js/PathfindingUtils.js');
+    }
+})();
+
 class BruteForceSolver {
     /**
      * Find the optimal wall placement by exhaustively checking all combinations
@@ -66,8 +74,8 @@ class BruteForceSolver {
             }
             
             // Check if penned
-            if (this._isPenned(testMap, homeRow, homeCol)) {
-                const area = this._calculatePennedArea(testMap, homeRow, homeCol);
+            if (PathfindingUtils.isPenned(testMap, homeRow, homeCol)) {
+                const area = PathfindingUtils.calculatePennedArea(testMap, homeRow, homeCol);
                 if (area > bestArea) { // MAXIMIZE area, not minimize!
                     bestArea = area;
                     bestSolution = wallPositions;
@@ -136,92 +144,21 @@ class BruteForceSolver {
     }
     
     /**
-     * Check if home is penned in
+     * Check if home is penned in (delegated to shared PathfindingUtils)
+     * @deprecated Use PathfindingUtils.isPenned() directly
      * @private
      */
     static _isPenned(map, homeRow, homeCol) {
-        const verticalTiles = map.length;
-        const horizontalTiles = map[0].length;
-        
-        const visited = new Set([`${homeRow},${homeCol}`]);
-        const queue = [[homeRow, homeCol]];
-        const directions = [[-1, 0], [1, 0], [0, -1], [0, 1]];
-        
-        while (queue.length > 0) {
-            const [row, col] = queue.shift();
-            
-            // Check if reached edge
-            if (row === 0 || row === verticalTiles - 1 || col === 0 || col === horizontalTiles - 1) {
-                return false; // Can escape
-            }
-            
-            // Explore neighbors
-            for (const [dr, dc] of directions) {
-                const newRow = row + dr;
-                const newCol = col + dc;
-                const key = `${newRow},${newCol}`;
-                
-                if (newRow < 0 || newRow >= verticalTiles || newCol < 0 || newCol >= horizontalTiles) {
-                    continue;
-                }
-                
-                if (visited.has(key)) {
-                    continue;
-                }
-                
-                const tileType = map[newRow][newCol];
-                if (tileType === 0 || tileType === 5) { // water or wall
-                    continue;
-                }
-                
-                visited.add(key);
-                queue.push([newRow, newCol]);
-            }
-        }
-        
-        return true; // Penned
+        return PathfindingUtils.isPenned(map, homeRow, homeCol);
     }
     
     /**
-     * Calculate the penned area size
+     * Calculate the penned area size (delegated to shared PathfindingUtils)
+     * @deprecated Use PathfindingUtils.calculatePennedArea() directly
      * @private
      */
     static _calculatePennedArea(map, homeRow, homeCol) {
-        const verticalTiles = map.length;
-        const horizontalTiles = map[0].length;
-        
-        const visited = new Set([`${homeRow},${homeCol}`]);
-        const queue = [[homeRow, homeCol]];
-        const directions = [[-1, 0], [1, 0], [0, -1], [0, 1]];
-        
-        while (queue.length > 0) {
-            const [row, col] = queue.shift();
-            
-            // Explore neighbors
-            for (const [dr, dc] of directions) {
-                const newRow = row + dr;
-                const newCol = col + dc;
-                const key = `${newRow},${newCol}`;
-                
-                if (newRow < 0 || newRow >= verticalTiles || newCol < 0 || newCol >= horizontalTiles) {
-                    continue;
-                }
-                
-                if (visited.has(key)) {
-                    continue;
-                }
-                
-                const tileType = map[newRow][newCol];
-                if (tileType === 0 || tileType === 5) { // water or wall
-                    continue;
-                }
-                
-                visited.add(key);
-                queue.push([newRow, newCol]);
-            }
-        }
-        
-        return visited.size;
+        return PathfindingUtils.calculatePennedArea(map, homeRow, homeCol);
     }
 }
 

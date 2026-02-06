@@ -1,0 +1,119 @@
+/**
+ * Pathfinding Utilities
+ * 
+ * Shared BFS pathfinding logic used by both MILPSolver and BruteForceSolver
+ * to ensure consistency between test and production code.
+ * 
+ * This module is the single source of truth for:
+ * - Checking if the pet is penned in
+ * - Calculating penned area size
+ */
+
+class PathfindingUtils {
+    /**
+     * Check if home is penned in (cannot reach any edge)
+     * 
+     * Uses BFS to explore all reachable tiles from home.
+     * If any edge tile is reached, the pet can escape.
+     * 
+     * @param {Array} map - 2D array where 0=water, 1=grass, 2=home, 5=wall
+     * @param {number} homeRow - Row index of home tile
+     * @param {number} homeCol - Column index of home tile
+     * @returns {boolean} True if penned (cannot reach edge), false otherwise
+     */
+    static isPenned(map, homeRow, homeCol) {
+        const verticalTiles = map.length;
+        const horizontalTiles = map[0].length;
+        
+        const visited = new Set([`${homeRow},${homeCol}`]);
+        const queue = [[homeRow, homeCol]];
+        const directions = [[-1, 0], [1, 0], [0, -1], [0, 1]];
+        
+        while (queue.length > 0) {
+            const [row, col] = queue.shift();
+            
+            // Check if reached edge
+            if (row === 0 || row === verticalTiles - 1 || col === 0 || col === horizontalTiles - 1) {
+                return false; // Can escape
+            }
+            
+            // Explore neighbors
+            for (const [dr, dc] of directions) {
+                const newRow = row + dr;
+                const newCol = col + dc;
+                const key = `${newRow},${newCol}`;
+                
+                if (newRow < 0 || newRow >= verticalTiles || newCol < 0 || newCol >= horizontalTiles) {
+                    continue;
+                }
+                
+                if (visited.has(key)) {
+                    continue;
+                }
+                
+                const tileType = map[newRow][newCol];
+                if (tileType === 0 || tileType === 5) { // water or wall
+                    continue;
+                }
+                
+                visited.add(key);
+                queue.push([newRow, newCol]);
+            }
+        }
+        
+        return true; // Penned
+    }
+    
+    /**
+     * Calculate the penned area size (number of tiles reachable from home)
+     * 
+     * Uses BFS to count all tiles reachable from home without crossing water or walls.
+     * 
+     * @param {Array} map - 2D array where 0=water, 1=grass, 2=home, 5=wall
+     * @param {number} homeRow - Row index of home tile
+     * @param {number} homeCol - Column index of home tile
+     * @returns {number} Number of tiles in the penned area (including home)
+     */
+    static calculatePennedArea(map, homeRow, homeCol) {
+        const verticalTiles = map.length;
+        const horizontalTiles = map[0].length;
+        
+        const visited = new Set([`${homeRow},${homeCol}`]);
+        const queue = [[homeRow, homeCol]];
+        const directions = [[-1, 0], [1, 0], [0, -1], [0, 1]];
+        
+        while (queue.length > 0) {
+            const [row, col] = queue.shift();
+            
+            // Explore neighbors
+            for (const [dr, dc] of directions) {
+                const newRow = row + dr;
+                const newCol = col + dc;
+                const key = `${newRow},${newCol}`;
+                
+                if (newRow < 0 || newRow >= verticalTiles || newCol < 0 || newCol >= horizontalTiles) {
+                    continue;
+                }
+                
+                if (visited.has(key)) {
+                    continue;
+                }
+                
+                const tileType = map[newRow][newCol];
+                if (tileType === 0 || tileType === 5) { // water or wall
+                    continue;
+                }
+                
+                visited.add(key);
+                queue.push([newRow, newCol]);
+            }
+        }
+        
+        return visited.size;
+    }
+}
+
+// Export for use in Node.js and browser
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = PathfindingUtils;
+}
