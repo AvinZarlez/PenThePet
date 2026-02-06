@@ -555,25 +555,39 @@ Thank you for helping maintain PenThePet! 🐕
 
 ## 🗺️ Map Generation Guidelines
 
-**CRITICAL: All map generation paths use the same method and validation.**
+**CRITICAL: Single consistent solver, no fallbacks.**
 
-### Three Generation Paths
+### Solver Usage Policy
+
+**MILPSolver (js/MILPSolver.js):**
+- ✅ Production solver - used for ALL map generation
+- ✅ Exhaustive search up to 50M combinations per wall count
+- ✅ Accurate and verified against test data
+- ✅ ONLY solver used in production code
+- ✅ No fallbacks, no heuristics
+
+**BruteForceSolver (test/BruteForceSolver.js):**
+- ✅ Test verification ONLY
+- ✅ Generates ground truth for test-maps-db.json
+- ✅ Validates MILPSolver accuracy on small maps (≤7x7)
+- ❌ NEVER used in production
+- ❌ NEVER used in map generation
+- ❌ NEVER as a fallback
+
+### Generation Flow (No Fallbacks)
 
 1. **Production Maps** (GitHub Actions or local script)
-   - Use: GitHub Actions workflow or `scripts/generate-single-map.js`
-   - Method: MILPSolver exhaustive search
-   - Validation: MapValidator (all rules)
-   - Verification: BruteForceSolver for ≤7x7 maps
+   - Use: `scripts/generate-single-map.js` or GitHub Actions
+   - Method: MILPSolver exhaustive search (ONLY method)
+   - Validation: MapValidator (all quality rules)
+   - Verification: BruteForceSolver for ≤7x7 maps (optional, for confidence)
+   - **On failure**: Throw error (no fallback to simplified maps)
 
 2. **Test Maps** (test setup)
    - Use: BruteForceSolver for ground truth
    - Only for maps ≤7x7 with ≤15 walls
-   - Provides verified optimal solutions
-
-3. **Debug Maps** (in-browser testing)
-   - Use: Same as production (no time limit)
-   - Method: MILPSolver exhaustive search
-   - Validation: MapValidator (all rules)
+   - Provides verified optimal solutions for testing
+   - Saves to test-maps-db.json
 
 ### Map Quality Rules
 
@@ -584,7 +598,11 @@ Thank you for helping maintain PenThePet! 🐕
 ✅ **Walls <= 15** - Must be solvable with CONSTANTS.MAX_WALLS  
 ✅ **Strategic placement** - At least one optimal wall not on edge  
 
-Maps failing any rule are discarded and regenerated.
+**If map fails quality checks:**
+- Discard map
+- Generate new random map
+- Retry up to 1000 times
+- If all attempts fail: **THROW ERROR** (no fallback!)
 
 ### Adding New Maps
 
@@ -620,10 +638,12 @@ node scripts/audit-maps.js
 
 ### DO NOT
 
-❌ Use time-limited generation (removed for quality)  
+❌ Fall back to BruteForceSolver in production  
+❌ Fall back to simplified/guaranteed valid maps  
 ❌ Skip MapValidator checks  
 ❌ Generate maps without validation  
 ❌ Change CONSTANTS.MAX_WALLS without regenerating all maps  
 ❌ Allow goalArea < 5 (too easy)  
 ❌ Allow all walls on edges only (too easy)  
+❌ Use multiple solver methods (use MILPSolver consistently)
 
