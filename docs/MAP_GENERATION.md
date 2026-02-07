@@ -232,30 +232,33 @@ Each generated map is validated to ensure:
 ### Key Files
 
 1. **js/constants.js**: All configurable constants
-2. **js/MapValidator.js**: Quality validation rules (NEW)
-3. **js/MapGenerator.js**: Main map generation logic
-4. **js/MILPSolver.js**: Exhaustive search solver for finding optimal wall placements
+2. **js/MapValidator.js**: Quality validation rules
+3. **js/MapGenerator.js**: Main map generation logic (NO FALLBACKS)
+4. **js/MILPSolver.js**: Production solver - exhaustive search for optimal wall placements
 5. **js/wordList.js**: Random English words for map names
-6. **test/BruteForceSolver.js**: Ground truth verification for small maps
+6. **test/BruteForceSolver.js**: Test-only ground truth verification for small maps
 7. **scripts/generate-single-map.js**: Generate one map (used by GitHub Actions)
 8. **scripts/generate-maps.js**: CLI script for batch map generation
 9. **scripts/audit-maps.js**: Validate existing maps
 
-### Generation Flow
+### Generation Flow (Updated - No Fallbacks)
 
 ```
 MapGenerator.generate()
   → _generateRandomMap()
   → _validateMap() [BFS pathfinding]
   → calculateGoal()
-      → MILPSolver.solveMap()
+      → MILPSolver.solveMap() [ONLY solver used]
           → _exhaustiveSearch() [memory-efficient]
               → _checkCombinationsIteratively()
-  → MapValidator.validate() [NEW - quality checks]
-  → Return { map, goal, maxWalls } or retry
+  → MapValidator.validate() [quality checks]
+  → Return { map, goal, maxWalls } or RETRY (up to 1000 attempts)
+  → If all attempts fail: THROW ERROR (no fallback!)
 ```
 
-### Validation Flow (NEW)
+**IMPORTANT**: No fallback to guaranteed valid maps. If generation fails after 1000 attempts, it throws an error. This ensures consistency and prevents degraded map quality.
+
+### Validation Flow
 
 ```
 MapValidator.validate(map, solution)
@@ -266,7 +269,7 @@ MapValidator.validate(map, solution)
   → Return {valid, errors}
 ```
 
-### Solver Algorithm Pseudocode
+### Solver Algorithm Pseudocode (Updated)
 
 ```
 For numWalls = 1 to MAX_WALLS:
@@ -274,8 +277,8 @@ For numWalls = 1 to MAX_WALLS:
     best_area = 0
     
     For each combination of numWalls walls:
-        if combinations_checked >= 100,000:
-            break  // Safety limit
+        if combinations_checked >= 50,000,000:
+            break  // Safety limit (increased for accuracy)
         
         Place walls on map
         if pet is penned:
@@ -367,12 +370,26 @@ node scripts/generate-maps.js --count 3 --sizes 7
 - At least one wall not on edge (strategic placement)
 - All maps solvable with ≤ 15 walls
 - Maps validated to have path to edge initially
+- **NO FALLBACKS**: Generation throws error if it fails (never falls back to simplified maps)
 
-**Three Generation Paths (All Use Same Method):**
+**Solver Usage Policy:**
 
-1. **Test Setup**: Uses BruteForceSolver for ground truth verification (≤7x7 only)
-2. **Production Maps**: Uses MILPSolver exhaustive search + MapValidator
-3. **Debug Maps**: Uses MILPSolver exhaustive search + MapValidator (same as production)
+1. **Production**: MILPSolver ONLY
+   - Used for all map generation (scripts, actions, in-game)
+   - Exhaustive search up to 50M combinations per wall count
+   - No fallbacks, no heuristics, no alternatives
+   - Single source of truth
 
-All three paths now use the same exhaustive search algorithm and validation rules.
+2. **Testing**: BruteForceSolver ONLY
+   - Used ONLY for test-maps-db.json ground truth
+   - Used ONLY to verify MILPSolver on small maps (≤7x7)
+   - Located in test/ directory (not production code)
+   - NEVER used in map generation or as fallback
+
+3. **No Fallback Logic**:
+   - Map generation uses single consistent method
+   - If generation fails, throw error (no fallback to simplified maps)
+   - This ensures all maps meet same quality standards
+
+All production paths use the same exhaustive search algorithm and validation rules.
 Time-limited generation has been removed to ensure consistent quality.

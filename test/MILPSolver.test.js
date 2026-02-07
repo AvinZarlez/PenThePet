@@ -321,50 +321,8 @@ describe('MILPSolver', () => {
         });
     });
 
-    describe('_heuristicSearch()', () => {
-        test('should find solution using heuristics', () => {
-            const map = [
-                [1, 1, 1, 1, 1],
-                [1, 1, 1, 1, 1],
-                [1, 1, 2, 1, 1],
-                [1, 1, 1, 1, 1],
-                [1, 1, 1, 1, 1]
-            ];
-            const result = MILPSolver._heuristicSearch(map, 6, 2, 2);
-            
-            // Heuristic may or may not find solution
-            expect(result === null || typeof result.goalArea === 'number').toBe(true);
-        });
-
-        test('should complete in reasonable time for large maps', () => {
-            const size = 9;
-            const map = Array(size).fill(null).map(() => Array(size).fill(1));
-            const center = Math.floor(size / 2);
-            map[center][center] = 2;
-            
-            const startTime = Date.now();
-            MILPSolver._heuristicSearch(map, 8, center, center);
-            const elapsed = Date.now() - startTime;
-            
-            expect(elapsed).toBeLessThan(30000); // Should complete in 30 seconds
-        });
-
-        test('should try multiple strategies', () => {
-            const map = [
-                [1, 1, 1, 1, 1, 1, 1],
-                [1, 0, 0, 0, 0, 0, 1],
-                [1, 0, 1, 1, 1, 0, 1],
-                [1, 0, 1, 2, 1, 0, 1],
-                [1, 0, 1, 1, 1, 0, 1],
-                [1, 0, 0, 0, 0, 0, 1],
-                [1, 1, 1, 1, 1, 1, 1]
-            ];
-            const result = MILPSolver._heuristicSearch(map, 8, 3, 3);
-            
-            // Should attempt solution
-            expect(result === null || result.goalArea).toBeTruthy();
-        });
-    });
+    // Note: _heuristicSearch and related methods have been removed as they were experimental
+    // and not used in production code. The solver uses only exhaustive search for accuracy.
 
     describe('Integration with PathfindingUtils', () => {
         test('solver result should be verifiable with PathfindingUtils', () => {

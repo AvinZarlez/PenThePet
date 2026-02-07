@@ -247,19 +247,22 @@ The map generation system consists of:
 1. **MapGenerator.js** (`js/MapGenerator.js`)
    - Generates random maps with guaranteed path to edge
    - Validates map connectivity using BFS pathfinding
-   - Calculates goal using MILPSolver
+   - Calculates goal using MILPSolver (ONLY solver)
+   - **NO FALLBACKS**: Throws error if generation fails after 1000 attempts
 
-2. **MILPSolver.js** (`js/MILPSolver.js`)
+2. **MILPSolver.js** (`js/MILPSolver.js`) - **PRODUCTION SOLVER**
+   - ✅ ONLY solver used in production
    - Finds optimal wall placements to **MAXIMIZE** penned area
-   - Uses exhaustive search for small maps (<200k combinations)
-   - Uses heuristic search for larger maps
+   - Uses exhaustive search up to 50M combinations per wall count
+   - No heuristics, no fallbacks - single consistent method
    - **CRITICAL**: Goal is MAXIMUM area, not minimum!
 
-3. **BruteForceSolver.js** (`test/BruteForceSolver.js`)
-   - Testing-only exhaustive search solver
+3. **BruteForceSolver.js** (`test/BruteForceSolver.js`) - **TEST ONLY**
+   - ⚠️ Testing-only exhaustive search solver
    - Checks ALL possible wall combinations
-   - Used to validate MILPSolver accuracy
-   - Provides ground truth for test maps
+   - Used ONLY to validate MILPSolver accuracy on small maps (≤7x7)
+   - Provides ground truth for test-maps-db.json
+   - **NEVER** used in production or as fallback
 
 ### How Goal Calculation Works
 
