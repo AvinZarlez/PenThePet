@@ -6,6 +6,7 @@ Complete guide for developing PenThePet.
 
 - [Getting Started](#getting-started)
 - [Development Workflow](#development-workflow)
+- [Testing Branches](#testing-branches)
 - [Coding Standards](#coding-standards)
 - [Common Tasks](#common-tasks)
 - [Debugging](#debugging)
@@ -113,6 +114,51 @@ PenThePet/
 4. **Run tests frequently** - Catch regressions early
 5. **Commit often** - Small commits are easier to review
 6. **Update docs** - Keep documentation in sync with code
+
+## Testing Branches
+
+Before merging changes to main, you should test your branch thoroughly. There are multiple ways to test:
+
+### Quick Testing Options
+
+**Option 1: Test Locally (Recommended for Development)**
+- Fastest feedback loop
+- Full debugging capabilities  
+- No impact on production
+
+**Option 2: Test on GitHub Pages (Visual Testing)**
+- See changes live without local setup
+- Temporarily replaces main branch
+- Good for visual verification
+
+**Option 3: GitHub Codespaces (Cloud Testing)**
+- No local setup needed
+- Full development environment
+- Limited free hours
+
+**📖 Complete Guide:** See [DEBUGGING_BRANCHES.md](DEBUGGING_BRANCHES.md) for:
+- Detailed setup instructions for each method
+- Testing multiple branches simultaneously
+- Best practices and troubleshooting
+- Step-by-step workflows
+
+### Quick Local Testing
+
+For quick local testing during development:
+
+```bash
+# Start local server (choose one)
+python3 -m http.server 8080
+# OR
+npx http-server -p 8080
+# OR  
+php -S localhost:8080
+
+# Open http://localhost:8080
+# Make changes → Save → Hard refresh browser (Cmd/Ctrl+Shift+R)
+```
+
+See [DEBUGGING_BRANCHES.md](DEBUGGING_BRANCHES.md) for more advanced workflows.
 
 ## Coding Standards
 

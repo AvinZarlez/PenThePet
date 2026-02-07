@@ -49,6 +49,13 @@ These are the core documentation files that describe the current state of the pr
   - Troubleshooting
   - CI/CD setup
 
+- **[DEBUGGING_BRANCHES.md](DEBUGGING_BRANCHES.md)** - Testing branches before merging
+  - Testing without cloning (GitHub Pages)
+  - Testing locally with live server
+  - Testing multiple branches simultaneously
+  - Best practices for branch testing
+  - Troubleshooting common issues
+
 ## 📝 Change Summaries
 
 Historical documentation of major changes, bug fixes, and implementations:
@@ -66,7 +73,8 @@ Historical documentation of major changes, bug fixes, and implementations:
 ### For New Developers
 1. Read [CODE_STRUCTURE.md](CODE_STRUCTURE.md) to understand the architecture
 2. Review [DEVELOPMENT.md](DEVELOPMENT.md) for setup instructions
-3. Check [TESTING.md](TESTING.md) to learn about the test suite
+3. Check [DEBUGGING_BRANCHES.md](DEBUGGING_BRANCHES.md) for testing branches
+4. Review [TESTING.md](TESTING.md) to learn about the test suite
 
 ### For AI Coding Agents
 1. **Must read first:** [AGENT_GUIDELINES.md](AGENT_GUIDELINES.md)
@@ -90,6 +98,7 @@ Historical documentation of major changes, bug fixes, and implementations:
 
 **Development:**
 - [DEVELOPMENT.md](DEVELOPMENT.md) - Day-to-day workflow
+- [DEBUGGING_BRANCHES.md](DEBUGGING_BRANCHES.md) - Testing branches
 - [TESTING.md](TESTING.md) - Test infrastructure
 
 **Map Generation:**
@@ -105,7 +114,8 @@ Historical documentation of major changes, bug fixes, and implementations:
 **Making Code Changes:**
 1. [AGENT_GUIDELINES.md](AGENT_GUIDELINES.md) - Requirements
 2. [CODE_STRUCTURE.md](CODE_STRUCTURE.md) - Architecture
-3. [TESTING.md](TESTING.md) - Testing
+3. [DEBUGGING_BRANCHES.md](DEBUGGING_BRANCHES.md) - Testing branches
+4. [TESTING.md](TESTING.md) - Testing
 
 **Adding Features:**
 1. [ARCHITECTURE.md](ARCHITECTURE.md) - Design philosophy
@@ -159,5 +169,5 @@ When updating documentation:
 ---
 
 **Last Updated:** 2026-02-06  
-**Total Documentation Files:** 12 (6 main + 6 summaries)  
-**Lines of Documentation:** ~6,000+
+**Total Documentation Files:** 13 (7 main + 6 summaries)  
+**Lines of Documentation:** ~12,000+
