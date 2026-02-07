@@ -46,6 +46,7 @@
             <div class="control-group button-group">
                 <button id="clearBtn" class="btn btn-warning">Clear Grid</button>
                 <button id="saveBtn" class="btn btn-primary">Save Level</button>
+                <button id="solveBtn" class="btn btn-primary">Run Solver</button>
             </div>
         </div>
         
@@ -60,9 +61,41 @@
             <button id="copyBtn" class="btn btn-success">Copy to Clipboard</button>
             <div id="copyFeedback" class="copy-feedback"></div>
         </div>
+        
+        <!-- Complete Map Section (Initially Hidden) -->
+        <div id="completeSection" class="export-section complete-section" style="display: none;">
+            <h3>✅ Complete Map with Solution</h3>
+            <p class="export-info">This map includes the optimal solution calculated by the solver:</p>
+            <div class="solution-summary">
+                <div class="summary-item">
+                    <strong>Grid Size:</strong> <span id="completeSizeDisplay">-</span>
+                </div>
+                <div class="summary-item">
+                    <strong>Goal Area:</strong> <span id="completeGoalDisplay">-</span>
+                </div>
+                <div class="summary-item">
+                    <strong>Optimal Walls:</strong> <span id="completeWallsDisplay">-</span>
+                </div>
+            </div>
+            <textarea id="completeData" readonly></textarea>
+            <div class="complete-actions">
+                <button id="copyCompleteBtn" class="btn btn-success">Copy to Clipboard</button>
+                <div class="date-field-group">
+                    <label for="mapDateField">Date (optional):</label>
+                    <input type="date" id="mapDateField" placeholder="YYYY-MM-DD">
+                    <small>Leave blank to use today's date</small>
+                </div>
+                <button id="insertMapBtn" class="btn btn-primary">Insert into Maps Data</button>
+            </div>
+            <div id="completeFeedback" class="copy-feedback"></div>
+        </div>
     </div>
     
     <!-- Scripts -->
+    <!-- Load dependencies needed for solver -->
+    <script src="js/PathfindingUtils.js"></script>
+    <script src="js/MILPSolver.js"></script>
+    <script src="js/wordList.js"></script>
     <script src="js/LevelEditor.js"></script>
 </body>
 </html>
