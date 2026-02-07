@@ -1,0 +1,251 @@
+/**
+ * Level Editor Styles
+ * 
+ * Contains all CSS styling for the level editor interface.
+ */
+
+/* ========== Global Styles ========== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+
+/* ========== Container Styles ========== */
+.container {
+    background: white;
+    border-radius: 20px;
+    padding: 30px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    max-width: 800px;
+    width: 100%;
+}
+
+/* ========== Typography ========== */
+h1 {
+    text-align: center;
+    color: #333;
+    margin-bottom: 10px;
+    font-size: 2em;
+}
+
+.subtitle {
+    text-align: center;
+    color: #666;
+    margin-bottom: 20px;
+    font-size: 0.9em;
+}
+
+h3 {
+    color: #333;
+    margin-bottom: 10px;
+}
+
+/* ========== Controls Section ========== */
+.controls-section {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.control-group {
+    margin-bottom: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.control-group:last-child {
+    margin-bottom: 0;
+}
+
+.control-group label {
+    font-weight: 600;
+    color: #333;
+    font-size: 0.95em;
+}
+
+.control-group input[type="range"] {
+    width: 100%;
+    cursor: pointer;
+}
+
+.control-group input[type="text"],
+.control-group input[type="number"],
+.control-group select {
+    padding: 8px 12px;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    font-size: 1em;
+    transition: border-color 0.2s;
+}
+
+.control-group input[type="text"]:focus,
+.control-group input[type="number"]:focus,
+.control-group select:focus {
+    outline: none;
+    border-color: #667eea;
+}
+
+/* ========== Button Styles ========== */
+.button-group {
+    flex-direction: row !important;
+    justify-content: space-between;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.btn {
+    padding: 12px 24px;
+    border: none;
+    border-radius: 8px;
+    font-size: 1em;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    flex: 1;
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.btn:active {
+    transform: translateY(0);
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+}
+
+.btn-warning {
+    background: linear-gradient(135deg, #ff9a56 0%, #ff6a56 100%);
+    color: white;
+}
+
+.btn-success {
+    background: linear-gradient(135deg, #7ed957 0%, #4caf50 100%);
+    color: white;
+}
+
+/* ========== Grid Container ========== */
+.grid-container {
+    display: inline-grid;
+    gap: var(--cell-gap, 3px);
+    background-color: #999;
+    padding: var(--cell-gap, 3px);
+    border-radius: 8px;
+    margin: 0 auto;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    justify-self: center;
+    width: 100%;
+    max-width: 600px;
+    aspect-ratio: 1 / 1;
+}
+
+/* ========== Cell Styles ========== */
+.cell {
+    width: var(--cell-size, 40px);
+    height: var(--cell-size, 40px);
+    border-radius: 4px;
+    cursor: pointer;
+    transition: transform 0.1s, box-shadow 0.1s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: calc(var(--cell-size, 40px) * 0.6);
+    user-select: none;
+}
+
+.cell:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+}
+
+.cell:active {
+    transform: scale(0.98);
+}
+
+/* Tile type styles */
+.cell.grass {
+    background: linear-gradient(135deg, #7ed957 0%, #4caf50 100%);
+}
+
+.cell.water {
+    background: linear-gradient(135deg, #4fc3f7 0%, #2196f3 100%);
+}
+
+.cell.home {
+    background: linear-gradient(135deg, #ffeb3b 0%, #ffc107 100%);
+}
+
+.cell.empty {
+    background: linear-gradient(135deg, #f0f0f0 0%, #e0e0e0 100%);
+}
+
+/* ========== Export Section ========== */
+.export-section {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border-radius: 10px;
+    padding: 20px;
+    margin-top: 20px;
+}
+
+.export-info {
+    color: #666;
+    font-size: 0.9em;
+    margin-bottom: 10px;
+}
+
+#exportData {
+    width: 100%;
+    min-height: 200px;
+    padding: 12px;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    font-family: 'Courier New', monospace;
+    font-size: 0.85em;
+    resize: vertical;
+    background: white;
+    margin-bottom: 10px;
+}
+
+.copy-feedback {
+    text-align: center;
+    color: #4caf50;
+    font-weight: 600;
+    min-height: 20px;
+    margin-top: 10px;
+}
+
+/* ========== Responsive Design ========== */
+@media (max-width: 600px) {
+    .container {
+        padding: 20px;
+    }
+    
+    h1 {
+        font-size: 1.5em;
+    }
+    
+    .button-group {
+        flex-direction: column !important;
+    }
+    
+    .grid-container {
+        max-width: 100%;
+    }
+}
