@@ -13,6 +13,7 @@
 
 ### Read for Specific Changes
 - **Map generation** → [docs/MAP_GENERATION.md](../docs/MAP_GENERATION.md)
+- **Level editor** → [docs/LEVEL_EDITOR.md](../docs/LEVEL_EDITOR.md)
 - **Adding tests** → [docs/TESTING.md](../docs/TESTING.md)  
 - **Development setup** → [docs/DEVELOPMENT.md](../docs/DEVELOPMENT.md)
 
@@ -35,8 +36,10 @@ PenThePet is a browser-based logic puzzle game about fencing in your pet. The ga
 ```
 PenThePet/
 ├── index.html              # Main HTML file (minimal, references external files)
+├── editor.html             # Level editor tool for creating custom maps
 ├── css/
-│   └── styles.css          # All game styling
+│   ├── styles.css          # All game styling
+│   └── editor.css          # Level editor styling
 ├── js/
 │   ├── constants.js        # Configuration constants
 │   ├── config.js           # Game configuration and settings
@@ -48,6 +51,7 @@ PenThePet/
 │   ├── Grid.js             # Grid data structure and generation logic
 │   ├── Game.js             # Main game controller and interaction logic
 │   ├── Menu.js             # Menu system (level selector, options, etc.)
+│   ├── LevelEditor.js      # Level editor logic and solver integration
 │   └── main.js             # Application entry point and initialization
 ├── scripts/
 │   └── generate-maps.js    # CLI for batch map generation
@@ -56,6 +60,7 @@ PenThePet/
 │   ├── CODE_STRUCTURE.md   # Code organization
 │   ├── ARCHITECTURE.md     # Design decisions
 │   ├── MAP_GENERATION.md   # Algorithm details
+│   ├── LEVEL_EDITOR.md     # Level editor guide
 │   ├── TESTING.md          # Testing guide
 │   └── DEVELOPMENT.md      # Developer guide
 └── test/                   # Test suite (262 tests)

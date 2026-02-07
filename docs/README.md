@@ -49,6 +49,14 @@ These are the core documentation files that describe the current state of the pr
   - Troubleshooting
   - CI/CD setup
 
+- **[LEVEL_EDITOR.md](LEVEL_EDITOR.md)** - Level editor tool guide
+  - How to use the level editor
+  - Solver integration details
+  - Map export and storage
+  - Technical implementation
+  - Workflows and best practices
+  - Troubleshooting
+
 - **[DEBUGGING_BRANCHES.md](DEBUGGING_BRANCHES.md)** - Testing branches before merging
   - Testing without cloning (GitHub Pages)
   - Testing locally with live server
@@ -98,6 +106,7 @@ Historical documentation of major changes, bug fixes, and implementations:
 
 **Development:**
 - [DEVELOPMENT.md](DEVELOPMENT.md) - Day-to-day workflow
+- [LEVEL_EDITOR.md](LEVEL_EDITOR.md) - Level editor tool
 - [DEBUGGING_BRANCHES.md](DEBUGGING_BRANCHES.md) - Testing branches
 - [TESTING.md](TESTING.md) - Test infrastructure
 
@@ -124,7 +133,8 @@ Historical documentation of major changes, bug fixes, and implementations:
 
 **Generating Maps:**
 1. [MAP_GENERATION.md](MAP_GENERATION.md) - Complete guide
-2. [AGENT_GUIDELINES.md](AGENT_GUIDELINES.md) - Quality rules
+2. [LEVEL_EDITOR.md](LEVEL_EDITOR.md) - Visual editor tool
+3. [AGENT_GUIDELINES.md](AGENT_GUIDELINES.md) - Quality rules
 
 **Understanding History:**
 1. [summaries/](summaries/) - All change summaries
@@ -168,6 +178,6 @@ When updating documentation:
 
 ---
 
-**Last Updated:** 2026-02-06  
-**Total Documentation Files:** 13 (7 main + 6 summaries)  
-**Lines of Documentation:** ~12,000+
+**Last Updated:** 2026-02-07  
+**Total Documentation Files:** 14 (8 main + 6 summaries)  
+**Lines of Documentation:** ~22,000+
