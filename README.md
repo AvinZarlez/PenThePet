@@ -79,6 +79,7 @@ This project has comprehensive documentation for both human developers and AI co
 - **[Map Generation](docs/MAP_GENERATION.md)** - Algorithm details and map generation process
 - **[Testing Guide](docs/TESTING.md)** - Testing infrastructure and how to add tests
 - **[Development Guide](docs/DEVELOPMENT.md)** - Setup, workflows, and best practices
+- **[Branch Testing Guide](docs/DEBUGGING_BRANCHES.md)** - How to test branches before merging
 - **[Design Decisions](docs/ARCHITECTURE.md)** - Why the project is built this way
 
 ### Project History
