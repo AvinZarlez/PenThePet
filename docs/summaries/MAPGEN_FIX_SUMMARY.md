@@ -1,5 +1,8 @@
 # Map Generation Fix Summary
 
+> **⚠️ HISTORICAL DOCUMENT** - This summary documents changes made on 2026-02-06.  
+> Some files mentioned here have since been refactored/removed. See current structure in [TESTING.md](../TESTING.md).
+
 ## Issue
 The map generation system was calculating ultra-small goals (like 1) when the actual maximum achievable penned area was much larger.
 

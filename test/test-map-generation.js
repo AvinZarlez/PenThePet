@@ -1,11 +1,26 @@
 /**
- * Test script to validate map generation and goal calculation
+ * Ground Truth Generator for Test Maps
  * 
- * This script:
- * 1. Generates test maps
- * 2. Finds the optimal solution using brute force
- * 3. Compares it to the MILP solver solution
- * 4. Saves verified maps to a test database
+ * PURPOSE:
+ * This utility generates verified test maps with ground truth optimal solutions
+ * using the BruteForceSolver. It is used to:
+ * 1. Generate test-maps-db.json with verified optimal solutions
+ * 2. Validate MILPSolver accuracy by comparing against brute force
+ * 3. Provide ground truth data for unit tests
+ * 
+ * IMPORTANT:
+ * - This is a TEST UTILITY, not production code
+ * - Only works for small maps (≤7x7) due to brute force computational limits
+ * - BruteForceSolver is the ground truth reference
+ * - Run this to regenerate test-maps-db.json when needed
+ * 
+ * USAGE:
+ *   node test/test-map-generation.js
+ * 
+ * OUTPUT FILES:
+ *   - test-maps-db.json: Verified test maps with ground truth solutions
+ *   - test-results.json: Detailed comparison results
+ *   - test-summary.txt: Human-readable summary
  */
 
 // Import required modules

@@ -1,5 +1,8 @@
 # Map Generation Audit Summary
 
+> **⚠️ HISTORICAL DOCUMENT** - This summary documents changes made during a previous refactoring.  
+> Some files mentioned here have since been refactored/removed. See current structure in [TESTING.md](../TESTING.md).
+
 ## Overview
 
 This document summarizes the complete map generation audit and consolidation performed to address the requirements in the problem statement.

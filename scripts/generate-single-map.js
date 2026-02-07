@@ -3,26 +3,16 @@
 /**
  * Generate a single map and add it to maps.json
  * Used by GitHub Actions workflow for daily map generation
+ * 
+ * This script uses ONLY MILPSolver (via MapGenerator) for production map generation.
+ * BruteForceSolver is NOT used here - it's only for test verification in test/ directory.
  */
 
 const fs = require('fs');
 const path = require('path');
 const MapGenerator = require('../js/MapGenerator.js');
 const MapValidator = require('../js/MapValidator.js');
-const BruteForceSolver = require('../test/BruteForceSolver.js');
 const { getRandomWord } = require('../js/wordList.js');
-
-/**
- * Convert map from string format to numeric format
- */
-function mapToNumeric(stringMap) {
-    return stringMap.map(row => row.map(tile => {
-        if (tile === 'water') return 0;
-        if (tile === 'grass') return 1;
-        if (tile === 'home') return 2;
-        return 1;
-    }));
-}
 
 /**
  * Get the next day number from maps.json
@@ -83,44 +73,7 @@ async function generateSingleMap(date, size, maxWalls) {
     }
     
     console.log('✓ Map passed quality validation');
-    
-    let verifiedGoal = result.goal;
-    let optimalWallCount = result.maxWalls;
-    
-    // For maps up to 7x7, verify with brute force for accuracy
-    if (size <= 7) {
-        console.log('\nRunning brute force verification...');
-        const numericMap = mapToNumeric(result.map);
-        const bruteStart = Date.now();
-        
-        try {
-            const bruteResult = BruteForceSolver.solveMap(numericMap, maxWalls);
-            const bruteDuration = Date.now() - bruteStart;
-            
-            if (bruteResult) {
-                verifiedGoal = bruteResult.goalArea;
-                optimalWallCount = bruteResult.wallPositions.length;
-                const match = verifiedGoal === result.goal;
-                
-                console.log(`  Exhaustive: goal=${result.goal}, walls=${result.maxWalls}`);
-                console.log(`  Brute force: goal=${verifiedGoal}, walls=${optimalWallCount}`);
-                console.log(`  Match: ${match ? 'YES ✓' : 'NO ✗'}`);
-                console.log(`  Verification took ${bruteDuration}ms`);
-                
-                // Use brute force result as it's guaranteed accurate
-                result.goal = verifiedGoal;
-                result.maxWalls = optimalWallCount;
-            } else {
-                console.warn('  ⚠ Brute force could not find solution, using exhaustive search result');
-            }
-        } catch (error) {
-            console.warn(`  ⚠ Brute force verification failed: ${error.message}`);
-            console.warn('  Using exhaustive search result');
-        }
-    } else {
-        console.log('\n✓ Using exhaustive search result (map too large for brute force verification)');
-        console.log(`  Goal: ${result.goal}, Walls: ${optimalWallCount}`);
-    }
+    console.log(`  Goal: ${result.goal}, Walls: ${result.maxWalls}`);
     
     // Get a random name for the map
     const mapName = getRandomWord();
@@ -232,4 +185,4 @@ if (require.main === module) {
     });
 }
 
-module.exports = { generateSingleMap, getNextDayNumber, mapToNumeric };
+module.exports = { generateSingleMap, getNextDayNumber };

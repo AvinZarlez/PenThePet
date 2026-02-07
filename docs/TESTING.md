@@ -76,10 +76,9 @@ PenThePet has a comprehensive test suite with:
 test/
 ├── setup.js                    # Jest setup and global mocks
 ├── *.test.js                   # Unit test files
-├── BruteForceSolver.js         # Test utility (exhaustive solver)
-├── generate-daily-maps.js      # Map generation utility
-├── test-map-generation.js      # Map validation utility
-├── validate-generation.js      # Generation smoke test
+├── BruteForceSolver.js         # Test utility (exhaustive solver, TEST ONLY)
+├── test-map-generation.js      # Ground truth generator for test data
+├── test-maps-db.json           # Verified test maps with optimal solutions
 └── README.md                   # Test documentation
 ```
 
@@ -332,10 +331,8 @@ test('should generate valid map with path to edge', () => {
 
 These are in `test/` but are utilities, not tests:
 
-- **BruteForceSolver.js** - Exhaustive search for test validation
-- **generate-daily-maps.js** - Generate maps for maps.json
-- **test-map-generation.js** - Compare solvers for accuracy
-- **validate-generation.js** - Quick smoke test for generation
+- **BruteForceSolver.js** - Exhaustive search for test validation (⚠️ TEST ONLY - never use in production)
+- **test-map-generation.js** - Generates verified test maps with ground truth optimal solutions using brute force
 
 ## Writing Tests
 

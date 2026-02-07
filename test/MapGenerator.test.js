@@ -589,4 +589,79 @@ describe('MapGenerator', () => {
             expect(elapsed).toBeLessThan(1000); // 100 validations in under 1 second
         });
     });
+
+    // NOTE: These tests are skipped by default because they run actual map generation
+    // which can be slow. Run them manually when you need to verify generation works.
+    describe.skip('Generation Smoke Tests', () => {
+        /**
+         * These tests validate that map generation works end-to-end:
+         * 1. Maps can be generated successfully
+         * 2. Goals are reasonable (not ultra small)
+         * 3. Goals scale with map size
+         * 4. Generation completes in reasonable time
+         */
+
+        test('should generate maps with reasonable goals', () => {
+            // Use smaller maps for faster testing
+            const testCases = [
+                { size: 5, maxWalls: 5 },
+                { size: 7, maxWalls: 7 }
+            ];
+
+            const results = [];
+
+            for (const { size, maxWalls } of testCases) {
+                const generator = new MapGenerator(size, { grass: 0.7, water: 0.3 });
+                const startTime = Date.now();
+                const result = generator.generate(null, maxWalls);
+                const duration = Date.now() - startTime;
+
+                expect(result).not.toBeNull();
+                expect(result.goal).toBeGreaterThan(0);
+                expect(result.map).toHaveLength(size);
+                expect(result.maxWalls).toBeLessThanOrEqual(maxWalls);
+
+                // Goals should be reasonable for the grid size
+                const totalTiles = size * size;
+                const minReasonable = Math.max(3, Math.floor(totalTiles * 0.1));
+                const maxReasonable = Math.floor(totalTiles * 0.8);
+                
+                expect(result.goal).toBeGreaterThanOrEqual(minReasonable);
+                expect(result.goal).toBeLessThanOrEqual(maxReasonable);
+
+                // Generation should complete in reasonable time
+                expect(duration).toBeLessThan(30000); // 30 seconds max
+
+                results.push({ size, goal: result.goal, duration });
+            }
+
+            // Goals should generally trend upward with size
+            if (results.length >= 2) {
+                // Allow some flexibility - larger maps should tend to have larger goals
+                // but don't require strict monotonic increase
+                const avgGoalsIncreasing = results[results.length - 1].goal >= results[0].goal;
+                expect(avgGoalsIncreasing).toBe(true);
+            }
+        }, 60000); // 60 second timeout for this test
+
+        test('should generate valid maps consistently', () => {
+            const generator = new MapGenerator(5, { grass: 0.7, water: 0.3 });
+            
+            // Generate multiple maps to ensure consistency  
+            for (let i = 0; i < 2; i++) {
+                const result = generator.generate(null, 5);
+                
+                expect(result).not.toBeNull();
+                expect(result.map).toHaveLength(5);
+                expect(result.goal).toBeGreaterThan(0);
+                expect(result.maxWalls).toBeLessThanOrEqual(5);
+                
+                // Verify home tile exists
+                const homeFound = result.map.some(row => 
+                    row.some(tile => tile === 'home')
+                );
+                expect(homeFound).toBe(true);
+            }
+        }, 60000); // 60 second timeout for this test
+    });
 });

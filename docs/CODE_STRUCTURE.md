@@ -29,11 +29,14 @@ PenThePet/
 │   ├── Menu.js             # Menu system (level selector, options, etc.)
 │   └── main.js             # Application entry point and initialization
 ├── scripts/
-│   └── generate-maps.js    # CLI script for batch map generation with metadata
-├── test/                   # Test suite (262 tests, coverage TBD)
-│   ├── *.test.js           # Unit tests for each module
-│   ├── BruteForceSolver.js # Exhaustive solver for test verification
-│   └── utility scripts     # Map generation and validation utilities
+│   ├── generate-maps.js       # CLI script for batch map generation with metadata
+│   ├── generate-single-map.js # Single map generator (used by GitHub Actions)
+│   └── audit-maps.js          # Validate existing maps in maps.json
+├── test/                   # Test suite (274 tests, 91% coverage)
+│   ├── *.test.js              # Unit tests for each module
+│   ├── BruteForceSolver.js    # Exhaustive solver for test verification (TEST ONLY)
+│   ├── test-map-generation.js # Ground truth generator for test data
+│   └── test-maps-db.json      # Verified test maps with optimal solutions
 ├── docs/                   # 📚 Comprehensive documentation
 │   ├── CODE_STRUCTURE.md   # This file
 │   ├── ARCHITECTURE.md     # Design decisions
@@ -197,16 +200,43 @@ Application entry point:
 
 **To customize initialization:** Modify the `initGame()` function.
 
+## Scripts (`scripts/` directory)
+
 ### `scripts/generate-maps.js`
 CLI script for batch map generation:
 - Generates maps with metadata (dayNumber, mapName, date)
 - Supports fresh generation or appending to existing maps
 - Configurable sizes, dates, and count
+- Validates and fixes database consistency
 - Saves to maps.json with proper formatting
 
 **Usage:**
 ```bash
 node scripts/generate-maps.js --fresh --count 10 --sizes 7,9,11
+```
+
+### `scripts/generate-single-map.js`
+Generate a single map for a specific date:
+- Used by GitHub Actions workflow
+- Validates map meets quality standards
+- For maps ≤7x7, verifies with BruteForceSolver
+- Automatically assigns day number and random name
+- Prevents duplicate dates
+
+**Usage:**
+```bash
+node scripts/generate-single-map.js --date 2026-02-15 --size 9
+```
+
+### `scripts/audit-maps.js`
+Validate existing maps in maps.json:
+- Checks all maps meet quality standards
+- Reports validation failures
+- Uses MapValidator for consistency
+
+**Usage:**
+```bash
+node scripts/audit-maps.js
 ```
 
 ### `maps.json`

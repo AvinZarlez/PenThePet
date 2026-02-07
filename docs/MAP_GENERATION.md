@@ -164,9 +164,8 @@ Use the GitHub Actions workflow to generate and commit a single daily map:
 5. Click **"Run workflow"**
 
 The workflow will:
-- Generate a map using exhaustive search
+- Generate a map using MILPSolver (production solver)
 - Validate it meets quality standards
-- For small maps (≤7x7), verify with brute force
 - Automatically commit the new map to `maps.json`
 - Assign next day number and random name
 
