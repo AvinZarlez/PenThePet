@@ -48,12 +48,13 @@ npm run lint
 
 **Test Utilities:**
 - `setup.js` - Jest configuration and global mocks
-- `BruteForceSolver.js` - Exhaustive solver for test verification
+- `BruteForceSolver.js` - Exhaustive solver for test verification (TEST ONLY)
 
-**Map Generation Utilities:**
-- `generate-daily-maps.js` - Generate maps for maps.json with verification
-- `test-map-generation.js` - Compare solvers and generate test data
-- `validate-generation.js` - Quick smoke test for generation
+**Ground Truth Generator:**
+- `test-map-generation.js` - Generates verified test maps using brute force, compares solver accuracy
+
+**Test Data:**
+- `test-maps-db.json` - Verified test maps with ground truth optimal solutions
 
 ## Test Coverage
 
@@ -97,28 +98,24 @@ describe('MyFunction', () => {
 });
 ```
 
-## Map Generation Testing
+## Ground Truth Test Data Generation
 
-### Quick Validation
-
-```bash
-# Quick smoke test
-node test/validate-generation.js
-```
-
-### Comprehensive Testing
+### Generate Verified Test Maps
 
 ```bash
-# Generate test maps and compare solvers
+# Generate test maps with verified optimal solutions
+# Uses BruteForceSolver to establish ground truth
 node test/test-map-generation.js
 ```
 
-### Generate Daily Maps
+This utility:
+- Generates small test maps (≤7x7)
+- Finds true optimal solutions using exhaustive search
+- Compares MILPSolver accuracy against brute force
+- Saves verified maps to `test-maps-db.json`
+- Generates detailed comparison reports
 
-```bash
-# Generate maps for the game with verification
-node test/generate-daily-maps.js
-```
+**Purpose:** Establish ground truth data for unit tests and verify solver accuracy.
 
 ## More Information
 
