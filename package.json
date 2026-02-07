@@ -36,7 +36,8 @@
       "!js/main.js",
       "!js/config.js",
       "!js/Game.js",
-      "!js/tileTypes.js"
+      "!js/tileTypes.js",
+      "!js/LevelEditor.js"
     ],
     "coverageThreshold": {
       "global": {

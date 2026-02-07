@@ -263,7 +263,7 @@ class LevelEditor {
             setTimeout(() => {
                 feedback.textContent = '';
             }, 3000);
-        } catch (err) {
+        } catch {
             feedback.textContent = '✗ Failed to copy. Please select and copy manually.';
             feedback.style.color = '#f44336';
             
