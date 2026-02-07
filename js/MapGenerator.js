@@ -90,8 +90,8 @@ class MapGenerator {
         // If we reach here, we failed to generate a valid map
         // Do NOT fall back to any alternative method - throw an error as required
         throw new Error(`Failed to generate valid map after ${maxTotalAttempts} attempts. ` +
-            `This indicates either the solver is not finding solutions, or the quality ` +
-            `constraints are too strict for the given parameters.`);
+            'This indicates either the solver is not finding solutions, or the quality ' +
+            'constraints are too strict for the given parameters.');
     }
 
     /**
