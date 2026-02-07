@@ -338,34 +338,34 @@ This will:
 
 ### Generating Maps for maps.json (Daily Levels)
 
-To generate a new daily map for the game:
+To generate a new daily map for the game, use the production scripts:
 
+**Recommended: Use the generation script**
+```bash
+node scripts/generate-single-map.js --date 2026-02-15 --size 9
+```
+
+**Or programmatically:**
 ```javascript
 const MapGenerator = require('./js/MapGenerator.js');
-const BruteForceSolver = require('./test/BruteForceSolver.js');
+const MapValidator = require('./js/MapValidator.js');
 
-// Generate map
+// Generate map using MILPSolver (production solver)
 const size = 9; // or 7, 11, etc.
-const maxWalls = 9;
+const maxWalls = 15;
 const generator = new MapGenerator(size, { grass: 0.7, water: 0.3 });
 const result = generator.generate(null, maxWalls);
 
-// For small maps, verify with brute force
-if (size <= 7) {
-  const numericMap = result.map.map(row => row.map(tile => {
-    if (tile === 'water') return 0;
-    if (tile === 'grass') return 1;
-    if (tile === 'home') return 2;
-    return 1;
-  }));
-  
-  const bruteResult = BruteForceSolver.solveMap(numericMap, maxWalls);
-  console.log(`MILP goal: ${result.goal}, Brute force goal: ${bruteResult.goalArea}`);
-  
-  // Use brute force result if available for accuracy
-  if (bruteResult) {
-    result.goal = bruteResult.goalArea;
-  }
+// Validate the map meets quality standards
+const validation = MapValidator.validate(result.map, {
+  goalArea: result.goal,
+  optimalWallCount: result.maxWalls,
+  optimalSolution: result.optimalSolution
+});
+
+if (!validation.valid) {
+  console.error('Map failed validation:', validation.errors);
+  // Try again or handle error
 }
 
 // Save to maps.json with today's date
@@ -374,10 +374,13 @@ const mapEntry = {
   [date]: {
     size: result.map.length,
     goal: result.goal,
+    maxWalls: result.maxWalls,
     map: result.map
   }
 };
 ```
+
+**Note:** BruteForceSolver should ONLY be used in test contexts (test/ directory), not in production map generation. MILPSolver is the verified, accurate production solver.
 
 ### Critical Learnings
 

@@ -160,3 +160,50 @@ The codebase is now:
 5. ✅ Fully documented with accurate information
 
 No further immediate refactoring needed. The structure is now consistent with the documented architecture.
+
+---
+
+## Follow-up Fix (2026-02-07 - Later)
+
+### Issue Identified
+After the initial refactoring, a code review revealed that `scripts/generate-single-map.js` was still importing and using `BruteForceSolver` from the test directory. This violated the core design principle that BruteForceSolver should ONLY be used for test verification, never in production code paths.
+
+### Root Cause
+The script was using BruteForceSolver to verify map generation accuracy for small maps (≤7x7). While well-intentioned, this mixed test utilities into production code and created an unnecessary dependency on test code.
+
+### Fix Applied
+Removed BruteForceSolver usage from `scripts/generate-single-map.js`:
+- Removed the `require('../test/BruteForceSolver.js')` import
+- Removed the `mapToNumeric()` helper function (only used for brute force)
+- Removed the brute force verification section (lines 90-119)
+- Simplified to trust MILPSolver results directly
+
+### Rationale
+1. **MILPSolver is already verified accurate**: It has been tested against BruteForceSolver in the test suite
+2. **Clear separation**: Production code should never import from test/ directory
+3. **Design compliance**: Aligns with documented architecture where MILPSolver is the ONLY production solver
+4. **Simplification**: Removes complexity and conditional logic from production script
+
+### Updated Files
+- `scripts/generate-single-map.js` - Removed BruteForceSolver usage
+- `docs/MAP_GENERATION.md` - Updated workflow description
+- `.github/copilot-instructions.md` - Fixed example code to not use BruteForceSolver
+
+### Verification
+- All 274 tests still pass
+- Coverage maintained at 91.41%
+- No BruteForceSolver references in production code (scripts/, js/)
+- Production scripts now only use MILPSolver via MapGenerator
+
+### Final State
+**Production code** (scripts/, js/):
+- Uses ONLY MILPSolver for map generation
+- No dependencies on test/ directory
+- Clean architecture separation
+
+**Test code** (test/):
+- BruteForceSolver available for ground truth verification
+- test-map-generation.js uses it to validate MILPSolver accuracy
+- Properly isolated from production code
+
+This completes the refactoring to fully enforce the production/test separation.
