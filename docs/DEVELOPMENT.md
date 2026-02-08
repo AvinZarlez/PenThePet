@@ -26,8 +26,8 @@ Complete guide for developing PenThePet.
 
 ```bash
 # Clone repository
-git clone https://github.com/AvinZarlez/PenThePet.git
-cd PenThePet
+git clone https://github.com/AvinZarlez/penthepet.git
+cd penthepet
 
 # Install development dependencies (optional, for testing/linting)
 npm install
@@ -612,7 +612,7 @@ git commit -m "Update game"
 git push origin main
 
 # GitHub Actions automatically deploys to:
-# https://avinzarlez.github.io/PenThePet/
+# https://avinzarlez.github.io/penthepet/
 ```
 
 **Verify deployment:**

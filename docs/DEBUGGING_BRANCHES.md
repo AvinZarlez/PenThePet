@@ -47,7 +47,7 @@ GitHub Pages can deploy from **any branch**, not just `main`. This lets you test
 
 4. **Test your changes**
    - Visit: `https://<username>.github.io/<repository>/`
-   - Example: `https://avinzarlez.github.io/PenThePet/`
+   - Example: `https://avinzarlez.github.io/penthepet/`
    - The site now shows your branch's code!
 
 **Making updates:**
@@ -128,8 +128,10 @@ Local testing is the **fastest and most flexible** method for active development
 
 1. **Clone repository:**
    ```bash
-   git clone https://github.com/AvinZarlez/PenThePet.git
-   cd PenThePet
+```bash
+# Clone the main repository
+git clone https://github.com/AvinZarlez/penthepet.git
+cd penthepet
    ```
 
 2. **Checkout the branch you want to test:**
@@ -202,8 +204,9 @@ You can test multiple branches at once using different methods:
 **Method 1: Multiple local clones** (easier but uses more disk space)
 ```bash
 # Clone to different directories
-git clone https://github.com/AvinZarlez/PenThePet.git penthepet-main
-git clone https://github.com/AvinZarlez/PenThePet.git penthepet-branch1
+# Clone two separate directories
+git clone https://github.com/AvinZarlez/penthepet.git penthepet-main
+git clone https://github.com/AvinZarlez/penthepet.git penthepet-branch1
 
 # In terminal 1
 cd penthepet-main
@@ -226,7 +229,7 @@ python3 -m http.server 8081
 git worktree add ../penthepet-feature my-feature-branch
 
 # In terminal 1
-cd PenThePet
+cd penthepet
 python3 -m http.server 8080
 
 # In terminal 2

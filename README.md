@@ -6,7 +6,7 @@ A browser-based logic puzzle game where you fence in your pet! Built with vanill
 
 ## 🎮 Play the Game
 
-The game is deployed on GitHub Pages: [Play PenThePet](https://avinzarlez.github.io/PenThePet/)
+The game is deployed on GitHub Pages: [Play PenThePet](https://avinzarlez.github.io/penthepet/)
 
 ## 📖 About
 
@@ -36,8 +36,8 @@ No build tools or dependencies needed for playing:
 
 ```bash
 # Clone the repository
-git clone https://github.com/AvinZarlez/PenThePet.git
-cd PenThePet
+git clone https://github.com/AvinZarlez/penthepet.git
+cd penthepet
 
 # Start a local server
 python3 -m http.server 8080
