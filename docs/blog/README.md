@@ -1,0 +1,124 @@
+# PenThePet Blog Posts
+
+This directory contains blog posts and articles about the development of PenThePet.
+
+## Contents
+
+### building-penthepet.md
+**Main Article** - A comprehensive technical journey through the development of PenThePet, exploring human-AI collaboration through 42 pull requests.
+
+- **Length**: ~6,700 words (~25-30 minute read)
+- **Style**: Professional technical writing accessible to non-technical readers (Wired magazine style)
+- **Topics Covered**:
+  - The origin story and project constraints
+  - Phase-by-phase development journey (6 phases)
+  - Deep dive into puzzle generation challenges (where AI struggled most)
+  - Testing and quality infrastructure
+  - Advanced features and refinement
+  - What AI does well vs. what it struggles with
+  - Best practices for AI-assisted development
+  - Project results and lessons learned
+
+**Key Sections**:
+1. **Introduction** - The motivation and setup
+2. **Phase 1: Foundation** - Building core game mechanics
+3. **Phase 2: Puzzle Generation Challenge** - 6 PRs, multiple bugs, the hardest part
+4. **Phase 3: Testing and Quality** - 274 tests, 91% coverage
+5. **Phase 4: Advanced Features** - Menu system, score tracking, level editor
+6. **Phase 5: Maintenance** - Dependency updates, bug fixes, refactoring
+7. **What AI Does Well** - Rapid prototyping, tests, documentation, standard algorithms
+8. **What AI Struggles With** - Optimization, architecture, subtle bugs, responsive design
+9. **Best Practices** - Architecture, Copilot instructions, testing, iteration
+10. **Results** - By the numbers, the AI contribution, would I do it again?
+11. **Conclusion** - The human-AI partnership model
+
+### outline.md
+**Detailed Article Outline** - The complete planning document used to structure the article.
+
+- Each section includes paragraph descriptions, suggested lengths, key points, and technical details
+- Total planned: ~6,500 words across 11 major sections
+- Organized as a blueprint for structured technical writing
+
+### pr-analysis.json
+**PR Analysis Data** - Structured analysis of all 42 pull requests.
+
+```json
+{
+  "summary": {
+    "total_prs": 42,
+    "categories": {
+      "features": 18,
+      "bugfixes": 10,
+      "refactoring": 6,
+      "dependencies": 4,
+      "documentation": 2,
+      "infrastructure": 2
+    }
+  },
+  "timeline": {
+    "phase_1_foundation": {...},
+    "phase_2_polish": {...},
+    "phase_3_puzzles": {...},
+    "phase_4_testing": {...},
+    "phase_5_features": {...},
+    "phase_6_refinement": {...}
+  },
+  "key_struggles": {
+    "map_generation": {...},
+    "testing_complexity": {...},
+    "architecture_drift": {...}
+  },
+  "ai_collaboration_insights": {...}
+}
+```
+
+## Source Material
+
+The article is based on:
+- All 42 merged pull requests from `/tmp/all_prs.json`
+- Existing implementation summaries in `docs/summaries/`
+- The complete codebase and documentation
+- Real development experience including challenges and lessons learned
+
+## Target Audience
+
+- Developers curious about AI-assisted development
+- Technical readers interested in real-world AI collaboration examples
+- Anyone wanting to understand AI coding assistant strengths and limitations
+- Readers of technical publications like Wired, Ars Technica, The Verge
+
+## Key Themes
+
+1. **AI excels at well-defined tasks**: Boilerplate, tests, standard algorithms
+2. **AI struggles with complex optimization**: Took 6 PRs to get puzzle generation right
+3. **Human oversight is essential**: Architecture, validation, bug identification
+4. **Documentation guides AI behavior**: Copilot instructions improved consistency
+5. **Testing catches AI mistakes**: 274 tests, 91% coverage was critical
+6. **The partnership model works**: ~70% AI-generated code, 30% human refinement
+
+## Statistics
+
+- **Development Time**: ~2 months
+- **Pull Requests**: 42 merged
+- **Code**: ~3,000 lines production, ~1,500 lines tests
+- **Test Coverage**: 274 tests, 91% coverage
+- **AI Contribution**: ~70% of code (estimated)
+- **Key Struggle**: 6 PRs to get puzzle generation algorithm correct
+
+## Usage
+
+These blog posts can be:
+- Published on a personal blog or Medium
+- Adapted for technical publication submission
+- Used as case study material for AI-assisted development talks
+- Referenced in documentation about the project's development process
+
+## License
+
+Same license as the PenThePet project (see root LICENSE file).
+
+---
+
+**Generated**: February 8, 2026  
+**Word Count**: Main article ~6,700 words, Outline ~3,600 words  
+**Total**: ~10,300 words of content
