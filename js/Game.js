@@ -687,12 +687,9 @@ class Game {
         const isPerfect = userScoreNum === goalScoreNum;
         
         // Build the display text
-        let displayText = '';
-        if (isPerfect) {
-            displayText = `🎉 ${userScoreNum} 🎉`;
-        } else {
-            displayText = userScoreNum.toString();
-        }
+        const displayText = isPerfect 
+            ? `🎉 ${userScoreNum} 🎉`
+            : userScoreNum.toString();
         
         metricOutput.innerHTML = displayText;
         

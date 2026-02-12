@@ -38,7 +38,7 @@ function getNextDayNumber(mapsPath) {
 /**
  * Generate a single map with validation and verification
  */
-async function generateSingleMap(date, size, maxWalls) {
+async function generateSingleMap(date, size, _maxWalls) {
     console.log(`\n${'='.repeat(60)}`);
     console.log(`Generating map for ${date} (${size}x${size})`);
     console.log('='.repeat(60));
