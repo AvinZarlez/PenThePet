@@ -48,8 +48,8 @@ class MapGenerator {
         
         while (totalAttempts < maxTotalAttempts) {
             let attempts = 0;
-            let map = null;
-            let result = null;
+            let map;
+            let result;
             
             // Try to generate a valid random map
             while (attempts < this.maxAttempts) {
