@@ -152,14 +152,13 @@ class MILPSolver {
         for (let numWalls = 1; numWalls <= Math.min(maxWalls, grassTiles.length); numWalls++) {
             console.log(`  Checking combinations with ${numWalls} walls...`);
             const startTime = Date.now();
-            let countForThisSize = 0;
             
             // Use iterative combination generation instead of storing all combinations
             const result = this._checkCombinationsIteratively(
                 map, grassTiles, numWalls, homeRow, homeCol, bestArea
             );
             
-            countForThisSize = result.checked;
+            const countForThisSize = result.checked;
             
             if (result.solution) {
                 bestArea = result.area;

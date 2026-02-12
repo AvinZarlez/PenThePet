@@ -455,7 +455,7 @@ class LevelEditor {
             if (storedMaps) {
                 try {
                     mapsData = JSON.parse(storedMaps);
-                } catch (e) {
+                } catch (_e) {
                     console.warn('Failed to parse existing maps data, starting fresh');
                 }
             }
