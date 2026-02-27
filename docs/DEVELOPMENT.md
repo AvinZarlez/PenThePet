@@ -18,6 +18,7 @@ Complete guide for developing PenThePet.
 ### Prerequisites
 
 - **Node.js 20+** (for development tools only)
+- **Python 3** (for map generation with MILP solver)
 - **Git** (for version control)
 - **Web Browser** (Chrome, Firefox, Safari)
 - **Text Editor** (VS Code recommended)
@@ -56,13 +57,18 @@ PenThePet/
 │   ├── tileTypes.js     # Tile definitions
 │   ├── wordList.js      # Map naming words
 │   ├── PathfindingUtils.js  # BFS pathfinding
-│   ├── MILPSolver.js    # Wall placement solver
-│   ├── MapGenerator.js  # Map generation
-│   ├── Grid.js          # Grid data structure
-│   ├── Game.js          # Game controller
+│   ├── Grid.js          # Grid state management
+│   ├── Game.js          # Game controller (checker)
+│   ├── Menu.js          # Menu system
 │   └── main.js          # Entry point
 ├── scripts/
-│   └── generate-maps.js # Generate daily maps
+│   ├── generate-maps.js # Generate daily maps
+│   ├── generate-single-map.js # Single map generator
+│   ├── audit-maps.js    # Validate maps
+│   └── solver/          # MILP solver pipeline
+│       ├── MILPSolver.js    # Node.js wrapper
+│       ├── solve.py         # Python MILP solver
+│       └── requirements.txt # Python deps (PuLP)
 ├── test/                # Test suite
 ├── docs/                # Documentation
 └── maps.json            # Daily puzzles
@@ -464,6 +470,9 @@ font-size: clamp(12px, 2vw, 16px);
 ### Generating New Daily Maps
 
 ```bash
+# Install Python dependencies first
+pip install -r scripts/solver/requirements.txt
+
 # Generate 10 fresh maps
 node scripts/generate-maps.js --fresh --count 10 --sizes 7,9,11
 

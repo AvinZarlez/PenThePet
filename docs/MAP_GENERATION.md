@@ -257,7 +257,7 @@ Each generated map is validated to ensure:
 1. **js/constants.js**: All configurable constants including `maxWallsForSize()`
 2. **js/MapValidator.js**: Quality validation rules
 3. **js/MapGenerator.js**: Main map generation logic (NO FALLBACKS)
-4. **js/MILPSolver.js**: Solver wrapper - calls Python MILP solver (Node.js) or JS fallback (browser)
+4. **scripts/solver/MILPSolver.js**: Node.js wrapper that calls Python MILP solver
 5. **js/PathfindingUtils.js**: BFS pathfinding for penning checks
 6. **js/wordList.js**: Random English words for map names
 7. **scripts/solver/solve.py**: Python MILP solver using PuLP + CBC
@@ -401,33 +401,30 @@ node scripts/generate-maps.js --count 3 --sizes 7
 
 **Key Invariants:**
 
-- MAX_WALLS = 15 (constant across all maps)
+- maxWalls = floor(size × 0.75) per grid size
 - Goal = maximum achievable area
-- maxWalls = minimum walls needed for goal
 - goalArea >= 5 (minimum difficulty)
 - At least one wall not on edge (strategic placement)
-- All maps solvable with ≤ 15 walls
 - Maps validated to have path to edge initially
 - **NO FALLBACKS**: Generation throws error if it fails (never falls back to simplified maps)
 
 **Solver Usage Policy:**
 
-1. **Production**: MILPSolver ONLY
-   - Used for all map generation (scripts, actions, in-game)
-   - Exhaustive search up to 50M combinations per wall count
-   - No fallbacks, no heuristics, no alternatives
-   - Single source of truth
+1. **Production**: Python MILP solver (scripts/solver/solve.py)
+   - Used for all map generation (scripts, GitHub Actions)
+   - Provably optimal using PuLP + CBC
+   - Called via Node.js wrapper (scripts/solver/MILPSolver.js)
+   - No solver code in the browser
 
-2. **Testing**: BruteForceSolver ONLY
-   - Used ONLY for test-maps-db.json ground truth
-   - Used ONLY to verify MILPSolver on small maps (≤7x7)
-   - Located in test/ directory (not production code)
-   - NEVER used in map generation or as fallback
+2. **Browser**: Checker only
+   - Game.js checks if pet is penned using PathfindingUtils
+   - No solver or map generation in the browser
+   - Maps are loaded from maps.json only
 
 3. **No Fallback Logic**:
    - Map generation uses single consistent method
    - If generation fails, throw error (no fallback to simplified maps)
    - This ensures all maps meet same quality standards
 
-All production paths use the same exhaustive search algorithm and validation rules.
+All production paths use the MILP solver and validation rules.
 Time-limited generation has been removed to ensure consistent quality.
