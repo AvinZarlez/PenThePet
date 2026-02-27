@@ -50,6 +50,7 @@ class Game {
     // Maps are loaded from maps.json only. The Game class is now a pure
     // checker/renderer - it checks if the pet is penned with current wall
     // placement, not a solver that generates new maps.
+    // All map generation happens in the Python MILP pipeline (scripts/solver/solve.py).
 
     /**
      * Render the grid to the DOM

@@ -18,6 +18,8 @@ const localStorageMock = {
 global.localStorage = localStorageMock;
 
 // Load game modules in the correct order for Node.js environment
+// Note: MILPSolver is loaded for generation pipeline tests (MapGenerator.test.js).
+// It is NOT used by browser-side code (Grid.test.js, Menu.test.js, etc.)
 global.CONSTANTS = require('../js/constants.js');
 global.CONFIG = require('../js/config.js');
 global.PathfindingUtils = require('../js/PathfindingUtils.js');
