@@ -102,18 +102,18 @@ class MILPSolver {
             output = execFileSync('python3', [solverPath], {
                 input: input,
                 encoding: 'utf-8',
-                timeout: 180000, // 3 minute timeout
+                timeout: 150000, // 150s - slightly above Python's 120s solver timeout
                 maxBuffer: 10 * 1024 * 1024
             });
-        } catch (_err) {
-            console.error('Python solver failed:', _err.message);
+        } catch (err) {
+            console.error('Python solver failed:', err.message);
             return null;
         }
 
         let result;
         try {
             result = JSON.parse(output.trim());
-        } catch (_err) {
+        } catch (err) { // eslint-disable-line no-unused-vars
             console.error('Failed to parse Python solver output:', output);
             return null;
         }

@@ -191,7 +191,8 @@ describe('MILPSolver', () => {
             }
         });
 
-        // Skipped: This test uses a 7x7 map which is slow (checks 1.7M+ combinations).
+        // Skipped: This test uses a 7x7 map which checks many combinations.
+        // The JS fallback limits to 5M combinations for browser performance.
         test.skip('should respect safety limit', () => {
             const map = [
                 [1, 1, 1, 1, 1, 1, 1],

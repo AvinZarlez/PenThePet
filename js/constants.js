@@ -11,7 +11,8 @@ const CONSTANTS = {
     
     /**
      * Calculate max walls for a given grid size.
-     * Formula: floor(size * 0.75)
+     * Uses 75% of grid size as the wall budget - this provides a good balance
+     * between challenge and solvability across different grid sizes.
      * Examples: 7x7→5, 9x9→6, 10x10→7, 11x11→8, 16x16→12, 21x21→15
      * @param {number} size - Grid size (one dimension)
      * @returns {number} Maximum walls allowed
