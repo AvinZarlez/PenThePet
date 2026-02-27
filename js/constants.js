@@ -7,7 +7,18 @@
 
 const CONSTANTS = {
     // Wall configuration
-    MAX_WALLS: 15,              // Maximum number of walls that can be placed in any level
+    MAX_WALLS: 15,              // Absolute maximum walls (for largest grid sizes)
+    
+    /**
+     * Calculate max walls for a given grid size.
+     * Formula: floor(size * 0.75)
+     * Examples: 7x7→5, 9x9→6, 10x10→7, 11x11→8, 16x16→12, 21x21→15
+     * @param {number} size - Grid size (one dimension)
+     * @returns {number} Maximum walls allowed
+     */
+    maxWallsForSize: function(size) {
+        return Math.floor(size * 0.75);
+    },
     
     // Grid configuration
     MAX_GRID_SIZE: 21,          // Maximum grid size (21x21)

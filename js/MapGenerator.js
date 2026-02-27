@@ -34,13 +34,13 @@ class MapGenerator {
 
     /**
      * Generate a valid map with guaranteed path to edge and goal calculation
-     * Uses CONSTANTS.MAX_WALLS for maximum wall count
+     * Uses CONSTANTS.maxWallsForSize(size) for wall count based on grid size
      * Retries generation if map doesn't meet quality standards
      * @param {string} _dateString - Optional date string for seeded generation (unused)
      * @returns {Object} Object containing map and goal, or throws error if unable to generate
      */
     generate(_dateString = null) {
-        const maxWalls = CONSTANTS.MAX_WALLS;
+        const maxWalls = CONSTANTS.maxWallsForSize(this.size);
         
         // Keep trying until we get a valid map that meets quality standards
         let totalAttempts = 0;
