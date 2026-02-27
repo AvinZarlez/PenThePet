@@ -133,110 +133,12 @@ describe('MILPSolver', () => {
         });
     });
 
-    describe('_findBestWallPlacement()', () => {
-        test('should handle already penned scenarios', () => {
-            const map = [
-                [5, 5, 5],
-                [5, 2, 5],
-                [5, 5, 5]
-            ];
-            const result = MILPSolver._findBestWallPlacement(map, 5, 1, 1);
-            
-            expect(result).not.toBeNull();
-            expect(result.goalArea).toBe(1);
-            expect(result.optimalWallCount).toBe(0);
-        });
+    // Note: _findBestWallPlacement and _exhaustiveSearch methods were removed.
+    // The solver now delegates to Python MILP solver (Node.js) or JS-based search (browser).
+    // The _checkCombinationsIteratively method is still available for the JS fallback.
 
-        test('should find solution with available grass tiles', () => {
-            const map = [
-                [1, 1, 1, 1, 1],
-                [1, 0, 0, 0, 1],
-                [1, 0, 2, 0, 1],
-                [1, 0, 0, 0, 1],
-                [1, 1, 1, 1, 1]
-            ];
-            const result = MILPSolver._findBestWallPlacement(map, 8, 2, 2);
-            
-            expect(result).not.toBeNull();
-            expect(result).toHaveProperty('goalArea');
-            expect(result).toHaveProperty('optimalWallCount');
-        });
-
-        test('should return null if no valid solution exists', () => {
-            // Map where home cannot be penned with reasonable walls
-            const map = [
-                [1, 1, 1, 1, 1],
-                [1, 1, 1, 1, 1],
-                [1, 1, 2, 1, 1],
-                [1, 1, 1, 1, 1],
-                [1, 1, 1, 1, 1]
-            ];
-            const result = MILPSolver._findBestWallPlacement(map, 2, 2, 2);
-            
-            // With only 2 walls on a 5x5 open grid, unlikely to pen effectively
-            // Result could be null or have a solution depending on search
-            expect(result === null || typeof result.goalArea === 'number').toBe(true);
-        });
-    });
-
-    describe('_exhaustiveSearch()', () => {
-        test('should explore combinations systematically', () => {
-            const map = [
-                [1, 1, 1],
-                [1, 2, 1],
-                [1, 1, 1]
-            ];
-            const grassTiles = [];
-            for (let i = 0; i < 3; i++) {
-                for (let j = 0; j < 3; j++) {
-                    if (map[i][j] === 1) {
-                        grassTiles.push([i, j]);
-                    }
-                }
-            }
-            
-            const result = MILPSolver._exhaustiveSearch(map, 4, 1, 1, grassTiles);
-            
-            expect(result).not.toBeNull();
-            expect(result).toHaveProperty('goalArea');
-        });
-
-        test('should handle small number of grass tiles', () => {
-            const map = [
-                [0, 1, 0],
-                [1, 2, 1],
-                [0, 1, 0]
-            ];
-            const grassTiles = [[0,1], [1,0], [1,2], [2,1]];
-            
-            const result = MILPSolver._exhaustiveSearch(map, 4, 1, 1, grassTiles);
-            
-            expect(result).not.toBeNull();
-        });
-
-        test('should return best solution among options', () => {
-            const map = [
-                [1, 1, 1, 1, 1],
-                [1, 0, 0, 0, 1],
-                [1, 0, 2, 0, 1],
-                [1, 0, 0, 0, 1],
-                [1, 1, 1, 1, 1]
-            ];
-            const grassTiles = [];
-            for (let i = 0; i < 5; i++) {
-                for (let j = 0; j < 5; j++) {
-                    if (map[i][j] === 1) {
-                        grassTiles.push([i, j]);
-                    }
-                }
-            }
-            
-            const result = MILPSolver._exhaustiveSearch(map, 8, 2, 2, grassTiles);
-            
-            expect(result).not.toBeNull();
-            expect(result.goalArea).toBeGreaterThan(0);
-        });
-    });
+    // Note: _heuristicSearch and related methods have been removed as they were experimental
+    // and not used in production code.
 
     describe('_checkCombinationsIteratively()', () => {
         test('should check combinations without exceeding maxToCheck', () => {
@@ -290,9 +192,6 @@ describe('MILPSolver', () => {
         });
 
         // Skipped: This test uses a 7x7 map which is slow (checks 1.7M+ combinations).
-        // When the code's maxToCheck was 100K, this test verified the limit was respected.
-        // The limit is now 50M for accuracy, making this test take too long to run.
-        // If you re-enable this test, update the assertion to: toBeLessThanOrEqual(50000000)
         test.skip('should respect safety limit', () => {
             const map = [
                 [1, 1, 1, 1, 1, 1, 1],
@@ -316,8 +215,7 @@ describe('MILPSolver', () => {
                 map, grassTiles, 5, 3, 3, 0
             );
             
-            // Original assertion when limit was 100,000
-            expect(result.checked).toBeLessThanOrEqual(100000);
+            expect(result.checked).toBeLessThanOrEqual(5000000);
         });
     });
 
@@ -470,31 +368,6 @@ describe('MILPSolver', () => {
     });
 
     describe('Private Methods and Edge Cases', () => {
-        describe('_estimateCombinations()', () => {
-            test('should estimate combinations for small inputs', () => {
-                const estimate = MILPSolver._estimateCombinations(10, 3);
-                expect(estimate).toBeGreaterThan(0);
-                expect(typeof estimate).toBe('number');
-            });
-
-            test('should handle large maxK values', () => {
-                const estimate = MILPSolver._estimateCombinations(20, 15);
-                expect(estimate).toBeGreaterThan(0);
-            });
-
-            test('should early exit for very large estimates', () => {
-                const estimate = MILPSolver._estimateCombinations(100, 50);
-                // Just verify it returns a reasonable number (doesn't throw)
-                expect(estimate).toBeGreaterThan(0);
-                expect(typeof estimate).toBe('number');
-            });
-
-            test('should handle edge case where maxK > n', () => {
-                const estimate = MILPSolver._estimateCombinations(5, 10);
-                expect(estimate).toBeGreaterThan(0);
-            });
-        });
-
         describe('Edge cases for wall placement', () => {
             test('should handle map where no solution exists', () => {
                 // Map completely surrounded by water - already penned
@@ -573,34 +446,6 @@ describe('MILPSolver', () => {
         });
     });
 
-    describe('solveMapWithTimeLimit', () => {
-        test('should find a solution within time limit for small map', () => {
-            const map = [
-                [1, 1, 1],
-                [1, 2, 1],
-                [1, 1, 1]
-            ];
-            
-            const result = MILPSolver.solveMapWithTimeLimit(map, 1000);
-            
-            expect(result).not.toBeNull();
-            expect(result.goalArea).toBeGreaterThan(0);
-            expect(result.optimalWallCount).toBeGreaterThan(0);
-        });
-
-        test('should return null if map cannot be penned', () => {
-            const map = [
-                [1, 1, 1],
-                [1, 2, 1],
-                [1, 1, 1]
-            ];
-            
-            // All grass, pet can reach edge, cannot pen with any walls
-            const result = MILPSolver.solveMapWithTimeLimit(map, 100);
-            
-            // Should either find a solution or return null
-            // For this specific case, it can pen with walls
-            expect(result).toBeDefined();
-        });
-    });
+    // Note: solveMapWithTimeLimit was removed. The solver now uses Python MILP
+    // for optimal results in Node.js, and JS-based search in the browser.
 });

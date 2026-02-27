@@ -105,15 +105,15 @@ class MILPSolver {
                 timeout: 180000, // 3 minute timeout
                 maxBuffer: 10 * 1024 * 1024
             });
-        } catch (err) {
-            console.error('Python solver failed:', err.message);
+        } catch (_err) {
+            console.error('Python solver failed:', _err.message);
             return null;
         }
 
         let result;
         try {
             result = JSON.parse(output.trim());
-        } catch (err) {
+        } catch (_err) {
             console.error('Failed to parse Python solver output:', output);
             return null;
         }

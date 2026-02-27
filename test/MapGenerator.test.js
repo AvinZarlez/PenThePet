@@ -43,12 +43,12 @@ describe('MapGenerator', () => {
     describe('generate()', () => {
         test('should generate a valid map with goal', () => {
             jest.spyOn(MILPSolver, 'solveMap').mockReturnValue({
-                walls: [[0, 0], [0, 0], [0, 0]],
+                walls: Array(7).fill(null).map(() => Array(7).fill(0)),
                 goalArea: 5,
                 optimalWallCount: 3
             });
 
-            const generator = new MapGenerator(3);
+            const generator = new MapGenerator(7);
             const result = generator.generate();
 
             expect(result).not.toBeNull();
@@ -77,16 +77,16 @@ describe('MapGenerator', () => {
 
         test('should place home tile at center', () => {
             jest.spyOn(MILPSolver, 'solveMap').mockReturnValue({
-                walls: Array(5).fill(null).map(() => Array(5).fill(0)),
+                walls: Array(7).fill(null).map(() => Array(7).fill(0)),
                 goalArea: 8,
                 optimalWallCount: 4
             });
 
-            const generator = new MapGenerator(5);
+            const generator = new MapGenerator(7);
             const result = generator.generate();
 
-            const centerRow = Math.floor(5 / 2);
-            const centerCol = Math.floor(5 / 2);
+            const centerRow = Math.floor(7 / 2);
+            const centerCol = Math.floor(7 / 2);
             expect(result.map[centerRow][centerCol]).toBe('home');
             
             MILPSolver.solveMap.mockRestore();
@@ -94,12 +94,12 @@ describe('MapGenerator', () => {
 
         test('should accept optional dateString parameter', () => {
             jest.spyOn(MILPSolver, 'solveMap').mockReturnValue({
-                walls: Array(3).fill(null).map(() => Array(3).fill(0)),
+                walls: Array(7).fill(null).map(() => Array(7).fill(0)),
                 goalArea: 5,
                 optimalWallCount: 2
             });
 
-            const generator = new MapGenerator(3);
+            const generator = new MapGenerator(7);
             const result = generator.generate('2024-01-01');
 
             expect(result).not.toBeNull();
@@ -109,12 +109,12 @@ describe('MapGenerator', () => {
 
         test('should return map with goal and maxWalls', () => {
             jest.spyOn(MILPSolver, 'solveMap').mockReturnValue({
-                walls: [[0, 0], [0, 0]],
+                walls: Array(7).fill(null).map(() => Array(7).fill(0)),
                 goalArea: 6,
                 optimalWallCount: 3
             });
 
-            const generator = new MapGenerator(3);
+            const generator = new MapGenerator(7);
             const result = generator.generate();
 
             expect(result.goal).toBe(6);
@@ -123,29 +123,29 @@ describe('MapGenerator', () => {
             MILPSolver.solveMap.mockRestore();
         });
 
-        test('should retry if optimalWallCount exceeds MAX_WALLS', () => {
+        test('should retry if optimalWallCount exceeds maxWalls for size', () => {
             let callCount = 0;
             jest.spyOn(MILPSolver, 'solveMap').mockImplementation(() => {
                 callCount++;
                 if (callCount === 1) {
                     return {
-                        walls: Array(3).fill(null).map(() => Array(3).fill(0)),
+                        walls: Array(7).fill(null).map(() => Array(7).fill(0)),
                         goalArea: 5,
                         optimalWallCount: 20 // Too many walls
                     };
                 }
                 return {
-                    walls: Array(3).fill(null).map(() => Array(3).fill(0)),
+                    walls: Array(7).fill(null).map(() => Array(7).fill(0)),
                     goalArea: 5,
-                    optimalWallCount: 5 // Within limit
+                    optimalWallCount: 3 // Within limit for 7x7 (maxWalls=5)
                 };
             });
 
-            const generator = new MapGenerator(3);
+            const generator = new MapGenerator(7);
             const result = generator.generate();
 
             expect(callCount).toBeGreaterThan(1);
-            expect(result.maxWalls).toBeLessThanOrEqual(CONSTANTS.MAX_WALLS);
+            expect(result.maxWalls).toBeLessThanOrEqual(CONSTANTS.maxWallsForSize(7));
             
             MILPSolver.solveMap.mockRestore();
         });
@@ -164,7 +164,7 @@ describe('MapGenerator', () => {
             jest.spyOn(MILPSolver, 'solveMap').mockReturnValue({
                 walls: Array(7).fill(null).map(() => Array(7).fill(0)),
                 goalArea: 12,
-                optimalWallCount: 6
+                optimalWallCount: 5
             });
 
             const generator = new MapGenerator(7);
@@ -172,7 +172,7 @@ describe('MapGenerator', () => {
 
             expect(result).not.toBeNull();
             expect(result.goal).toBe(12);
-            expect(result.maxWalls).toBe(6);
+            expect(result.maxWalls).toBe(5);
             
             MILPSolver.solveMap.mockRestore();
         });
@@ -495,16 +495,16 @@ describe('MapGenerator', () => {
     describe('Edge Cases', () => {
         test('should handle minimum size (3x3)', () => {
             jest.spyOn(MILPSolver, 'solveMap').mockReturnValue({
-                walls: Array(3).fill(null).map(() => Array(3).fill(0)),
+                walls: Array(7).fill(null).map(() => Array(7).fill(0)),
                 goalArea: 5,
                 optimalWallCount: 2
             });
 
-            const generator = new MapGenerator(3);
+            const generator = new MapGenerator(7);
             const result = generator.generate();
 
             expect(result).not.toBeNull();
-            expect(result.map.length).toBe(3);
+            expect(result.map.length).toBe(7);
             
             MILPSolver.solveMap.mockRestore();
         });
@@ -527,12 +527,12 @@ describe('MapGenerator', () => {
 
         test('should handle 100% grass distribution', () => {
             jest.spyOn(MILPSolver, 'solveMap').mockReturnValue({
-                walls: Array(5).fill(null).map(() => Array(5).fill(0)),
+                walls: Array(7).fill(null).map(() => Array(7).fill(0)),
                 goalArea: 8,
                 optimalWallCount: 4
             });
 
-            const generator = new MapGenerator(5, { grass: 1.0, water: 0.0 });
+            const generator = new MapGenerator(7, { grass: 1.0, water: 0.0 });
             const result = generator.generate();
 
             expect(result).not.toBeNull();
@@ -542,12 +542,12 @@ describe('MapGenerator', () => {
 
         test('should handle very low grass distribution', () => {
             jest.spyOn(MILPSolver, 'solveMap').mockReturnValue({
-                walls: Array(5).fill(null).map(() => Array(5).fill(0)),
+                walls: Array(7).fill(null).map(() => Array(7).fill(0)),
                 goalArea: 5,
                 optimalWallCount: 1
             });
 
-            const generator = new MapGenerator(5, { grass: 0.1, water: 0.9 });
+            const generator = new MapGenerator(7, { grass: 0.1, water: 0.9 });
             
             // This might take multiple attempts but should eventually succeed
             const result = generator.generate();
@@ -560,12 +560,12 @@ describe('MapGenerator', () => {
     describe('Performance', () => {
         test('should generate small map quickly', () => {
             jest.spyOn(MILPSolver, 'solveMap').mockReturnValue({
-                walls: Array(5).fill(null).map(() => Array(5).fill(0)),
+                walls: Array(7).fill(null).map(() => Array(7).fill(0)),
                 goalArea: 8,
                 optimalWallCount: 4
             });
 
-            const generator = new MapGenerator(5);
+            const generator = new MapGenerator(7);
             const startTime = Date.now();
             generator.generate();
             const elapsed = Date.now() - startTime;

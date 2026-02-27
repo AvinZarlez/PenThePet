@@ -53,7 +53,7 @@ describe('Grid', () => {
             jest.spyOn(MILPSolver, 'solveMap').mockReturnValue({
                 walls: Array(3).fill(null).map(() => Array(3).fill(0)),
                 goalArea: 5,
-                optimalWallCount: 3
+                optimalWallCount: 2
             });
 
             const grid = new Grid(3);
@@ -70,7 +70,7 @@ describe('Grid', () => {
             jest.spyOn(MILPSolver, 'solveMap').mockReturnValue({
                 walls: Array(3).fill(null).map(() => Array(3).fill(0)),
                 goalArea: 5,
-                optimalWallCount: 3
+                optimalWallCount: 2
             });
 
             const grid = new Grid(3);
@@ -85,12 +85,12 @@ describe('Grid', () => {
 
         test('should accept optional dateString parameter', () => {
             jest.spyOn(MILPSolver, 'solveMap').mockReturnValue({
-                walls: Array(3).fill(null).map(() => Array(3).fill(0)),
+                walls: Array(7).fill(null).map(() => Array(7).fill(0)),
                 goalArea: 5,
                 optimalWallCount: 2
             });
 
-            const grid = new Grid(3);
+            const grid = new Grid(7);
             const result = grid.generate('2024-01-01');
 
             expect(result).not.toBeNull();
@@ -148,7 +148,7 @@ describe('Grid', () => {
             jest.spyOn(MILPSolver, 'solveMap').mockReturnValue({
                 walls: Array(7).fill(null).map(() => Array(7).fill(0)),
                 goalArea: 15,
-                optimalWallCount: 7
+                optimalWallCount: 5
             });
 
             const grid = new Grid(7);
@@ -156,7 +156,7 @@ describe('Grid', () => {
 
             expect(result).not.toBeNull();
             expect(result.goal).toBe(15);
-            expect(result.maxWalls).toBe(7);
+            expect(result.maxWalls).toBe(5);
             
             MILPSolver.solveMap.mockRestore();
         });
@@ -577,12 +577,12 @@ describe('Grid', () => {
     describe('Integration Tests', () => {
         test('should support full workflow: generate -> modify -> reset', () => {
             jest.spyOn(MILPSolver, 'solveMap').mockReturnValue({
-                walls: Array(3).fill(null).map(() => Array(3).fill(0)),
+                walls: Array(7).fill(null).map(() => Array(7).fill(0)),
                 goalArea: 5,
                 optimalWallCount: 3
             });
 
-            const grid = new Grid(3);
+            const grid = new Grid(7);
             grid.generate();
             grid.saveInitialState();
 
@@ -598,12 +598,12 @@ describe('Grid', () => {
 
         test('should support workflow: generate -> save -> load -> verify', () => {
             jest.spyOn(MILPSolver, 'solveMap').mockReturnValue({
-                walls: Array(3).fill(null).map(() => Array(3).fill(0)),
+                walls: Array(7).fill(null).map(() => Array(7).fill(0)),
                 goalArea: 5,
                 optimalWallCount: 3
             });
 
-            const grid = new Grid(3);
+            const grid = new Grid(7);
             grid.generate();
 
             const allTiles = grid.getAllTiles();
@@ -612,7 +612,7 @@ describe('Grid', () => {
             expect(homePos).toBeTruthy();
             expect(homePos.row).toBeGreaterThanOrEqual(0);
             expect(homePos.col).toBeGreaterThanOrEqual(0);
-            expect(allTiles.length).toBe(3);
+            expect(allTiles.length).toBe(7);
             
             MILPSolver.solveMap.mockRestore();
         });
