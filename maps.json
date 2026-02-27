@@ -5,7 +5,7 @@
     "date": "2026-02-06",
     "size": 7,
     "goal": 11,
-    "maxWalls": 3,
+    "maxWalls": 5,
     "map": [
       [
         "grass",

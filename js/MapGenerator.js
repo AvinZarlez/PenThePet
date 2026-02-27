@@ -67,7 +67,7 @@ class MapGenerator {
                             return { 
                                 map, 
                                 goal: result.goalArea, 
-                                maxWalls: result.optimalWallCount,
+                                maxWalls: maxWalls,
                                 optimalSolution: result.optimalSolution
                             };
                         } else {

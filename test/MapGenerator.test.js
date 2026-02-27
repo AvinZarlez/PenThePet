@@ -118,7 +118,8 @@ describe('MapGenerator', () => {
             const result = generator.generate();
 
             expect(result.goal).toBe(6);
-            expect(result.maxWalls).toBe(3);
+            // maxWalls is the budget (floor(7 * 0.75) = 5), not the optimal count
+            expect(result.maxWalls).toBe(CONSTANTS.maxWallsForSize(7));
             
             MILPSolver.solveMap.mockRestore();
         });
@@ -172,7 +173,8 @@ describe('MapGenerator', () => {
 
             expect(result).not.toBeNull();
             expect(result.goal).toBe(12);
-            expect(result.maxWalls).toBe(5);
+            // maxWalls is the budget (floor(7 * 0.75) = 5)
+            expect(result.maxWalls).toBe(CONSTANTS.maxWallsForSize(7));
             
             MILPSolver.solveMap.mockRestore();
         });
