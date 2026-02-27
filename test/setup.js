@@ -21,7 +21,7 @@ global.localStorage = localStorageMock;
 global.CONSTANTS = require('../js/constants.js');
 global.CONFIG = require('../js/config.js');
 global.PathfindingUtils = require('../js/PathfindingUtils.js');
-global.MILPSolver = require('../js/MILPSolver.js');
+global.MILPSolver = require('../scripts/solver/MILPSolver.js');
 global.MapGenerator = require('../js/MapGenerator.js');
 
 // Mock getTileType for tests that need it

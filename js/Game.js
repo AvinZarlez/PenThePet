@@ -46,30 +46,10 @@ class Game {
         // init() is only used for debug map generation
     }
 
-    /**
-     * Initialize a new game
-     */
-    init() {
-        // Use today's date for consistent daily maps
-        const today = new Date().toISOString().split('T')[0];
-        const result = this.grid.generate(today);
-        
-        if (result === null) {
-            console.error('Failed to initialize game - could not generate valid map');
-            return;
-        }
-        
-        // Update goal and maxWalls from generation (uses optimal wall count)
-        this.goalAreaSize = result.goal;
-        this.maxWalls = result.maxWalls;  // Use optimal wall count from generator
-        
-        this.grid.saveInitialState();
-        this.wallCount = 0;
-        this.render();
-        this.updateWallCounter();
-        this.updateAreaSizeDisplay();
-        this.updateLegend();  // Update legend to show loaded pet emoji
-    }
+    // Note: init(), newGame(), and generateDebugMap() have been removed.
+    // Maps are loaded from maps.json only. The Game class is now a pure
+    // checker/renderer - it checks if the pet is penned with current wall
+    // placement, not a solver that generates new maps.
 
     /**
      * Render the grid to the DOM
@@ -445,85 +425,12 @@ class Game {
     }
 
     /**
-     * Start a new game with a fresh grid
-     */
-    newGame() {
-        const result = this.grid.generate(null);
-        
-        if (result === null) {
-            console.error('Failed to generate new game');
-            return;
-        }
-        
-        // Update goal and maxWalls from generation (uses optimal wall count)
-        this.goalAreaSize = result.goal;
-        this.maxWalls = result.maxWalls;  // Use optimal wall count from generator
-        
-        this.grid.saveInitialState();
-        this.wallCount = 0;
-        this.render();
-        this.updateWallCounter();
-        this.updateAreaSizeDisplay();
-    }
-
-    /**
-     * Change the grid size
-     * @param {number} newSize - The new grid size
-     */
-    changeGridSize(newSize) {
-        if (newSize >= CONFIG.grid.minSize && newSize <= CONFIG.grid.maxSize) {
-            this.grid = new Grid(newSize);
-            this.newGame();
-        }
-    }
-
-    /**
-     * Generate a debug map with specified size (not saved, for testing)
-     * Uses full exhaustive search to ensure quality (accuracy over speed).
-     * @param {number} size - The size of the debug map
-     */
-    generateDebugMap(size) {
-        if (size >= CONFIG.grid.minSize && size <= CONFIG.grid.maxSize) {
-            this.grid = new Grid(size);
-            
-            console.log(`Generating debug map ${size}x${size} with exhaustive search...`);
-            const result = this.grid.generate(null); // Use same method as production
-            
-            if (result === null) {
-                console.error('Failed to generate debug map');
-                this.showNotification('Failed to generate a valid map. Try again.');
-                return;
-            }
-            
-            // Update goal and maxWalls from generation
-            // The solver finds the largest achievable area and minimum walls needed
-            this.goalAreaSize = result.goal;
-            this.maxWalls = result.maxWalls;
-            console.log(`Generated debug map (size: ${size}x${size}, goal: ${result.goal}, maxWalls: ${this.maxWalls})`);
-            
-            this.grid.saveInitialState();
-            this.wallCount = 0;
-            this.render();
-            this.updateWallCounter();
-            this.updateAreaSizeDisplay();
-        }
-    }
-
-    /**
      * Attach event listeners to UI controls
      */
     attachEventListeners() {
-        const newGameBtn = document.getElementById('newGameBtn');
         const resetBtn = document.getElementById('resetBtn');
         const statusBtn = document.getElementById('pennedStatus');
         const exitViewerBtn = document.getElementById('exitViewer');
-        const debugGridSizeSlider = document.getElementById('debugGridSize');
-        const debugSizeValue = document.getElementById('debugSizeValue');
-        const generateDebugMapBtn = document.getElementById('generateDebugMapBtn');
-        
-        if (newGameBtn) {
-            newGameBtn.addEventListener('click', () => this.newGame());
-        }
         
         if (resetBtn) {
             resetBtn.addEventListener('click', () => this.reset());
@@ -535,20 +442,6 @@ class Game {
 
         if (exitViewerBtn) {
             exitViewerBtn.addEventListener('click', () => this.hideRoamingArea());
-        }
-
-        // Debug Tools event listeners
-        if (debugGridSizeSlider && debugSizeValue) {
-            debugGridSizeSlider.addEventListener('input', (e) => {
-                debugSizeValue.textContent = e.target.value;
-            });
-        }
-
-        if (generateDebugMapBtn && debugGridSizeSlider) {
-            generateDebugMapBtn.addEventListener('click', () => {
-                const debugSize = parseInt(debugGridSizeSlider.value);
-                this.generateDebugMap(debugSize);
-            });
         }
 
         // Add arrow key navigation (using bound function for potential cleanup)

@@ -1,8 +1,9 @@
 /**
  * Grid Class
  * 
- * Manages the game grid data structure and tile generation.
- * Responsible for creating, storing, and manipulating the grid state.
+ * Manages the game grid data structure and tile state.
+ * Maps are loaded from maps.json (generated offline by the Python solver pipeline).
+ * This class handles state management: loading maps, tracking tiles, saving/restoring state.
  */
 
 class Grid {
@@ -14,64 +15,6 @@ class Grid {
         this.size = size;
         this.tiles = [];
         this.initialTiles = [];
-    }
-
-    /**
-     * Generate a new random grid based on tile distribution
-     * Uses MapGenerator to ensure valid maps with paths to edge
-     * @param {string} dateString - Optional date string for seeded generation
-     * @returns {Object|null} Object with {map: Array, goal: number} or null if generation fails
-     */
-    generate(dateString = null) {
-        // Note: dateString is accepted but not currently used for seeding
-        // as implementing true seeded random would require additional library
-        // For now, maps vary but this provides the framework for future enhancement
-        
-        const generator = new MapGenerator(this.size, CONFIG.tileDistribution);
-        const result = generator.generate(dateString);
-        
-        if (result === null) {
-            console.error('Failed to generate valid map');
-            return null;
-        }
-        
-        this.tiles = result.map;
-        return result; // Return map, goal, and maxWalls
-    }
-
-    /**
-     * Generate a random tile type based on configuration
-     * @private
-     * @returns {string} The tile type name
-     */
-    _generateRandomTile() {
-        const rand = Math.random();
-        const grassThreshold = CONFIG.tileDistribution.grass;
-        
-        // Currently supports grass and water
-        // Future: extend this to support more tile types
-        return rand < grassThreshold ? 'grass' : 'water';
-    }
-
-    /**
-     * Place a home tile at the center of the grid
-     * Ensures only one home tile exists and it's not on an edge
-     * @private
-     */
-    _placeHomeTile() {
-        // Remove any existing home tiles first
-        for (let i = 0; i < this.size; i++) {
-            for (let j = 0; j < this.size; j++) {
-                if (this.tiles[i][j] === 'home') {
-                    this.tiles[i][j] = 'grass';
-                }
-            }
-        }
-        
-        // Place home at center (for now, can be randomized later)
-        const centerRow = Math.floor(this.size / 2);
-        const centerCol = Math.floor(this.size / 2);
-        this.tiles[centerRow][centerCol] = 'home';
     }
 
     /**
@@ -125,18 +68,6 @@ class Grid {
     setTile(row, col, tileType) {
         if (row >= 0 && row < this.size && col >= 0 && col < this.size) {
             this.tiles[row][col] = tileType;
-        }
-    }
-
-    /**
-     * Change the grid size and regenerate
-     * @param {number} newSize - The new grid size
-     */
-    resize(newSize) {
-        if (newSize >= CONFIG.grid.minSize && newSize <= CONFIG.grid.maxSize) {
-            this.size = newSize;
-            this.generate();
-            this.saveInitialState();
         }
     }
 

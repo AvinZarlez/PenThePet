@@ -2,10 +2,12 @@
  * Unit Tests for MapGenerator.js
  * 
  * Tests the map generation and validation logic.
+ * MapGenerator is used by the generation scripts (Node.js only),
+ * not loaded in the browser.
  */
 
 const MapGenerator = require('../js/MapGenerator.js');
-const MILPSolver = require('../js/MILPSolver.js');
+const MILPSolver = require('../scripts/solver/MILPSolver.js');
 const CONSTANTS = require('../js/constants.js');
 
 describe('MapGenerator', () => {

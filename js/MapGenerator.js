@@ -5,16 +5,16 @@
  * when no walls are placed. Uses BFS pathfinding to validate connectivity.
  */
 
-// For Node.js environment - import dependencies if not in browser
+// Node.js-only module - used by generation scripts, never loaded in browser
 (function() {
     if (typeof require !== 'undefined') {
-        if (typeof CONSTANTS === 'undefined' && typeof global !== 'undefined') {
+        if (typeof global.CONSTANTS === 'undefined') {
             global.CONSTANTS = require('./constants.js');
         }
-        if (typeof MILPSolver === 'undefined' && typeof global !== 'undefined') {
-            global.MILPSolver = require('./MILPSolver.js');
+        if (typeof global.MILPSolver === 'undefined') {
+            global.MILPSolver = require('../scripts/solver/MILPSolver.js');
         }
-        if (typeof MapValidator === 'undefined' && typeof global !== 'undefined') {
+        if (typeof global.MapValidator === 'undefined') {
             global.MapValidator = require('./MapValidator.js');
         }
     }
