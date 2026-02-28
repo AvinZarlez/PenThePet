@@ -44,7 +44,6 @@ const CONSTANTS = {
     
     // Grid sizing
     GRID_PADDING: 6,            // Padding around the grid in pixels
-    AVAILABLE_HEIGHT_RATIO: 0.7, // Use 70% of viewport height for grid
     
     // Gameplay
     ALLOW_WALL_REMOVAL: true,   // Allow clicking walls to remove them

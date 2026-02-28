@@ -22,7 +22,6 @@ describe('CONSTANTS', () => {
             expect(CONSTANTS).toHaveProperty('TILE_DISTRIBUTION');
             expect(CONSTANTS).toHaveProperty('CELL');
             expect(CONSTANTS).toHaveProperty('GRID_PADDING');
-            expect(CONSTANTS).toHaveProperty('AVAILABLE_HEIGHT_RATIO');
             expect(CONSTANTS).toHaveProperty('ALLOW_WALL_REMOVAL');
             expect(CONSTANTS).toHaveProperty('AUTO_SAVE_STATE');
             expect(CONSTANTS).toHaveProperty('HINT_MODE_DEFAULT');
@@ -152,11 +151,6 @@ describe('CONSTANTS', () => {
             expect(CONSTANTS.GRID_PADDING).toBeGreaterThanOrEqual(0);
         });
 
-        test('AVAILABLE_HEIGHT_RATIO should be between 0 and 1', () => {
-            expect(typeof CONSTANTS.AVAILABLE_HEIGHT_RATIO).toBe('number');
-            expect(CONSTANTS.AVAILABLE_HEIGHT_RATIO).toBeGreaterThan(0);
-            expect(CONSTANTS.AVAILABLE_HEIGHT_RATIO).toBeLessThanOrEqual(1);
-        });
     });
 
     describe('Gameplay Settings', () => {
@@ -191,7 +185,7 @@ describe('CONSTANTS', () => {
             expect(Number.isFinite(CONSTANTS.CELL.MIN_SIZE)).toBe(true);
             expect(Number.isFinite(CONSTANTS.CELL.MAX_SIZE)).toBe(true);
             expect(Number.isFinite(CONSTANTS.GRID_PADDING)).toBe(true);
-            expect(Number.isFinite(CONSTANTS.AVAILABLE_HEIGHT_RATIO)).toBe(true);
+
         });
 
         test('all numeric values should not be NaN', () => {

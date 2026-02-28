@@ -30,7 +30,6 @@ class Game {
         this.GRID_PADDING = CONSTANTS.GRID_PADDING;
         this.MIN_CELL_SIZE = CONSTANTS.CELL.MIN_SIZE;
         this.MAX_CELL_SIZE = CONSTANTS.CELL.MAX_SIZE;
-        this.AVAILABLE_HEIGHT_RATIO = CONSTANTS.AVAILABLE_HEIGHT_RATIO;
         
         // Submission state
         this.currentDate = null;
@@ -487,36 +486,15 @@ class Game {
      * @returns {number} The calculated cell size in pixels
      */
     calculateCellSize() {
-        // Calculate available width
+        // Calculate available width (width-only sizing allows vertical scrolling)
         const availableWidth = window.innerWidth * 0.90;
-        
-        // Calculate available height by measuring actual space
-        // Get grid container position to determine how much vertical space is left
-        const gridContainer = this.gridElement.parentElement;
-        let availableHeight;
-        
-        if (gridContainer) {
-            const containerRect = gridContainer.getBoundingClientRect();
-            // Space from container top to bottom of viewport, minus some margin
-            availableHeight = window.innerHeight - containerRect.top - 20;
-        } else {
-            // Fallback to percentage-based calculation
-            availableHeight = window.innerHeight * this.AVAILABLE_HEIGHT_RATIO;
-        }
-        
-        // Ensure minimum available height
-        availableHeight = Math.max(availableHeight, 200);
         
         // Calculate total space needed for gaps and padding
         const totalGap = this.CELL_GAP * (this.grid.size - 1);
         const totalPadding = this.GRID_PADDING * 2; // padding on both sides
         
-        // Calculate max cell size that fits in each dimension
-        const maxCellWidth = Math.floor((availableWidth - totalPadding - totalGap) / this.grid.size);
-        const maxCellHeight = Math.floor((availableHeight - totalPadding - totalGap) / this.grid.size);
-        
-        // Use the smaller of the two to ensure it fits in both dimensions
-        const maxCellSize = Math.min(maxCellWidth, maxCellHeight);
+        // Calculate max cell size that fits the available width
+        const maxCellSize = Math.floor((availableWidth - totalPadding - totalGap) / this.grid.size);
         
         return Math.max(this.MIN_CELL_SIZE, Math.min(this.MAX_CELL_SIZE, maxCellSize));
     }
