@@ -161,6 +161,10 @@ class Menu {
      * Reset all local data by deleting all cookies and reloading the page
      */
     resetAllData() {
+        // Delete all cloud data if available
+        if (typeof CloudSync !== 'undefined' && CloudSync.isConfigured() && CloudSync.isLoggedIn()) {
+            CloudSync.deleteAllSubmissions();
+        }
         CookieUtils.deleteAllCookies();
         window.location.reload();
     }

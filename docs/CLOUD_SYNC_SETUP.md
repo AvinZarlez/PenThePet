@@ -1,0 +1,221 @@
+# ☁️ Cloud Sync Setup Guide
+
+This guide explains how to enable cross-device cloud sync so that your
+puzzle progress is automatically available on every browser and device you use.
+
+## Overview
+
+By default the app stores all data **locally in your browser** (cookies).
+Cloud sync is an **opt-in feature** that is disabled until you configure it.
+Once enabled:
+
+- Submissions you make on one device automatically appear on all your
+  other signed-in devices.
+- Settings (pet type, hint mode) are synced when you sign in on a new device.
+- Each user's data is stored privately; no one else can read or write it.
+
+Cloud sync is powered by **Firebase** — Google's free serverless backend.
+You need to create your own Firebase project and connect it to your fork of
+this repository. Firebase's free tier (Spark plan) is more than sufficient
+for normal use.
+
+## Prerequisites
+
+- A Google account (for Firebase)
+- Admin access to your fork of this repository
+
+## Step-by-step Setup
+
+### Step 1 — Create a Firebase Project
+
+1. Go to [https://console.firebase.google.com](https://console.firebase.google.com).
+2. Click **Add project** (or **Create a project**).
+3. Enter a project name (e.g. `penthepet`).
+4. You can disable Google Analytics — it is not needed.
+5. Click **Create project**, then **Continue**.
+
+### Step 2 — Register a Web App
+
+1. On the project overview page, click the **Web** icon (`</>`) under
+   "Add an app to get started".
+2. Enter an app nickname (e.g. `penthepet-web`).
+3. Leave "Also set up Firebase Hosting" **unchecked** — the app is hosted
+   on GitHub Pages.
+4. Click **Register app**.
+5. Firebase shows you a `firebaseConfig` object — copy the values.
+6. Click **Continue to console**.
+
+> **Note:** Firebase API keys are **not secret**. They identify your
+> project but all access is controlled by Authentication and Security Rules.
+> It is safe to commit `firebase-config.js` with your real values.
+
+### Step 3 — Enable Email/Password Authentication
+
+1. In the Firebase console left sidebar, click **Build → Authentication**.
+2. Click **Get started**.
+3. Under the **Sign-in method** tab, click **Email/Password**.
+4. Toggle **Enable** to on.
+5. Leave "Email link (passwordless sign-in)" disabled.
+6. Click **Save**.
+
+### Step 4 — Create a Firestore Database
+
+1. In the left sidebar, click **Build → Firestore Database**.
+2. Click **Create database**.
+3. Choose **Start in production mode** (you will set the correct rules next).
+4. Select a Cloud Firestore location closest to your users (e.g. `us-east1`).
+5. Click **Enable**.
+
+### Step 5 — Set Firestore Security Rules
+
+The default production rules deny all access. Replace them with rules that
+allow each authenticated user to read and write only their own data.
+
+1. In **Build → Firestore Database**, click the **Rules** tab.
+1. Replace the entire contents with the following and click **Publish**:
+
+```text
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /users/{userId}/{document=**} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+  }
+}
+```
+
+> **What this rule does:** A signed-in user can only read and write
+> documents stored under their own user ID. No user can access another
+> user's data.
+
+### Step 6 — Restrict Your API Key (Recommended)
+
+To ensure that **only your website** can use your Firebase project (not a
+fork running on a different domain):
+
+1. Go to the
+   [Google Cloud Console → Credentials](https://console.cloud.google.com/apis/credentials).
+2. Select the project you just created.
+3. Click the **Browser key** that Firebase created automatically.
+4. Under **Application restrictions**, select **HTTP referrers (web sites)**.
+5. Add the allowed domains. For a GitHub Pages site:
+
+   ```text
+   https://YOUR_USERNAME.github.io/penthepet/*
+   ```
+
+   Replace `YOUR_USERNAME` with your actual GitHub username.
+   You can also add `http://localhost/*` for local development.
+
+6. Click **Save**.
+
+This means even if someone forks the repo and deploys it, their site will
+be on a different domain and Firebase will reject their requests.
+
+### Step 7 — Add Your Config to the Repository
+
+Open `js/firebase-config.js` in your fork and fill in the values from Step 2:
+
+```js
+const FIREBASE_CONFIG = {
+    apiKey: 'AIzaSy...',
+    authDomain: 'your-project.firebaseapp.com',
+    projectId: 'your-project',
+    storageBucket: 'your-project.firebasestorage.app',
+    messagingSenderId: '1234567890',
+    appId: '1:1234567890:web:abcdef'
+};
+```
+
+Commit and push. The app detects that `apiKey` is non-empty and
+automatically enables the cloud sync UI.
+
+### Step 8 — Test the Setup
+
+1. Open the app (your GitHub Pages URL).
+2. A **"☁️ Sign In to Sync"** button should appear below the menu button.
+3. Click it, enter your email and a password (min 6 characters), then
+   click **Create Account**.
+4. After signing in, you should see your email and a **☁️ Synced** badge.
+5. Submit a puzzle — it should upload to Firestore automatically.
+6. Open the same URL in a different browser or device, sign in with the
+   same account, and verify that the submission appears.
+
+## How Data Is Stored
+
+Submissions are stored in Firestore at:
+
+```text
+users/{userId}/submissions/{YYYY-MM-DD}
+```
+
+Each document contains `score`, `walls`, and `timestamp` — the same data
+that is stored in the local cookie.
+
+User settings (pet type, hint mode) are stored at:
+
+```text
+users/{userId}/submissions/settings
+```
+
+## How Sync Works
+
+| Event | What happens |
+|---|---|
+| **Sign in** | Cloud submissions are downloaded and merged into local cookies. Local-only submissions are uploaded to the cloud. |
+| **Submit a puzzle** | Saved to cookie AND uploaded to Firestore. |
+| **Realtime update** | Changes from other signed-in devices are pushed to cookies automatically. |
+| **Sign out** | Realtime listener stops. Local cookies remain untouched. |
+
+## Running Without Cloud Sync
+
+If you fork this repository and do **not** want cloud sync, simply leave
+`js/firebase-config.js` unchanged (with an empty `apiKey`). The app will
+behave exactly as before — all data stays in local cookies and the cloud
+sync UI is hidden.
+
+## Firebase Free Tier Limits
+
+Firebase's Spark (free) plan is sufficient for normal use:
+
+| Resource | Free quota |
+|---|---|
+| Firestore reads | 50,000 / day |
+| Firestore writes | 20,000 / day |
+| Firestore storage | 1 GiB |
+| Authentication users | Unlimited |
+
+A typical user saving a few submissions per day will use a handful of
+reads and writes — far below the free limits.
+
+## Troubleshooting
+
+### "☁️ Sign In to Sync" button does not appear
+
+The `apiKey` in `js/firebase-config.js` is empty. Complete Step 7.
+
+### "Email/password sign-in is not enabled"
+
+Return to Step 3 and enable the **Email/Password** provider.
+
+### "Firestore permission denied" or "⚠️ Sync error"
+
+Your security rules are still set to deny all access. Return to Step 5.
+
+### "Firestore database not found or not ready"
+
+You skipped Step 4. Go to **Build → Firestore Database** and create a
+database.
+
+### Firebase works locally but not on GitHub Pages
+
+Check the API key restrictions (Step 6) — make sure your GitHub Pages
+domain is in the allowed referrers list.
+
+## Additional Resources
+
+- [Firebase Console](https://console.firebase.google.com)
+- [Firebase Firestore Documentation](https://firebase.google.com/docs/firestore)
+- [Firebase Authentication Documentation](https://firebase.google.com/docs/auth)
+- [Firebase Pricing (Spark plan)](https://firebase.google.com/pricing)

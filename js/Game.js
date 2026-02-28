@@ -990,6 +990,11 @@ class Game {
             timestamp: new Date().toISOString()
         };
         this._setCookie(cookieName, JSON.stringify(submissionData), 365);
+
+        // Sync to cloud if available
+        if (typeof CloudSync !== 'undefined' && CloudSync.isConfigured() && CloudSync.isLoggedIn()) {
+            CloudSync.saveSubmission(dateString, submissionData);
+        }
     }
     
     /**
@@ -1027,6 +1032,11 @@ class Game {
     deleteSubmission(dateString) {
         const cookieName = `submission_${dateString}`;
         CookieUtils.deleteCookie(cookieName);
+
+        // Delete from cloud if available
+        if (typeof CloudSync !== 'undefined' && CloudSync.isConfigured() && CloudSync.isLoggedIn()) {
+            CloudSync.deleteSubmission(dateString);
+        }
     }
 }
 
