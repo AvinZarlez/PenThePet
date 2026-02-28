@@ -186,6 +186,13 @@ if (!validation.valid) {
 
 Use the GitHub Actions workflow to generate maps and open a pull request:
 
+> **Setup:** For the workflow to create pull requests automatically, enable **one** of:
+>
+> - **Repository setting** *(recommended)*: Go to Settings → Actions → General → check **"Allow GitHub Actions to create and approve pull requests"**
+> - **Personal Access Token**: Create a PAT with `repo` scope and add it as a repository secret named `REPO_TOKEN` under Settings → Secrets and variables → Actions
+>
+> If neither is configured, the workflow will still generate the map and push the branch — you'll just need to create the PR manually from the link in the workflow output.
+
 1. Go to the **Actions** tab in the GitHub repository
 2. Select **"Generate Daily Map"** workflow
 3. Click **"Run workflow"**
