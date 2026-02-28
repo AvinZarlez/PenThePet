@@ -917,6 +917,15 @@ class Game {
     hasSubmission(dateString) {
         return this.loadSubmission(dateString) !== null;
     }
+
+    /**
+     * Delete saved submission for a specific puzzle
+     * @param {string} dateString - Date of the puzzle
+     */
+    deleteSubmission(dateString) {
+        const cookieName = `submission_${dateString}`;
+        CookieUtils.deleteCookie(cookieName);
+    }
 }
 
 // Export for use in other modules
