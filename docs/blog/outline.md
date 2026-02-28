@@ -724,7 +724,7 @@
   - ~1,500 lines of test code
   - 237 tests, ~90% coverage
   - 7 major development phases
-  - ~3 weeks of active development
+  - Under a month of development (Feb 5 - Feb 28)
 - Code quality:
   - Zero framework dependencies
   - Vanilla JavaScript throughout

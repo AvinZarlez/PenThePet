@@ -654,7 +654,7 @@ For boilerplate-heavy work—HTML structure, CSS layout, event listener setup—
 
 ### Test Generation
 
-Writing comprehensive test suites is tedious but essential. AI excels here because tests are formulaic: set up state, call function, assert result. Copilot generated hundreds of tests for this project over its development lifecycle. Even after the major refactor (which removed solver-related tests), 237 tests remained, covering:
+Writing comprehensive test suites is tedious but essential. AI excels here because tests are formulaic: set up state, call function, assert result. Copilot generated 274 tests for this project at peak coverage. The major solver refactor (PR #63) later removed solver-related tests, leaving 237 tests covering the browser code:
 
 ```javascript
 // Example: AI-generated test covering edge case
@@ -825,7 +825,7 @@ These criteria weren't obvious to AI. They emerged through iteration and were ev
 
 ### By the Numbers
 
-After roughly three weeks of active development:
+After under a month of development:
 - **48 merged pull requests**
 - **~2,000 lines of browser JavaScript** (down from ~3,000 after the refactor)
 - **~1,500 lines of test code** (237 tests, ~90% coverage)

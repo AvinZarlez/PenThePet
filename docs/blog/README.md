@@ -101,7 +101,7 @@ The article is based on:
 
 ## Statistics
 
-- **Development Time**: ~3 weeks active development
+- **Development Time**: Under a month (Feb 5 - Feb 28, 2026)
 - **Pull Requests**: 48 merged
 - **Browser Code**: ~2,000 lines (down from ~3,000 after refactor)
 - **Test Coverage**: 237 tests, ~90% coverage

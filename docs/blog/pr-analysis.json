@@ -47,7 +47,7 @@
       "description": "Comprehensive testing infrastructure",
       "key_achievements": [
         "Centralized constants",
-        "237+ unit tests with ~90% coverage",
+        "237 unit tests with ~90% coverage",
         "Map validation system",
         "Complete documentation",
         "Fast test suite (<10s)"
