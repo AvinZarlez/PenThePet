@@ -30,13 +30,13 @@ const {
 } = require('./lib/mapUtils.js');
 
 /**
- * Generate a single map entry with full MILP solving and quality validation.
+ * Generate one map with MILP solving and quality validation.
  * Returns null on failure (caller decides whether to abort or continue).
  * @param {string} date - Date key in YYYY-MM-DD format
  * @param {number} size - Grid size
  * @returns {Promise<Object|null>}
  */
-async function generateSingleMap(date, size) {
+async function generateMap(date, size) {
     console.log(`\n${'='.repeat(60)}`);
     console.log(`Generating map for ${date} (${size}x${size})`);
     console.log('='.repeat(60));
@@ -93,7 +93,7 @@ async function generateSingleMap(date, size) {
 }
 
 /**
- * Main entry point
+ * Main entry point — parses CLI args and drives the generation loop.
  */
 async function main() {
     const args = process.argv.slice(2);
@@ -116,7 +116,7 @@ async function main() {
 
     const mapsPath = path.join(__dirname, '../maps.json');
 
-    // Parse size input (supports "9" or "7-13")
+    // Parse size input — supports an exact value ("9") or a range ("7-13")
     let parsedSize;
     try {
         parsedSize = parseSizeInput(sizeInput);
@@ -133,7 +133,7 @@ async function main() {
     console.log(`Size:  ${sizeInput}`);
     console.log('='.repeat(60));
 
-    // Load existing maps (unless --fresh)
+    // Load existing maps (skipped when --fresh replaces everything)
     let maps = {};
     if (!fresh && fs.existsSync(mapsPath)) {
         const data = fs.readFileSync(mapsPath, 'utf8');
@@ -149,13 +149,13 @@ async function main() {
         console.log(`No date provided, auto-assigned${count > 1 ? ' start' : ''}: ${startDate}`);
     }
 
-    // Validate date format
+    // Reject malformed dates early
     if (!/^\d{4}-\d{2}-\d{2}$/.test(startDate)) {
         console.error('Error: Date must be in YYYY-MM-DD format');
         process.exit(1);
     }
 
-    // For single map with an explicit date, error if date already exists (backwards-compat)
+    // When generating a single map, refuse to overwrite an existing date unless --fresh
     if (count === 1 && !fresh && maps[startDate]) {
         console.error(`Error: Map for ${startDate} already exists`);
         console.error(`Existing map: "${maps[startDate].mapName}" (Day ${maps[startDate].dayNumber})`);
@@ -166,7 +166,7 @@ async function main() {
     let currentDate = startDate;
 
     for (let i = 0; i < count; i++) {
-        // Skip dates that already have maps when appending multiple maps
+        // When appending a batch, skip over dates that already have maps
         if (!fresh && count > 1) {
             while (maps[currentDate]) {
                 console.log(`Map for ${currentDate} already exists, skipping...`);
@@ -175,7 +175,7 @@ async function main() {
         }
 
         const size = getRandomSize(parsedSize);
-        const mapData = await generateSingleMap(currentDate, size);
+        const mapData = await generateMap(currentDate, size);
 
         if (!mapData) {
             console.error('\n✗ Failed to generate valid map');
@@ -195,7 +195,7 @@ async function main() {
         currentDate = incrementDate(currentDate);
     }
 
-    // Validate and auto-fix database consistency before saving
+    // Validate and auto-fix database consistency (sequential day numbers, unique names)
     console.log('\nValidating maps database...');
     let dbValidation = validateMapsDatabase(maps);
 
@@ -214,7 +214,7 @@ async function main() {
         console.log('✓ Database validation passed');
     }
 
-    // Sort by date and save
+    // Sort by date before saving so maps.json stays ordered
     const sortedMaps = {};
     Object.keys(maps).sort().forEach(key => { sortedMaps[key] = maps[key]; });
     fs.writeFileSync(mapsPath, JSON.stringify(sortedMaps, null, 2));
@@ -224,7 +224,7 @@ async function main() {
         console.log(`✓ Generated ${count} new maps`);
     }
 
-    // Summary table
+    // Print a summary of all maps now in the file
     console.log('\nMap Summary:');
     Object.keys(sortedMaps).sort().forEach(date => {
         const m = sortedMaps[date];
@@ -239,13 +239,12 @@ if (require.main === module) {
     });
 }
 
-// Re-export shared utilities (used by tests and callers)
+// Export the generator function and utility pass-throughs for programmatic use and tests
 module.exports = {
-    generateSingleMap,
+    generateMap,
     parseSizeInput,
     getRandomSize,
     incrementDate,
     getNextDayNumber,
     getNextAvailableDate,
 };
-

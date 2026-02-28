@@ -95,7 +95,7 @@ test/
     ├── MapGenerator.test.js          # Map generation
     ├── MapValidator.test.js          # Map validation
     ├── generate-maps.test.js         # Database validation utilities (mapUtils.js)
-    └── generate-single-map.test.js  # Generation entry point utilities
+    └── generate-map.test.js  # Generation entry point utilities
 ```
 
 ## Running Tests
@@ -322,7 +322,7 @@ These files are excluded because they're UI/config and tested manually:
 - `getNextDayNumber` — correct next sequential day number
 - maps.json structure validation (required fields, optimalSolution format)
 
-#### 11. generate-single-map.test.js (16 tests)
+#### 11. generate-map.test.js (16 tests)
 
 **Purpose:** Test generation entry-point utilities
 

@@ -219,8 +219,9 @@ scripts/
 │   ├── MILPSolver.js     # Node.js wrapper
 │   ├── solve.py          # Python MILP solver
 │   └── requirements.txt  # Python deps
-├── generate-maps.js      # Batch generation
-├── generate-single-map.js # Single map generation
+├── generate-map.js       # Map generation entry point (single, batch, or fresh)
+├── lib/
+│   └── mapUtils.js       # Shared utilities (dates, size parsing, DB validation)
 └── audit-maps.js         # Map validation
 ```
 

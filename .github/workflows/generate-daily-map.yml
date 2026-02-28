@@ -59,10 +59,10 @@ jobs:
 
           if [ -n "$DATE_ARG" ]; then
             echo "Generating ${COUNT_ARG} map(s) starting ${DATE_ARG} (size: ${SIZE_ARG})"
-            node scripts/generate-single-map.js --size "${SIZE_ARG}" --count "${COUNT_ARG}" --date "${DATE_ARG}"
+            node scripts/generate-map.js --size "${SIZE_ARG}" --count "${COUNT_ARG}" --date "${DATE_ARG}"
           else
             echo "Generating ${COUNT_ARG} map(s) with auto-assigned date(s) (size: ${SIZE_ARG})"
-            node scripts/generate-single-map.js --size "${SIZE_ARG}" --count "${COUNT_ARG}"
+            node scripts/generate-map.js --size "${SIZE_ARG}" --count "${COUNT_ARG}"
           fi
           
       - name: Check for changes

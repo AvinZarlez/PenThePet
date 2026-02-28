@@ -217,7 +217,7 @@ The workflow will:
 
 ### Method 2: Local Script for Single or Multiple Maps
 
-`scripts/generate-single-map.js` is the single generation entry point for both the GitHub
+`scripts/generate-map.js` is the single generation entry point for both the GitHub
 Actions workflow and local use. It supports all generation scenarios:
 
 ```bash
@@ -225,19 +225,19 @@ Actions workflow and local use. It supports all generation scenarios:
 pip install -r scripts/solver/requirements.txt
 
 # Generate a single map for a specific date
-node scripts/generate-single-map.js --date 2026-02-15 --size 9
+node scripts/generate-map.js --date 2026-02-15 --size 9
 
 # Generate a single map with auto-assigned date
-node scripts/generate-single-map.js --size 9
+node scripts/generate-map.js --size 9
 
 # Generate 5 maps starting from a date (size picked randomly from range 7–13)
-node scripts/generate-single-map.js --date 2026-03-01 --size 7-13 --count 5
+node scripts/generate-map.js --date 2026-03-01 --size 7-13 --count 5
 
 # Generate 3 maps with auto-assigned dates
-node scripts/generate-single-map.js --size 11 --count 3
+node scripts/generate-map.js --size 11 --count 3
 
 # Replace all existing maps with 10 fresh ones
-node scripts/generate-single-map.js --fresh --count 10 --date 2026-03-01 --size 9
+node scripts/generate-map.js --fresh --count 10 --date 2026-03-01 --size 9
 ```
 
 **Arguments:**
@@ -279,7 +279,7 @@ Each generated map is validated to ensure:
 6. **js/wordList.js**: Random English words for map names
 7. **scripts/solver/solve.py**: Python MILP solver using PuLP + CBC
 8. **scripts/solver/requirements.txt**: Python dependencies
-9. **scripts/generate-single-map.js**: Generation entry point — single map, batch, or fresh replacement (used by GitHub Actions and locally)
+9. **scripts/generate-map.js**: Generation entry point — single map, batch, or fresh replacement (used by GitHub Actions and locally)
 10. **scripts/lib/mapUtils.js**: Shared pure utilities — date helpers, size parsing, database validation/fix
 11. **scripts/audit-maps.js**: Validates all maps in maps.json against MapValidator
 
@@ -394,7 +394,7 @@ console.log('Walls:', result.maxWalls);
 "
 
 # Run the generation script with test data
-node scripts/generate-single-map.js --count 3 --size 7
+node scripts/generate-map.js --count 3 --size 7
 ```
 
 ## Summary for Future Agents
@@ -402,7 +402,7 @@ node scripts/generate-single-map.js --count 3 --size 7
 **When generating maps:**
 
 1. Use GitHub Actions workflow for production daily maps (preferred) — opens a PR
-2. Use `scripts/generate-single-map.js` for local generation (supports `--count`, `--size N-M` range, `--fresh`)
+2. Use `scripts/generate-map.js` for local generation (supports `--count`, `--size N-M` range, `--fresh`)
 3. Run `scripts/audit-maps.js` to validate existing maps (checks all quality rules including strategic wall placement)
 4. Ensure CONSTANTS.MAX_WALLS = 15 (never change without regenerating all maps)
 5. All maps MUST pass MapValidator checks (goal >= 5, not all walls on edges, etc.)

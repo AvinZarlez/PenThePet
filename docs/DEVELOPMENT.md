@@ -64,7 +64,7 @@ PenThePet/
 │   ├── Menu.js          # Menu system
 │   └── main.js          # Entry point
 ├── scripts/
-│   ├── generate-single-map.js # Map generation entry point (single, batch, or fresh)
+│   ├── generate-map.js # Map generation entry point (single, batch, or fresh)
 │   ├── audit-maps.js    # Validate all maps in maps.json
 │   ├── lib/
 │   │   └── mapUtils.js  # Shared utilities (dates, size parsing, DB validation)
@@ -428,7 +428,7 @@ font-size: clamp(12px, 2vw, 16px);
 2. **Regenerate maps** (if needed)
 
    ```bash
-   node scripts/generate-single-map.js --fresh --count 10
+   node scripts/generate-map.js --fresh --count 10
    ```
 
 3. **Test**
@@ -502,13 +502,13 @@ font-size: clamp(12px, 2vw, 16px);
 pip install -r scripts/solver/requirements.txt
 
 # Generate a single map (auto-assigned date)
-node scripts/generate-single-map.js --size 9
+node scripts/generate-map.js --size 9
 
 # Generate 5 maps with random sizes (7–13)
-node scripts/generate-single-map.js --size 7-13 --count 5
+node scripts/generate-map.js --size 7-13 --count 5
 
 # Replace all maps with 10 fresh ones
-node scripts/generate-single-map.js --fresh --count 10 --date 2026-03-01 --size 9
+node scripts/generate-map.js --fresh --count 10 --date 2026-03-01 --size 9
 
 # Test generated maps
 npm test

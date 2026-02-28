@@ -1,5 +1,5 @@
 /**
- * Unit Tests for generate-single-map.js utility functions
+ * Unit Tests for generate-map.js utility functions
  */
 
 const {
@@ -7,7 +7,7 @@ const {
     getRandomSize,
     incrementDate,
     getNextAvailableDate,
-} = require('../../scripts/generate-single-map.js');
+} = require('../../scripts/generate-map.js');
 const fs = require('fs');
 
 describe('parseSizeInput', () => {

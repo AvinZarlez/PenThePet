@@ -47,7 +47,7 @@ Maps are pre-generated offline and stored in `maps.json`. Generation requires Py
 
 ```bash
 pip install -r scripts/solver/requirements.txt
-node scripts/generate-single-map.js --date 2026-02-15 --size 9
+node scripts/generate-map.js --date 2026-02-15 --size 9
 ```
 
 Key points:
