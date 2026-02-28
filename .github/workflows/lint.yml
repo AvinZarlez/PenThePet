@@ -1,0 +1,164 @@
+name: Lint
+
+on:
+  push:
+    branches:
+      - main
+      - development
+    paths:
+      - 'js/**'
+      - 'scripts/**/*.js'
+      - 'test/**/*.js'
+      - 'eslint.config.mjs'
+      - 'package.json'
+      - 'package-lock.json'
+      - 'scripts/solver/**'
+      - 'ruff.toml'
+      - '**/*.md'
+      - '.markdownlint-cli2.jsonc'
+  pull_request:
+    branches: '**'
+
+# Cancel in-progress runs when a new commit is pushed to the same branch/PR
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check-paths:
+    name: Detect Changed Files
+    runs-on: ubuntu-latest
+    outputs:
+      js: ${{ steps.filter.outputs.js }}
+      python: ${{ steps.filter.outputs.python }}
+      markdown: ${{ steps.filter.outputs.markdown }}
+
+    permissions:
+      contents: read
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Detect changed paths
+        id: filter
+        run: |
+          if [ "${{ github.event_name }}" != "pull_request" ]; then
+            # On push the workflow-level paths filter already ensures only
+            # relevant changes reach here, so run all linters.
+            echo "js=true" >> "$GITHUB_OUTPUT"
+            echo "python=true" >> "$GITHUB_OUTPUT"
+            echo "markdown=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          CHANGED=$(git diff --name-only \
+            "${{ github.event.pull_request.base.sha }}" \
+            "${{ github.event.pull_request.head.sha }}")
+          echo "Changed files:"
+          echo "$CHANGED"
+          echo "js=$(echo "$CHANGED" | grep -qE \
+            '(^js/|^scripts/.*\.js$|^test/.*\.js$|^eslint\.config\.mjs$|^package(-lock)?\.json$)' \
+            && echo true || echo false)" >> "$GITHUB_OUTPUT"
+          echo "python=$(echo "$CHANGED" | grep -qE \
+            '(^scripts/solver/|^ruff\.toml$)' \
+            && echo true || echo false)" >> "$GITHUB_OUTPUT"
+          echo "markdown=$(echo "$CHANGED" | grep -qE \
+            '(\.md$|\.markdownlint-cli2\.jsonc$)' \
+            && echo true || echo false)" >> "$GITHUB_OUTPUT"
+
+  lint-js:
+    name: Lint JavaScript
+    needs: check-paths
+    if: needs.check-paths.outputs.js == 'true'
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 20.x
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20.x
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run ESLint
+        run: npm run lint
+
+  lint-python:
+    name: Lint Python
+    needs: check-paths
+    if: needs.check-paths.outputs.python == 'true'
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install ruff
+        run: pip install ruff
+
+      - name: Run ruff
+        run: ruff check scripts/solver/
+
+  lint-markdown:
+    name: Lint Markdown
+    needs: check-paths
+    if: needs.check-paths.outputs.markdown == 'true'
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 20.x
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20.x
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run markdownlint
+        run: npm run lint:markdown
+
+  lint:
+    name: Lint
+    needs: [check-paths, lint-js, lint-python, lint-markdown]
+    if: always()
+    runs-on: ubuntu-latest
+
+    permissions: {}
+
+    steps:
+      - name: Check lint results
+        run: |
+          for result in \
+              "${{ needs.check-paths.result }}" \
+              "${{ needs.lint-js.result }}" \
+              "${{ needs.lint-python.result }}" \
+              "${{ needs.lint-markdown.result }}"; do
+            if [[ "$result" == "failure" || "$result" == "cancelled" ]]; then
+              echo "Lint pipeline failed or was cancelled."
+              exit 1
+            fi
+          done
+          echo "All lint checks passed (or were not required)."

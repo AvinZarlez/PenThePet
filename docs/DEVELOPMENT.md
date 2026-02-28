@@ -598,34 +598,29 @@ if (DEBUG) {
 
 ### GitHub Actions Workflows
 
-The project uses GitHub Actions for automated testing and deployment.
+The project uses two consolidated GitHub Actions workflows for linting and testing, plus standalone workflows for deployment and map generation.
 
-**PR trigger design:** All four lint/test workflows run on **every PR** (no path filter on the `pull_request` trigger). This is intentional — GitHub classic branch protection requires a status check to actually report a result; if a workflow never runs, the check stays in "expected — waiting for status" and permanently blocks the PR. Running all checks on every PR guarantees a result is always reported.
+**How required checks work:** GitHub classic branch protection requires a status check to actually *report* a result. If a workflow never fires (because a path filter prevented it), the check stays "Expected — Waiting for status to be reported" and permanently blocks the PR. To avoid this, each workflow has a **gate job** (`Lint` / `Test`) that always runs regardless of which files changed. Actual lint and test work is done by conditional sub-jobs — they run only when relevant files changed, and are skipped otherwise. The gate job checks whether any sub-job failed; if all were skipped it passes in under a second.
 
-**Push trigger design:** Path filters are still applied on `push` to `main`/`development` to avoid redundant CI on merge commits.
+**lint.yml** - Runs all linters; always produces a `Lint` status on every PR:
 
-**lint-js.yml** - ESLint on all JavaScript:
+- PR trigger: no path filter — always fires
+- Push trigger: only when JS, Python solver, or Markdown files change
+- **Detect Changed Files** — determines which linters are needed
+- **Lint JavaScript** — ESLint; runs only when `js/**`, `scripts/**/*.js`, `test/**/*.js`, `eslint.config.mjs`, or `package*.json` change
+- **Lint Python** — ruff; runs only when `scripts/solver/**` or `ruff.toml` change
+- **Lint Markdown** — markdownlint; runs only when `*.md` or `.markdownlint-cli2.jsonc` change
+- **Lint** *(gate)* — always runs; fails if any linter failed, passes if all passed or were skipped
 
-- PR: always runs
-- Push: only when `js/**`, `scripts/**/*.js`, `test/**/*.js`, `eslint.config.mjs`, `package.json`, or `package-lock.json` change
+**test.yml** - Runs the test suite; always produces a `Test` status on every PR:
 
-**lint-python.yml** - ruff on Python solver code:
-
-- PR: always runs
-- Push: only when `scripts/solver/**` or `ruff.toml` change
-
-**lint-markdown.yml** - markdownlint on documentation:
-
-- PR: always runs
-- Push: only when any `*.md` file or `.markdownlint-cli2.jsonc` changes
-
-**test.yml** - Runs tests (parallel jobs, then combined coverage):
-
-- PR: always runs
-- Push: only when `js/**`, `scripts/**`, `test/**`, `package.json`, or `package-lock.json` change
-- **Test Webapp** - Jest tests for browser-side components
-- **Test Level Generation** - Jest tests for generation scripts
-- **Full Test Suite & Coverage** - Combined test run with coverage reporting, Codecov upload, and PR comments (runs after both test jobs pass)
+- PR trigger: no path filter — always fires
+- Push trigger: only when `js/**`, `scripts/**`, `test/**`, or `package*.json` change
+- **Detect Changed Files** — determines if tests are needed
+- **Test Webapp** — Jest tests for browser-side components; conditional
+- **Test Level Generation** — Jest tests for generation scripts; conditional
+- **Full Test Suite & Coverage** — combined test run with coverage reporting, Codecov upload, and PR comments; runs only after both test jobs pass
+- **Test** *(gate)* — always runs; fails if any job failed, passes if all passed or were skipped
 
 **generate-daily-map.yml** - Manual workflow for adding new maps:
 
@@ -663,18 +658,14 @@ The `main` branch must be protected so that only @AvinZarlez can merge pull requ
 
 #### Required Status Checks
 
-**Goal:** If a lint or test workflow runs on a PR, it must pass before the PR can be merged.
+There are exactly **two** required status checks to register in branch protection — one per consolidated workflow:
 
-**Why all four workflows run on every PR:** GitHub classic branch protection requires a status check to actually *report* a result. If the workflow never runs (because a path filter prevented it from triggering), GitHub shows the check as "Expected — Waiting for status to be reported" and the PR is permanently blocked. To avoid this, the `pull_request` trigger on each workflow has **no path filter** — every PR always gets a result from all four checks.
+| Check name (use exactly as shown) | Workflow file | What it gates |
+|---|---|---|
+| `Lint` | `lint.yml` | ESLint, ruff, markdownlint |
+| `Test` | `test.yml` | Jest webapp tests, generation tests, coverage |
 
-| Check name (use exactly as shown) | Workflow file |
-|---|---|
-| `Lint JavaScript` | `lint-js.yml` |
-| `Lint Python` | `lint-python.yml` |
-| `Lint Markdown` | `lint-markdown.yml` |
-| `Full Test Suite & Coverage` | `test.yml` |
-
-> **Note on `Full Test Suite & Coverage`:** this job uses `needs: [test-webapp, test-generation]`, so it only runs after both parallel test jobs pass. Requiring this single check is enough to enforce all three test jobs together.
+Both gate jobs always run on every PR and always report a result, so they never block a merge with "Expected — Waiting for status to be reported." Sub-jobs inside each workflow run only when relevant files changed.
 
 **Step-by-step setup in GitHub:**
 
@@ -682,7 +673,7 @@ The `main` branch must be protected so that only @AvinZarlez can merge pull requ
 2. Click **Edit** next to the `main` branch protection rule (or **Add rule** if none exists)
 3. Enable **Require status checks to pass before merging**
 4. Enable **Require branches to be up to date before merging**
-5. In the **Search for status checks** box, search for and add all four check names from the table above
+5. In the **Search for status checks** box, search for `Lint` and `Test` and add both
 6. Click **Save changes**
 
 > **Can't find a check in the search box?** The check name only appears after at least one PR has run that workflow. Open a draft PR to any branch to populate the list.
