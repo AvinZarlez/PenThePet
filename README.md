@@ -59,6 +59,4 @@ MIT License — see [LICENSE](LICENSE) for details.
 
 ## 🙏 Credits
 
-Made by [Avin Zarlez](https://www.AvinZarlez.com). Built with GitHub Copilot assistance.
-
-Map generation uses a MILP solver (PuLP + CBC) for provably optimal solutions.
+Made by [Avin Zarlez](https://www.AvinZarlez.com).
