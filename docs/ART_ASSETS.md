@@ -19,7 +19,7 @@ All game art assets are stored in the `assets/` folder at the project root. Thes
 - **Format**: SVG for crisp rendering at any display size. Tiles scale via CSS `background-size: cover`.
 - **Palette**: Natural tones — greens for grass, blues for water, browns for wood/walls, yellows for penned highlights.
 - **Repeating**: Grass, water, and penned textures are designed to tile seamlessly when placed in adjacent grid cells.
-- **Home tile**: The doorway opening is centered and large enough to comfortably frame any pet emoji at the game's font size.
+- **Home tile**: The home SVG is mostly a dark interior with a thin doghouse frame and small roof peak. The pet emoji is displayed large and centered on top, dominating the tile.
 
 ## How Assets Are Used
 

@@ -248,7 +248,8 @@ class Game {
                 pathSet.add(`${row},${col}`);
                 
                 // Build ordered path array for direction calculation
-                const orderedPath = [`${startRow},${startCol}`, ...path, `${row},${col}`];
+                // Note: path already includes the edge position as its last element
+                const orderedPath = [`${startRow},${startCol}`, ...path];
                 const directionMap = this._calculatePathDirections(orderedPath);
                 
                 return { hasPath: true, path: pathSet, directions: directionMap };

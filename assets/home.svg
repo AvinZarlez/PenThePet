@@ -1,25 +1,18 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 50 50">
   <!-- Green grass ground -->
   <rect width="50" height="50" fill="#5cb85c"/>
-  <!-- Dog house body -->
-  <rect x="8" y="20" width="34" height="26" rx="3" fill="#c0855a"/>
-  <!-- Dog house front panel (lighter) -->
-  <rect x="10" y="22" width="30" height="22" rx="2" fill="#d4a373"/>
-  <!-- Roof -->
-  <polygon points="5,22 25,5 45,22" fill="#8b4513"/>
-  <!-- Roof outline for depth -->
-  <polygon points="5,22 25,5 45,22" fill="none" stroke="#6d3410" stroke-width="1.5" stroke-linejoin="round"/>
+  <!-- Subtle grass blades -->
+  <path d="M5 48 Q6 42 4 38" stroke="#4caf50" stroke-width="1" fill="none" opacity="0.5"/>
+  <path d="M45 48 Q46 42 44 38" stroke="#4caf50" stroke-width="1" fill="none" opacity="0.5"/>
+  <!-- Thin doghouse frame around edges -->
+  <rect x="2" y="12" width="46" height="36" rx="3" fill="#c0855a" opacity="0.6"/>
+  <!-- Large open interior (most of the tile) -->
+  <rect x="4" y="14" width="42" height="34" rx="2" fill="#3d2b1a"/>
+  <!-- Interior highlight for depth -->
+  <rect x="5" y="15" width="40" height="32" rx="2" fill="#4a3728" opacity="0.6"/>
+  <!-- Small roof peak at top -->
+  <polygon points="0,14 25,1 50,14" fill="#8b4513"/>
+  <polygon points="0,14 25,1 50,14" fill="none" stroke="#6d3410" stroke-width="1" stroke-linejoin="round"/>
   <!-- Roof ridge highlight -->
-  <line x1="14" y1="14" x2="36" y2="14" stroke="#a0522d" stroke-width="1.5" opacity="0.4"/>
-  <!-- Door opening (center area for pet emoji) -->
-  <ellipse cx="25" cy="37" rx="9" ry="10" fill="#4a3728"/>
-  <!-- Door arch highlight -->
-  <ellipse cx="25" cy="37" rx="7" ry="8" fill="#3d2b1a" opacity="0.5"/>
-  <!-- Small roof overhang shadow -->
-  <rect x="7" y="20" width="36" height="3" fill="#6d3410" opacity="0.3" rx="1"/>
-  <!-- Wood grain on house -->
-  <line x1="12" y1="28" x2="18" y2="28" stroke="#b0855a" stroke-width="0.6" opacity="0.4"/>
-  <line x1="32" y1="28" x2="38" y2="28" stroke="#b0855a" stroke-width="0.6" opacity="0.4"/>
-  <line x1="12" y1="42" x2="16" y2="42" stroke="#b0855a" stroke-width="0.6" opacity="0.4"/>
-  <line x1="34" y1="42" x2="38" y2="42" stroke="#b0855a" stroke-width="0.6" opacity="0.4"/>
+  <line x1="11" y1="8" x2="39" y2="8" stroke="#a0522d" stroke-width="1" opacity="0.3"/>
 </svg>

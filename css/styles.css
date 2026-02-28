@@ -368,7 +368,7 @@ button:active {
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: clamp(0.8em, calc(var(--cell-size, 50px) / 33), 1.5em);
+    font-size: clamp(1.2em, calc(var(--cell-size, 50px) / 18), 2.2em);
 }
 
 .cell.water:hover {
