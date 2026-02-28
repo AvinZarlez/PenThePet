@@ -9,7 +9,8 @@ let game;
 let menu;
 
 /**
- * Load today's map from the database or from cookie selection
+ * Load today's map from the database or from cookie selection.
+ * Falls back to the latest available level if today's map doesn't exist.
  * @returns {Promise<Object|null>} Map data or null if not found
  */
 async function loadTodayMap() {
@@ -27,9 +28,19 @@ async function loadTodayMap() {
             return mapsDb[savedLevel];
         }
         
-        // Otherwise use today's map
+        // Try today's map first
         const today = DateUtils.getTodayDate();
-        return mapsDb[today] || null;
+        if (mapsDb[today]) {
+            return mapsDb[today];
+        }
+        
+        // Fall back to the latest available level at or before today
+        const pastDates = Object.keys(mapsDb).filter(date => date <= today).sort();
+        if (pastDates.length > 0) {
+            return mapsDb[pastDates[pastDates.length - 1]];
+        }
+        
+        return null;
     } catch (error) {
         console.error('Error loading maps database:', error);
         return null;
