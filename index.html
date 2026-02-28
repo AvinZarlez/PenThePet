@@ -70,25 +70,6 @@
             <div id="grid" class="grid"></div>
         </div>
 
-        <div class="bottom-controls">
-            <button id="newGameBtn">New Game</button>
-        </div>
-
-
-
-        <div class="debug-section">
-            <h3>Debug Tools</h3>
-            <div class="debug-content">
-                <div class="debug-item">
-                    <label for="debugGridSize">Map Size: <span id="debugSizeValue">9</span></label>
-                    <input type="range" id="debugGridSize" min="7" max="21" value="9">
-                </div>
-                <div class="debug-item">
-                    <button id="generateDebugMapBtn">Generate Debug Map</button>
-                </div>
-            </div>
-        </div>
-
         <footer>
             <p>Built with HTML, CSS, and JavaScript</p>
         </footer>
@@ -223,14 +204,11 @@
         </div>
     </div>
 
-    <!-- Game Scripts (Load in order: constants -> config -> types -> pathfinding -> solver -> mapgen -> grid -> game -> menu -> main) -->
+    <!-- Game Scripts (Load in order: constants -> config -> types -> pathfinding -> grid -> game -> menu -> main) -->
     <script src="js/constants.js"></script>
     <script src="js/config.js"></script>
     <script src="js/tileTypes.js"></script>
     <script src="js/PathfindingUtils.js"></script>
-    <script src="js/MILPSolver.js"></script>
-    <script src="js/MapValidator.js"></script>
-    <script src="js/MapGenerator.js"></script>
     <script src="js/Grid.js"></script>
     <script src="js/Game.js"></script>
     <script src="js/Menu.js"></script>

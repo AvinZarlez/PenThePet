@@ -24,7 +24,6 @@ PenThePet is a daily logic puzzle game where you place walls to create the large
 - **Hint System**: Three modes (disabled, check optimal, reveal target)
 - **Instructions**: Comprehensive in-game guide
 - **Settings Persistence**: All preferences saved in cookies
-- **Debug Mode**: Optional developer tools
 - **Keyboard Navigation**: Full accessibility support
 - **Mobile-Friendly**: Responsive design for all screen sizes
 
@@ -106,15 +105,14 @@ PenThePet/
 │   ├── tileTypes.js        # Tile definitions
 │   ├── wordList.js         # Random words for map names
 │   ├── PathfindingUtils.js # Shared pathfinding algorithms
-│   ├── MILPSolver.js       # Optimal wall placement solver
-│   ├── MapGenerator.js     # Map generation and validation
-│   ├── Grid.js             # Grid data structure
-│   ├── Game.js             # Game controller
-│   ├── Menu.js             # Menu system (NEW)
+│   ├── Grid.js             # Grid state management
+│   ├── Game.js             # Game controller (checker)
+│   ├── Menu.js             # Menu system
 │   └── main.js             # Application entry point
 ├── scripts/
-│   └── generate-maps.js    # CLI for generating daily maps
-├── test/                   # Test suite (262 tests)
+│   ├── generate-maps.js    # CLI for generating daily maps
+│   └── solver/             # MILP solver pipeline (Python + Node.js)
+├── test/                   # Test suite (222 tests)
 ├── docs/                   # Documentation
 └── maps.json               # Daily puzzle maps
 
@@ -125,7 +123,7 @@ See [CODE_STRUCTURE.md](docs/CODE_STRUCTURE.md) for detailed architecture.
 
 The project has comprehensive test coverage with Jest:
 
-- **262 tests** across 8 test suites
+- **222 tests** across 7 test suites
 - Unit tests for all core modules
 - Integration tests for map generation
 - Cookie persistence tests
@@ -177,5 +175,5 @@ MIT License - See [LICENSE](LICENSE) file for details
 ---
 
 **Current Version:** 1.0.0  
-**Test Coverage:** 77% (240 tests passing)  
+**Test Coverage:** 77% (222 tests passing)  
 **Daily Maps:** 10+ unique puzzles

@@ -37,9 +37,10 @@ class MapValidator {
             errors.push(`Goal area too small (${solution.goalArea} < 5) - map is too easy`);
         }
         
-        // Validation 3: Optimal walls must be <= MAX_WALLS
-        if (solution.optimalWallCount > CONSTANTS.MAX_WALLS) {
-            errors.push(`Too many walls needed (${solution.optimalWallCount} > ${CONSTANTS.MAX_WALLS})`);
+        // Validation 3: Optimal walls must be <= maxWalls for this map size
+        const maxWallsForSize = CONSTANTS.maxWallsForSize(map.length);
+        if (solution.optimalWallCount > maxWallsForSize) {
+            errors.push(`Too many walls needed (${solution.optimalWallCount} > ${maxWallsForSize} for size ${map.length})`);
         }
         
         // Validation 4: Walls should not ALL be on edge tiles only (too easy)

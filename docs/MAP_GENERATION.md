@@ -12,25 +12,45 @@ The map generation system finds the **MAXIMUM** achievable penned area for each 
 
 1. The solver searches for the largest area that can be enclosed by optimally placing walls
 2. The goal represents the best possible score a player can achieve
-3. The system determines the minimum number of walls needed to achieve this maximum area
+3. The wall budget is determined by the grid size: `floor(size × 0.75)`
 
-### Algorithm: Memory-Efficient Exhaustive Search
+### Algorithm: Python MILP Solver
 
-**Key Requirement:** Accuracy is prioritized over speed.
+**Key Requirement:** Provably optimal results using Mixed Integer Linear Programming.
 
-The map generation uses a memory-efficient exhaustive search algorithm that:
+The map generation uses a Python MILP solver (`scripts/solver/solve.py`) powered by PuLP + CBC that:
 
-1. **Generates combinations on-the-fly** instead of storing all combinations in memory
-2. **Checks up to 50 million combinations per wall count** (safety limit for performance)
-3. **Tries wall counts from 1 to 15** (CONSTANTS.MAX_WALLS)
-4. **Finds the maximum penned area** by testing each combination
-5. **Uses MapValidator to ensure quality standards**
+1. **Formulates the problem as a Mixed Integer Linear Program** with binary variables for wall placement and pen membership
+2. **Uses network flow constraints** to ensure the pen is a connected region containing home
+3. **Uses vertex-cut constraints** to ensure the pen boundary is entirely walls/water
+4. **Maximizes the enclosed area** subject to wall budget constraints
+5. **Returns provably optimal solutions** (not approximations)
 
-#### Why Exhaustive Search?
+The solver runs in Node.js via subprocess call to Python, making it suitable for the level generation pipeline (not browser).
 
-User requirement: *"Accuracy is far more important than speed, levels can take as long as they need to generate."*
+#### Why MILP?
 
-The exhaustive search ensures we find the true optimal solution (within the 50M combination limit per wall count) rather than using heuristics that might miss the best solution.
+- **Provably optimal**: CBC solver guarantees the solution is optimal (not a heuristic approximation)
+- **Fast**: Solves 21×21 maps in under 2 seconds
+- **Scalable**: Handles any map size efficiently
+- **Reliable**: No combinatorial explosion as with brute-force search
+
+### Wall Budget Formula
+
+The number of walls a player gets is determined by the grid size:
+
+```
+maxWalls = floor(size × 0.75)
+```
+
+| Grid Size | maxWalls |
+|-----------|----------|
+| 7×7       | 5        |
+| 9×9       | 6        |
+| 11×11     | 8        |
+| 13×13     | 9        |
+| 15×15     | 11       |
+| 21×21     | 15       |
 
 ### Map Quality Validation
 
@@ -38,7 +58,7 @@ The exhaustive search ensures we find the true optimal solution (within the 50M 
 
 1. **Path to edge exists**: Pet can reach edge from home when no walls are placed
 2. **Goal area >= 5**: Maps with smaller goals are too easy and rejected
-3. **Walls <= 15**: Maximum walls that can be used is CONSTANTS.MAX_WALLS (15)
+3. **Walls within budget**: Optimal wall count must be ≤ maxWalls for the grid size
 4. **Not all walls on edges**: At least one optimal wall must be placed on a non-edge tile (prevents trivial solutions)
 
 Maps that fail any validation rule are discarded and regeneration is attempted.
@@ -65,7 +85,7 @@ Each map in `maps.json` contains the following fields:
   "date": "2026-02-06",    // Date in YYYY-MM-DD format
   "size": 7,               // Grid size (7x7, 9x9, 11x11, etc.)
   "goal": 13,              // Maximum achievable penned area
-  "maxWalls": 8,           // Minimum walls needed to achieve goal
+  "maxWalls": 5,           // Wall budget: floor(size * 0.75)
   "map": [                 // 2D array of tile types
     ["grass", "water", ...],
     ...
@@ -79,8 +99,8 @@ Each map in `maps.json` contains the following fields:
 - **mapName**: Random English word from `js/wordList.js` for memorable map identification
 - **date**: Date string used as the map key in maps.json
 - **size**: Grid dimensions (always square: size x size)
-- **goal**: The maximum area achievable with optimal wall placement
-- **maxWalls**: The minimum number of walls needed to achieve the goal area
+- **goal**: The maximum area achievable with optimal wall placement within the wall budget
+- **maxWalls**: The wall budget for the player, computed as `floor(size * 0.75)`
 - **map**: 2D array where each cell is "grass", "water", or "home"
 
 ## Constants Configuration
@@ -89,7 +109,10 @@ All configurable values are centralized in `js/constants.js`:
 
 ```javascript
 const CONSTANTS = {
-    MAX_WALLS: 15,              // Maximum walls allowed in any level
+    MAX_WALLS: 15,              // Absolute maximum walls (for largest grid sizes)
+    maxWallsForSize: function(size) {
+        return Math.floor(size * 0.75);
+    },
     MAX_GRID_SIZE: 21,          // Maximum grid size
     MIN_GRID_SIZE: 7,           // Minimum grid size
     DEFAULT_GRID_SIZE: 9,       // Default grid size
@@ -121,9 +144,9 @@ Every generated map must pass these quality checks (implemented in `js/MapValida
 - Prevents maps that are too easy or trivial
 - Example: A 3x3 pen would fail (only 1-2 tiles achievable)
 
-#### 3. Maximum Walls (optimalWallCount <= 15)
-- Solution must use at most CONSTANTS.MAX_WALLS (15) walls
-- Ensures maps are solvable within player constraints
+#### 3. Maximum Walls (within budget)
+- Solution must use at most `maxWallsForSize(size)` walls
+- Ensures maps are solvable within the player's wall budget
 - Maps requiring more walls are discarded
 
 #### 4. Strategic Wall Placement (Not All on Edges)
@@ -160,11 +183,11 @@ Use the GitHub Actions workflow to generate and commit a single daily map:
 4. Fill in parameters:
    - **date**: Date in YYYY-MM-DD format (e.g., `2026-02-15`)
    - **size**: Map size (7, 9, 11, etc.)
-   - **max_walls**: Maximum walls to try (default: 15)
 5. Click **"Run workflow"**
 
 The workflow will:
-- Generate a map using MILPSolver (production solver)
+- Set up Python and install PuLP (MILP solver dependency)
+- Generate a map using the Python MILP solver for optimal results
 - Validate it meets quality standards
 - Automatically commit the new map to `maps.json`
 - Assign next day number and random name
@@ -174,10 +197,11 @@ The workflow will:
 Generate a single map locally and add it to maps.json:
 
 ```bash
-node scripts/generate-single-map.js --date 2026-02-15 --size 9
+# Install Python dependencies first
+pip install -r scripts/solver/requirements.txt
 
-# With custom max walls
-node scripts/generate-single-map.js --date 2026-02-15 --size 11 --max-walls 12
+# Generate a map (maxWalls is computed automatically from size)
+node scripts/generate-single-map.js --date 2026-02-15 --size 9
 ```
 
 ### Method 3: Batch Generation
@@ -222,34 +246,35 @@ This will report any maps that fail validation rules.
 Each generated map is validated to ensure:
 
 1. **Path exists**: Pet can reach an edge from home (when no walls placed)
-2. **Solvable**: Can be penned with ≤ MAX_WALLS (15) walls
+2. **Solvable**: Can be penned within the wall budget (`floor(size * 0.75)`)
 3. **Optimal**: Goal represents maximum achievable area
-4. **Minimal walls**: maxWalls is the minimum needed to achieve goal
+4. **Strategic**: Not all walls on edges (prevents trivial solutions)
 
 ## Code Architecture
 
 ### Key Files
 
-1. **js/constants.js**: All configurable constants
+1. **js/constants.js**: All configurable constants including `maxWallsForSize()`
 2. **js/MapValidator.js**: Quality validation rules
 3. **js/MapGenerator.js**: Main map generation logic (NO FALLBACKS)
-4. **js/MILPSolver.js**: Production solver - exhaustive search for optimal wall placements
-5. **js/wordList.js**: Random English words for map names
-6. **test/BruteForceSolver.js**: Test-only ground truth verification for small maps
-7. **scripts/generate-single-map.js**: Generate one map (used by GitHub Actions)
-8. **scripts/generate-maps.js**: CLI script for batch map generation
-9. **scripts/audit-maps.js**: Validate existing maps
+4. **scripts/solver/MILPSolver.js**: Node.js wrapper that calls Python MILP solver
+5. **js/PathfindingUtils.js**: BFS pathfinding for penning checks
+6. **js/wordList.js**: Random English words for map names
+7. **scripts/solver/solve.py**: Python MILP solver using PuLP + CBC
+8. **scripts/solver/requirements.txt**: Python dependencies
+9. **scripts/generate-single-map.js**: Generate one map (used by GitHub Actions)
+10. **scripts/generate-maps.js**: CLI script for batch map generation
 
-### Generation Flow (Updated - No Fallbacks)
+### Generation Flow
 
 ```
 MapGenerator.generate()
   → _generateRandomMap()
   → _validateMap() [BFS pathfinding]
   → calculateGoal()
-      → MILPSolver.solveMap() [ONLY solver used]
-          → _exhaustiveSearch() [memory-efficient]
-              → _checkCombinationsIteratively()
+      → MILPSolver.solveMap() [Node.js wrapper]
+          → _solvePython() [calls scripts/solver/solve.py]
+              → PuLP MILP solver (CBC)
   → MapValidator.validate() [quality checks]
   → Return { map, goal, maxWalls } or RETRY (up to 1000 attempts)
   → If all attempts fail: THROW ERROR (no fallback!)
@@ -257,41 +282,55 @@ MapGenerator.generate()
 
 **IMPORTANT**: No fallback to guaranteed valid maps. If generation fails after 1000 attempts, it throws an error. This ensures consistency and prevents degraded map quality.
 
+### MILP Solver Architecture
+
+The Python MILP solver (`scripts/solver/solve.py`) formulates the problem as:
+
+**Variables:**
+- `s[i]` ∈ {0,1}: Whether tile `i` is in the pen
+- `w[i]` ∈ {0,1}: Whether a wall is placed on grass tile `i`
+- `f[i,j]` ≥ 0: Network flow between adjacent tiles
+
+**Objective:** Maximize Σ s[i] (total enclosed area)
+
+**Constraints:**
+1. Home is in the pen
+2. Boundary tiles are NOT in the pen
+3. Walled tiles are NOT in the pen
+4. Total walls ≤ maxWalls budget
+5. Vertex cut: adjacent tiles on different sides need a wall
+6. Flow conservation: ensures pen connectivity to home
+7. Flow capacity: flow only through pen tiles
+
 ### Validation Flow
 
 ```
 MapValidator.validate(map, solution)
   → _hasPathToEdge() [BFS check]
   → Check goalArea >= 5
-  → Check optimalWallCount <= MAX_WALLS
+  → Check optimalWallCount <= maxWallsForSize(map.length)
   → _allWallsOnEdge() [strategic placement check]
   → Return {valid, errors}
 ```
 
-### Solver Algorithm Pseudocode (Updated)
+## Dependencies
 
+### Python Dependencies (Level Generation)
+
+The MILP solver requires Python 3 and PuLP. Install with:
+
+```bash
+pip install -r scripts/solver/requirements.txt
 ```
-For numWalls = 1 to MAX_WALLS:
-    combinations_checked = 0
-    best_area = 0
-    
-    For each combination of numWalls walls:
-        if combinations_checked >= 50,000,000:
-            break  // Safety limit (increased for accuracy)
-        
-        Place walls on map
-        if pet is penned:
-            area = calculate_penned_area()
-            if area > best_area:
-                best_area = area
-                best_solution = current_walls
-        
-        combinations_checked++
-    
-    if found_solution and numWalls >= 8:
-        break  // Early exit
-    
-Return best_solution
+
+PuLP includes the CBC solver, which is used for the MILP optimization.
+
+### Node.js Dependencies (Testing)
+
+Standard Jest testing framework. Install with:
+
+```bash
+npm install
 ```
 
 ## Future Considerations
@@ -362,33 +401,30 @@ node scripts/generate-maps.js --count 3 --sizes 7
 
 **Key Invariants:**
 
-- MAX_WALLS = 15 (constant across all maps)
+- maxWalls = floor(size × 0.75) per grid size
 - Goal = maximum achievable area
-- maxWalls = minimum walls needed for goal
 - goalArea >= 5 (minimum difficulty)
 - At least one wall not on edge (strategic placement)
-- All maps solvable with ≤ 15 walls
 - Maps validated to have path to edge initially
 - **NO FALLBACKS**: Generation throws error if it fails (never falls back to simplified maps)
 
 **Solver Usage Policy:**
 
-1. **Production**: MILPSolver ONLY
-   - Used for all map generation (scripts, actions, in-game)
-   - Exhaustive search up to 50M combinations per wall count
-   - No fallbacks, no heuristics, no alternatives
-   - Single source of truth
+1. **Production**: Python MILP solver (scripts/solver/solve.py)
+   - Used for all map generation (scripts, GitHub Actions)
+   - Provably optimal using PuLP + CBC
+   - Called via Node.js wrapper (scripts/solver/MILPSolver.js)
+   - No solver code in the browser
 
-2. **Testing**: BruteForceSolver ONLY
-   - Used ONLY for test-maps-db.json ground truth
-   - Used ONLY to verify MILPSolver on small maps (≤7x7)
-   - Located in test/ directory (not production code)
-   - NEVER used in map generation or as fallback
+2. **Browser**: Checker only
+   - Game.js checks if pet is penned using PathfindingUtils
+   - No solver or map generation in the browser
+   - Maps are loaded from maps.json only
 
 3. **No Fallback Logic**:
    - Map generation uses single consistent method
    - If generation fails, throw error (no fallback to simplified maps)
    - This ensures all maps meet same quality standards
 
-All production paths use the same exhaustive search algorithm and validation rules.
+All production paths use the MILP solver and validation rules.
 Time-limited generation has been removed to ensure consistent quality.

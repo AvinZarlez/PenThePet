@@ -2,10 +2,10 @@
  * Unit Tests for Grid.js
  * 
  * Tests the Grid class for game state management.
+ * Grid no longer generates maps - it only loads pre-generated maps from maps.json.
  */
 
 const Grid = require('../js/Grid.js');
-const MILPSolver = require('../js/MILPSolver.js');
 
 // Mock CONFIG if not available
 if (typeof global.CONFIG === 'undefined') {
@@ -45,120 +45,6 @@ describe('Grid', () => {
                 const grid = new Grid(size);
                 expect(grid.size).toBe(size);
             });
-        });
-    });
-
-    describe('generate()', () => {
-        test('should generate a map', () => {
-            jest.spyOn(MILPSolver, 'solveMap').mockReturnValue({
-                walls: Array(3).fill(null).map(() => Array(3).fill(0)),
-                goalArea: 5,
-                optimalWallCount: 3
-            });
-
-            const grid = new Grid(3);
-            const result = grid.generate();
-
-            expect(result).not.toBeNull();
-            expect(result).toHaveProperty('map');
-            expect(result).toHaveProperty('goal');
-            
-            MILPSolver.solveMap.mockRestore();
-        });
-
-        test('should set tiles to generated map', () => {
-            jest.spyOn(MILPSolver, 'solveMap').mockReturnValue({
-                walls: Array(3).fill(null).map(() => Array(3).fill(0)),
-                goalArea: 5,
-                optimalWallCount: 3
-            });
-
-            const grid = new Grid(3);
-            grid.generate();
-
-            expect(grid.tiles).not.toBeNull();
-            expect(grid.tiles.length).toBe(3);
-            expect(grid.tiles[0].length).toBe(3);
-            
-            MILPSolver.solveMap.mockRestore();
-        });
-
-        test('should accept optional dateString parameter', () => {
-            jest.spyOn(MILPSolver, 'solveMap').mockReturnValue({
-                walls: Array(3).fill(null).map(() => Array(3).fill(0)),
-                goalArea: 5,
-                optimalWallCount: 2
-            });
-
-            const grid = new Grid(3);
-            const result = grid.generate('2024-01-01');
-
-            expect(result).not.toBeNull();
-            
-            MILPSolver.solveMap.mockRestore();
-        });
-
-        test('should throw error when generation consistently fails', () => {
-            jest.spyOn(MILPSolver, 'solveMap').mockReturnValue(null);
-
-            const grid = new Grid(3);
-            
-            // Should throw error after max attempts, not return null
-            expect(() => grid.generate()).toThrow('Failed to generate valid map');
-            
-            MILPSolver.solveMap.mockRestore();
-        });
-
-        test('should handle generation failure gracefully', () => {
-            // Mock MapGenerator to return null
-            const MapGenerator = require('../js/MapGenerator.js');
-            const originalGenerate = MapGenerator.prototype.generate;
-            MapGenerator.prototype.generate = jest.fn(() => null);
-
-            const grid = new Grid(3);
-            const result = grid.generate();
-
-            expect(result).toBeNull();
-            
-            // Restore
-            MapGenerator.prototype.generate = originalGenerate;
-        });
-
-        test('should handle generation with different sizes', () => {
-            const sizes = [7, 9, 11];
-            
-            sizes.forEach(size => {
-                jest.spyOn(MILPSolver, 'solveMap').mockReturnValue({
-                    walls: Array(size).fill(null).map(() => Array(size).fill(0)),
-                    goalArea: 10,
-                    optimalWallCount: 5
-                });
-
-                const grid = new Grid(size);
-                grid.generate();
-
-                expect(grid.tiles.length).toBe(size);
-                expect(grid.tiles[0].length).toBe(size);
-                
-                MILPSolver.solveMap.mockRestore();
-            });
-        });
-
-        test('should accept useTimeLimit parameter for debug generation', () => {
-            jest.spyOn(MILPSolver, 'solveMap').mockReturnValue({
-                walls: Array(7).fill(null).map(() => Array(7).fill(0)),
-                goalArea: 15,
-                optimalWallCount: 7
-            });
-
-            const grid = new Grid(7);
-            const result = grid.generate(null);
-
-            expect(result).not.toBeNull();
-            expect(result.goal).toBe(15);
-            expect(result.maxWalls).toBe(7);
-            
-            MILPSolver.solveMap.mockRestore();
         });
     });
 
@@ -424,7 +310,7 @@ describe('Grid', () => {
             expect(result).toBe(mockTiles);
         });
 
-        test('should return empty array if no tiles generated', () => {
+        test('should return empty array if no tiles loaded', () => {
             const grid = new Grid(3);
             const result = grid.getAllTiles();
             expect(result).toEqual([]);
@@ -505,231 +391,39 @@ describe('Grid', () => {
         });
     });
 
-    describe('resize()', () => {
-        test('should change grid size within valid range', () => {
-            jest.spyOn(MILPSolver, 'solveMap').mockReturnValue({
-                walls: Array(11).fill(null).map(() => Array(11).fill(0)),
-                goalArea: 10,
-                optimalWallCount: 5
-            });
-
-            const grid = new Grid(9);
-            grid.resize(11);
-
-            expect(grid.size).toBe(11);
-            
-            MILPSolver.solveMap.mockRestore();
-        });
-
-        test('should not resize if new size is below minimum', () => {
-            const grid = new Grid(9);
-            const originalSize = grid.size;
-
-            grid.resize(CONFIG.grid.minSize - 1);
-
-            expect(grid.size).toBe(originalSize);
-        });
-
-        test('should not resize if new size is above maximum', () => {
-            const grid = new Grid(9);
-            const originalSize = grid.size;
-
-            grid.resize(CONFIG.grid.maxSize + 1);
-
-            expect(grid.size).toBe(originalSize);
-        });
-
-        test('should regenerate grid after resize', () => {
-            jest.spyOn(MILPSolver, 'solveMap').mockReturnValue({
-                walls: Array(11).fill(null).map(() => Array(11).fill(0)),
-                goalArea: 10,
-                optimalWallCount: 5
-            });
-
-            const grid = new Grid(9);
-            const oldTiles = grid.tiles;
-            
-            grid.resize(11);
-
-            // After resize, tiles should be regenerated
-            expect(grid.tiles).not.toBe(oldTiles);
-            
-            MILPSolver.solveMap.mockRestore();
-        });
-
-        test('should save initial state after resize', () => {
-            jest.spyOn(MILPSolver, 'solveMap').mockReturnValue({
-                walls: Array(11).fill(null).map(() => Array(11).fill(0)),
-                goalArea: 10,
-                optimalWallCount: 5
-            });
-
-            const grid = new Grid(9);
-            grid.resize(11);
-
-            // After resize, grid should have tiles
-            expect(grid.tiles.length).toBeGreaterThan(0);
-            
-            MILPSolver.solveMap.mockRestore();
-        });
-    });
-
     describe('Integration Tests', () => {
-        test('should support full workflow: generate -> modify -> reset', () => {
-            jest.spyOn(MILPSolver, 'solveMap').mockReturnValue({
-                walls: Array(3).fill(null).map(() => Array(3).fill(0)),
-                goalArea: 5,
-                optimalWallCount: 3
-            });
-
+        test('should support full workflow: load -> modify -> reset', () => {
             const grid = new Grid(3);
-            grid.generate();
+            const map = [
+                ['grass', 'grass', 'grass'],
+                ['grass', 'home', 'grass'],
+                ['grass', 'grass', 'grass']
+            ];
+            
+            grid.loadMap(map);
             grid.saveInitialState();
 
-            const originalTile = grid.getTile(0, 0);
             grid.setTile(0, 0, 'wall');
             expect(grid.getTile(0, 0)).toBe('wall');
 
             grid.reset();
-            expect(grid.getTile(0, 0)).toBe(originalTile);
-            
-            MILPSolver.solveMap.mockRestore();
+            expect(grid.getTile(0, 0)).toBe('grass');
         });
 
-        test('should support workflow: generate -> save -> load -> verify', () => {
-            jest.spyOn(MILPSolver, 'solveMap').mockReturnValue({
-                walls: Array(3).fill(null).map(() => Array(3).fill(0)),
-                goalArea: 5,
-                optimalWallCount: 3
-            });
-
-            const grid = new Grid(3);
-            grid.generate();
+        test('should support workflow: load -> save -> verify', () => {
+            const grid = new Grid(7);
+            const map = Array(7).fill(null).map(() => Array(7).fill('grass'));
+            map[3][3] = 'home';
+            
+            grid.loadMap(map);
 
             const allTiles = grid.getAllTiles();
             const homePos = grid.getHomePosition();
 
             expect(homePos).toBeTruthy();
-            expect(homePos.row).toBeGreaterThanOrEqual(0);
-            expect(homePos.col).toBeGreaterThanOrEqual(0);
-            expect(allTiles.length).toBe(3);
-            
-            MILPSolver.solveMap.mockRestore();
-        });
-    });
-
-    describe('Private Methods Coverage', () => {
-        describe('_generateRandomTile()', () => {
-            test('should generate grass or water tile', () => {
-                const grid = new Grid(3);
-                grid.tiles = [
-                    ['grass', 'grass', 'grass'],
-                    ['grass', 'grass', 'grass'],
-                    ['grass', 'grass', 'grass']
-                ];
-                
-                const tile = grid._generateRandomTile();
-                expect(['grass', 'water']).toContain(tile);
-            });
-
-            test('should respect tile distribution probabilities', () => {
-                const grid = new Grid(3);
-                const samples = 1000;
-                let grassCount = 0;
-                
-                for (let i = 0; i < samples; i++) {
-                    if (grid._generateRandomTile() === 'grass') {
-                        grassCount++;
-                    }
-                }
-                
-                // With 70% grass probability, expect roughly 700 grass tiles (with some margin)
-                const grassRatio = grassCount / samples;
-                expect(grassRatio).toBeGreaterThan(0.6);
-                expect(grassRatio).toBeLessThan(0.8);
-            });
-        });
-
-        describe('_placeHomeTile()', () => {
-            test('should place home tile at center', () => {
-                const grid = new Grid(5);
-                grid.tiles = [
-                    ['grass', 'grass', 'grass', 'grass', 'grass'],
-                    ['grass', 'grass', 'grass', 'grass', 'grass'],
-                    ['grass', 'grass', 'grass', 'grass', 'grass'],
-                    ['grass', 'grass', 'grass', 'grass', 'grass'],
-                    ['grass', 'grass', 'grass', 'grass', 'grass']
-                ];
-                
-                grid._placeHomeTile();
-                
-                const centerRow = Math.floor(5 / 2);
-                const centerCol = Math.floor(5 / 2);
-                expect(grid.tiles[centerRow][centerCol]).toBe('home');
-            });
-
-            test('should remove existing home tiles before placing new one', () => {
-                const grid = new Grid(5);
-                grid.tiles = [
-                    ['grass', 'home', 'grass', 'grass', 'grass'],
-                    ['grass', 'grass', 'home', 'grass', 'grass'],
-                    ['grass', 'grass', 'grass', 'grass', 'grass'],
-                    ['grass', 'grass', 'grass', 'grass', 'grass'],
-                    ['grass', 'grass', 'grass', 'grass', 'grass']
-                ];
-                
-                grid._placeHomeTile();
-                
-                // Count home tiles
-                let homeCount = 0;
-                for (let i = 0; i < grid.size; i++) {
-                    for (let j = 0; j < grid.size; j++) {
-                        if (grid.tiles[i][j] === 'home') {
-                            homeCount++;
-                        }
-                    }
-                }
-                
-                expect(homeCount).toBe(1);
-                
-                const centerRow = Math.floor(5 / 2);
-                const centerCol = Math.floor(5 / 2);
-                expect(grid.tiles[centerRow][centerCol]).toBe('home');
-            });
-
-            test('should work with odd-sized grids', () => {
-                const sizes = [3, 5, 7, 9, 11];
-                
-                sizes.forEach(size => {
-                    const grid = new Grid(size);
-                    grid.tiles = Array(size).fill(null).map(() => 
-                        Array(size).fill('grass')
-                    );
-                    
-                    grid._placeHomeTile();
-                    
-                    const centerRow = Math.floor(size / 2);
-                    const centerCol = Math.floor(size / 2);
-                    expect(grid.tiles[centerRow][centerCol]).toBe('home');
-                });
-            });
-
-            test('should work with even-sized grids', () => {
-                const sizes = [8, 10, 12];
-                
-                sizes.forEach(size => {
-                    const grid = new Grid(size);
-                    grid.tiles = Array(size).fill(null).map(() => 
-                        Array(size).fill('grass')
-                    );
-                    
-                    grid._placeHomeTile();
-                    
-                    const centerRow = Math.floor(size / 2);
-                    const centerCol = Math.floor(size / 2);
-                    expect(grid.tiles[centerRow][centerCol]).toBe('home');
-                });
-            });
+            expect(homePos.row).toBe(3);
+            expect(homePos.col).toBe(3);
+            expect(allTiles.length).toBe(7);
         });
     });
 });

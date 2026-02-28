@@ -5,16 +5,16 @@
  * when no walls are placed. Uses BFS pathfinding to validate connectivity.
  */
 
-// For Node.js environment - import dependencies if not in browser
+// Node.js-only module - used by generation scripts, never loaded in browser
 (function() {
     if (typeof require !== 'undefined') {
-        if (typeof CONSTANTS === 'undefined' && typeof global !== 'undefined') {
+        if (typeof global.CONSTANTS === 'undefined') {
             global.CONSTANTS = require('./constants.js');
         }
-        if (typeof MILPSolver === 'undefined' && typeof global !== 'undefined') {
-            global.MILPSolver = require('./MILPSolver.js');
+        if (typeof global.MILPSolver === 'undefined') {
+            global.MILPSolver = require('../scripts/solver/MILPSolver.js');
         }
-        if (typeof MapValidator === 'undefined' && typeof global !== 'undefined') {
+        if (typeof global.MapValidator === 'undefined') {
             global.MapValidator = require('./MapValidator.js');
         }
     }
@@ -34,13 +34,13 @@ class MapGenerator {
 
     /**
      * Generate a valid map with guaranteed path to edge and goal calculation
-     * Uses CONSTANTS.MAX_WALLS for maximum wall count
+     * Uses CONSTANTS.maxWallsForSize(size) for wall count based on grid size
      * Retries generation if map doesn't meet quality standards
      * @param {string} _dateString - Optional date string for seeded generation (unused)
      * @returns {Object} Object containing map and goal, or throws error if unable to generate
      */
     generate(_dateString = null) {
-        const maxWalls = CONSTANTS.MAX_WALLS;
+        const maxWalls = CONSTANTS.maxWallsForSize(this.size);
         
         // Keep trying until we get a valid map that meets quality standards
         let totalAttempts = 0;
@@ -67,7 +67,7 @@ class MapGenerator {
                             return { 
                                 map, 
                                 goal: result.goalArea, 
-                                maxWalls: result.optimalWallCount,
+                                maxWalls: maxWalls,
                                 optimalSolution: result.optimalSolution
                             };
                         } else {

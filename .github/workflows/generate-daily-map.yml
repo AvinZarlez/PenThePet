@@ -21,10 +21,6 @@ on:
           - '17'
           - '19'
           - '21'
-      max_walls:
-        description: 'Maximum walls to try (default: 15)'
-        required: false
-        default: '15'
 
 jobs:
   generate-map:
@@ -38,9 +34,16 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20'
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
           
       - name: Install dependencies
-        run: npm install
+        run: |
+          npm install
+          pip install -r scripts/solver/requirements.txt
         
       - name: Generate map
         id: generate
@@ -48,8 +51,7 @@ jobs:
           echo "Generating map for ${{ github.event.inputs.date }} (size: ${{ github.event.inputs.size }})"
           node scripts/generate-single-map.js \
             --date "${{ github.event.inputs.date }}" \
-            --size "${{ github.event.inputs.size }}" \
-            --max-walls "${{ github.event.inputs.max_walls }}"
+            --size "${{ github.event.inputs.size }}"
           
       - name: Check for changes
         id: check_changes

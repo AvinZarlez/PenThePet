@@ -7,19 +7,21 @@ const MapValidator = require('../js/MapValidator.js');
 describe('MapValidator', () => {
     describe('validate', () => {
         test('should pass validation for valid map with good solution', () => {
-            // 5x5 map with path to edge
+            // 7x7 map with path to edge (maxWalls = floor(7*0.75) = 5)
             const map = [
-                ['grass', 'grass', 'grass', 'grass', 'grass'],
-                ['grass', 'water', 'grass', 'water', 'grass'],
-                ['grass', 'grass', 'home', 'grass', 'grass'],
-                ['grass', 'water', 'grass', 'water', 'grass'],
-                ['grass', 'grass', 'grass', 'grass', 'grass']
+                ['grass', 'grass', 'grass', 'grass', 'grass', 'grass', 'grass'],
+                ['grass', 'water', 'grass', 'water', 'grass', 'water', 'grass'],
+                ['grass', 'grass', 'grass', 'grass', 'grass', 'grass', 'grass'],
+                ['grass', 'water', 'grass', 'home', 'grass', 'water', 'grass'],
+                ['grass', 'grass', 'grass', 'grass', 'grass', 'grass', 'grass'],
+                ['grass', 'water', 'grass', 'water', 'grass', 'water', 'grass'],
+                ['grass', 'grass', 'grass', 'grass', 'grass', 'grass', 'grass']
             ];
             
             const solution = {
                 goalArea: 8,
                 optimalWallCount: 4,
-                optimalSolution: [[1, 1], [1, 3], [3, 1], [3, 3]] // Not all on edges
+                optimalSolution: [[1, 2], [2, 1], [3, 2], [4, 1]] // Not all on edges
             };
             
             const result = MapValidator.validate(map, solution);
@@ -46,18 +48,21 @@ describe('MapValidator', () => {
         });
         
         test('should fail validation when all walls are on edge', () => {
+            // 7x7 map: maxWallsForSize(7) = 5
             const map = [
-                ['grass', 'grass', 'grass', 'grass', 'grass'],
-                ['grass', 'water', 'grass', 'water', 'grass'],
-                ['grass', 'grass', 'home', 'grass', 'grass'],
-                ['grass', 'water', 'grass', 'water', 'grass'],
-                ['grass', 'grass', 'grass', 'grass', 'grass']
+                ['grass', 'grass', 'grass', 'grass', 'grass', 'grass', 'grass'],
+                ['grass', 'water', 'grass', 'water', 'grass', 'water', 'grass'],
+                ['grass', 'grass', 'grass', 'grass', 'grass', 'grass', 'grass'],
+                ['grass', 'water', 'grass', 'home', 'grass', 'water', 'grass'],
+                ['grass', 'grass', 'grass', 'grass', 'grass', 'grass', 'grass'],
+                ['grass', 'water', 'grass', 'water', 'grass', 'water', 'grass'],
+                ['grass', 'grass', 'grass', 'grass', 'grass', 'grass', 'grass']
             ];
             
             const solution = {
                 goalArea: 10,
                 optimalWallCount: 4,
-                optimalSolution: [[0, 0], [0, 4], [4, 0], [4, 4]] // All on edges
+                optimalSolution: [[0, 0], [0, 6], [6, 0], [6, 6]] // All on edges
             };
             
             const result = MapValidator.validate(map, solution);
@@ -66,36 +71,44 @@ describe('MapValidator', () => {
         });
         
         test('should fail validation when too many walls needed', () => {
+            // 7x7 map: maxWallsForSize(7) = 5
             const map = [
-                ['grass', 'grass', 'grass'],
-                ['grass', 'home', 'grass'],
-                ['grass', 'grass', 'grass']
+                ['grass', 'grass', 'grass', 'grass', 'grass', 'grass', 'grass'],
+                ['grass', 'grass', 'grass', 'grass', 'grass', 'grass', 'grass'],
+                ['grass', 'grass', 'grass', 'grass', 'grass', 'grass', 'grass'],
+                ['grass', 'grass', 'grass', 'home', 'grass', 'grass', 'grass'],
+                ['grass', 'grass', 'grass', 'grass', 'grass', 'grass', 'grass'],
+                ['grass', 'grass', 'grass', 'grass', 'grass', 'grass', 'grass'],
+                ['grass', 'grass', 'grass', 'grass', 'grass', 'grass', 'grass']
             ];
             
             const solution = {
                 goalArea: 8,
-                optimalWallCount: 16, // More than MAX_WALLS (15)
+                optimalWallCount: 16, // More than maxWallsForSize(7) = 5
                 optimalSolution: []
             };
             
             const result = MapValidator.validate(map, solution);
             expect(result.valid).toBe(false);
-            expect(result.errors).toContain('Too many walls needed (16 > 15)');
+            expect(result.errors).toContain('Too many walls needed (16 > 5 for size 7)');
         });
         
         test('should pass validation when at least one wall is not on edge', () => {
+            // 7x7 map: maxWallsForSize(7) = 5
             const map = [
-                ['grass', 'grass', 'grass', 'grass', 'grass'],
-                ['grass', 'water', 'grass', 'water', 'grass'],
-                ['grass', 'grass', 'home', 'grass', 'grass'],
-                ['grass', 'water', 'grass', 'water', 'grass'],
-                ['grass', 'grass', 'grass', 'grass', 'grass']
+                ['grass', 'grass', 'grass', 'grass', 'grass', 'grass', 'grass'],
+                ['grass', 'water', 'grass', 'water', 'grass', 'water', 'grass'],
+                ['grass', 'grass', 'grass', 'grass', 'grass', 'grass', 'grass'],
+                ['grass', 'water', 'grass', 'home', 'grass', 'water', 'grass'],
+                ['grass', 'grass', 'grass', 'grass', 'grass', 'grass', 'grass'],
+                ['grass', 'water', 'grass', 'water', 'grass', 'water', 'grass'],
+                ['grass', 'grass', 'grass', 'grass', 'grass', 'grass', 'grass']
             ];
             
             const solution = {
                 goalArea: 10,
                 optimalWallCount: 4,
-                optimalSolution: [[0, 0], [0, 4], [4, 0], [1, 2]] // One not on edge
+                optimalSolution: [[0, 0], [0, 6], [6, 0], [1, 2]] // One not on edge
             };
             
             const result = MapValidator.validate(map, solution);
