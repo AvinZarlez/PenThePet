@@ -299,27 +299,36 @@ class Game {
         
         for (let i = 0; i < orderedPath.length; i++) {
             const current = orderedPath[i];
-            // Use the next step's position to determine direction; for last step, use previous
-            const next = i < orderedPath.length - 1 ? orderedPath[i + 1] : null;
-            const prev = i > 0 ? orderedPath[i - 1] : null;
-            const reference = next || prev;
+            // Use direction toward the next step; for the last step, continue
+            // in the same direction as the previous step (forward, not backward)
+            let dr, dc;
             
-            if (reference) {
+            if (i < orderedPath.length - 1) {
+                // Normal case: face toward next step
                 const [curRow, curCol] = current.split(',').map(Number);
-                const [refRow, refCol] = reference.split(',').map(Number);
-                const dr = refRow - curRow;
-                const dc = refCol - curCol;
-                
-                // Map direction deltas to rotation angles
-                // Default paw points up (0°), right=90°, down=180°, left=270°
-                let angle = 0;
-                if (dr === -1 && dc === 0) angle = 0;    // up
-                if (dr === 0 && dc === 1) angle = 90;    // right
-                if (dr === 1 && dc === 0) angle = 180;   // down
-                if (dr === 0 && dc === -1) angle = 270;  // left
-                
-                directionMap.set(current, angle);
+                const [nextRow, nextCol] = orderedPath[i + 1].split(',').map(Number);
+                dr = nextRow - curRow;
+                dc = nextCol - curCol;
+            } else if (i > 0) {
+                // Last step: continue in the same direction as the previous step
+                const [prevRow, prevCol] = orderedPath[i - 1].split(',').map(Number);
+                const [curRow, curCol] = current.split(',').map(Number);
+                dr = curRow - prevRow;
+                dc = curCol - prevCol;
+            } else {
+                directionMap.set(current, 0);
+                continue;
             }
+            
+            // Map direction deltas to rotation angles
+            // Default paw points up (0°), right=90°, down=180°, left=270°
+            let angle = 0;
+            if (dr === -1 && dc === 0) angle = 0;         // up
+            else if (dr === 0 && dc === 1) angle = 90;    // right
+            else if (dr === 1 && dc === 0) angle = 180;   // down
+            else if (dr === 0 && dc === -1) angle = 270;  // left
+            
+            directionMap.set(current, angle);
         }
         
         return directionMap;
