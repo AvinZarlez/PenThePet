@@ -114,7 +114,7 @@ PenThePet/
 ├── scripts/
 │   ├── generate-maps.js    # CLI for generating daily maps
 │   └── solver/             # MILP solver pipeline (Python + Node.js)
-├── test/                   # Test suite (237 tests)
+├── test/                   # Test suite
 ├── docs/                   # Documentation
 └── maps.json               # Daily puzzle maps
 
@@ -125,12 +125,13 @@ See [CODE_STRUCTURE.md](docs/CODE_STRUCTURE.md) for detailed architecture.
 
 The project has comprehensive test coverage with Jest:
 
-- **237 tests** across 10 test suites
 - Unit tests for all core modules
 - Integration tests for map generation
 - Cookie persistence tests
 
 Run tests with `npm test`. See [TESTING.md](docs/TESTING.md) for details.
+
+[![Tests](https://github.com/AvinZarlez/penthepet/actions/workflows/test.yml/badge.svg)](https://github.com/AvinZarlez/penthepet/actions/workflows/test.yml) — [View test results and coverage](https://github.com/AvinZarlez/penthepet/actions/workflows/test.yml)
 
 ## 🎨 Tech Stack
 
@@ -172,10 +173,9 @@ MIT License - See [LICENSE](LICENSE) file for details
 
 - Inspired by daily logic puzzle games
 - Built with GitHub Copilot assistance
-- Map generation uses exhaustive search for optimal solutions
+- Map generation uses MILP solver (PuLP + CBC) for provably optimal solutions
 
 ---
 
 **Current Version:** 1.0.0  
-**Test Coverage:** ~90% (237 tests passing)  
 **Daily Maps:** 10+ unique puzzles

@@ -16,11 +16,10 @@ Comprehensive guide to testing in PenThePet.
 ## Overview
 
 PenThePet has a comprehensive test suite with:
-- **237 unit tests** across 10 test suites
-- **~90% code coverage** (statements, branches, functions, lines)
 - **Jest** testing framework
 - **ESLint** for code quality
 - **GitHub Actions** CI/CD pipeline
+- Test results and coverage are available in the [CI pipeline](https://github.com/AvinZarlez/penthepet/actions/workflows/test.yml)
 
 ### Test Philosophy
 
@@ -85,11 +84,6 @@ test/
 ```bash
 # Run all tests with coverage
 npm test
-
-# Expected output:
-# Test Suites: 10 passed, 10 total
-# Tests:       237 passed, 239 total (2 skipped)
-# Time:        ~2-3 seconds
 ```
 
 ### Watch Mode
@@ -532,10 +526,9 @@ npm test && npm run lint
 ### Updating Documentation
 
 When tests change:
-1. Update test counts in this file
-2. Update coverage numbers in README
-3. Add new test files to this documentation
-4. Explain new testing strategies
+1. Update coverage numbers in this file if significant change
+2. Add new test files to this documentation
+3. Explain new testing strategies
 
 ## Conclusion
 

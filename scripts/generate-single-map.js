@@ -96,6 +96,29 @@ async function generateSingleMap(date, size, _maxWalls) {
 }
 
 /**
+ * Get the next available date from maps.json (day after the latest existing date).
+ * If no maps exist, returns today's date.
+ */
+function getNextAvailableDate(mapsPath) {
+    if (!fs.existsSync(mapsPath)) {
+        return new Date().toISOString().split('T')[0];
+    }
+    
+    const data = fs.readFileSync(mapsPath, 'utf8');
+    const maps = JSON.parse(data);
+    const dates = Object.keys(maps).sort();
+    
+    if (dates.length === 0) {
+        return new Date().toISOString().split('T')[0];
+    }
+    
+    // Get the day after the latest date
+    const latestDate = new Date(dates[dates.length - 1]);
+    latestDate.setDate(latestDate.getDate() + 1);
+    return latestDate.toISOString().split('T')[0];
+}
+
+/**
  * Main function
  */
 async function main() {
@@ -115,9 +138,12 @@ async function main() {
         }
     }
     
+    const mapsPath = path.join(__dirname, '../maps.json');
+    
+    // Auto-assign date if not provided
     if (!date) {
-        console.error('Error: --date parameter is required (YYYY-MM-DD format)');
-        process.exit(1);
+        date = getNextAvailableDate(mapsPath);
+        console.log(`No date provided, auto-assigned: ${date}`);
     }
     
     // Validate date format
@@ -125,8 +151,6 @@ async function main() {
         console.error('Error: Date must be in YYYY-MM-DD format');
         process.exit(1);
     }
-    
-    const mapsPath = path.join(__dirname, '../maps.json');
     
     // Load existing maps
     let maps = {};
@@ -186,4 +210,4 @@ if (require.main === module) {
     });
 }
 
-module.exports = { generateSingleMap, getNextDayNumber };
+module.exports = { generateSingleMap, getNextDayNumber, getNextAvailableDate };

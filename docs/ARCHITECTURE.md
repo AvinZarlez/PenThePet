@@ -221,24 +221,25 @@ scripts/
 
 ### Map Generation Strategy
 
-**Decision:** Exhaustive search for optimal wall placement
+**Decision:** MILP solver for provably optimal wall placement
 
 **Why:**
 - **User Requirement**: "Accuracy is far more important than speed"
-- Maps are small enough (7x7 to 11x11) for exhaustive search
-- Guarantees finding true optimal solution
-- Heuristics might miss best solution
+- Provably optimal solutions using PuLP + CBC
+- Handles all map sizes efficiently (7x7 to 21x21)
+- No combinatorial explosion as with brute-force approaches
 
 **Algorithm:**
 1. Generate random map with grass/water distribution
 2. Validate pet can reach edge (BFS pathfinding)
-3. For each wall count from 1 to MAX_WALLS:
-   - Try all combinations of wall placements (up to 100k)
-   - Check if pet is penned for each combination
-   - Track maximum achievable penned area
-4. Return map with optimal goal and wall count
+3. Formulate as Mixed Integer Linear Program:
+   - Maximize enclosed area subject to wall budget
+   - Ensure pen connectivity via network flow constraints
+   - Ensure boundary completeness via vertex-cut constraints
+4. Solve with PuLP + CBC for provably optimal solution
+5. Return map with optimal goal and wall count
 
-**Tradeoff:** Slower generation (~1-2 seconds per map) vs. guaranteed optimal solution
+**Tradeoff:** Requires Python + PuLP dependency for generation vs. guaranteed optimal solution
 
 **Justification:** Maps are generated once and reused; accuracy more important than speed.
 
@@ -299,7 +300,7 @@ for (let i = 0; i < combinationCount; i++) {
 
 ### Test Performance
 
-**Decision:** 237 tests should run in <10 seconds
+**Decision:** Tests should run in <10 seconds
 
 **Why:**
 - Fast tests encourage running them frequently
