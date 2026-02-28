@@ -1,10 +1,427 @@
 {
-  "2026-02-06": {
+  "2026-02-28": {
     "dayNumber": 1,
-    "mapName": "Canyon",
-    "date": "2026-02-06",
+    "mapName": "South",
+    "date": "2026-02-28",
     "size": 7,
     "goal": 11,
+    "maxWalls": 5,
+    "map": [
+      [
+        "water",
+        "water",
+        "grass",
+        "grass",
+        "grass",
+        "water",
+        "water"
+      ],
+      [
+        "grass",
+        "grass",
+        "water",
+        "water",
+        "water",
+        "water",
+        "grass"
+      ],
+      [
+        "grass",
+        "grass",
+        "grass",
+        "grass",
+        "grass",
+        "water",
+        "grass"
+      ],
+      [
+        "grass",
+        "grass",
+        "water",
+        "home",
+        "grass",
+        "water",
+        "grass"
+      ],
+      [
+        "grass",
+        "water",
+        "water",
+        "grass",
+        "grass",
+        "water",
+        "water"
+      ],
+      [
+        "grass",
+        "grass",
+        "water",
+        "grass",
+        "grass",
+        "grass",
+        "grass"
+      ],
+      [
+        "water",
+        "grass",
+        "grass",
+        "grass",
+        "grass",
+        "grass",
+        "grass"
+      ]
+    ],
+    "optimalSolution": [
+      [
+        1,
+        0
+      ],
+      [
+        2,
+        0
+      ],
+      [
+        3,
+        0
+      ],
+      [
+        5,
+        4
+      ],
+      [
+        6,
+        3
+      ]
+    ]
+  },
+  "2026-03-01": {
+    "dayNumber": 2,
+    "mapName": "Millennium",
+    "date": "2026-03-01",
+    "size": 9,
+    "goal": 22,
+    "maxWalls": 6,
+    "map": [
+      [
+        "grass",
+        "grass",
+        "water",
+        "grass",
+        "grass",
+        "grass",
+        "grass",
+        "water",
+        "grass"
+      ],
+      [
+        "water",
+        "water",
+        "grass",
+        "water",
+        "water",
+        "grass",
+        "grass",
+        "grass",
+        "grass"
+      ],
+      [
+        "water",
+        "grass",
+        "grass",
+        "grass",
+        "water",
+        "grass",
+        "grass",
+        "grass",
+        "grass"
+      ],
+      [
+        "grass",
+        "water",
+        "water",
+        "grass",
+        "grass",
+        "grass",
+        "water",
+        "grass",
+        "water"
+      ],
+      [
+        "water",
+        "water",
+        "grass",
+        "grass",
+        "home",
+        "water",
+        "grass",
+        "water",
+        "grass"
+      ],
+      [
+        "grass",
+        "grass",
+        "grass",
+        "grass",
+        "grass",
+        "water",
+        "grass",
+        "grass",
+        "water"
+      ],
+      [
+        "water",
+        "grass",
+        "grass",
+        "grass",
+        "grass",
+        "water",
+        "grass",
+        "grass",
+        "grass"
+      ],
+      [
+        "grass",
+        "grass",
+        "grass",
+        "grass",
+        "grass",
+        "water",
+        "water",
+        "grass",
+        "grass"
+      ],
+      [
+        "water",
+        "grass",
+        "water",
+        "grass",
+        "grass",
+        "grass",
+        "grass",
+        "grass",
+        "grass"
+      ]
+    ],
+    "optimalSolution": [
+      [
+        2,
+        5
+      ],
+      [
+        5,
+        0
+      ],
+      [
+        7,
+        0
+      ],
+      [
+        8,
+        1
+      ],
+      [
+        8,
+        3
+      ],
+      [
+        8,
+        4
+      ]
+    ]
+  },
+  "2026-03-02": {
+    "dayNumber": 3,
+    "mapName": "Twilight",
+    "date": "2026-03-02",
+    "size": 11,
+    "goal": 29,
+    "maxWalls": 8,
+    "map": [
+      [
+        "grass",
+        "grass",
+        "grass",
+        "grass",
+        "grass",
+        "grass",
+        "grass",
+        "grass",
+        "grass",
+        "grass",
+        "grass"
+      ],
+      [
+        "grass",
+        "water",
+        "grass",
+        "grass",
+        "grass",
+        "grass",
+        "grass",
+        "grass",
+        "grass",
+        "grass",
+        "grass"
+      ],
+      [
+        "grass",
+        "grass",
+        "grass",
+        "grass",
+        "grass",
+        "grass",
+        "grass",
+        "grass",
+        "water",
+        "grass",
+        "grass"
+      ],
+      [
+        "grass",
+        "grass",
+        "water",
+        "grass",
+        "grass",
+        "grass",
+        "grass",
+        "grass",
+        "water",
+        "water",
+        "grass"
+      ],
+      [
+        "grass",
+        "grass",
+        "water",
+        "water",
+        "grass",
+        "water",
+        "grass",
+        "grass",
+        "grass",
+        "grass",
+        "water"
+      ],
+      [
+        "grass",
+        "grass",
+        "grass",
+        "water",
+        "water",
+        "home",
+        "grass",
+        "grass",
+        "grass",
+        "grass",
+        "water"
+      ],
+      [
+        "water",
+        "grass",
+        "water",
+        "grass",
+        "grass",
+        "water",
+        "water",
+        "grass",
+        "grass",
+        "water",
+        "water"
+      ],
+      [
+        "grass",
+        "grass",
+        "grass",
+        "water",
+        "grass",
+        "grass",
+        "grass",
+        "water",
+        "grass",
+        "grass",
+        "grass"
+      ],
+      [
+        "water",
+        "grass",
+        "grass",
+        "grass",
+        "grass",
+        "grass",
+        "grass",
+        "grass",
+        "grass",
+        "grass",
+        "grass"
+      ],
+      [
+        "water",
+        "grass",
+        "grass",
+        "grass",
+        "water",
+        "grass",
+        "grass",
+        "grass",
+        "grass",
+        "water",
+        "grass"
+      ],
+      [
+        "water",
+        "water",
+        "grass",
+        "grass",
+        "grass",
+        "grass",
+        "grass",
+        "grass",
+        "water",
+        "grass",
+        "grass"
+      ]
+    ],
+    "optimalSolution": [
+      [
+        2,
+        7
+      ],
+      [
+        3,
+        6
+      ],
+      [
+        7,
+        10
+      ],
+      [
+        8,
+        3
+      ],
+      [
+        8,
+        10
+      ],
+      [
+        10,
+        5
+      ],
+      [
+        10,
+        6
+      ],
+      [
+        10,
+        7
+      ]
+    ]
+  },
+  "2026-03-03": {
+    "dayNumber": 4,
+    "mapName": "Eagle",
+    "date": "2026-03-03",
+    "size": 7,
+    "goal": 9,
     "maxWalls": 5,
     "map": [
       [
@@ -12,15 +429,24 @@
         "grass",
         "grass",
         "grass",
-        "water",
-        "water",
-        "water"
+        "grass",
+        "grass",
+        "grass"
       ],
       [
         "grass",
-        "water",
         "grass",
         "water",
+        "grass",
+        "grass",
+        "water",
+        "grass"
+      ],
+      [
+        "water",
+        "grass",
+        "grass",
+        "grass",
         "grass",
         "grass",
         "grass"
@@ -28,15 +454,6 @@
       [
         "water",
         "grass",
-        "water",
-        "grass",
-        "grass",
-        "grass",
-        "grass"
-      ],
-      [
-        "grass",
-        "water",
         "water",
         "home",
         "grass",
@@ -45,27 +462,27 @@
       ],
       [
         "grass",
+        "water",
+        "grass",
         "grass",
         "water",
+        "grass",
+        "grass"
+      ],
+      [
+        "grass",
+        "water",
+        "grass",
         "water",
         "grass",
         "grass",
         "grass"
       ],
       [
-        "water",
-        "water",
-        "grass",
-        "water",
-        "water",
-        "grass",
-        "water"
-      ],
-      [
-        "water",
-        "water",
         "grass",
         "grass",
+        "grass",
+        "water",
         "grass",
         "water",
         "water"
@@ -74,311 +491,371 @@
     "optimalSolution": [
       [
         1,
-        6
+        1
+      ],
+      [
+        1,
+        3
       ],
       [
         2,
-        6
+        4
+      ],
+      [
+        3,
+        5
+      ],
+      [
+        6,
+        2
+      ]
+    ]
+  },
+  "2026-03-04": {
+    "dayNumber": 5,
+    "mapName": "Dolphin",
+    "date": "2026-03-04",
+    "size": 9,
+    "goal": 23,
+    "maxWalls": 6,
+    "map": [
+      [
+        "grass",
+        "grass",
+        "water",
+        "water",
+        "grass",
+        "grass",
+        "grass",
+        "water",
+        "water"
+      ],
+      [
+        "grass",
+        "grass",
+        "grass",
+        "grass",
+        "water",
+        "grass",
+        "grass",
+        "water",
+        "grass"
+      ],
+      [
+        "grass",
+        "grass",
+        "water",
+        "grass",
+        "grass",
+        "grass",
+        "grass",
+        "grass",
+        "grass"
+      ],
+      [
+        "grass",
+        "grass",
+        "grass",
+        "grass",
+        "water",
+        "water",
+        "grass",
+        "grass",
+        "grass"
+      ],
+      [
+        "water",
+        "grass",
+        "grass",
+        "grass",
+        "home",
+        "water",
+        "water",
+        "water",
+        "water"
+      ],
+      [
+        "grass",
+        "water",
+        "grass",
+        "grass",
+        "water",
+        "grass",
+        "grass",
+        "grass",
+        "grass"
+      ],
+      [
+        "water",
+        "grass",
+        "grass",
+        "grass",
+        "grass",
+        "grass",
+        "grass",
+        "grass",
+        "grass"
+      ],
+      [
+        "grass",
+        "grass",
+        "grass",
+        "water",
+        "grass",
+        "grass",
+        "grass",
+        "water",
+        "grass"
+      ],
+      [
+        "water",
+        "water",
+        "grass",
+        "grass",
+        "water",
+        "water",
+        "water",
+        "water",
+        "grass"
+      ]
+    ],
+    "optimalSolution": [
+      [
+        1,
+        1
+      ],
+      [
+        2,
+        5
+      ],
+      [
+        3,
+        1
+      ],
+      [
+        5,
+        8
+      ],
+      [
+        6,
+        2
+      ],
+      [
+        6,
+        8
+      ]
+    ]
+  },
+  "2026-03-05": {
+    "dayNumber": 6,
+    "mapName": "Refuge",
+    "date": "2026-03-05",
+    "size": 11,
+    "goal": 38,
+    "maxWalls": 8,
+    "map": [
+      [
+        "grass",
+        "grass",
+        "grass",
+        "grass",
+        "grass",
+        "grass",
+        "grass",
+        "grass",
+        "grass",
+        "water",
+        "grass"
+      ],
+      [
+        "water",
+        "grass",
+        "grass",
+        "grass",
+        "grass",
+        "grass",
+        "water",
+        "grass",
+        "water",
+        "grass",
+        "water"
+      ],
+      [
+        "grass",
+        "grass",
+        "grass",
+        "water",
+        "water",
+        "water",
+        "water",
+        "grass",
+        "water",
+        "water",
+        "grass"
+      ],
+      [
+        "grass",
+        "grass",
+        "water",
+        "grass",
+        "grass",
+        "grass",
+        "grass",
+        "grass",
+        "grass",
+        "water",
+        "water"
+      ],
+      [
+        "grass",
+        "grass",
+        "grass",
+        "grass",
+        "grass",
+        "grass",
+        "grass",
+        "grass",
+        "grass",
+        "water",
+        "grass"
+      ],
+      [
+        "grass",
+        "grass",
+        "grass",
+        "water",
+        "water",
+        "home",
+        "grass",
+        "water",
+        "water",
+        "grass",
+        "grass"
+      ],
+      [
+        "grass",
+        "grass",
+        "grass",
+        "grass",
+        "grass",
+        "grass",
+        "grass",
+        "water",
+        "grass",
+        "grass",
+        "grass"
+      ],
+      [
+        "grass",
+        "grass",
+        "grass",
+        "water",
+        "grass",
+        "grass",
+        "water",
+        "grass",
+        "water",
+        "grass",
+        "water"
+      ],
+      [
+        "water",
+        "grass",
+        "water",
+        "grass",
+        "grass",
+        "grass",
+        "grass",
+        "grass",
+        "grass",
+        "grass",
+        "grass"
+      ],
+      [
+        "water",
+        "grass",
+        "water",
+        "water",
+        "water",
+        "water",
+        "grass",
+        "water",
+        "grass",
+        "grass",
+        "grass"
+      ],
+      [
+        "grass",
+        "grass",
+        "grass",
+        "grass",
+        "grass",
+        "grass",
+        "grass",
+        "grass",
+        "grass",
+        "grass",
+        "grass"
+      ]
+    ],
+    "optimalSolution": [
+      [
+        0,
+        7
       ],
       [
         4,
+        1
+      ],
+      [
+        5,
+        0
+      ],
+      [
+        6,
+        0
+      ],
+      [
+        7,
+        0
+      ],
+      [
+        8,
+        8
+      ],
+      [
+        10,
+        1
+      ],
+      [
+        10,
         6
       ]
     ]
   },
-  "2026-02-27": {
-    "date": "2026-02-27",
-    "mapName": "Eclipse",
-    "size": 9,
-    "goal": 19,
-    "maxWalls": 6,
-    "map": [
-      [
-        "water",
-        "grass",
-        "grass",
-        "grass",
-        "grass",
-        "water",
-        "water",
-        "grass",
-        "grass"
-      ],
-      [
-        "grass",
-        "grass",
-        "grass",
-        "water",
-        "grass",
-        "grass",
-        "water",
-        "grass",
-        "grass"
-      ],
-      [
-        "grass",
-        "grass",
-        "water",
-        "water",
-        "grass",
-        "grass",
-        "water",
-        "grass",
-        "grass"
-      ],
-      [
-        "water",
-        "grass",
-        "water",
-        "water",
-        "grass",
-        "grass",
-        "grass",
-        "grass",
-        "grass"
-      ],
-      [
-        "water",
-        "grass",
-        "water",
-        "grass",
-        "home",
-        "water",
-        "water",
-        "grass",
-        "water"
-      ],
-      [
-        "grass",
-        "water",
-        "water",
-        "grass",
-        "grass",
-        "grass",
-        "water",
-        "grass",
-        "grass"
-      ],
-      [
-        "grass",
-        "grass",
-        "grass",
-        "grass",
-        "grass",
-        "water",
-        "grass",
-        "water",
-        "grass"
-      ],
-      [
-        "grass",
-        "water",
-        "grass",
-        "grass",
-        "grass",
-        "water",
-        "grass",
-        "water",
-        "grass"
-      ],
-      [
-        "water",
-        "grass",
-        "grass",
-        "grass",
-        "grass",
-        "grass",
-        "water",
-        "grass",
-        "grass"
-      ]
-    ],
-    "dayNumber": 2
-  },
-  "2026-02-28": {
-    "date": "2026-02-28",
-    "mapName": "Avalanche",
-    "size": 11,
-    "goal": 26,
-    "maxWalls": 8,
-    "map": [
-      [
-        "water",
-        "grass",
-        "grass",
-        "water",
-        "grass",
-        "grass",
-        "grass",
-        "water",
-        "grass",
-        "grass",
-        "water"
-      ],
-      [
-        "grass",
-        "grass",
-        "grass",
-        "water",
-        "grass",
-        "grass",
-        "grass",
-        "grass",
-        "water",
-        "water",
-        "water"
-      ],
-      [
-        "grass",
-        "grass",
-        "water",
-        "water",
-        "grass",
-        "grass",
-        "water",
-        "grass",
-        "grass",
-        "grass",
-        "grass"
-      ],
-      [
-        "water",
-        "grass",
-        "grass",
-        "grass",
-        "water",
-        "grass",
-        "grass",
-        "grass",
-        "grass",
-        "grass",
-        "grass"
-      ],
-      [
-        "water",
-        "grass",
-        "grass",
-        "water",
-        "water",
-        "grass",
-        "grass",
-        "grass",
-        "grass",
-        "water",
-        "water"
-      ],
-      [
-        "grass",
-        "grass",
-        "water",
-        "grass",
-        "water",
-        "home",
-        "water",
-        "grass",
-        "grass",
-        "grass",
-        "grass"
-      ],
-      [
-        "water",
-        "grass",
-        "grass",
-        "grass",
-        "grass",
-        "water",
-        "grass",
-        "grass",
-        "water",
-        "grass",
-        "grass"
-      ],
-      [
-        "grass",
-        "water",
-        "water",
-        "grass",
-        "grass",
-        "water",
-        "grass",
-        "grass",
-        "water",
-        "grass",
-        "grass"
-      ],
-      [
-        "grass",
-        "grass",
-        "grass",
-        "grass",
-        "grass",
-        "grass",
-        "grass",
-        "water",
-        "water",
-        "grass",
-        "grass"
-      ],
-      [
-        "grass",
-        "grass",
-        "grass",
-        "grass",
-        "grass",
-        "grass",
-        "grass",
-        "grass",
-        "grass",
-        "water",
-        "grass"
-      ],
-      [
-        "grass",
-        "grass",
-        "water",
-        "grass",
-        "grass",
-        "water",
-        "grass",
-        "grass",
-        "grass",
-        "grass",
-        "grass"
-      ]
-    ],
-    "dayNumber": 3
-  },
-  "2026-03-01": {
-    "date": "2026-03-01",
-    "mapName": "Deer",
+  "2026-03-06": {
+    "dayNumber": 7,
+    "mapName": "Geyser",
+    "date": "2026-03-06",
     "size": 7,
-    "goal": 12,
+    "goal": 7,
     "maxWalls": 5,
     "map": [
       [
+        "grass",
+        "grass",
+        "grass",
         "water",
         "water",
-        "grass",
-        "grass",
-        "grass",
         "grass",
         "grass"
       ],
       [
-        "water",
-        "grass",
-        "grass",
-        "grass",
-        "grass",
-        "grass",
-        "grass"
-      ],
-      [
-        "water",
         "grass",
         "grass",
         "grass",
         "water",
+        "grass",
         "grass",
         "grass"
       ],
@@ -386,39 +863,69 @@
         "water",
         "water",
         "grass",
-        "home",
-        "water",
         "grass",
-        "grass"
-      ],
-      [
-        "water",
-        "water",
         "grass",
-        "water",
         "grass",
-        "water",
         "water"
       ],
       [
         "grass",
         "grass",
         "grass",
+        "home",
+        "grass",
+        "grass",
+        "grass"
+      ],
+      [
+        "grass",
+        "grass",
+        "grass",
+        "grass",
         "water",
+        "grass",
+        "grass"
+      ],
+      [
+        "grass",
+        "grass",
+        "grass",
+        "grass",
         "grass",
         "water",
         "grass"
       ],
       [
         "grass",
-        "water",
-        "water",
-        "water",
         "grass",
         "grass",
+        "grass",
+        "grass",
+        "water",
         "grass"
       ]
     ],
-    "dayNumber": 4
+    "optimalSolution": [
+      [
+        1,
+        2
+      ],
+      [
+        1,
+        5
+      ],
+      [
+        3,
+        2
+      ],
+      [
+        3,
+        5
+      ],
+      [
+        4,
+        3
+      ]
+    ]
   }
 }

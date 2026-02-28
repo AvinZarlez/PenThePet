@@ -146,6 +146,7 @@ class Menu {
         this.game.updateWallCounter();
         this.game.updateAreaSizeDisplay();
         this.game.updateResetButton();
+        this.game.updateSolutionToggleBar();
     }
 
     /**
@@ -319,6 +320,7 @@ class Menu {
         this.game.updateWallCounter();
         this.game.updateAreaSizeDisplay();
         this.game.updateResetButton();
+        this.game.updateSolutionToggleBar();
         this.game.updateLegend();
     }
 

@@ -67,6 +67,7 @@ function createMockGame() {
         updateWallCounter: jest.fn(),
         updateAreaSizeDisplay: jest.fn(),
         updateResetButton: jest.fn(),
+        updateSolutionToggleBar: jest.fn(),
         loadSubmission: jest.fn(() => null),
         deleteSubmission: jest.fn(),
         isValidPosition: jest.fn(() => true)
@@ -455,6 +456,7 @@ describe('Menu', () => {
             expect(game.updateWallCounter).toHaveBeenCalled();
             expect(game.updateAreaSizeDisplay).toHaveBeenCalled();
             expect(game.updateResetButton).toHaveBeenCalled();
+            expect(game.updateSolutionToggleBar).toHaveBeenCalled();
         });
 
         test('should do nothing if no current date', () => {
