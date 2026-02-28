@@ -18,6 +18,7 @@ on:
       - '.markdownlint-cli2.jsonc'
   pull_request:
     branches: '**'
+  workflow_dispatch:
 
 # Cancel in-progress runs when a new commit is pushed to the same branch/PR
 concurrency:
@@ -35,6 +36,8 @@ jobs:
 
     permissions:
       contents: read
+
+    steps:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
@@ -44,8 +47,7 @@ jobs:
         id: filter
         run: |
           if [ "${{ github.event_name }}" != "pull_request" ]; then
-            # On push the workflow-level paths filter already ensures only
-            # relevant changes reach here, so run all linters.
+            # On push or workflow_dispatch, run all linters.
             echo "js=true" >> "$GITHUB_OUTPUT"
             echo "python=true" >> "$GITHUB_OUTPUT"
             echo "markdown=true" >> "$GITHUB_OUTPUT"
