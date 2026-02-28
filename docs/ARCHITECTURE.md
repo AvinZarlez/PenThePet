@@ -193,6 +193,8 @@ js/
 ├── config.js             # Derived config
 ├── tileTypes.js          # Data definitions
 ├── wordList.js           # Static data
+├── CookieUtils.js        # Cookie helpers
+├── DateUtils.js          # Date helpers
 ├── PathfindingUtils.js   # Shared utilities
 ├── Grid.js               # Data structure
 ├── Game.js               # Controller (checker)
@@ -297,7 +299,7 @@ for (let i = 0; i < combinationCount; i++) {
 
 ### Test Performance
 
-**Decision:** 222 tests should run in <10 seconds
+**Decision:** 237 tests should run in <10 seconds
 
 **Why:**
 - Fast tests encourage running them frequently
@@ -375,25 +377,26 @@ class Game {
 
 ### Adding Persistence
 
-**Design:** Cookie-based preferences already implemented
+**Design:** Cookie-based preferences via shared CookieUtils
 
 **Current:**
-- Selected pet emoji stored in cookie
+- Selected pet emoji, hint mode, current level, debug mode, and submissions stored in cookies
+- All cookie operations use `CookieUtils.getCookie()` and `CookieUtils.setCookie()`
+- Date formatting uses `DateUtils.formatDate()`
 - Expires after 1 year
 
 **Easy to Add:**
-- Hint mode preference
-- Grid size preference
-- Daily puzzle completion tracking
 - Statistics (games played, win rate)
+- Theme preferences
+- Additional game modes
 
 **Pattern:**
 ```javascript
-_savePrefToCookie(key, value) {
-    const date = new Date();
-    date.setTime(date.getTime() + (365 * 24 * 60 * 60 * 1000));
-    document.cookie = `${key}=${encodeURIComponent(value)};expires=${date.toUTCString()};path=/;SameSite=Lax`;
-}
+// Save a preference
+CookieUtils.setCookie('myKey', 'myValue', 365);
+
+// Load a preference
+const saved = CookieUtils.getCookie('myKey');
 ```
 
 ### Internationalization (i18n)

@@ -838,12 +838,7 @@ class Game {
      * @returns {string|null} Saved pet emoji or null if not found
      */
     _loadPetFromCookie() {
-        const value = `; ${document.cookie}`;
-        const parts = value.split('; selectedPet=');
-        if (parts.length === 2) {
-            return decodeURIComponent(parts.pop().split(';').shift());
-        }
-        return null;
+        return CookieUtils.getCookie('selectedPet');
     }
 
     /**
@@ -852,39 +847,30 @@ class Game {
      * @param {string} petEmoji - Pet emoji to save
      */
     _savePetToCookie(petEmoji) {
-        const date = new Date();
-        date.setTime(date.getTime() + (365 * 24 * 60 * 60 * 1000)); // 1 year
-        const expires = `expires=${date.toUTCString()}`;
-        document.cookie = `selectedPet=${encodeURIComponent(petEmoji)};${expires};path=/;SameSite=Lax`;
+        CookieUtils.setCookie('selectedPet', petEmoji, 365);
     }
     
     /**
-     * Helper method to get a cookie value
+     * Helper method to get a cookie value.
+     * Delegates to CookieUtils for shared implementation.
      * @private
      * @param {string} name - Cookie name
      * @returns {string|null} Cookie value or null
      */
     _getCookie(name) {
-        const value = `; ${document.cookie}`;
-        const parts = value.split(`; ${name}=`);
-        if (parts.length === 2) {
-            return decodeURIComponent(parts.pop().split(';').shift());
-        }
-        return null;
+        return CookieUtils.getCookie(name);
     }
     
     /**
-     * Helper method to set a cookie
+     * Helper method to set a cookie.
+     * Delegates to CookieUtils for shared implementation.
      * @private
      * @param {string} name - Cookie name
      * @param {string} value - Cookie value
      * @param {number} days - Expiration in days
      */
     _setCookie(name, value, days) {
-        const date = new Date();
-        date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
-        const expires = `expires=${date.toUTCString()}`;
-        document.cookie = `${name}=${encodeURIComponent(value)};${expires};path=/;SameSite=Lax`;
+        CookieUtils.setCookie(name, value, days);
     }
     
     /**

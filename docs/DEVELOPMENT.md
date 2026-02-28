@@ -56,6 +56,8 @@ PenThePet/
 │   ├── config.js        # Game config (uses constants)
 │   ├── tileTypes.js     # Tile definitions
 │   ├── wordList.js      # Map naming words
+│   ├── CookieUtils.js   # Shared cookie helpers
+│   ├── DateUtils.js     # Shared date helpers
 │   ├── PathfindingUtils.js  # BFS pathfinding
 │   ├── Grid.js          # Grid state management
 │   ├── Game.js          # Game controller (checker)

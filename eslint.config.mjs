@@ -13,6 +13,8 @@ export default [
                 ...globals.node,
                 ...globals.jest,
                 // Custom globals
+                CookieUtils: 'readonly',
+                DateUtils: 'readonly',
                 CONFIG: 'readonly',
                 CONSTANTS: 'readonly',
                 TILE_TYPES: 'readonly',
@@ -26,7 +28,6 @@ export default [
                 getRandomWord: 'readonly',
                 WORD_LIST: 'readonly',
                 updateMapInfo: 'readonly',
-                formatDate: 'readonly',
             },
         },
         rules: {

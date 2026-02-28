@@ -21,7 +21,9 @@ PenThePet/
 │   ├── config.js           # Game configuration (references constants)
 │   ├── tileTypes.js        # Tile type definitions and properties
 │   ├── wordList.js         # Random English words for map naming
-│   ├── PathfindingUtils.js # Shared pathfinding utilities
+│   ├── CookieUtils.js      # Shared cookie get/set helpers
+│   ├── DateUtils.js        # Shared date formatting helpers
+│   ├── PathfindingUtils.js # Shared pathfinding utilities (BFS, penning, path-to-edge)
 │   ├── MapGenerator.js     # Map generation logic (used by generation scripts only)
 │   ├── MapValidator.js     # Map quality validation (used by generation scripts only)
 │   ├── Grid.js             # Grid state management (load, get/set, reset)
@@ -36,7 +38,7 @@ PenThePet/
 │       ├── MILPSolver.js      # Node.js wrapper that calls Python solver
 │       ├── solve.py           # Python MILP solver using PuLP + CBC
 │       └── requirements.txt   # Python dependencies (PuLP)
-├── test/                   # Test suite (222 tests)
+├── test/                   # Test suite (237 tests)
 │   └── *.test.js              # Unit tests for each module
 ├── docs/                   # 📚 Comprehensive documentation
 │   ├── CODE_STRUCTURE.md   # This file
@@ -78,7 +80,7 @@ Contains all visual styling for the game:
 **To customize the look:** Modify colors, sizes, or add new CSS classes here.
 
 ### `js/constants.js`
-**NEW**: Centralized constants for all game parameters:
+Centralized constants for all game parameters:
 - **MAX_WALLS**: Maximum walls allowed (15)
 - **MAX_GRID_SIZE**: Maximum grid size (21)
 - **Tile distribution**: Probability ratios for tile generation
@@ -103,12 +105,27 @@ Collection of random English words used for map naming:
 - Used by map generation script to give each map a memorable name
 - Exported function `getRandomWord()` for easy access
 
+### `js/CookieUtils.js`
+Shared cookie utility functions:
+- `getCookie(name)` - Read a cookie value by name
+- `setCookie(name, value, days)` - Set a cookie with expiration
+- Used by Game.js, Menu.js, and main.js
+- Single source of truth for all cookie operations
+
+### `js/DateUtils.js`
+Shared date utility functions:
+- `getTodayDate()` - Get today's date in YYYY-MM-DD format
+- `formatDate(dateStr)` - Format date string for display (e.g., "Feb 6, 2026")
+- Used by Menu.js and main.js
+- Single source of truth for all date operations
+
 ### `js/PathfindingUtils.js`
-Shared pathfinding utilities used by game logic and generation scripts:
+Shared pathfinding utilities used by game logic, generation scripts, and validation:
 - BFS pathfinding algorithms
-- Pet penning detection
-- Penned area calculation
-- Used by Game.js for checking if pet is penned
+- `isPenned(map, homeRow, homeCol)` - Check if pet is penned (numeric map format)
+- `calculatePennedArea(map, homeRow, homeCol)` - Count reachable tiles (numeric map format)
+- `hasPathToEdge(map)` - Check if home can reach edge (string map format)
+- Used by Game.js, MILPSolver.js, MapGenerator.js, and MapValidator.js
 
 ### `js/tileTypes.js`
 Defines all tile types and their properties:
@@ -147,16 +164,10 @@ Game controller that checks if the pet is penned:
 - DOM manipulation and dynamic cell sizing
 - Penning detection (checks if pet can reach edge)
 - Wall placement and removal
-- **Cookie Management**: Stores and retrieves user preferences (selected pet animal)
+- Score submission and optimal solution viewing
+- Delegates cookie operations to CookieUtils
 
 **Note**: Game no longer generates maps or has debug tools. Maps are loaded from maps.json via main.js.
-
-**Cookie Storage:**
-- `selectedPet`: Stores the user's selected animal emoji
-- Expires after 1 year
-- Path: `/` (accessible across the entire site)
-- SameSite: `Lax` (secure against CSRF)
-- Future settings can be added (e.g., `hintMode`, `gridSize`)
 
 **To add gameplay features:** Extend this class with new methods for character movement, scoring, etc.
 
@@ -164,20 +175,15 @@ Game controller that checks if the pet is penned:
 Menu system for navigation and settings:
 - **Modal Management**: Opens/closes menu, level selector, instructions, about, and options modals
 - **Level Selector**: Displays available maps from maps.json, allows switching between different day's puzzles
+- **Level Loading**: Dynamically loads selected map into the game, fully resets game state (grid size, submission, optimal solution)
 - **Options Management**: Syncs pet type and hint mode settings
-- **Cookie Persistence**: Saves and loads all user preferences
+- **Cookie Persistence**: Delegates to CookieUtils for all cookie operations
   - `selectedPet`: User's chosen animal emoji
   - `hintMode`: Selected hint mode (disabled, checkOptimal, revealTarget)
   - `currentLevel`: Currently selected level date
-- **Level Loading**: Dynamically loads selected map from maps.json into the game
+  - `debugMode`: Whether debug tools are visible
 
-**Cookie Storage Details:**
-- All cookies expire after 1 year
-- Path: `/` (accessible across entire site)
-- SameSite: `Lax` (secure against CSRF)
-- Values are URL-encoded for safety
-
-**To add new menu options:** Extend the Menu class with new modal types and cookie storage.
+**To add new menu options:** Extend the Menu class with new modal types and cookie storage via CookieUtils.
 
 ### `js/main.js`
 Application entry point:
@@ -238,7 +244,7 @@ Generated maps with complete metadata:
 - See MAP_GENERATION.md for metadata structure
 
 ### `MAP_GENERATION.md`
-**NEW**: Comprehensive documentation for map generation:
+Comprehensive documentation for map generation:
 - Algorithm explanation and pseudocode
 - Metadata structure and field descriptions
 - Generation process and requirements
@@ -334,49 +340,41 @@ document.addEventListener('keydown', (e) => {
 
 ## 🍪 User Preferences and Cookies
 
-The game uses browser cookies to remember user preferences across sessions. This works perfectly with GitHub Pages hosting.
+The game uses browser cookies to remember user preferences across sessions. All cookie operations go through `CookieUtils` in `js/CookieUtils.js`.
 
 ### Currently Stored Preferences
 
-- **selectedPet**: The user's chosen animal emoji (expires after 1 year)
-  - Cookie name: `selectedPet`
-  - Format: URL-encoded emoji string
-  - Path: `/` (accessible across entire site)
-  - SameSite: `Lax` (secure against CSRF attacks)
+| Cookie Name | Purpose | Set By | Format |
+|------------|---------|--------|--------|
+| `selectedPet` | Chosen animal emoji | Menu.js / Game.js | URL-encoded emoji |
+| `hintMode` | Hint mode setting | Menu.js | `disabled`, `checkOptimal`, `revealTarget` |
+| `currentLevel` | Selected puzzle date | Menu.js | `YYYY-MM-DD` |
+| `debugMode` | Debug tools visibility | Menu.js | `true` / `false` |
+| `submission_YYYY-MM-DD` | Submitted score per puzzle | Game.js | JSON `{score, walls, timestamp}` |
+
+All cookies:
+- Expire after 1 year
+- Path: `/` (accessible across entire site)
+- SameSite: `Lax` (secure against CSRF)
+- Values are URL-encoded for safety
 
 ### How It Works
 
-1. **On Selection**: When user selects an animal from the dropdown, `Game._savePetToCookie()` stores it
-2. **On Load**: When game initializes, `Game._loadPetFromCookie()` retrieves the saved preference
-3. **Fallback**: If no cookie exists, defaults to 🐶 (Dog)
+1. **On Selection**: When user changes a setting, the relevant module calls `CookieUtils.setCookie()`
+2. **On Load**: When game initializes, modules call `CookieUtils.getCookie()` to retrieve saved preferences
+3. **Fallback**: If no cookie exists, defaults are used (e.g., 🐶 Dog for pet)
 
 ### Adding New Preferences
 
-To store additional settings (e.g., hint mode, grid size):
+To store a new setting, use the shared `CookieUtils`:
 
-1. **Add cookie save function** in `Game.js`:
 ```javascript
-_saveHintModeToCookie(mode) {
-    const date = new Date();
-    date.setTime(date.getTime() + (365 * 24 * 60 * 60 * 1000));
-    const expires = `expires=${date.toUTCString()}`;
-    document.cookie = `hintMode=${encodeURIComponent(mode)};${expires};path=/;SameSite=Lax`;
-}
-```
+// Save a preference
+CookieUtils.setCookie('myPreference', 'value', 365);
 
-2. **Add cookie load function** in `Game.js`:
-```javascript
-_loadHintModeFromCookie() {
-    const value = `; ${document.cookie}`;
-    const parts = value.split(`; hintMode=`);
-    if (parts.length === 2) {
-        return decodeURIComponent(parts.pop().split(';').shift());
-    }
-    return null;
-}
+// Load a preference
+const saved = CookieUtils.getCookie('myPreference');
 ```
-
-3. **Call in constructor** and **event handlers** appropriately
 
 ### Cookie Compatibility with GitHub Pages
 

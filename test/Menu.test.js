@@ -45,14 +45,25 @@ function createMockGame() {
         render: jest.fn(),
         updateLegend: jest.fn(),
         grid: {
+            size: 7,
             loadMap: jest.fn(),
-            saveInitialState: jest.fn()
+            saveInitialState: jest.fn(),
+            getTile: jest.fn(() => 'grass'),
+            setTile: jest.fn()
         },
         wallCount: 0,
         goalAreaSize: 10,
         maxWalls: 9,
+        currentDate: null,
+        optimalSolution: null,
+        isSubmitted: false,
+        submittedScore: null,
+        submittedWalls: null,
+        viewingOptimal: false,
         updateWallCounter: jest.fn(),
-        updateAreaSizeDisplay: jest.fn()
+        updateAreaSizeDisplay: jest.fn(),
+        loadSubmission: jest.fn(() => null),
+        isValidPosition: jest.fn(() => true)
     };
 }
 
@@ -183,13 +194,13 @@ describe('Menu', () => {
     describe('Cookie Persistence', () => {
         test('should save and load pet emoji', () => {
             menu._savePetToCookie('🐱');
-            const loaded = menu._getCookie('selectedPet');
+            const loaded = CookieUtils.getCookie('selectedPet');
             expect(loaded).toBe('🐱');
         });
 
         test('should save and load hint mode', () => {
             menu._saveHintModeToCookie('checkOptimal');
-            const loaded = menu._getCookie('hintMode');
+            const loaded = CookieUtils.getCookie('hintMode');
             expect(loaded).toBe('checkOptimal');
         });
 
@@ -201,12 +212,12 @@ describe('Menu', () => {
 
         test('should save and load current level', () => {
             menu._saveCurrentLevelToCookie('2026-02-05');
-            const loaded = menu._getCookie('currentLevel');
+            const loaded = CookieUtils.getCookie('currentLevel');
             expect(loaded).toBe('2026-02-05');
         });
 
         test('should handle missing cookies gracefully', () => {
-            const value = menu._getCookie('nonexistent');
+            const value = CookieUtils.getCookie('nonexistent');
             expect(value).toBe(null);
         });
     });
@@ -268,7 +279,7 @@ describe('Menu', () => {
             await menu.loadMapsDatabase();
             await menu.selectLevel('2026-02-06');
             
-            const savedLevel = menu._getCookie('currentLevel');
+            const savedLevel = CookieUtils.getCookie('currentLevel');
             expect(savedLevel).toBe('2026-02-06');
         });
 
@@ -354,26 +365,17 @@ describe('Menu', () => {
     });
 
     describe('Date Formatting', () => {
-        test('should use global formatDate if available', () => {
-            // Mock global formatDate
-            global.formatDate = jest.fn(() => 'Mocked Date');
-            
+        test('should delegate to DateUtils.formatDate', () => {
             const result = menu._formatDate('2026-02-06');
             
-            expect(result).toBe('Mocked Date');
-            expect(global.formatDate).toHaveBeenCalledWith('2026-02-06');
-            
-            // Clean up
-            delete global.formatDate;
+            // Should match the format from DateUtils.formatDate
+            expect(result).toMatch(/Feb.*6.*2026/);
         });
 
-        test('should fallback to local formatting if no global formatDate', () => {
-            // Ensure no global formatDate
-            delete global.formatDate;
-            
-            const result = menu._formatDate('2026-02-06');
-            
-            expect(result).toMatch(/Feb.*6.*2026/);
+        test('should format various date strings correctly', () => {
+            expect(menu._formatDate('2026-01-15')).toMatch(/Jan.*15.*2026/);
+            expect(menu._formatDate('2025-12-25')).toMatch(/Dec.*25.*2025/);
+            expect(menu._formatDate('2026-06-01')).toMatch(/Jun.*1.*2026/);
         });
     });
 

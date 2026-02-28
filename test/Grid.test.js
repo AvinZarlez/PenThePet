@@ -360,14 +360,17 @@ describe('Grid', () => {
             expect(() => grid.loadMap('not an array')).toThrow();
         });
 
-        test('should throw error for wrong size map', () => {
+        test('should update grid size when loading different sized map', () => {
             const grid = new Grid(3);
-            const wrongSizeMap = [
+            const differentSizeMap = [
                 ['grass', 'grass'],
                 ['grass', 'home']
             ];
 
-            expect(() => grid.loadMap(wrongSizeMap)).toThrow('Invalid map');
+            grid.loadMap(differentSizeMap);
+            expect(grid.size).toBe(2);
+            expect(grid.tiles.length).toBe(2);
+            expect(grid.getTile(1, 1)).toBe('home');
         });
 
         test('should allow loading different maps', () => {

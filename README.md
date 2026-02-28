@@ -104,6 +104,8 @@ PenThePet/
 │   ├── config.js           # Game configuration
 │   ├── tileTypes.js        # Tile definitions
 │   ├── wordList.js         # Random words for map names
+│   ├── CookieUtils.js      # Shared cookie helpers
+│   ├── DateUtils.js        # Shared date helpers
 │   ├── PathfindingUtils.js # Shared pathfinding algorithms
 │   ├── Grid.js             # Grid state management
 │   ├── Game.js             # Game controller (checker)
@@ -112,7 +114,7 @@ PenThePet/
 ├── scripts/
 │   ├── generate-maps.js    # CLI for generating daily maps
 │   └── solver/             # MILP solver pipeline (Python + Node.js)
-├── test/                   # Test suite (222 tests)
+├── test/                   # Test suite (237 tests)
 ├── docs/                   # Documentation
 └── maps.json               # Daily puzzle maps
 
@@ -123,7 +125,7 @@ See [CODE_STRUCTURE.md](docs/CODE_STRUCTURE.md) for detailed architecture.
 
 The project has comprehensive test coverage with Jest:
 
-- **222 tests** across 7 test suites
+- **237 tests** across 10 test suites
 - Unit tests for all core modules
 - Integration tests for map generation
 - Cookie persistence tests
@@ -175,5 +177,5 @@ MIT License - See [LICENSE](LICENSE) file for details
 ---
 
 **Current Version:** 1.0.0  
-**Test Coverage:** 77% (222 tests passing)  
+**Test Coverage:** ~90% (237 tests passing)  
 **Daily Maps:** 10+ unique puzzles

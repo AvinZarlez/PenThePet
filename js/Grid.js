@@ -80,13 +80,15 @@ class Grid {
     }
 
     /**
-     * Load a pre-generated map into the grid
+     * Load a pre-generated map into the grid.
+     * Updates the grid size to match the map dimensions.
      * @param {Array} map - 2D array of tile types
      */
     loadMap(map) {
-        if (!Array.isArray(map) || map.length !== this.size) {
-            throw new Error('Invalid map: must be a 2D array matching grid size');
+        if (!Array.isArray(map) || map.length === 0) {
+            throw new Error('Invalid map: must be a non-empty 2D array');
         }
+        this.size = map.length;
         this.tiles = map.map(row => [...row]); // Deep copy to avoid reference issues
     }
 }
