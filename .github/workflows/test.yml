@@ -14,17 +14,93 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  lint-and-test:
+  lint-js:
+    name: Lint JavaScript
     runs-on: ubuntu-latest
-    
-    permissions:
-      contents: read
-      pull-requests: write
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-      
+
+      - name: Setup Node.js 20.x
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20.x
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run ESLint
+        run: npm run lint
+
+  lint-python:
+    name: Lint Python
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install ruff
+        run: pip install ruff
+
+      - name: Run ruff
+        run: ruff check scripts/solver/
+
+  lint-markdown:
+    name: Lint Markdown
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 20.x
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20.x
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run markdownlint
+        run: npm run lint:markdown
+
+  test-webapp:
+    name: Test Webapp
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 20.x
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20.x
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run webapp tests
+        run: npm run test:webapp
+
+  test-generation:
+    name: Test Level Generation
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
       - name: Setup Node.js 20.x
         uses: actions/setup-node@v4
         with:
@@ -35,19 +111,47 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      
+
       - name: Install dependencies
         run: |
           npm ci
           pip install -r scripts/solver/requirements.txt
-      
-      - name: Run ESLint
-        run: npm run lint
-        continue-on-error: false
-      
-      - name: Run tests with coverage
+
+      - name: Run level generation tests
+        run: npm run test:generation
+
+  coverage:
+    name: Full Test Suite & Coverage
+    runs-on: ubuntu-latest
+    needs: [test-webapp, test-generation]
+
+    permissions:
+      contents: read
+      pull-requests: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 20.x
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20.x
+          cache: 'npm'
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: |
+          npm ci
+          pip install -r scripts/solver/requirements.txt
+
+      - name: Run all tests with coverage
         run: npm test
-      
+
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v3
         with:
@@ -55,7 +159,7 @@ jobs:
           flags: unittests
           name: codecov-umbrella
           fail_ci_if_error: false
-      
+
       - name: Upload coverage artifact
         if: always()
         uses: actions/upload-artifact@v4
@@ -63,7 +167,7 @@ jobs:
           name: coverage-report
           path: coverage/
           retention-days: 30
-      
+
       - name: Generate test report
         if: always()
         run: |
@@ -75,7 +179,7 @@ jobs:
           fi
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "✅ All checks passed!" >> $GITHUB_STEP_SUMMARY
-      
+
       - name: Comment PR with test results
         if: github.event_name == 'pull_request' && always()
         uses: actions/github-script@v7
@@ -91,17 +195,17 @@ jobs:
             } catch (error) {
               console.log('Coverage data not found');
             }
-            
+
             const body = `## Test Results
-            
+
             ### Code Coverage: ${coverage}
-            
+
             - ✅ Linting: Passed
             - ✅ Tests: Passed
-            
+
             **Node Version:** 20.x
             `;
-            
+
             github.rest.issues.createComment({
               issue_number: context.issue.number,
               owner: context.repo.owner,

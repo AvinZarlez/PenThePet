@@ -13,7 +13,7 @@
       }
     },
     {
-      "label": "Run Tests",
+      "label": "Run All Tests",
       "type": "npm",
       "script": "test",
       "problemMatcher": [],
@@ -23,7 +23,27 @@
       }
     },
     {
-      "label": "Run Linter",
+      "label": "Run Webapp Tests",
+      "type": "npm",
+      "script": "test:webapp",
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      }
+    },
+    {
+      "label": "Run Generation Tests",
+      "type": "npm",
+      "script": "test:generation",
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      }
+    },
+    {
+      "label": "Lint JavaScript",
       "type": "npm",
       "script": "lint",
       "problemMatcher": [
@@ -35,9 +55,39 @@
       }
     },
     {
-      "label": "Fix Lint Issues",
+      "label": "Fix JavaScript Lint Issues",
       "type": "npm",
       "script": "lint:fix",
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      }
+    },
+    {
+      "label": "Lint Python",
+      "type": "npm",
+      "script": "lint:python",
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      }
+    },
+    {
+      "label": "Lint Markdown",
+      "type": "npm",
+      "script": "lint:markdown",
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      }
+    },
+    {
+      "label": "Lint All",
+      "type": "npm",
+      "script": "lint:all",
       "problemMatcher": [],
       "presentation": {
         "reveal": "always",

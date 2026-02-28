@@ -16,6 +16,30 @@
     {
       "type": "node",
       "request": "launch",
+      "name": "Jest: Run Webapp Tests",
+      "program": "${workspaceFolder}/node_modules/.bin/jest",
+      "args": [
+        "--runInBand",
+        "--testPathPatterns=test/webapp/"
+      ],
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen"
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Jest: Run Generation Tests",
+      "program": "${workspaceFolder}/node_modules/.bin/jest",
+      "args": [
+        "--runInBand",
+        "--testPathPatterns=test/generation/"
+      ],
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen"
+    },
+    {
+      "type": "node",
+      "request": "launch",
       "name": "Jest: Run Current Test File",
       "program": "${workspaceFolder}/node_modules/.bin/jest",
       "args": [
