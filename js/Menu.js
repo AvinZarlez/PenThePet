@@ -222,13 +222,7 @@ class Menu {
             updateMapInfo(mapData);
         }
 
-        // Update grid size if it changed (e.g., switching from 9x9 to 7x7)
-        const newSize = mapData.map.length;
-        if (this.game.grid.size !== newSize) {
-            this.game.grid.size = newSize;
-        }
-
-        // Load the map
+        // Load the map (also updates grid size to match)
         this.game.grid.loadMap(mapData.map);
         this.game.grid.saveInitialState();
         this.game.wallCount = 0;

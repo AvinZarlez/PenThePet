@@ -373,9 +373,9 @@ describe('Menu', () => {
         });
 
         test('should format various date strings correctly', () => {
-            const result = menu._formatDate('2026-02-06');
-            
-            expect(result).toMatch(/Feb.*6.*2026/);
+            expect(menu._formatDate('2026-01-15')).toMatch(/Jan.*15.*2026/);
+            expect(menu._formatDate('2025-12-25')).toMatch(/Dec.*25.*2025/);
+            expect(menu._formatDate('2026-06-01')).toMatch(/Jun.*1.*2026/);
         });
     });
 
