@@ -89,6 +89,10 @@ Each map in `maps.json` contains the following fields:
   "map": [                 // 2D array of tile types
     ["grass", "water", ...],
     ...
+  ],
+  "optimalSolution": [     // Wall coordinates for the optimal solution
+    [row, col],
+    ...
   ]
 }
 ```
@@ -101,7 +105,8 @@ Each map in `maps.json` contains the following fields:
 - **size**: Grid dimensions (always square: size x size)
 - **goal**: The maximum area achievable with optimal wall placement within the wall budget
 - **maxWalls**: The wall budget for the player, computed as `floor(size * 0.75)`
-- **map**: 2D array where each cell is "grass", "water", or "home"
+- **map**: 2D array where each cell is `"grass"`, `"water"`, or `"home"`
+- **optimalSolution**: Array of `[row, col]` coordinate pairs identifying where the optimal walls are placed
 
 ## Constants Configuration
 
@@ -179,47 +184,68 @@ if (!validation.valid) {
 
 ### Method 1: GitHub Actions (Recommended for Production)
 
-Use the GitHub Actions workflow to generate and commit a single daily map:
+Use the GitHub Actions workflow to generate maps and open a pull request:
 
 1. Go to the **Actions** tab in the GitHub repository
 2. Select **"Generate Daily Map"** workflow
 3. Click **"Run workflow"**
 4. Fill in parameters:
-   - **date**: Date in YYYY-MM-DD format (e.g., `2026-02-15`)
-   - **size**: Map size (7, 9, 11, etc.)
+   - **date** *(optional)*: Start date in YYYY-MM-DD format (e.g., `2026-02-15`). Leave empty to auto-assign the next available date.
+   - **size**: Map size — either an exact value (e.g., `9`) or a range to pick from randomly (e.g., `7-13`). A random integer in the range is chosen for each map.
+   - **count** *(optional)*: Number of maps to generate (default `1`). When generating multiple maps, dates are assigned sequentially starting from the given start date.
 5. Click **"Run workflow"**
 
 The workflow will:
 
 - Set up Python and install PuLP (MILP solver dependency)
-- Generate a map using the Python MILP solver for optimal results
-- Validate it meets quality standards
-- Automatically commit the new map to `maps.json`
-- Assign next day number and random name
+- Create a new branch (`maps/add-maps-YYYYMMDD-HHMMSS`)
+- Generate the requested number of maps using the Python MILP solver
+- Validate each map meets quality standards
+- Commit the updated `maps.json` to the branch
+- Open a pull request against `main` for review and merge
 
-### Method 2: Local Script for Single Map
+> **Why a pull request?** The `main` branch is protected, so the workflow cannot push directly. A PR lets you review the generated maps before merging.
 
-Generate a single map locally and add it to maps.json:
+#### Examples
+
+| Scenario | `date` | `size` | `count` |
+|---|---|---|---|
+| Single map for a specific date | `2026-03-01` | `9` | `1` |
+| Single map, auto-assigned date | *(empty)* | `11` | `1` |
+| 5 maps with random sizes | *(empty)* | `7-13` | `5` |
+| 3 maps starting a specific date | `2026-03-01` | `9-15` | `3` |
+
+### Method 2: Local Script for Single or Multiple Maps
+
+`scripts/generate-map.js` is the single generation entry point for both the GitHub
+Actions workflow and local use. It supports all generation scenarios:
 
 ```bash
 # Install Python dependencies first
 pip install -r scripts/solver/requirements.txt
 
-# Generate a map (maxWalls is computed automatically from size)
-node scripts/generate-single-map.js --date 2026-02-15 --size 9
+# Generate a single map for a specific date
+node scripts/generate-map.js --date 2026-02-15 --size 9
+
+# Generate a single map with auto-assigned date
+node scripts/generate-map.js --size 9
+
+# Generate 5 maps starting from a date (size picked randomly from range 7–13)
+node scripts/generate-map.js --date 2026-03-01 --size 7-13 --count 5
+
+# Generate 3 maps with auto-assigned dates
+node scripts/generate-map.js --size 11 --count 3
+
+# Replace all existing maps with 10 fresh ones
+node scripts/generate-map.js --fresh --count 10 --date 2026-03-01 --size 9
 ```
 
-### Method 3: Batch Generation
+**Arguments:**
 
-The `scripts/generate-maps.js` script generates multiple maps:
-
-```bash
-# Generate 10 fresh maps (replace existing)
-node scripts/generate-maps.js --fresh --count 10 --start-date 2026-02-06 --sizes 7,9,11
-
-# Add 5 new maps (append to existing)
-node scripts/generate-maps.js --count 5 --start-date 2026-02-16 --sizes 9,11
-```
+- `--date YYYY-MM-DD` *(optional)*: Start date. Defaults to the next available date.
+- `--size N` or `--size N-M`: Exact size or a range. A random integer in `[N, M]` is chosen per map.
+- `--count N` *(optional)*: Number of maps to generate (default `1`). Dates are assigned sequentially.
+- `--fresh` *(optional)*: Replace all existing maps instead of appending.
 
 ### Auditing Existing Maps
 
@@ -229,22 +255,8 @@ Check if all maps in maps.json meet validation standards:
 node scripts/audit-maps.js
 ```
 
-This will report any maps that fail validation rules.
-
-### Script Options
-
-- `--fresh`: Replace all existing maps (default: append)
-- `--count N`: Generate N maps (default: 10)
-- `--start-date YYYY-MM-DD`: Starting date (default: today)
-- `--sizes N,M,K`: Grid sizes to cycle through (default: 7,9,11)
-
-### Script Behavior
-
-1. Loads existing maps (unless `--fresh` is used)
-2. Generates new maps starting from next day number
-3. Assigns random English words as map names
-4. Saves all maps to `maps.json` with proper formatting
-5. Displays summary of generated maps
+This validates every map's path-to-edge, goal area, wall count, and strategic wall placement,
+using the stored `optimalSolution` for each map.
 
 ## Map Validation
 
@@ -267,8 +279,9 @@ Each generated map is validated to ensure:
 6. **js/wordList.js**: Random English words for map names
 7. **scripts/solver/solve.py**: Python MILP solver using PuLP + CBC
 8. **scripts/solver/requirements.txt**: Python dependencies
-9. **scripts/generate-single-map.js**: Generate one map (used by GitHub Actions)
-10. **scripts/generate-maps.js**: CLI script for batch map generation
+9. **scripts/generate-map.js**: Generation entry point — single map, batch, or fresh replacement (used by GitHub Actions and locally)
+10. **scripts/lib/mapUtils.js**: Shared pure utilities — date helpers, size parsing, database validation/fix
+11. **scripts/audit-maps.js**: Validates all maps in maps.json against MapValidator
 
 ### Generation Flow
 
@@ -381,21 +394,20 @@ console.log('Walls:', result.maxWalls);
 "
 
 # Run the generation script with test data
-node scripts/generate-maps.js --count 3 --sizes 7
+node scripts/generate-map.js --count 3 --size 7
 ```
 
 ## Summary for Future Agents
 
 **When generating maps:**
 
-1. Use GitHub Actions workflow for production daily maps (preferred)
-2. Use `scripts/generate-single-map.js` for local testing
-3. Use `scripts/generate-maps.js` for batch generation
-4. Run `scripts/audit-maps.js` to validate existing maps
-5. Ensure CONSTANTS.MAX_WALLS = 15 (never change without regenerating all maps)
-6. All maps MUST pass MapValidator checks (goal >= 5, not all walls on edges, etc.)
-7. Verify maps.json has correct JSON format after generation
-8. Test at least one generated map in the game to ensure it works
+1. Use GitHub Actions workflow for production daily maps (preferred) — opens a PR
+2. Use `scripts/generate-map.js` for local generation (supports `--count`, `--size N-M` range, `--fresh`)
+3. Run `scripts/audit-maps.js` to validate existing maps (checks all quality rules including strategic wall placement)
+4. Ensure CONSTANTS.MAX_WALLS = 15 (never change without regenerating all maps)
+5. All maps MUST pass MapValidator checks (goal >= 5, not all walls on edges, etc.)
+6. Verify maps.json has correct JSON format after generation
+7. Test at least one generated map in the game to ensure it works
 
 **When modifying generation:**
 

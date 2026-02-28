@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 
 /**
- * Audit existing maps in maps.json
- * Check if they meet the new validation rules
+ * Audit existing maps in maps.json — validates every map against MapValidator.
+ * Exits with code 1 if any map fails validation.
  */
 
 const fs = require('fs');
@@ -32,21 +32,17 @@ function auditMaps() {
         console.log(`\nChecking ${date} - "${mapData.mapName}" (Day ${mapData.dayNumber})`);
         console.log(`  Size: ${mapData.size}x${mapData.size}, Goal: ${mapData.goal}, Walls: ${mapData.maxWalls}`);
         
-        // Validate the map
         const validation = MapValidator.validate(mapData.map, {
             goalArea: mapData.goal,
             optimalWallCount: mapData.maxWalls,
-            optimalSolution: [] // We don't have the solution saved, so can't check wall positions
+            optimalSolution: mapData.optimalSolution || []
         });
         
         if (!validation.valid) {
             console.log('  ✗ FAILED VALIDATION:');
             validation.errors.forEach(err => {
-                // Skip the "all walls on edge" check since we don't have optimalSolution
-                if (!err.includes('All optimal walls are on edge tiles')) {
-                    console.log(`    - ${err}`);
-                    issues.push({ date, mapName: mapData.mapName, error: err });
-                }
+                console.log(`    - ${err}`);
+                issues.push({ date, mapName: mapData.mapName, error: err });
             });
         } else {
             console.log('  ✓ Passed validation');

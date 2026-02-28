@@ -94,7 +94,8 @@ test/
 └── generation/                       # Level generation tests
     ├── MapGenerator.test.js          # Map generation
     ├── MapValidator.test.js          # Map validation
-    └── generate-maps.test.js         # Generation script
+    ├── generate-maps.test.js         # Database validation utilities (mapUtils.js)
+    └── generate-map.test.js  # Generation entry point utilities
 ```
 
 ## Running Tests
@@ -292,7 +293,7 @@ These files are excluded because they're UI/config and tested manually:
 - Format dates for display
 - Handle various months and single-digit days
 
-### Generation Tests (66 tests)
+### Generation Tests (82 tests)
 
 #### 8. MapGenerator.test.js (39 tests)
 
@@ -312,14 +313,25 @@ These files are excluded because they're UI/config and tested manually:
 
 #### 10. generate-maps.test.js (20 tests)
 
-**Purpose:** Test map generation script functionality
+**Purpose:** Test shared database utilities in `scripts/lib/mapUtils.js`
 
 **Tests:**
 
-- Database validation and fixing logic
-- Day number calculation
-- Maps.json structure validation
-- Metadata fields present and valid
+- `validateMapsDatabase` — detects gaps, duplicates, missing fields
+- `fixMapsDatabase` — repairs gaps and duplicate names
+- `getNextDayNumber` — correct next sequential day number
+- maps.json structure validation (required fields, optimalSolution format)
+
+#### 11. generate-map.test.js (16 tests)
+
+**Purpose:** Test generation entry-point utilities
+
+**Tests:**
+
+- `parseSizeInput` — exact value and range parsing, error cases
+- `getRandomSize` — stays within range for all random picks
+- `incrementDate` — day/month/year rollover, leap years
+- `getNextAvailableDate` — auto-assigns correct next date
 
 ## Writing Tests
 
