@@ -494,7 +494,6 @@ describe('Menu', () => {
             menu.populateLevelList();
 
             const levelList = document.getElementById('levelList');
-            const today = DateUtils.getTodayDate();
             
             // Every rendered level-item-date should be <= today
             const dateElements = levelList.querySelectorAll('.level-item-date');
