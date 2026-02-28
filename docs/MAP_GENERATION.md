@@ -179,35 +179,63 @@ if (!validation.valid) {
 
 ### Method 1: GitHub Actions (Recommended for Production)
 
-Use the GitHub Actions workflow to generate and commit a single daily map:
+Use the GitHub Actions workflow to generate maps and open a pull request:
 
 1. Go to the **Actions** tab in the GitHub repository
 2. Select **"Generate Daily Map"** workflow
 3. Click **"Run workflow"**
 4. Fill in parameters:
-   - **date**: Date in YYYY-MM-DD format (e.g., `2026-02-15`)
-   - **size**: Map size (7, 9, 11, etc.)
+   - **date** *(optional)*: Start date in YYYY-MM-DD format (e.g., `2026-02-15`). Leave empty to auto-assign the next available date.
+   - **size**: Map size — either an exact value (e.g., `9`) or a range to pick from randomly (e.g., `7-13`). A random integer in the range is chosen for each map.
+   - **count** *(optional)*: Number of maps to generate (default `1`). When generating multiple maps, dates are assigned sequentially starting from the given start date.
 5. Click **"Run workflow"**
 
 The workflow will:
 
 - Set up Python and install PuLP (MILP solver dependency)
-- Generate a map using the Python MILP solver for optimal results
-- Validate it meets quality standards
-- Automatically commit the new map to `maps.json`
-- Assign next day number and random name
+- Create a new branch (`maps/add-maps-YYYYMMDD-HHMMSS`)
+- Generate the requested number of maps using the Python MILP solver
+- Validate each map meets quality standards
+- Commit the updated `maps.json` to the branch
+- Open a pull request against `main` for review and merge
 
-### Method 2: Local Script for Single Map
+> **Why a pull request?** The `main` branch is protected, so the workflow cannot push directly. A PR lets you review the generated maps before merging.
 
-Generate a single map locally and add it to maps.json:
+#### Examples
+
+| Scenario | `date` | `size` | `count` |
+|---|---|---|---|
+| Single map for a specific date | `2026-03-01` | `9` | `1` |
+| Single map, auto-assigned date | *(empty)* | `11` | `1` |
+| 5 maps with random sizes | *(empty)* | `7-13` | `5` |
+| 3 maps starting a specific date | `2026-03-01` | `9-15` | `3` |
+
+### Method 2: Local Script for Single or Multiple Maps
+
+Generate one or more maps locally and add them to maps.json:
 
 ```bash
 # Install Python dependencies first
 pip install -r scripts/solver/requirements.txt
 
-# Generate a map (maxWalls is computed automatically from size)
+# Generate a single map for a specific date
 node scripts/generate-single-map.js --date 2026-02-15 --size 9
+
+# Generate a single map with auto-assigned date
+node scripts/generate-single-map.js --size 9
+
+# Generate 5 maps starting from a date (size picked randomly from range 7–13)
+node scripts/generate-single-map.js --date 2026-03-01 --size 7-13 --count 5
+
+# Generate 3 maps with auto-assigned dates
+node scripts/generate-single-map.js --size 11 --count 3
 ```
+
+**Arguments:**
+
+- `--date YYYY-MM-DD` *(optional)*: Start date. Defaults to the next available date.
+- `--size N` or `--size N-M`: Exact size or a range. A random integer in `[N, M]` is chosen per map.
+- `--count N` *(optional)*: Number of maps to generate (default `1`). Dates are assigned sequentially.
 
 ### Method 3: Batch Generation
 
@@ -388,8 +416,8 @@ node scripts/generate-maps.js --count 3 --sizes 7
 
 **When generating maps:**
 
-1. Use GitHub Actions workflow for production daily maps (preferred)
-2. Use `scripts/generate-single-map.js` for local testing
+1. Use GitHub Actions workflow for production daily maps (preferred) — opens a PR
+2. Use `scripts/generate-single-map.js` for local testing (supports `--count` and `--size N-M` range)
 3. Use `scripts/generate-maps.js` for batch generation
 4. Run `scripts/audit-maps.js` to validate existing maps
 5. Ensure CONSTANTS.MAX_WALLS = 15 (never change without regenerating all maps)

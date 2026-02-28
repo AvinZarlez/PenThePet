@@ -4,23 +4,17 @@ on:
   workflow_dispatch:
     inputs:
       date:
-        description: 'Date for the map (YYYY-MM-DD). Leave empty to auto-assign the next date.'
+        description: 'Start date for the map(s) (YYYY-MM-DD). Leave empty to auto-assign the next date.'
         required: false
         default: ''
       size:
-        description: 'Map size (7, 9, 11, etc.)'
+        description: 'Map size — exact (e.g. "9") or a range to pick from randomly (e.g. "7-13")'
         required: true
         default: '9'
-        type: choice
-        options:
-          - '7'
-          - '9'
-          - '11'
-          - '13'
-          - '15'
-          - '17'
-          - '19'
-          - '21'
+      count:
+        description: 'Number of maps to generate'
+        required: false
+        default: '1'
 
 jobs:
   generate-map:
@@ -28,6 +22,7 @@ jobs:
     
     permissions:
       contents: write
+      pull-requests: write
     
     steps:
       - name: Checkout repository
@@ -47,20 +42,27 @@ jobs:
         run: |
           npm install
           pip install -r scripts/solver/requirements.txt
+
+      - name: Create branch
+        id: create_branch
+        run: |
+          BRANCH_NAME="maps/add-maps-$(date +%Y%m%d-%H%M%S)"
+          echo "branch_name=${BRANCH_NAME}" >> $GITHUB_OUTPUT
+          git checkout -b "${BRANCH_NAME}"
         
-      - name: Generate map
+      - name: Generate map(s)
         id: generate
         run: |
           DATE_ARG="${{ github.event.inputs.date }}"
           SIZE_ARG="${{ github.event.inputs.size }}"
-          CMD="node scripts/generate-single-map.js --size ${SIZE_ARG}"
-          
+          COUNT_ARG="${{ github.event.inputs.count }}"
+
           if [ -n "$DATE_ARG" ]; then
-            echo "Generating map for ${DATE_ARG} (size: ${SIZE_ARG})"
-            $CMD --date "${DATE_ARG}"
+            echo "Generating ${COUNT_ARG} map(s) starting ${DATE_ARG} (size: ${SIZE_ARG})"
+            node scripts/generate-single-map.js --size "${SIZE_ARG}" --count "${COUNT_ARG}" --date "${DATE_ARG}"
           else
-            echo "Generating map with auto-assigned date (size: ${SIZE_ARG})"
-            $CMD
+            echo "Generating ${COUNT_ARG} map(s) with auto-assigned date(s) (size: ${SIZE_ARG})"
+            node scripts/generate-single-map.js --size "${SIZE_ARG}" --count "${COUNT_ARG}"
           fi
           
       - name: Check for changes
@@ -72,19 +74,52 @@ jobs:
             echo "has_changes=true" >> $GITHUB_OUTPUT
           fi
           
-      - name: Commit and push changes
+      - name: Commit and push branch
         if: steps.check_changes.outputs.has_changes == 'true'
         run: |
           git config user.name "GitHub Actions Bot"
           git config user.email "actions@github.com"
           git add maps.json
           DATE_ARG="${{ github.event.inputs.date }}"
-          if [ -n "$DATE_ARG" ]; then
-            git commit -m "Add daily map for ${DATE_ARG}"
+          COUNT_ARG="${{ github.event.inputs.count }}"
+          if [ "${COUNT_ARG}" -gt 1 ]; then
+            if [ -n "$DATE_ARG" ]; then
+              git commit -m "Add ${COUNT_ARG} daily maps starting ${DATE_ARG}"
+            else
+              git commit -m "Add ${COUNT_ARG} daily maps (auto-assigned dates)"
+            fi
           else
-            git commit -m "Add new daily map (auto-assigned date)"
+            if [ -n "$DATE_ARG" ]; then
+              git commit -m "Add daily map for ${DATE_ARG}"
+            else
+              git commit -m "Add new daily map (auto-assigned date)"
+            fi
           fi
-          git push
+          git push origin "${{ steps.create_branch.outputs.branch_name }}"
+
+      - name: Create Pull Request
+        if: steps.check_changes.outputs.has_changes == 'true'
+        run: |
+          DATE_ARG="${{ github.event.inputs.date }}"
+          COUNT_ARG="${{ github.event.inputs.count }}"
+          SIZE_ARG="${{ github.event.inputs.size }}"
+          if [ "${COUNT_ARG}" -gt 1 ]; then
+            TITLE="Add ${COUNT_ARG} new daily maps (size: ${SIZE_ARG})"
+            BODY="Generated ${COUNT_ARG} map(s) with size **${SIZE_ARG}** using the map generation pipeline."
+          elif [ -n "$DATE_ARG" ]; then
+            TITLE="Add daily map for ${DATE_ARG} (size: ${SIZE_ARG})"
+            BODY="Generated map for **${DATE_ARG}** with size **${SIZE_ARG}** using the map generation pipeline."
+          else
+            TITLE="Add new daily map (size: ${SIZE_ARG})"
+            BODY="Generated a new map with size **${SIZE_ARG}** using the map generation pipeline."
+          fi
+          gh pr create \
+            --title "${TITLE}" \
+            --body "${BODY}" \
+            --head "${{ steps.create_branch.outputs.branch_name }}" \
+            --base main
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           
       - name: No changes
         if: steps.check_changes.outputs.has_changes == 'false'
