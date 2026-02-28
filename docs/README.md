@@ -8,6 +8,7 @@ All project documentation lives here. Each file covers a single topic — pick w
 |----------|-------------|
 | [HISTORY.md](HISTORY.md) | How and why this project was built (AI-assisted development experiment) |
 | [ARCHITECTURE.md](ARCHITECTURE.md) | Design philosophy, technology choices, and technical trade-offs |
+| [ART_ASSETS.md](ART_ASSETS.md) | Art asset inventory, sizes, design guidelines, and replacement instructions |
 | [CODE_STRUCTURE.md](CODE_STRUCTURE.md) | Every code file in the project — what it does and how it connects |
 | [MAP_GENERATION.md](MAP_GENERATION.md) | Map generation algorithm, solver details, and how to generate maps locally or via GitHub Actions |
 | [DEVELOPMENT.md](DEVELOPMENT.md) | How to clone, run, lint, test, and debug locally (including VS Code setup) |

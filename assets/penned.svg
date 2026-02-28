@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 50 50">
+  <defs>
+    <pattern id="pennedPattern" x="0" y="0" width="50" height="50" patternUnits="userSpaceOnUse">
+      <!-- Yellow-tinted grass base -->
+      <rect width="50" height="50" fill="#e8c840"/>
+      <!-- Grass blades with golden tint -->
+      <path d="M5 48 Q6 40 4 35" stroke="#d4b030" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+      <path d="M7 48 Q8 42 6 38" stroke="#e0c848" stroke-width="1" fill="none" stroke-linecap="round"/>
+      <path d="M15 48 Q14 38 16 32" stroke="#d4b030" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+      <path d="M17 48 Q18 40 16 36" stroke="#e0c848" stroke-width="1" fill="none" stroke-linecap="round"/>
+      <path d="M25 48 Q26 42 24 36" stroke="#d4b030" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+      <path d="M27 48 Q28 40 26 34" stroke="#e0c848" stroke-width="1" fill="none" stroke-linecap="round"/>
+      <path d="M35 48 Q34 39 36 33" stroke="#d4b030" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+      <path d="M37 48 Q38 42 36 37" stroke="#e0c848" stroke-width="1" fill="none" stroke-linecap="round"/>
+      <path d="M45 48 Q46 40 44 34" stroke="#d4b030" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+      <path d="M47 48 Q48 43 46 38" stroke="#e0c848" stroke-width="1" fill="none" stroke-linecap="round"/>
+      <path d="M10 28 Q9 20 11 14" stroke="#d4b030" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+      <path d="M20 28 Q21 18 19 12" stroke="#d4b030" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+      <path d="M30 28 Q29 19 31 13" stroke="#d4b030" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+      <path d="M40 28 Q41 20 39 14" stroke="#d4b030" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+      <!-- Golden shimmer dots -->
+      <circle cx="8" cy="44" r="1" fill="#f0d850" opacity="0.5"/>
+      <circle cx="22" cy="10" r="1" fill="#f0d850" opacity="0.5"/>
+      <circle cx="38" cy="44" r="1" fill="#f0d850" opacity="0.5"/>
+      <circle cx="48" cy="22" r="1" fill="#f0d850" opacity="0.4"/>
+      <circle cx="3" cy="18" r="1" fill="#f0d850" opacity="0.4"/>
+    </pattern>
+  </defs>
+  <rect width="50" height="50" fill="url(#pennedPattern)"/>
+</svg>

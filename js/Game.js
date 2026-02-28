@@ -70,7 +70,7 @@ class Game {
         
         for (let i = 0; i < this.grid.size; i++) {
             for (let j = 0; j < this.grid.size; j++) {
-                const cellElement = this._createCellElement(i, j, allTiles[i][j], pathInfo.path, accessibleTiles);
+                const cellElement = this._createCellElement(i, j, allTiles[i][j], pathInfo.path, accessibleTiles, pathInfo.directions);
                 this.gridElement.appendChild(cellElement);
             }
         }
@@ -88,9 +88,10 @@ class Game {
      * @param {string} tileType - The tile type name
      * @param {Set} pathSet - Set of coordinates that are part of the path
      * @param {Set} accessibleTiles - Set of coordinates accessible when penned
+     * @param {Map} directions - Map of coordinate strings to rotation angles for paw direction
      * @returns {HTMLElement} The created cell element
      */
-    _createCellElement(row, col, tileType, pathSet, accessibleTiles) {
+    _createCellElement(row, col, tileType, pathSet, accessibleTiles, directions) {
         const cell = document.createElement('div');
         const tileInfo = getTileType(tileType);
         
@@ -105,14 +106,22 @@ class Game {
         cell.dataset.row = row;
         cell.dataset.col = col;
         
-        // Add home emoji if this is the home tile
+        // Add pet emoji centered inside the home tile (doghouse image is background)
         if (tileType === 'home') {
-            cell.textContent = `🏠${this.petEmoji}`;
+            cell.textContent = this.petEmoji;
         }
         
-        // Add path overlay (paw emoji) if this cell is on the path
+        // Add paw image overlay if this cell is on the escape path
         if (pathSet && pathSet.has(coordKey) && tileType !== 'home') {
-            cell.dataset.overlay = '🐾';
+            const paw = document.createElement('img');
+            paw.src = 'assets/paw.svg';
+            paw.alt = '';
+            paw.className = 'paw-overlay';
+            paw.setAttribute('aria-hidden', 'true');
+            // Calculate rotation based on direction to next path step
+            const angle = directions && directions.has(coordKey) ? directions.get(coordKey) : 0;
+            paw.style.transform = `translate(-50%, -50%) rotate(${angle}deg)`;
+            cell.appendChild(paw);
         }
         
         // Add accessibility attributes
@@ -209,12 +218,12 @@ class Game {
 
     /**
      * Calculate the path from home to the nearest edge using BFS
-     * @returns {Object} Object with hasPath (boolean) and path (Set of coordinates)
+     * @returns {Object} Object with hasPath (boolean), path (Set of coordinates), and directions (Map of coordinate to rotation angle)
      */
     calculatePath() {
         const homePos = this.grid.getHomePosition();
         if (!homePos) {
-            return { hasPath: false, path: new Set() };
+            return { hasPath: false, path: new Set(), directions: new Map() };
         }
 
         const { row: startRow, col: startCol } = homePos;
@@ -237,7 +246,13 @@ class Game {
                 // Build path set including current position
                 const pathSet = new Set(path);
                 pathSet.add(`${row},${col}`);
-                return { hasPath: true, path: pathSet };
+                
+                // Build ordered path array for direction calculation
+                // Note: path already includes the edge position as its last element
+                const orderedPath = [`${startRow},${startCol}`, ...path];
+                const directionMap = this._calculatePathDirections(orderedPath);
+                
+                return { hasPath: true, path: pathSet, directions: directionMap };
             }
 
             // Explore neighbors
@@ -270,7 +285,54 @@ class Game {
         }
 
         // No path found
-        return { hasPath: false, path: new Set() };
+        return { hasPath: false, path: new Set(), directions: new Map() };
+    }
+
+    /**
+     * Calculate rotation angles for each step in an ordered path.
+     * Each paw faces the direction toward the next step (the direction the pet walks).
+     * @private
+     * @param {Array<string>} orderedPath - Array of "row,col" strings in walk order
+     * @returns {Map<string, number>} Map of coordinate string to rotation angle in degrees
+     */
+    _calculatePathDirections(orderedPath) {
+        const directionMap = new Map();
+        
+        for (let i = 0; i < orderedPath.length; i++) {
+            const current = orderedPath[i];
+            // Use direction toward the next step; for the last step, continue
+            // in the same direction as the previous step (forward, not backward)
+            let dr, dc;
+            
+            if (i < orderedPath.length - 1) {
+                // Normal case: face toward next step
+                const [curRow, curCol] = current.split(',').map(Number);
+                const [nextRow, nextCol] = orderedPath[i + 1].split(',').map(Number);
+                dr = nextRow - curRow;
+                dc = nextCol - curCol;
+            } else if (i > 0) {
+                // Last step: continue in the same direction as the previous step
+                const [prevRow, prevCol] = orderedPath[i - 1].split(',').map(Number);
+                const [curRow, curCol] = current.split(',').map(Number);
+                dr = curRow - prevRow;
+                dc = curCol - prevCol;
+            } else {
+                directionMap.set(current, 0);
+                continue;
+            }
+            
+            // Map direction deltas to rotation angles
+            // Default paw points up (0°), right=90°, down=180°, left=270°
+            let angle = 0;
+            if (dr === -1 && dc === 0) angle = 0;         // up
+            else if (dr === 0 && dc === 1) angle = 90;    // right
+            else if (dr === 1 && dc === 0) angle = 180;   // down
+            else if (dr === 0 && dc === -1) angle = 270;  // left
+            
+            directionMap.set(current, angle);
+        }
+        
+        return directionMap;
     }
 
     /**
@@ -841,7 +903,7 @@ class Game {
     updateLegend() {
         const homeLegend = document.getElementById('homeLegend');
         if (homeLegend) {
-            homeLegend.textContent = `Home 🏠${this.petEmoji}`;
+            homeLegend.textContent = `Home ${this.petEmoji}`;
         }
     }
 

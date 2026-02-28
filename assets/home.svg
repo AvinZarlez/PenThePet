@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 50 50">
+  <!-- Green grass ground -->
+  <rect width="50" height="50" fill="#5cb85c"/>
+  <!-- Subtle grass blades -->
+  <path d="M5 48 Q6 42 4 38" stroke="#4caf50" stroke-width="1" fill="none" opacity="0.5"/>
+  <path d="M45 48 Q46 42 44 38" stroke="#4caf50" stroke-width="1" fill="none" opacity="0.5"/>
+  <!-- Thin doghouse frame around edges -->
+  <rect x="2" y="12" width="46" height="36" rx="3" fill="#c0855a" opacity="0.6"/>
+  <!-- Large open interior (most of the tile) -->
+  <rect x="4" y="14" width="42" height="34" rx="2" fill="#3d2b1a"/>
+  <!-- Interior highlight for depth -->
+  <rect x="5" y="15" width="40" height="32" rx="2" fill="#4a3728" opacity="0.6"/>
+  <!-- Small roof peak at top -->
+  <polygon points="0,14 25,1 50,14" fill="#8b4513"/>
+  <polygon points="0,14 25,1 50,14" fill="none" stroke="#6d3410" stroke-width="1" stroke-linejoin="round"/>
+  <!-- Roof ridge highlight -->
+  <line x1="11" y1="8" x2="39" y2="8" stroke="#a0522d" stroke-width="1" opacity="0.3"/>
+</svg>
