@@ -1,12 +1,24 @@
-name: CI/CD Pipeline
+name: Test
 
 on:
   push:
     branches:
       - main
       - development
+    paths:
+      - 'js/**'
+      - 'scripts/**'
+      - 'test/**'
+      - 'package.json'
+      - 'package-lock.json'
   pull_request:
     branches: '**'
+    paths:
+      - 'js/**'
+      - 'scripts/**'
+      - 'test/**'
+      - 'package.json'
+      - 'package-lock.json'
 
 # Cancel in-progress runs when a new commit is pushed to the same branch/PR
 concurrency:
@@ -14,74 +26,6 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  lint-js:
-    name: Lint JavaScript
-    runs-on: ubuntu-latest
-
-    permissions:
-      contents: read
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js 20.x
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20.x
-          cache: 'npm'
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Run ESLint
-        run: npm run lint
-
-  lint-python:
-    name: Lint Python
-    runs-on: ubuntu-latest
-
-    permissions:
-      contents: read
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Setup Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
-
-      - name: Install ruff
-        run: pip install ruff
-
-      - name: Run ruff
-        run: ruff check scripts/solver/
-
-  lint-markdown:
-    name: Lint Markdown
-    runs-on: ubuntu-latest
-
-    permissions:
-      contents: read
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js 20.x
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20.x
-          cache: 'npm'
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Run markdownlint
-        run: npm run lint:markdown
-
   test-webapp:
     name: Test Webapp
     runs-on: ubuntu-latest
