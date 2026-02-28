@@ -35,8 +35,8 @@ These are the core documentation files that describe the current state of the pr
   - Script usage
 
 - **[TESTING.md](TESTING.md)** - Testing infrastructure and guide
-  - Test suite overview (222 tests)
-  - Code coverage (77%)
+  - Test suite overview (237 tests)
+  - Code coverage (~90%)
   - Writing tests
   - Running tests
   - Debugging tests
@@ -168,6 +168,6 @@ When updating documentation:
 
 ---
 
-**Last Updated:** 2026-02-07  
+**Last Updated:** 2026-02-28  
 **Total Documentation Files:** 13 (7 main + 6 summaries)  
 **Lines of Documentation:** ~20,000+

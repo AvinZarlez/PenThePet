@@ -1,6 +1,6 @@
 # PenThePet Test Suite
 
-This directory contains tests and utilities for the PenThePet game.
+This directory contains tests for the PenThePet game.
 
 ## 📚 Full Testing Documentation
 
@@ -34,40 +34,38 @@ npm run lint
 ### Test Files
 
 **Unit Tests** (`.test.js`):
-- `constants.test.js` - CONSTANTS validation (38 tests)
-- `wordList.test.js` - Word list testing (24 tests)
+- `constants.test.js` - CONSTANTS validation (41 tests)
+- `wordList.test.js` - Word list testing (52 tests)
 - `PathfindingUtils.test.js` - Pathfinding algorithms (35 tests)
 - `Grid.test.js` - Grid class functionality (45 tests)
-- `MILPSolver.test.js` - Wall placement solver (40 tests)
-- `MapGenerator.test.js` - Map generation (27 tests)
+- `MapGenerator.test.js` - Map generation (72 tests)
+- `MapValidator.test.js` - Map validation (6 tests)
+- `Menu.test.js` - Menu system (46 tests)
+- `CookieUtils.test.js` - Cookie utilities (11 tests)
+- `DateUtils.test.js` - Date utilities (6 tests)
 - `generate-maps.test.js` - Map generation script (31 tests)
 
-**Total: 240 tests, 77% coverage**
+**Total: 237 tests (2 skipped), ~90% coverage**
 
-### Utility Files
+### Setup File
 
-**Test Utilities:**
-- `setup.js` - Jest configuration and global mocks
-- `BruteForceSolver.js` - Exhaustive solver for test verification (TEST ONLY)
-
-**Ground Truth Generator:**
-- `test-map-generation.js` - Generates verified test maps using brute force, compares solver accuracy
-
-**Test Data:**
-- `test-maps-db.json` - Verified test maps with ground truth optimal solutions
+- `setup.js` - Jest configuration, global mocks, and module loading
 
 ## Test Coverage
 
-Current coverage (77% overall):
+Current coverage (~90% overall):
 
 | File | Coverage | Status |
 |------|----------|--------|
 | Grid.js | 100% | ✅ Excellent |
-| PathfindingUtils.js | 97.82% | ✅ Excellent |
-| MapGenerator.js | 95.53% | ✅ Excellent |
+| CookieUtils.js | 100% | ✅ Excellent |
+| DateUtils.js | 100% | ✅ Excellent |
 | constants.js | 100% | ✅ Excellent |
 | wordList.js | 100% | ✅ Excellent |
-| MILPSolver.js | 60.71% | ⚠️ Complex algorithm |
+| PathfindingUtils.js | 96.38% | ✅ Excellent |
+| MapValidator.js | 93.1% | ✅ Excellent |
+| MapGenerator.js | 90.66% | ✅ Good |
+| Menu.js | 83.33% | ✅ Good |
 
 **Note:** Some files (Game.js, main.js, config.js, tileTypes.js) are tested manually in browser and excluded from coverage.
 
@@ -97,25 +95,6 @@ describe('MyFunction', () => {
     });
 });
 ```
-
-## Ground Truth Test Data Generation
-
-### Generate Verified Test Maps
-
-```bash
-# Generate test maps with verified optimal solutions
-# Uses BruteForceSolver to establish ground truth
-node test/test-map-generation.js
-```
-
-This utility:
-- Generates small test maps (≤7x7)
-- Finds true optimal solutions using exhaustive search
-- Compares MILPSolver accuracy against brute force
-- Saves verified maps to `test-maps-db.json`
-- Generates detailed comparison reports
-
-**Purpose:** Establish ground truth data for unit tests and verify solver accuracy.
 
 ## More Information
 

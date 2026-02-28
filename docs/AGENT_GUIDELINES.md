@@ -48,6 +48,15 @@ if (walls > CONSTANTS.MAX_WALLS) { ... }
 // ❌ DON'T: Hardcode values
 if (walls > 15) { ... }
 
+// ✅ DO: Use shared utilities for cookies and dates
+CookieUtils.setCookie('myPref', 'value', 365);
+const saved = CookieUtils.getCookie('myPref');
+const today = DateUtils.getTodayDate();
+const display = DateUtils.formatDate('2026-02-06');
+
+// ❌ DON'T: Duplicate cookie/date logic in individual files
+document.cookie = `myPref=${value};expires=...`;
+
 // ✅ DO: Follow existing patterns
 class NewFeature {
     constructor() { ... }
@@ -249,7 +258,11 @@ import React from 'react';
 <!-- DON'T change this order -->
 <script src="js/constants.js"></script>
 <script src="js/config.js"></script>
-<!-- ... specific order matters ... -->
+<script src="js/tileTypes.js"></script>
+<script src="js/CookieUtils.js"></script>
+<script src="js/DateUtils.js"></script>
+<script src="js/PathfindingUtils.js"></script>
+<!-- ... remaining scripts in order ... -->
 ```
 
 ❌ **Commit without testing**
