@@ -212,7 +212,8 @@ The workflow will:
 
 ### Method 2: Local Script for Single or Multiple Maps
 
-Generate one or more maps locally and add them to maps.json:
+`scripts/generate-single-map.js` is the single generation entry point for both the GitHub
+Actions workflow and local use. It supports all generation scenarios:
 
 ```bash
 # Install Python dependencies first
@@ -229,6 +230,9 @@ node scripts/generate-single-map.js --date 2026-03-01 --size 7-13 --count 5
 
 # Generate 3 maps with auto-assigned dates
 node scripts/generate-single-map.js --size 11 --count 3
+
+# Replace all existing maps with 10 fresh ones
+node scripts/generate-single-map.js --fresh --count 10 --date 2026-03-01 --size 9
 ```
 
 **Arguments:**
@@ -236,18 +240,7 @@ node scripts/generate-single-map.js --size 11 --count 3
 - `--date YYYY-MM-DD` *(optional)*: Start date. Defaults to the next available date.
 - `--size N` or `--size N-M`: Exact size or a range. A random integer in `[N, M]` is chosen per map.
 - `--count N` *(optional)*: Number of maps to generate (default `1`). Dates are assigned sequentially.
-
-### Method 3: Batch Generation
-
-The `scripts/generate-maps.js` script generates multiple maps:
-
-```bash
-# Generate 10 fresh maps (replace existing)
-node scripts/generate-maps.js --fresh --count 10 --start-date 2026-02-06 --sizes 7,9,11
-
-# Add 5 new maps (append to existing)
-node scripts/generate-maps.js --count 5 --start-date 2026-02-16 --sizes 9,11
-```
+- `--fresh` *(optional)*: Replace all existing maps instead of appending.
 
 ### Auditing Existing Maps
 
@@ -257,22 +250,8 @@ Check if all maps in maps.json meet validation standards:
 node scripts/audit-maps.js
 ```
 
-This will report any maps that fail validation rules.
-
-### Script Options
-
-- `--fresh`: Replace all existing maps (default: append)
-- `--count N`: Generate N maps (default: 10)
-- `--start-date YYYY-MM-DD`: Starting date (default: today)
-- `--sizes N,M,K`: Grid sizes to cycle through (default: 7,9,11)
-
-### Script Behavior
-
-1. Loads existing maps (unless `--fresh` is used)
-2. Generates new maps starting from next day number
-3. Assigns random English words as map names
-4. Saves all maps to `maps.json` with proper formatting
-5. Displays summary of generated maps
+This validates every map's path-to-edge, goal area, wall count, and strategic wall placement,
+using the stored `optimalSolution` for each map.
 
 ## Map Validation
 
@@ -295,8 +274,9 @@ Each generated map is validated to ensure:
 6. **js/wordList.js**: Random English words for map names
 7. **scripts/solver/solve.py**: Python MILP solver using PuLP + CBC
 8. **scripts/solver/requirements.txt**: Python dependencies
-9. **scripts/generate-single-map.js**: Generate one map (used by GitHub Actions)
-10. **scripts/generate-maps.js**: CLI script for batch map generation
+9. **scripts/generate-single-map.js**: Generation entry point — single map, batch, or fresh replacement (used by GitHub Actions and locally)
+10. **scripts/lib/mapUtils.js**: Shared pure utilities — date helpers, size parsing, database validation/fix
+11. **scripts/audit-maps.js**: Validates all maps in maps.json against MapValidator
 
 ### Generation Flow
 
@@ -417,13 +397,12 @@ node scripts/generate-maps.js --count 3 --sizes 7
 **When generating maps:**
 
 1. Use GitHub Actions workflow for production daily maps (preferred) — opens a PR
-2. Use `scripts/generate-single-map.js` for local testing (supports `--count` and `--size N-M` range)
-3. Use `scripts/generate-maps.js` for batch generation
-4. Run `scripts/audit-maps.js` to validate existing maps
-5. Ensure CONSTANTS.MAX_WALLS = 15 (never change without regenerating all maps)
-6. All maps MUST pass MapValidator checks (goal >= 5, not all walls on edges, etc.)
-7. Verify maps.json has correct JSON format after generation
-8. Test at least one generated map in the game to ensure it works
+2. Use `scripts/generate-single-map.js` for local generation (supports `--count`, `--size N-M` range, `--fresh`)
+3. Run `scripts/audit-maps.js` to validate existing maps (checks all quality rules including strategic wall placement)
+4. Ensure CONSTANTS.MAX_WALLS = 15 (never change without regenerating all maps)
+5. All maps MUST pass MapValidator checks (goal >= 5, not all walls on edges, etc.)
+6. Verify maps.json has correct JSON format after generation
+7. Test at least one generated map in the game to ensure it works
 
 **When modifying generation:**
 

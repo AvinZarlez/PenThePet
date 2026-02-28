@@ -15,7 +15,7 @@
     "lint:markdown": "markdownlint-cli2 \"**/*.md\" \"#node_modules\"",
     "lint:markdown:fix": "markdownlint-cli2 --fix \"**/*.md\" \"#node_modules\"",
     "lint:all": "npm run lint && npm run lint:python && npm run lint:markdown",
-    "generate-maps": "node scripts/generate-maps.js"
+    "generate-maps": "node scripts/generate-single-map.js"
   },
   "keywords": [
     "game",

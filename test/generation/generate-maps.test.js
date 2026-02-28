@@ -1,6 +1,6 @@
 /**
- * Unit Tests for generate-maps.js
- * 
+ * Unit Tests for scripts/lib/mapUtils.js
+ *
  * Tests the map database validation and fixing logic.
  */
 
@@ -8,7 +8,7 @@ const {
     validateMapsDatabase, 
     fixMapsDatabase, 
     getNextDayNumber 
-} = require('../../scripts/generate-maps.js');
+} = require('../../scripts/lib/mapUtils.js');
 const fs = require('fs');
 
 describe('Map Database Validation', () => {
