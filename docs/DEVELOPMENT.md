@@ -655,19 +655,29 @@ The `main` branch must be protected so that only @AvinZarlez can merge pull requ
 
 #### Required Status Checks and Path-Filtered Workflows
 
-**The short answer:** Path-filtered workflows work correctly as required status checks. When a workflow is skipped because no relevant files changed, GitHub marks it as **skipped** — and GitHub treats a skipped required status check as **passing**. The PR can still be merged.
+**Goal:** If a lint or test workflow runs on a PR, it must pass before the PR can be merged.
 
-**Recommended required status checks (minimum viable set):**
+**How path filters make this safe:** Every workflow uses `paths:` filters so it only triggers when relevant files change. When a workflow is not triggered at all, GitHub treats the check as **not required** for that PR — so requiring these checks never blocks merges where none of the relevant files changed.
 
-Only add the `coverage` job from `test.yml` as a required status check. This is sufficient because:
+| Check name (use exactly as shown) | Workflow file | Triggered when |
+|---|---|---|
+| `Lint JavaScript` | `lint-js.yml` | JS source, test, or ESLint config changes |
+| `Lint Python` | `lint-python.yml` | Python solver or `ruff.toml` changes |
+| `Lint Markdown` | `lint-markdown.yml` | Any `.md` or markdownlint config changes |
+| `Full Test Suite & Coverage` | `test.yml` | JS source, scripts, or test file changes |
 
-- `coverage` only runs after both `test-webapp` and `test-generation` pass (it uses `needs: [test-webapp, test-generation]`)
-- If any test job fails, `coverage` will not run, blocking the merge
-- If no code files changed (path filter not triggered), the entire `test.yml` workflow is skipped, which GitHub counts as passing
+> **Note on `Full Test Suite & Coverage`:** this job uses `needs: [test-webapp, test-generation]`, so it only runs after both parallel test jobs pass. Requiring this single check is enough to enforce all three test jobs together.
 
-The lint workflows (`lint-js`, `lint-python`, `lint-markdown`) do **not** need to be required status checks. They will still run and show as failed in the PR checks UI, making the issue visible, but they won't add extra branch rules to maintain.
+**Step-by-step setup in GitHub:**
 
-**In practice, do not add the individual lint jobs as required.** Fewer required rules = less configuration to keep in sync as workflows evolve.
+1. Go to **Settings → Branches**
+2. Click **Edit** next to the `main` branch protection rule (or **Add rule** if none exists)
+3. Enable **Require status checks to pass before merging**
+4. Enable **Require branches to be up to date before merging**
+5. In the **Search for status checks** box, search for and add all four check names from the table above
+6. Click **Save changes**
+
+> **Can't find a check in the search box?** The check name only appears after at least one PR has run that workflow. Open a draft PR that touches each relevant file type (e.g., edit a `.md` file, a `.js` file, a `.py` file) to populate the list.
 
 The `.github/CODEOWNERS` file enforces that @AvinZarlez must approve every PR:
 
