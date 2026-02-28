@@ -605,8 +605,8 @@ The project uses two consolidated GitHub Actions workflows for linting and testi
 **lint.yml** - Runs all linters; always produces a `Lint` status on every PR:
 
 - PR trigger: no path filter — always fires
-- Push trigger: only when JS, Python solver, or Markdown files change
-- Manual trigger: `workflow_dispatch` — run on any branch via **Actions → Lint → Run workflow**
+- Push trigger: only when JS, Python solver, Markdown, or YAML files change; each linter only runs when its specific files changed
+- Manual trigger: `workflow_dispatch` — run on any branch via **Actions → Lint → Run workflow** (always runs all linters)
 - **Detect Changed Files** — determines which linters are needed
 - **Lint JavaScript** — ESLint; runs only when `js/**`, `scripts/**/*.js`, `test/**/*.js`, `eslint.config.mjs`, or `package*.json` change
 - **Lint Python** — ruff; runs only when `scripts/solver/**` or `ruff.toml` change
