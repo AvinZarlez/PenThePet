@@ -98,7 +98,9 @@ jobs:
           git push origin "${{ steps.create_branch.outputs.branch_name }}"
 
       - name: Create Pull Request
+        id: create_pr
         if: steps.check_changes.outputs.has_changes == 'true'
+        continue-on-error: true
         run: |
           DATE_ARG="${{ github.event.inputs.date }}"
           COUNT_ARG="${{ github.event.inputs.count }}"
@@ -119,7 +121,20 @@ jobs:
             --head "${{ steps.create_branch.outputs.branch_name }}" \
             --base main
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.REPO_TOKEN || secrets.GITHUB_TOKEN }}
+
+      - name: PR creation fallback
+        if: steps.check_changes.outputs.has_changes == 'true' && steps.create_pr.outcome == 'failure'
+        run: |
+          BRANCH="${{ steps.create_branch.outputs.branch_name }}"
+          echo "::warning::Automatic PR creation failed. The branch '${BRANCH}' was pushed successfully."
+          echo ""
+          echo "Create the pull request manually:"
+          echo "  https://github.com/${{ github.repository }}/compare/main...${BRANCH}?expand=1"
+          echo ""
+          echo "To fix automatic PR creation, enable one of:"
+          echo "  1. Repository setting: Settings > Actions > General > 'Allow GitHub Actions to create and approve pull requests'"
+          echo "  2. Add a REPO_TOKEN secret (Personal Access Token with 'repo' scope) under Settings > Secrets and variables > Actions"
           
       - name: No changes
         if: steps.check_changes.outputs.has_changes == 'false'
