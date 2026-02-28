@@ -174,24 +174,7 @@ The project includes VSCode configurations for easy test running:
 
 ## Test Coverage
 
-### Current Coverage
-
-```text
----------------------|---------|----------|---------|---------|
-File                 | % Stmts | % Branch | % Funcs | % Lines |
----------------------|---------|----------|---------|---------|
-All files            |   91.18 |    77.06 |   89.41 |   92.14 |
- CookieUtils.js      |     100 |     87.5 |     100 |     100 |
- DateUtils.js        |     100 |       75 |     100 |     100 |
- Grid.js             |     100 |    95.65 |     100 |     100 |
- MapGenerator.js     |   90.66 |       75 |     100 |   89.39 |
- MapValidator.js     |    93.1 |    81.25 |     100 |    93.1 |
- Menu.js             |   86.51 |    60.63 |   80.43 |   89.05 |
- PathfindingUtils.js |   96.38 |    93.54 |     100 |    96.2 |
- constants.js        |     100 |       75 |     100 |     100 |
- wordList.js         |     100 |       75 |     100 |     100 |
----------------------|---------|----------|---------|---------|
-```
+Coverage thresholds are enforced by the CI pipeline. Run `npm test` to see current coverage locally.
 
 ### Excluded from Coverage
 
@@ -202,18 +185,11 @@ These files are excluded because they're UI/config and tested manually:
 - `js/config.js` - Configuration (no logic)
 - `js/tileTypes.js` - Data definitions (no logic)
 
-### Coverage Goals
-
-- **Core algorithms**: 95%+ (PathfindingUtils, MapGenerator)
-- **Data structures**: 95%+ (Grid)
-- **Utilities**: 100% (constants, wordList)
-- **Validation**: 85%+ (MapValidator)
-
 ## Test Files
 
-### Webapp Tests (189 tests)
+### Webapp Tests
 
-#### 1. constants.test.js (32 tests)
+#### 1. constants.test.js
 
 **Purpose:** Validate all CONSTANTS values are properly defined
 
@@ -225,7 +201,7 @@ These files are excluded because they're UI/config and tested manually:
 - Values are in reasonable ranges
 - Tile distribution sums to ~1.0
 
-#### 2. wordList.test.js (30 tests)
+#### 2. wordList.test.js
 
 **Purpose:** Test word list for map naming
 
@@ -237,7 +213,7 @@ These files are excluded because they're UI/config and tested manually:
 - Helper functions work correctly (getRandomWord, getWordCount)
 - Exported functions return expected types
 
-#### 3. PathfindingUtils.test.js (30 tests)
+#### 3. PathfindingUtils.test.js
 
 **Purpose:** Test pathfinding and pet penning algorithms
 
@@ -248,7 +224,7 @@ These files are excluded because they're UI/config and tested manually:
 - Edge cases: all grass, all water, single path
 - Various map configurations and sizes
 
-#### 4. Grid.test.js (34 tests)
+#### 4. Grid.test.js
 
 **Purpose:** Test Grid class functionality
 
@@ -259,7 +235,7 @@ These files are excluded because they're UI/config and tested manually:
 - State Management: Reset, save/restore state
 - Tile Operations: Get/set tiles, bounds checking
 
-#### 5. Menu.test.js (44 tests)
+#### 5. Menu.test.js
 
 **Purpose:** Test menu system and level loading
 
@@ -272,7 +248,7 @@ These files are excluded because they're UI/config and tested manually:
 - Options: Pet type and hint mode syncing
 - Error handling: Network failures, missing elements
 
-#### 6. CookieUtils.test.js (13 tests)
+#### 6. CookieUtils.test.js
 
 **Purpose:** Test shared cookie get/set helpers
 
@@ -283,7 +259,7 @@ These files are excluded because they're UI/config and tested manually:
 - Handle emoji and JSON values
 - Distinguish similar cookie names
 
-#### 7. DateUtils.test.js (6 tests)
+#### 7. DateUtils.test.js
 
 **Purpose:** Test shared date formatting helpers
 
@@ -293,9 +269,9 @@ These files are excluded because they're UI/config and tested manually:
 - Format dates for display
 - Handle various months and single-digit days
 
-### Generation Tests (82 tests)
+### Generation Tests
 
-#### 8. MapGenerator.test.js (39 tests)
+#### 8. MapGenerator.test.js
 
 **Purpose:** Test map generation and validation
 
@@ -307,11 +283,11 @@ These files are excluded because they're UI/config and tested manually:
 - Retry logic: Handles unsolvable maps
 - Metadata: Includes goal, maxWalls
 
-#### 9. MapValidator.test.js (7 tests)
+#### 9. MapValidator.test.js
 
 **Purpose:** Test map quality validation rules
 
-#### 10. generate-maps.test.js (20 tests)
+#### 10. generate-maps.test.js
 
 **Purpose:** Test shared database utilities in `scripts/lib/mapUtils.js`
 
@@ -322,7 +298,7 @@ These files are excluded because they're UI/config and tested manually:
 - `getNextDayNumber` — correct next sequential day number
 - maps.json structure validation (required fields, optimalSolution format)
 
-#### 11. generate-map.test.js (16 tests)
+#### 11. generate-map.test.js
 
 **Purpose:** Test generation entry-point utilities
 

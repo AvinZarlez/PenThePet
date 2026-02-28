@@ -1,184 +1,62 @@
 # 🐕 PenThePet
 
-A browser-based logic puzzle game where you fence in your pet! Built with vanilla JavaScript, HTML, and CSS - no frameworks or build tools required.
+[![Live Demo](https://img.shields.io/badge/demo-live-brightgreen)](https://avinzarlez.github.io/penthepet)
+[![CI/CD Pipeline](https://github.com/AvinZarlez/penthepet/actions/workflows/test.yml/badge.svg)](https://github.com/AvinZarlez/penthepet/actions/workflows/test.yml)
+[![Deploy to GitHub Pages](https://github.com/AvinZarlez/penthepet/actions/workflows/static.yml/badge.svg)](https://github.com/AvinZarlez/penthepet/actions/workflows/static.yml)
+[![Generate Daily Map](https://github.com/AvinZarlez/penthepet/actions/workflows/generate-daily-map.yml/badge.svg)](https://github.com/AvinZarlez/penthepet/actions/workflows/generate-daily-map.yml)
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
-[![Tests](https://github.com/AvinZarlez/penthepet/actions/workflows/test.yml/badge.svg)](https://github.com/AvinZarlez/penthepet/actions/workflows/test.yml)
-
-## 🎮 Play the Game
-
-The game is deployed on GitHub Pages: [Play PenThePet](https://avinzarlez.github.io/penthepet/)
-
-## 📖 About
-
-PenThePet is a daily logic puzzle game where you place walls to create the largest possible fenced area for your pet. Each day features a new puzzle with:
-
-- Unique maps with grass and water tiles
-- A home tile where your pet starts
-- A goal to achieve the maximum penned area with optimal wall placement
-- Daily map with a unique name and day number
-
-## ✨ Features
-
-- **Daily Puzzles**: New map every day with unique challenges
-- **Level Selector**: Play previous days' puzzles at any time
-- **Customizable**: Choose your favorite pet from 26 animals
-- **Hint System**: Three modes (disabled, check optimal, reveal target)
-- **Instructions**: Comprehensive in-game guide
-- **Settings Persistence**: All preferences saved in cookies
-- **Keyboard Navigation**: Full accessibility support
-- **Mobile-Friendly**: Responsive design for all screen sizes
-
-## 🚀 Quick Start
-
-### Playing Locally
-
-No build tools or dependencies needed for playing:
-
-```bash
-# Clone the repository
-git clone https://github.com/AvinZarlez/PenThePet.git
-cd PenThePet
-
-# Start a local server
-python3 -m http.server 8080
-
-# Open http://localhost:8080 in your browser
-```
-
-### Development Setup
-
-For development with testing and linting:
-
-```bash
-# Install development dependencies
-npm install
-
-# Run tests
-npm test
-
-# Run tests in watch mode
-npm run test:watch
-
-# Lint code
-npm run lint
-
-# Auto-fix linting issues
-npm run lint:fix
-
-# Generate new maps
-npm run generate-maps
-```
-
-## 📚 Documentation
-
-This project has comprehensive documentation for both human developers and AI coding agents.
-
-### Core Documentation
-
-- **[Architecture & Code Structure](docs/CODE_STRUCTURE.md)** - How the code is organized and why
-- **[Map Generation](docs/MAP_GENERATION.md)** - Algorithm details and map generation process
-- **[Testing Guide](docs/TESTING.md)** - Testing infrastructure and how to add tests
-- **[Development Guide](docs/DEVELOPMENT.md)** - Setup, workflows, and best practices
-- **[Branch Testing Guide](docs/DEBUGGING_BRANCHES.md)** - How to test branches before merging
-- **[Design Decisions](docs/ARCHITECTURE.md)** - Why the project is built this way
-
-### Project History
-
-- **[Project History](docs/HISTORY.md)** - How this project was built (AI-assisted development experiment)
-- **[Implementation Summary](docs/summaries/IMPLEMENTATION_SUMMARY.md)** - Changes made during initial development
-- **[Map Generation Fix](docs/summaries/MAPGEN_FIX_SUMMARY.md)** - Critical bug fix in goal calculation
-- **[All Change Summaries](docs/summaries/)** - Complete history of PRs and major changes
-
-### For AI Coding Agents
-
-- **[Agent Guidelines](docs/AGENT_GUIDELINES.md)** - Requirements for maintaining this codebase
-- **[Copilot Instructions](.github/copilot-instructions.md)** - Full context for GitHub Copilot
-
-## 🏗️ Project Structure
-
-```text
-PenThePet/
-├── index.html              # Game entry point
-├── css/
-│   └── styles.css          # All visual styling
-├── js/
-│   ├── constants.js        # Configuration constants
-│   ├── config.js           # Game configuration
-│   ├── tileTypes.js        # Tile definitions
-│   ├── wordList.js         # Random words for map names
-│   ├── CookieUtils.js      # Shared cookie helpers
-│   ├── DateUtils.js        # Shared date helpers
-│   ├── PathfindingUtils.js # Shared pathfinding algorithms
-│   ├── Grid.js             # Grid state management
-│   ├── Game.js             # Game controller (checker)
-│   ├── Menu.js             # Menu system
-│   └── main.js             # Application entry point
-├── scripts/
-│   ├── generate-maps.js    # CLI for generating daily maps
-│   └── solver/             # MILP solver pipeline (Python + Node.js)
-├── test/                   # Test suite
-├── docs/                   # Documentation
-└── maps.json               # Daily puzzle maps
-
-See [CODE_STRUCTURE.md](docs/CODE_STRUCTURE.md) for detailed architecture.
-```
-
-## 🧪 Testing
-
-The project has comprehensive test coverage with Jest:
-
-- Unit tests for all core modules
-- Integration tests for map generation
-- Cookie persistence tests
-
-Run tests with `npm test`. See [TESTING.md](docs/TESTING.md) for details.
-
-[![Tests](https://github.com/AvinZarlez/penthepet/actions/workflows/test.yml/badge.svg)](https://github.com/AvinZarlez/penthepet/actions/workflows/test.yml) — [View test results and coverage](https://github.com/AvinZarlez/penthepet/actions/workflows/test.yml)
-
-## 🎨 Tech Stack
-
-- **Pure Vanilla JavaScript** (ES6+) - No frameworks
-- **HTML5 & CSS3** - Semantic markup and modern styling
-- **No Build Tools** - Runs directly in browser
-- **GitHub Pages** - Zero-configuration deployment
-- **Jest** - Testing framework (dev only)
-- **ESLint** - Code quality (dev only)
-
-### Why No Frameworks?
-
-This project intentionally uses vanilla JavaScript for:
-
-- **Simplicity** - No complex build pipelines or tooling
-- **Learning** - Pure JavaScript skills without framework magic
-- **Performance** - No framework overhead
-- **Portability** - Works anywhere with a browser
-- **Maintenance** - No dependency updates or breaking changes
-
-See [ARCHITECTURE.md](docs/ARCHITECTURE.md) for design philosophy.
-
-## 🤝 Contributing
-
-Contributions are welcome! Please:
-
-1. Read the [Development Guide](docs/DEVELOPMENT.md)
-2. Follow the coding standards in [CODE_STRUCTURE.md](docs/CODE_STRUCTURE.md)
-3. Add tests for new features
-4. Update documentation for any changes
-5. Ensure tests pass and linting is clean
-
-**For AI Coding Agents:** Please read [AGENT_GUIDELINES.md](docs/AGENT_GUIDELINES.md) before making changes.
-
-## 📝 License
-
-MIT License - See [LICENSE](LICENSE) file for details
-
-## 🙏 Acknowledgments
-
-- Inspired by daily logic puzzle games
-- Built with GitHub Copilot assistance
-- Map generation uses MILP solver (PuLP + CBC) for provably optimal solutions
+**A daily logic puzzle — fence in your pet!** PenThePet is a free, browser-based puzzle game where you strategically place walls to create the largest enclosed area for your pet. A new puzzle every day, no install required.
 
 ---
 
-**Current Version:** 1.0.0  
-**Daily Maps:** 10+ unique puzzles
+## ⚡ Quick Start
+
+1. Open the [live game](https://avinzarlez.github.io/penthepet/) — no install, no sign-in required.
+2. Click on grass tiles to place walls and pen in your pet.
+3. Try to match or beat the optimal enclosed area!
+
+---
+
+## 🎮 How to Play
+
+- **Objective:** Build walls to pen in your pet. The goal is to create the largest enclosed area possible.
+- **Click grass tiles** (green) to place walls. Click walls to remove them.
+- **Water tiles** (blue) are impassable and cannot be clicked.
+- Your pet starts at the **home tile** (🏠) and you have a limited number of walls.
+- When your pet is penned (can't reach the edge), your area size is shown — try to maximize it!
+- **You can only submit once per puzzle** — plan carefully!
+
+## ✨ Features
+
+- **Daily Puzzles** — A new unique map every day
+- **Level Selector** — Play any previous day's puzzle
+- **26 Pet Types** — Choose your favorite animal emoji
+- **Hint System** — Three modes: disabled, check optimal, or reveal target
+- **Mobile-Friendly** — Responsive design for any screen size
+- **Keyboard Navigation** — Full accessibility support
+- **Settings Persistence** — Preferences saved automatically in cookies
+
+## ⚙️ Options
+
+Access these from the **☰ Menu → Options**:
+
+| Option | Description |
+|--------|-------------|
+| **Pet Type** | Choose from 26 animal emojis |
+| **Hint Mode** | *Disabled* — no hints. *Check Optimal* — area turns yellow/green based on goal. *Reveal Target* — shows your area vs. the goal (e.g., "8 / 11"). |
+| **Debug Mode** | Shows developer tools at the bottom of the page |
+
+---
+
+## 📚 Documentation
+
+For developers, contributors, and AI agents — see the **[docs/](docs/README.md)** folder for all project documentation.
+
+## 📝 License
+
+MIT License — see [LICENSE](LICENSE) for details.
+
+## 🙏 Credits
+
+Made by [Avin Zarlez](https://www.AvinZarlez.com).
