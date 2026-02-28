@@ -153,8 +153,15 @@ button:active {
     border: 2px solid #333;
 }
 
-#resetBtn:hover {
+#resetBtn:hover:not(:disabled) {
     background: linear-gradient(135deg, #e8e8e8 0%, #d8d8d8 100%);
+}
+
+#resetBtn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
 }
 
 /* ========== Wall Counter Styles ========== */

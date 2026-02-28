@@ -145,6 +145,7 @@ class Menu {
         this.game.render();
         this.game.updateWallCounter();
         this.game.updateAreaSizeDisplay();
+        this.game.updateResetButton();
     }
 
     /**
@@ -317,6 +318,7 @@ class Menu {
         this.game.render();
         this.game.updateWallCounter();
         this.game.updateAreaSizeDisplay();
+        this.game.updateResetButton();
         this.game.updateLegend();
     }
 

@@ -66,6 +66,7 @@ function createMockGame() {
         viewingOptimal: false,
         updateWallCounter: jest.fn(),
         updateAreaSizeDisplay: jest.fn(),
+        updateResetButton: jest.fn(),
         loadSubmission: jest.fn(() => null),
         deleteSubmission: jest.fn(),
         isValidPosition: jest.fn(() => true)
@@ -453,6 +454,7 @@ describe('Menu', () => {
             expect(game.render).toHaveBeenCalled();
             expect(game.updateWallCounter).toHaveBeenCalled();
             expect(game.updateAreaSizeDisplay).toHaveBeenCalled();
+            expect(game.updateResetButton).toHaveBeenCalled();
         });
 
         test('should do nothing if no current date', () => {
@@ -487,7 +489,7 @@ describe('Menu', () => {
             const consoleSpy = jest.spyOn(console, 'error').mockImplementation();
             try {
                 menu.resetAllData();
-            } catch (e) {
+            } catch {
                 // jsdom may throw on reload
             }
             consoleSpy.mockRestore();
