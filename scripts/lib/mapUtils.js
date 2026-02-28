@@ -5,6 +5,7 @@
  */
 
 const fs = require('fs');
+const CONSTANTS = require('../../js/constants.js');
 
 // ---------------------------------------------------------------------------
 // Size input helpers
@@ -15,11 +16,13 @@ const fs = require('fs');
  * Accepts:
  *   - Exact: "9"    → { type: 'exact', value: 9 }
  *   - Range: "7-13" → { type: 'range', min: 7, max: 13 }
+ * Sizes must be within [MIN_GRID_SIZE, MAX_GRID_SIZE].
  * @param {string|number} sizeStr
  * @returns {{ type: 'exact', value: number } | { type: 'range', min: number, max: number }}
  */
 function parseSizeInput(sizeStr) {
     const str = String(sizeStr).trim();
+    const { MIN_GRID_SIZE, MAX_GRID_SIZE } = CONSTANTS;
     const rangeMatch = str.match(/^(\d+)-(\d+)$/);
     if (rangeMatch) {
         const min = parseInt(rangeMatch[1]);
@@ -27,11 +30,17 @@ function parseSizeInput(sizeStr) {
         if (min > max) {
             throw new Error(`Invalid size range "${str}": min (${min}) must be <= max (${max})`);
         }
+        if (min < MIN_GRID_SIZE || max > MAX_GRID_SIZE) {
+            throw new Error(`Invalid size range "${str}": must be between ${MIN_GRID_SIZE} and ${MAX_GRID_SIZE}`);
+        }
         return { type: 'range', min, max };
     }
     const exact = parseInt(str);
     if (isNaN(exact)) {
         throw new Error(`Invalid size "${str}": must be a number or range (e.g., "9" or "7-13")`);
+    }
+    if (exact < MIN_GRID_SIZE || exact > MAX_GRID_SIZE) {
+        throw new Error(`Invalid size ${exact}: must be between ${MIN_GRID_SIZE} and ${MAX_GRID_SIZE}`);
     }
     return { type: 'exact', value: exact };
 }

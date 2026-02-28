@@ -35,6 +35,22 @@ describe('parseSizeInput', () => {
         expect(() => parseSizeInput('13-7')).toThrow(/min.*<=.*max/i);
     });
 
+    test('throws on size below minimum', () => {
+        expect(() => parseSizeInput('3')).toThrow(/must be between/i);
+    });
+
+    test('throws on size above maximum', () => {
+        expect(() => parseSizeInput('25')).toThrow(/must be between/i);
+    });
+
+    test('throws on range below minimum', () => {
+        expect(() => parseSizeInput('3-9')).toThrow(/must be between/i);
+    });
+
+    test('throws on range above maximum', () => {
+        expect(() => parseSizeInput('9-25')).toThrow(/must be between/i);
+    });
+
     test('throws on non-numeric string', () => {
         expect(() => parseSizeInput('large')).toThrow(/invalid size/i);
     });
