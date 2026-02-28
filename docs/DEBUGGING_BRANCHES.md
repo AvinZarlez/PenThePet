@@ -27,6 +27,7 @@ GitHub Pages can deploy from **any branch**, not just `main`. This lets you test
 **Setup (one-time per branch):**
 
 1. **Push your branch to GitHub**
+
    ```bash
    git checkout my-feature-branch
    git push origin my-feature-branch
@@ -37,7 +38,7 @@ GitHub Pages can deploy from **any branch**, not just `main`. This lets you test
    - Under **Source**, select **Deploy from a branch**
    - Under **Branch**, select your branch (e.g., `my-feature-branch`) and `/root`
    - Click **Save**
-   
+
    ![GitHub Pages Settings Example](https://docs.github.com/assets/images/help/pages/source-branch-dropdown.png)
 
 3. **Wait for deployment** (~1-2 minutes)
@@ -51,6 +52,7 @@ GitHub Pages can deploy from **any branch**, not just `main`. This lets you test
    - The site now shows your branch's code!
 
 **Making updates:**
+
 ```bash
 # Make changes in your branch
 git add .
@@ -62,11 +64,13 @@ git push origin my-feature-branch
 ```
 
 **⚠️ Important Notes:**
+
 - Only **one branch** can be deployed at a time
 - This temporarily replaces the main site
 - Remember to switch back to `main` branch when done testing!
 
 **Restoring main branch:**
+
 1. Go to **Settings** → **Pages**
 2. Under **Branch**, select `main` and `/root`
 3. Click **Save**
@@ -84,6 +88,7 @@ GitHub Codespaces provides a cloud-based development environment with live previ
    - Wait for environment to load (~1 minute)
 
 2. **Start server:**
+
    ```bash
    python3 -m http.server 8080
    ```
@@ -93,11 +98,13 @@ GitHub Codespaces provides a cloud-based development environment with live previ
    - Or go to **Ports** tab → click port 8080 URL
 
 **Pros:**
+
 - ✅ No local setup required
 - ✅ Full development environment
 - ✅ Can test multiple branches simultaneously (separate Codespaces)
 
 **Cons:**
+
 - ❌ Requires GitHub account
 - ❌ Free tier limited to 60 hours/month (Pro/Team get more)
 - ❌ Not a "public" URL (requires GitHub auth to view)
@@ -111,6 +118,7 @@ GitHub Codespaces provides a cloud-based development environment with live previ
 - **GitHub Actions** - Custom workflow to deploy PRs to separate URLs
 
 These would provide unique URLs like:
+
 - `https://pr-123-penthepet.netlify.app/`
 - Automatically update on each push to PR
 
@@ -121,18 +129,21 @@ Local testing is the **fastest and most flexible** method for active development
 ### Initial Setup (One-Time)
 
 **Prerequisites:**
+
 - Git installed
 - Python 3, Node.js, or PHP (for local server)
 
 **Steps:**
 
 1. **Clone repository:**
+
    ```bash
    git clone https://github.com/AvinZarlez/PenThePet.git
    cd PenThePet
    ```
 
 2. **Checkout the branch you want to test:**
+
    ```bash
    # List all branches
    git branch -a
@@ -145,9 +156,9 @@ Local testing is the **fastest and most flexible** method for active development
    ```
 
 3. **Start a local web server:**
-   
+
    Choose one based on what's installed:
-   
+
    ```bash
    # Python 3 (most common)
    python3 -m http.server 8080
@@ -200,6 +211,7 @@ Browsers cache CSS/JS files. Hard refresh forces reload of all assets, ensuring 
 You can test multiple branches at once using different methods:
 
 **Method 1: Multiple local clones** (easier but uses more disk space)
+
 ```bash
 # Clone to different directories
 git clone https://github.com/AvinZarlez/PenThePet.git penthepet-main
@@ -221,6 +233,7 @@ python3 -m http.server 8081
 ```
 
 **Method 2: Git worktrees** (advanced, shares .git)
+
 ```bash
 # In your main clone
 git worktree add ../penthepet-feature my-feature-branch
@@ -291,6 +304,7 @@ window.game.render();
 ### Before Testing a Branch
 
 **Checklist:**
+
 - [ ] Know what you're testing (specific feature/fix)
 - [ ] Decide: local testing or GitHub Pages?
 - [ ] If using GitHub Pages, plan to restore main when done
@@ -299,6 +313,7 @@ window.game.render();
 ### During Testing
 
 **What to test:**
+
 1. **Functionality** - Does the feature work?
 2. **UI** - Does it look correct?
 3. **Mobile** - Test responsive layout (DevTools device mode)
@@ -306,7 +321,8 @@ window.game.render();
 5. **Edge cases** - What happens with unusual inputs?
 
 **Example test plan for a new tile type:**
-```
+
+```text
 ✓ New tile renders with correct color
 ✓ New tile appears in legend
 ✓ New tile has hover effect
@@ -320,6 +336,7 @@ window.game.render();
 ### After Testing
 
 **Before merging:**
+
 - [ ] Verify branch in browser (visual test)
 - [ ] Check console for errors
 - [ ] Test on mobile viewport
@@ -328,6 +345,7 @@ window.game.render();
 - [ ] If changed GitHub Pages branch, restore to `main`
 
 **Merge process:**
+
 ```bash
 # From your feature branch
 git checkout main
@@ -363,6 +381,7 @@ git push origin main
 ### "Local server won't start"
 
 **"Address already in use" error:**
+
 ```bash
 # Find what's using port 8080
 lsof -i :8080  # Mac/Linux
@@ -373,6 +392,7 @@ python3 -m http.server 8081
 ```
 
 **"Python command not found":**
+
 ```bash
 # Try different variations
 python --version
@@ -388,6 +408,7 @@ php -S localhost:8080
 ### "Game loads but features broken"
 
 **Check console errors:**
+
 1. Open DevTools (F12)
 2. Look at Console tab for red errors
 3. Common issues:
@@ -398,6 +419,7 @@ php -S localhost:8080
 **Verify script loading order:**
 
 Scripts must load in specific order (see `index.html`):
+
 1. constants.js
 2. config.js
 3. tileTypes.js
@@ -412,11 +434,13 @@ Scripts must load in specific order (see `index.html`):
 ### "Tests fail locally but pass in CI"
 
 **Possible causes:**
+
 - Different Node.js versions
 - Missing dependencies
 - Uncommitted files
 
 **Solutions:**
+
 ```bash
 # Check Node version (need 20+)
 node --version
@@ -435,11 +459,13 @@ npm test -- --verbose
 ### "GitHub Pages shows 404"
 
 **Possible causes:**
+
 - Pages not enabled
 - Wrong branch/path configured
 - Files not pushed
 
 **Solutions:**
+
 1. Check Settings → Pages is enabled
 2. Verify branch is correct (usually `main`)
 3. Verify path is `/root` (not `/docs`)
@@ -459,6 +485,7 @@ PenThePet doesn't have PR preview deployments yet. Your options:
 **Future enhancement:**
 
 Consider adding PR preview deployments using:
+
 - Netlify Deploy Previews (free tier)
 - Vercel GitHub integration
 - Cloudflare Pages
@@ -488,6 +515,7 @@ This would provide isolated preview URLs for each PR without affecting productio
 ---
 
 **Related Documentation:**
+
 - [DEVELOPMENT.md](DEVELOPMENT.md) - Development workflow and setup
 - [TESTING.md](TESTING.md) - Running automated tests
 - [CODE_STRUCTURE.md](CODE_STRUCTURE.md) - Understanding the codebase

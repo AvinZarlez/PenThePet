@@ -39,7 +39,7 @@ The solver runs in Node.js via subprocess call to Python, making it suitable for
 
 The number of walls a player gets is determined by the grid size:
 
-```
+```text
 maxWalls = floor(size × 0.75)
 ```
 
@@ -135,21 +135,25 @@ const CONSTANTS = {
 Every generated map must pass these quality checks (implemented in `js/MapValidator.js`):
 
 #### 1. Path to Edge (Required)
+
 - Pet must be able to reach at least one edge tile from home
 - Checked using BFS pathfinding
 - Maps without a valid path are discarded
 
 #### 2. Minimum Goal Area (goalArea >= 5)
+
 - Goal area must be at least 5 tiles
 - Prevents maps that are too easy or trivial
 - Example: A 3x3 pen would fail (only 1-2 tiles achievable)
 
 #### 3. Maximum Walls (within budget)
+
 - Solution must use at most `maxWallsForSize(size)` walls
 - Ensures maps are solvable within the player's wall budget
 - Maps requiring more walls are discarded
 
 #### 4. Strategic Wall Placement (Not All on Edges)
+
 - At least one optimal wall must be placed on a non-edge tile
 - Prevents trivial solutions (just blocking edge exits)
 - Encourages strategic thinking about interior placement
@@ -186,6 +190,7 @@ Use the GitHub Actions workflow to generate and commit a single daily map:
 5. Click **"Run workflow"**
 
 The workflow will:
+
 - Set up Python and install PuLP (MILP solver dependency)
 - Generate a map using the Python MILP solver for optimal results
 - Validate it meets quality standards
@@ -267,7 +272,7 @@ Each generated map is validated to ensure:
 
 ### Generation Flow
 
-```
+```text
 MapGenerator.generate()
   → _generateRandomMap()
   → _validateMap() [BFS pathfinding]
@@ -287,6 +292,7 @@ MapGenerator.generate()
 The Python MILP solver (`scripts/solver/solve.py`) formulates the problem as:
 
 **Variables:**
+
 - `s[i]` ∈ {0,1}: Whether tile `i` is in the pen
 - `w[i]` ∈ {0,1}: Whether a wall is placed on grass tile `i`
 - `f[i,j]` ≥ 0: Network flow between adjacent tiles
@@ -294,6 +300,7 @@ The Python MILP solver (`scripts/solver/solve.py`) formulates the problem as:
 **Objective:** Maximize Σ s[i] (total enclosed area)
 
 **Constraints:**
+
 1. Home is in the pen
 2. Boundary tiles are NOT in the pen
 3. Walled tiles are NOT in the pen
@@ -304,7 +311,7 @@ The Python MILP solver (`scripts/solver/solve.py`) formulates the problem as:
 
 ### Validation Flow
 
-```
+```text
 MapValidator.validate(map, solution)
   → _hasPathToEdge() [BFS check]
   → Check goalArea >= 5

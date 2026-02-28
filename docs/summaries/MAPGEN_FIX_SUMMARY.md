@@ -4,19 +4,24 @@
 > Some files mentioned here have since been refactored/removed. See current structure in [TESTING.md](../TESTING.md).
 
 ## Issue
+
 The map generation system was calculating ultra-small goals (like 1) when the actual maximum achievable penned area was much larger.
 
 ## Root Cause
+
 Both the BruteForceSolver and MILPSolver were **minimizing** the penned area instead of **maximizing** it. This was the opposite of the game's objective.
 
 ## Fix
+
 Changed both solvers to maximize the penned area:
+
 - `bestArea = Infinity` → `bestArea = 0`
 - `if (area < bestArea)` → `if (area > bestArea)`
 
 ## What Was Added
 
 ### Test Infrastructure
+
 - `test/BruteForceSolver.js` - Exhaustive search for ground truth
 - `test/test-map-generation.js` - Validation framework
 - `test/generate-daily-maps.js` - Daily map generator with verification
@@ -25,6 +30,7 @@ Changed both solvers to maximize the penned area:
 - `test/README.md` - Complete test documentation
 
 ### Documentation
+
 - `.github/copilot-instructions.md` - Added 200+ lines documenting:
   - Map format (string and numeric)
   - Solver architecture
@@ -34,11 +40,13 @@ Changed both solvers to maximize the penned area:
 - `test/README.md` - Test infrastructure guide
 
 ### Improved MILP Solver
+
 - Exhaustive search for small maps (<200k combinations, ~500ms)
 - Heuristic search for larger maps
 - Adaptive threshold based on map size
 
 ### Fresh Maps
+
 - Regenerated `maps.json` with verified correct goals
 - Old: goals of 10/15 (unverified, possibly wrong)
 - New: goals of 10/4 (verified via brute force for 7x7 map)
@@ -46,11 +54,13 @@ Changed both solvers to maximize the penned area:
 ## Results
 
 ### Before
+
 - Goals: 1-2 (ultra-small, wrong)
 - Solver: Finding MINIMUM area
 - Game: Nearly impossible
 
 ### After
+
 - Goals: 3-25 depending on map size (reasonable)
 - Solver: Finding MAXIMUM area
 - Game: Challenging but achievable
@@ -58,6 +68,7 @@ Changed both solvers to maximize the penned area:
 - No security vulnerabilities
 
 ## Testing
+
 ```bash
 # Quick validation
 node test/validate-generation.js
@@ -94,6 +105,7 @@ node test/generate-daily-maps.js
 ## For Future Development
 
 All necessary documentation is now in place for:
+
 - Understanding how map generation works
 - Generating new test maps
 - Creating daily levels

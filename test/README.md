@@ -7,6 +7,7 @@ This directory contains tests for the PenThePet game.
 **For comprehensive testing information, see [../docs/TESTING.md](../docs/TESTING.md)**
 
 That document includes:
+
 - Complete testing guide
 - Test coverage details
 - How to write tests
@@ -34,6 +35,7 @@ npm run lint
 ### Test Files
 
 **Unit Tests** (`.test.js`):
+
 - `constants.test.js` - CONSTANTS validation (41 tests)
 - `wordList.test.js` - Word list testing (52 tests)
 - `PathfindingUtils.test.js` - Pathfinding algorithms (35 tests)
@@ -81,6 +83,7 @@ When adding tests:
 6. Document test purpose with comments
 
 Example:
+
 ```javascript
 describe('MyFunction', () => {
     test('should handle basic case', () => {

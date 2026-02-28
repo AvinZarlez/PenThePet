@@ -11,6 +11,7 @@ The game is deployed on GitHub Pages: [Play PenThePet](https://avinzarlez.github
 ## 📖 About
 
 PenThePet is a daily logic puzzle game where you place walls to create the largest possible fenced area for your pet. Each day features a new puzzle with:
+
 - Unique maps with grass and water tiles
 - A home tile where your pet starts
 - A goal to achieve the maximum penned area with optimal wall placement
@@ -95,7 +96,7 @@ This project has comprehensive documentation for both human developers and AI co
 
 ## 🏗️ Project Structure
 
-```
+```text
 PenThePet/
 ├── index.html              # Game entry point
 ├── css/
@@ -146,6 +147,7 @@ Run tests with `npm test`. See [TESTING.md](docs/TESTING.md) for details.
 ### Why No Frameworks?
 
 This project intentionally uses vanilla JavaScript for:
+
 - **Simplicity** - No complex build pipelines or tooling
 - **Learning** - Pure JavaScript skills without framework magic
 - **Performance** - No framework overhead

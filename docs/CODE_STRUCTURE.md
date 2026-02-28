@@ -1,6 +1,7 @@
 # Pen the Pet - Code Structure Guide
 
 **For comprehensive documentation, see the [docs/](.) directory:**
+
 - **[ARCHITECTURE.md](ARCHITECTURE.md)** - Design decisions and philosophy
 - **[TESTING.md](TESTING.md)** - Testing guide and coverage
 - **[DEVELOPMENT.md](DEVELOPMENT.md)** - Developer workflow and setup
@@ -11,7 +12,7 @@
 
 ## 📁 Project Structure
 
-```
+```text
 PenThePet/
 ├── index.html              # Main HTML file (minimal, references external files)
 ├── css/
@@ -53,7 +54,9 @@ PenThePet/
 ## 🎯 File Purposes
 
 ### `index.html`
+
 The main entry point for the game. Contains the HTML structure:
+
 - **Header**: Title, subtitle, and menu button (top-right corner)
 - **Map Info Display**: Shows Day number, map name, and date
 - **Legend**: Explains tile types
@@ -65,7 +68,9 @@ The main entry point for the game. Contains the HTML structure:
 **Keep this minimal** - structure only, no inline styles or scripts.
 
 ### `css/styles.css`
+
 Contains all visual styling for the game:
+
 - Global styles (body, container)
 - Typography (headings, text)
 - Map info display (Day, name, date)
@@ -80,7 +85,9 @@ Contains all visual styling for the game:
 **To customize the look:** Modify colors, sizes, or add new CSS classes here.
 
 ### `js/constants.js`
+
 Centralized constants for all game parameters:
+
 - **MAX_WALLS**: Maximum walls allowed (15)
 - **MAX_GRID_SIZE**: Maximum grid size (21)
 - **Tile distribution**: Probability ratios for tile generation
@@ -90,7 +97,9 @@ Centralized constants for all game parameters:
 **IMPORTANT**: Always reference these constants instead of hardcoding values!
 
 ### `js/config.js`
+
 Game configuration that references constants from constants.js:
+
 - **Grid settings**: Default size, min/max size limits
 - **Tile distribution**: Uses CONSTANTS.TILE_DISTRIBUTION
 - **Cell visuals**: Size in pixels, gap between cells
@@ -100,27 +109,35 @@ Game configuration that references constants from constants.js:
 **To change game parameters:** Check constants.js first, then modify CONFIG if needed.
 
 ### `js/wordList.js`
+
 Collection of random English words used for map naming:
+
 - Contains ~150 nature, color, and concept words
 - Used by map generation script to give each map a memorable name
 - Exported function `getRandomWord()` for easy access
 
 ### `js/CookieUtils.js`
+
 Shared cookie utility functions:
+
 - `getCookie(name)` - Read a cookie value by name
 - `setCookie(name, value, days)` - Set a cookie with expiration
 - Used by Game.js, Menu.js, and main.js
 - Single source of truth for all cookie operations
 
 ### `js/DateUtils.js`
+
 Shared date utility functions:
+
 - `getTodayDate()` - Get today's date in YYYY-MM-DD format
 - `formatDate(dateStr)` - Format date string for display (e.g., "Feb 6, 2026")
 - Used by Menu.js and main.js
 - Single source of truth for all date operations
 
 ### `js/PathfindingUtils.js`
+
 Shared pathfinding utilities used by game logic, generation scripts, and validation:
+
 - BFS pathfinding algorithms
 - `isPenned(map, homeRow, homeCol)` - Check if pet is penned (numeric map format)
 - `calculatePennedArea(map, homeRow, homeCol)` - Count reachable tiles (numeric map format)
@@ -128,7 +145,9 @@ Shared pathfinding utilities used by game logic, generation scripts, and validat
 - Used by Game.js, MILPSolver.js, MapGenerator.js, and MapValidator.js
 
 ### `js/tileTypes.js`
+
 Defines all tile types and their properties:
+
 - Name, display name, and description
 - Whether the tile is clickable
 - CSS class and gradient colors
@@ -137,7 +156,9 @@ Defines all tile types and their properties:
 **To add new tile types:** Add a new entry to the TILE_TYPES object with all required properties.
 
 ### `js/MapGenerator.js`
+
 Handles map generation and validation (used by generation scripts, not browser):
+
 - Generates random maps with tile distribution based on constants
 - Validates maps to ensure there's a path from home to edge
 - Uses MILP solver pipeline to calculate optimal goal and wall count
@@ -147,7 +168,9 @@ Handles map generation and validation (used by generation scripts, not browser):
 See MAP_GENERATION.md for complete documentation.
 
 ### `js/Grid.js`
+
 Pure state management for the grid:
+
 - Grid initialization and tile storage
 - Loads maps from pre-generated map data (maps.json)
 - Grid state management (current state, initial state)
@@ -158,7 +181,9 @@ Pure state management for the grid:
 **Note**: Grid no longer generates maps. Maps are loaded from maps.json only.
 
 ### `js/Game.js`
+
 Game controller that checks if the pet is penned:
+
 - Game rendering and UI updates
 - User interaction handling (clicks, keyboard)
 - DOM manipulation and dynamic cell sizing
@@ -172,7 +197,9 @@ Game controller that checks if the pet is penned:
 **To add gameplay features:** Extend this class with new methods for character movement, scoring, etc.
 
 ### `js/Menu.js`
+
 Menu system for navigation and settings:
+
 - **Modal Management**: Opens/closes menu, level selector, instructions, about, and options modals
 - **Level Selector**: Displays available maps from maps.json, allows switching between different day's puzzles
 - **Level Loading**: Dynamically loads selected map into the game, fully resets game state (grid size, submission, optimal solution)
@@ -186,7 +213,9 @@ Menu system for navigation and settings:
 **To add new menu options:** Extend the Menu class with new modal types and cookie storage via CookieUtils.
 
 ### `js/main.js`
+
 Application entry point:
+
 - Initializes the game when the page loads
 - Loads maps from maps.json
 - Checks for saved level selection in cookies
@@ -201,7 +230,9 @@ Application entry point:
 ## Scripts (`scripts/` directory)
 
 ### `scripts/generate-maps.js`
+
 CLI script for batch map generation:
+
 - Generates maps with metadata (dayNumber, mapName, date)
 - Supports fresh generation or appending to existing maps
 - Configurable sizes, dates, and count
@@ -209,42 +240,53 @@ CLI script for batch map generation:
 - Saves to maps.json with proper formatting
 
 **Usage:**
+
 ```bash
 node scripts/generate-maps.js --fresh --count 10 --sizes 7,9,11
 ```
 
 ### `scripts/generate-single-map.js`
+
 Generate a single map for a specific date:
+
 - Used by GitHub Actions workflow
 - Validates map meets quality standards
 - Automatically assigns day number and random name
 - Prevents duplicate dates
 
 **Usage:**
+
 ```bash
 node scripts/generate-single-map.js --date 2026-02-15 --size 9
 ```
 
 ### `scripts/audit-maps.js`
+
 Validate existing maps in maps.json:
+
 - Checks all maps meet quality standards
 - Reports validation failures
 - Uses MapValidator for consistency
 
 **Usage:**
+
 ```bash
 node scripts/audit-maps.js
 ```
 
 ### `maps.json`
+
 Generated maps with complete metadata:
+
 - Key: Date string (YYYY-MM-DD)
 - Value: Map object with dayNumber, mapName, size, goal, maxWalls, map
 - Generated by scripts/generate-maps.js
 - See MAP_GENERATION.md for metadata structure
 
 ### `MAP_GENERATION.md`
+
 Comprehensive documentation for map generation:
+
 - Algorithm explanation and pseudocode
 - Metadata structure and field descriptions
 - Generation process and requirements
@@ -258,6 +300,7 @@ Comprehensive documentation for map generation:
 ### Adding a New Tile Type
 
 1. **Define the tile type** in `js/tileTypes.js`:
+
 ```javascript
 sand: {
     name: 'sand',
@@ -270,20 +313,23 @@ sand: {
 }
 ```
 
-2. **Add the CSS styling** in `css/styles.css`:
+1. **Add the CSS styling** in `css/styles.css`:
+
 ```css
 .cell.sand {
     background: linear-gradient(135deg, #ffd54f 0%, #ffb300 100%);
 }
 ```
 
-3. **Update tile generation** in map generation scripts if needed (tiles are generated during map creation, not at runtime):
+1. **Update tile generation** in map generation scripts if needed (tiles are generated during map creation, not at runtime):
+
 ```javascript
 // In MapGenerator.js (used by generation scripts only)
 // Update TILE_DISTRIBUTION in constants.js
 ```
 
-4. **Add legend entry** in `index.html` (optional):
+1. **Add legend entry** in `index.html` (optional):
+
 ```html
 <div class="legend-item">
     <div class="legend-box sand"></div>
@@ -294,6 +340,7 @@ sand: {
 ### Adding a Character
 
 1. **Create a new Character class** in `js/Character.js`:
+
 ```javascript
 class Character {
     constructor(row, col) {
@@ -311,7 +358,8 @@ class Character {
 }
 ```
 
-2. **Update Game.js** to include the character:
+1. **Update Game.js** to include the character:
+
 ```javascript
 constructor(size) {
     this.grid = new Grid(size);
@@ -320,7 +368,8 @@ constructor(size) {
 }
 ```
 
-3. **Add keyboard controls** in `js/Game.js`:
+1. **Add keyboard controls** in `js/Game.js`:
+
 ```javascript
 document.addEventListener('keydown', (e) => {
     if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.key)) {
@@ -353,6 +402,7 @@ The game uses browser cookies to remember user preferences across sessions. All 
 | `submission_YYYY-MM-DD` | Submitted score per puzzle | Game.js | JSON `{score, walls, timestamp}` |
 
 All cookies:
+
 - Expire after 1 year
 - Path: `/` (accessible across entire site)
 - SameSite: `Lax` (secure against CSRF)
@@ -379,6 +429,7 @@ const saved = CookieUtils.getCookie('myPreference');
 ### Cookie Compatibility with GitHub Pages
 
 Cookies work seamlessly with GitHub Pages because:
+
 - They are stored in the user's browser (client-side)
 - No server-side processing required
 - Compatible with static hosting

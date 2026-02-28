@@ -5,9 +5,16 @@
   "main": "js/main.js",
   "scripts": {
     "test": "jest --coverage",
+    "test:webapp": "jest --testPathPatterns=test/webapp/",
+    "test:generation": "jest --testPathPatterns=test/generation/",
     "test:watch": "jest --watch",
     "lint": "eslint js/**/*.js test/**/*.js scripts/**/*.js",
     "lint:fix": "eslint js/**/*.js test/**/*.js scripts/**/*.js --fix",
+    "lint:python": "ruff check scripts/solver/",
+    "lint:python:fix": "ruff check --fix scripts/solver/",
+    "lint:markdown": "markdownlint-cli2 \"**/*.md\" \"#node_modules\"",
+    "lint:markdown:fix": "markdownlint-cli2 --fix \"**/*.md\" \"#node_modules\"",
+    "lint:all": "npm run lint && npm run lint:python && npm run lint:markdown",
     "generate-maps": "node scripts/generate-maps.js"
   },
   "keywords": [
@@ -27,7 +34,8 @@
     "eslint": "^10.0.1",
     "globals": "^17.3.0",
     "jest": "^30.2.0",
-    "jest-environment-jsdom": "^30.2.0"
+    "jest-environment-jsdom": "^30.2.0",
+    "markdownlint-cli2": "^0.21.0"
   },
   "jest": {
     "testEnvironment": "jsdom",

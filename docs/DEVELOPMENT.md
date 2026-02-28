@@ -46,7 +46,7 @@ open http://localhost:8080
 
 ### Project Structure
 
-```
+```text
 PenThePet/
 ├── index.html           # Entry point - open this in browser
 ├── css/
@@ -81,6 +81,7 @@ PenThePet/
 ### Typical Development Cycle
 
 1. **Start local server**
+
    ```bash
    python3 -m http.server 8080
    ```
@@ -103,11 +104,13 @@ PenThePet/
    - Verify functionality
 
 6. **Run automated tests**
+
    ```bash
    npm test
    ```
 
 7. **Commit changes**
+
    ```bash
    git add .
    git commit -m "Description of changes"
@@ -130,21 +133,25 @@ Before merging changes to main, you should test your branch thoroughly. There ar
 ### Quick Testing Options
 
 **Option 1: Test Locally (Recommended for Development)**
+
 - Fastest feedback loop
 - Full debugging capabilities  
 - No impact on production
 
 **Option 2: Test on GitHub Pages (Visual Testing)**
+
 - See changes live without local setup
 - Temporarily replaces main branch
 - Good for visual verification
 
 **Option 3: GitHub Codespaces (Cloud Testing)**
+
 - No local setup needed
 - Full development environment
 - Limited free hours
 
 **📖 Complete Guide:** See [DEBUGGING_BRANCHES.md](DEBUGGING_BRANCHES.md) for:
+
 - Detailed setup instructions for each method
 - Testing multiple branches simultaneously
 - Best practices and troubleshooting
@@ -173,6 +180,7 @@ See [DEBUGGING_BRANCHES.md](DEBUGGING_BRANCHES.md) for more advanced workflows.
 ### JavaScript Style
 
 **ES6+ Features:**
+
 ```javascript
 // Use const/let (not var)
 const MAX_SIZE = 21;
@@ -197,6 +205,7 @@ class Grid {
 ```
 
 **Naming Conventions:**
+
 ```javascript
 // Constants: UPPER_SNAKE_CASE
 const MAX_WALLS = 15;
@@ -213,6 +222,7 @@ _validateMap() { ... }
 ```
 
 **Code Organization:**
+
 ```javascript
 // 1. Imports/requires (if using modules)
 const Grid = require('./Grid.js');
@@ -238,6 +248,7 @@ module.exports = Game;
 ```
 
 **Comments:**
+
 ```javascript
 /**
  * Generate a random map with given size.
@@ -257,6 +268,7 @@ let penned = false; // Track if pet is penned
 ### CSS Style
 
 **Organization:**
+
 ```css
 /* Global styles first */
 :root {
@@ -287,6 +299,7 @@ body, html { ... }
 ```
 
 **Modern CSS:**
+
 ```css
 /* Use CSS Grid for layout */
 .grid-container {
@@ -314,6 +327,7 @@ font-size: clamp(12px, 2vw, 16px);
 ### HTML Style
 
 **Semantic HTML:**
+
 ```html
 <!-- Use semantic tags -->
 <header>...</header>
@@ -328,6 +342,7 @@ font-size: clamp(12px, 2vw, 16px);
 ```
 
 **Accessibility:**
+
 ```html
 <!-- ARIA labels for screen readers -->
 <button aria-label="Start new game">New Game</button>
@@ -350,6 +365,7 @@ font-size: clamp(12px, 2vw, 16px);
    - What should undo restore?
 
 2. **Update data structures**
+
    ```javascript
    // Grid.js
    class Grid {
@@ -370,12 +386,14 @@ font-size: clamp(12px, 2vw, 16px);
    ```
 
 3. **Update UI**
+
    ```html
    <!-- index.html -->
    <button id="undoBtn">Undo</button>
    ```
 
 4. **Wire up interaction**
+
    ```javascript
    // Game.js
    document.getElementById('undoBtn').addEventListener('click', () => {
@@ -397,6 +415,7 @@ font-size: clamp(12px, 2vw, 16px);
 **Example: Change max walls from 15 to 20**
 
 1. **Update constants**
+
    ```javascript
    // js/constants.js
    const CONSTANTS = {
@@ -406,11 +425,13 @@ font-size: clamp(12px, 2vw, 16px);
    ```
 
 2. **Regenerate maps** (if needed)
+
    ```bash
    node scripts/generate-maps.js --fresh --count 10
    ```
 
 3. **Test**
+
    ```bash
    npm test
    ```
@@ -424,6 +445,7 @@ font-size: clamp(12px, 2vw, 16px);
 **Example: Add "ice" tile**
 
 1. **Define tile type**
+
    ```javascript
    // js/tileTypes.js
    ice: {
@@ -438,6 +460,7 @@ font-size: clamp(12px, 2vw, 16px);
    ```
 
 2. **Add CSS styling**
+
    ```css
    /* css/styles.css */
    .cell.ice {
@@ -446,6 +469,7 @@ font-size: clamp(12px, 2vw, 16px);
    ```
 
 3. **Update tile distribution**
+
    ```javascript
    // js/constants.js
    TILE_DISTRIBUTION: {
@@ -456,6 +480,7 @@ font-size: clamp(12px, 2vw, 16px);
    ```
 
 4. **Update legend** (optional)
+
    ```html
    <!-- index.html -->
    <div class="legend-item">
@@ -490,6 +515,7 @@ npm test
 ### Browser DevTools
 
 **Console:**
+
 ```javascript
 // Access game instance
 window.game // Game object
@@ -503,6 +529,7 @@ console.log('Clicked:', row, col, tileType);
 ```
 
 **Breakpoints:**
+
 1. Open DevTools (F12)
 2. Go to Sources tab
 3. Find file (e.g., `Game.js`)
@@ -511,27 +538,32 @@ console.log('Clicked:', row, col, tileType);
 6. Inspect variables in Scope panel
 
 **Network Tab:**
+
 - Check if maps.json loads correctly
 - Verify no 404 errors
 
 ### Common Issues
 
 **Game doesn't load:**
+
 - Check console for errors
 - Verify script loading order in index.html
 - Check if local server is running
 
 **Map generation fails:**
+
 - Check console for "Failed to find solution" messages
 - Reduce maxWalls if generation takes too long
 - Check tile distribution sums to ~1.0
 
 **Tests fail:**
+
 - Run `npm install` to ensure dependencies installed
 - Check Node.js version (need 20+)
 - Look at specific test failure message
 
 **Linting errors:**
+
 - Run `npm run lint:fix` to auto-fix
 - Manually fix remaining issues
 - Check ESLint configuration
@@ -539,6 +571,7 @@ console.log('Clicked:', row, col, tileType);
 ### Debug Logging
 
 Add temporary logging:
+
 ```javascript
 // Game.js
 handleCellClick(row, col) {
@@ -548,6 +581,7 @@ handleCellClick(row, col) {
 ```
 
 Remove before committing or wrap in debug flag:
+
 ```javascript
 const DEBUG = false;
 
@@ -563,6 +597,7 @@ if (DEBUG) {
 The project uses GitHub Actions for automated testing and deployment:
 
 **test.yml** - Runs on every push and PR:
+
 - Lints code with ESLint
 - Runs Jest tests with coverage
 - Posts coverage report to Codecov
@@ -570,6 +605,7 @@ The project uses GitHub Actions for automated testing and deployment:
 - Comments test results on PRs
 
 **generate-daily-map.yml** - Manual workflow for adding new maps:
+
 - Triggered via workflow_dispatch
 - Date is optional (auto-assigns next available date if omitted)
 - Generates map using Python MILP solver
@@ -577,6 +613,7 @@ The project uses GitHub Actions for automated testing and deployment:
 - Commits new map to maps.json
 
 **static.yml** - Deploys to GitHub Pages on main branch:
+
 - Uploads entire repository as artifact
 - Deploys to GitHub Pages automatically
 
@@ -585,6 +622,7 @@ The project uses GitHub Actions for automated testing and deployment:
 **Purpose:** Dependabot is configured to monitor dependencies and create PRs for updates.
 
 **Configuration** (`.github/dependabot.yml`):
+
 ```yaml
 version: 2
 updates:
@@ -595,6 +633,7 @@ updates:
 ```
 
 **Important Notes:**
+
 - ⚠️ **GitHub Actions monitoring is intentionally disabled**
 - Monitoring GitHub Actions in Copilot agent environments causes network/permission errors
 - This leads to ~2 minute delays when agents complete their work
@@ -602,6 +641,7 @@ updates:
 - Solution: Only monitor npm packages (which we actually need)
 
 **If you need to update Actions manually:**
+
 - actions/checkout@v4
 - actions/setup-node@v4
 - codecov/codecov-action@v3
@@ -617,6 +657,7 @@ updates:
 PenThePet deploys automatically to GitHub Pages.
 
 **Setup (one-time):**
+
 1. Go to repository Settings
 2. Navigate to Pages section
 3. Set Source: Deploy from a branch
@@ -624,6 +665,7 @@ PenThePet deploys automatically to GitHub Pages.
 5. Save
 
 **Deploy process:**
+
 ```bash
 # Make changes
 git add .
@@ -635,6 +677,7 @@ git push origin main
 ```
 
 **Verify deployment:**
+
 1. Go to Actions tab
 2. Check "pages build and deployment" workflow
 3. Wait for green checkmark
@@ -668,12 +711,14 @@ npm install
 ### Game works locally but not on GitHub Pages
 
 **Check:**
+
 - Are all paths relative (not absolute)?
 - Are filenames case-correct?
 - Is maps.json committed?
 - Check browser console for 404 errors
 
 **Fix:**
+
 ```html
 <!-- Bad: Absolute path -->
 <script src="/js/main.js"></script>
@@ -687,6 +732,7 @@ npm install
 **Cause:** Map generation takes too long
 
 **Fix:**
+
 ```javascript
 // In test file
 jest.setTimeout(30000); // 30 seconds
@@ -700,6 +746,7 @@ const testSize = 5; // Instead of 21
 **Cause:** New code added without tests
 
 **Fix:**
+
 1. Check coverage report: `npm test -- --coverage`
 2. Look at uncovered lines
 3. Add tests for those code paths
@@ -708,11 +755,13 @@ const testSize = 5; // Instead of 21
 ### ESLint errors after update
 
 **Quick fix:**
+
 ```bash
 npm run lint:fix
 ```
 
 **Manual fix:**
+
 1. Read error message
 2. Fix the code
 3. Re-run `npm run lint`
@@ -720,6 +769,7 @@ npm run lint:fix
 ## Best Practices Summary
 
 ✅ **DO:**
+
 - Test in browser before committing
 - Run `npm test` before push
 - Write tests for new features
@@ -729,6 +779,7 @@ npm run lint:fix
 - Commit small, focused changes
 
 ❌ **DON'T:**
+
 - Commit without testing
 - Add frameworks/libraries without discussion
 - Hardcode configuration values
@@ -740,6 +791,7 @@ npm run lint:fix
 ## VS Code Setup (Optional)
 
 **Recommended Extensions:**
+
 - ESLint
 - Prettier
 - Live Server
@@ -747,12 +799,14 @@ npm run lint:fix
 - JavaScript (ES6) code snippets
 
 **Workspace Settings** (already configured in `.vscode/`):
+
 - Auto-format on save
 - ESLint integration
 - Jest test runner
 - Debug configurations
 
 **Usage:**
+
 - Press F5 to debug tests
 - Right-click HTML file → Open with Live Server
 - Use test task to run Jest
@@ -760,12 +814,14 @@ npm run lint:fix
 ## Getting Help
 
 **Resources:**
+
 - [CODE_STRUCTURE.md](CODE_STRUCTURE.md) - Architecture
 - [MAP_GENERATION.md](MAP_GENERATION.md) - Algorithm details
 - [TESTING.md](TESTING.md) - Testing guide
 - [ARCHITECTURE.md](ARCHITECTURE.md) - Design decisions
 
 **When stuck:**
+
 1. Check documentation
 2. Look at existing code for patterns
 3. Check browser console for errors

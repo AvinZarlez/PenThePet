@@ -16,6 +16,7 @@ Comprehensive guide to testing in PenThePet.
 ## Overview
 
 PenThePet has a comprehensive test suite with:
+
 - **Jest** testing framework
 - **ESLint** for code quality
 - **GitHub Actions** CI/CD pipeline
@@ -41,6 +42,7 @@ PenThePet has a comprehensive test suite with:
 ### Configuration
 
 **package.json:**
+
 ```json
 {
   "scripts": {
@@ -64,6 +66,7 @@ PenThePet has a comprehensive test suite with:
 ```
 
 **Coverage Targets:**
+
 - Branches: 70%
 - Functions: 75%
 - Lines: 70%
@@ -71,7 +74,7 @@ PenThePet has a comprehensive test suite with:
 
 ### File Structure
 
-```
+```text
 test/
 ├── setup.js                    # Jest setup and global mocks
 └── *.test.js                   # Unit test files
@@ -126,7 +129,7 @@ npm test -- --coverage --coverageDirectory=coverage
 
 ### Current Coverage (as of last update)
 
-```
+```text
 ---------------------|---------|----------|---------|---------|
 File                 | % Stmts | % Branch | % Funcs | % Lines |
 ---------------------|---------|----------|---------|---------|
@@ -146,6 +149,7 @@ All files            |   90.07 |    76.57 |   88.15 |   91.39 |
 ### Excluded from Coverage
 
 These files are excluded because they're UI/config and tested manually:
+
 - `js/main.js` - Entry point (tested via browser)
 - `js/Game.js` - UI controller (manual testing)
 - `js/config.js` - Configuration (no logic)
@@ -167,6 +171,7 @@ These files are excluded because they're UI/config and tested manually:
 **Purpose:** Validate all CONSTANTS values are properly defined
 
 **Tests:**
+
 - CONSTANTS object exists and is exported
 - All required fields present (MAX_WALLS, MAX_GRID_SIZE, etc.)
 - Values are correct types (numbers, objects)
@@ -174,6 +179,7 @@ These files are excluded because they're UI/config and tested manually:
 - Tile distribution sums to ~1.0
 
 **Example:**
+
 ```javascript
 test('should have MAX_WALLS constant', () => {
     expect(CONSTANTS.MAX_WALLS).toBeDefined();
@@ -187,6 +193,7 @@ test('should have MAX_WALLS constant', () => {
 **Purpose:** Test word list for map naming
 
 **Tests:**
+
 - Word list exists and is non-empty
 - All words are strings
 - No duplicate words
@@ -194,6 +201,7 @@ test('should have MAX_WALLS constant', () => {
 - Exported functions return expected types
 
 **Example:**
+
 ```javascript
 test('should not have duplicate words', () => {
     const wordSet = new Set(WORDS);
@@ -206,12 +214,14 @@ test('should not have duplicate words', () => {
 **Purpose:** Test pathfinding and pet penning algorithms
 
 **Tests:**
+
 - `isPenned()` correctly detects if pet can reach edge
 - `calculatePennedArea()` correctly counts reachable tiles
 - Edge cases: all grass, all water, single path
 - Various map configurations and sizes
 
 **Example:**
+
 ```javascript
 test('should detect pet is penned when surrounded by walls', () => {
     const map = [
@@ -230,6 +240,7 @@ test('should detect pet is penned when surrounded by walls', () => {
 **Purpose:** Test Grid class functionality
 
 **Test Groups:**
+
 - Constructor: Size validation, initialization
 - Map Loading: Load from map data, validate structure
 - State Management: Reset, save/restore state
@@ -240,6 +251,7 @@ test('should detect pet is penned when surrounded by walls', () => {
 **Purpose:** Test map generation and validation
 
 **Test Groups:**
+
 - Basic generation: Correct size, has home tile
 - Validation: Path to edge exists
 - Goal calculation: Uses solver correctly
@@ -251,6 +263,7 @@ test('should detect pet is penned when surrounded by walls', () => {
 **Purpose:** Test menu system and level loading
 
 **Test Groups:**
+
 - Modal management: Open/close modals
 - Cookie persistence: Save/load preferences via CookieUtils
 - Level selector: Load maps database, populate list
@@ -267,6 +280,7 @@ test('should detect pet is penned when surrounded by walls', () => {
 **Purpose:** Test shared cookie get/set helpers
 
 **Tests:**
+
 - Read existing and non-existent cookies
 - Set and overwrite cookies
 - Handle emoji and JSON values
@@ -277,6 +291,7 @@ test('should detect pet is penned when surrounded by walls', () => {
 **Purpose:** Test shared date formatting helpers
 
 **Tests:**
+
 - Get today's date in ISO format
 - Format dates for display
 - Handle various months and single-digit days
@@ -286,6 +301,7 @@ test('should detect pet is penned when surrounded by walls', () => {
 **Purpose:** Test map generation script functionality
 
 **Tests:**
+
 - Script loads and runs without errors
 - Generates correct number of maps
 - Metadata fields present and valid
@@ -357,11 +373,13 @@ test('should calculate penned area for simple enclosed region', () => {
 ### Adding New Tests
 
 **When to add tests:**
+
 - Adding new feature
 - Fixing a bug (add test that would have caught it)
 - Code has low coverage (<70%)
 
 **Steps:**
+
 1. Create or open appropriate `.test.js` file
 2. Add describe block for feature
 3. Add test cases for normal and edge cases
@@ -380,6 +398,7 @@ For complex algorithms (MapGenerator, PathfindingUtils):
 3. **Test invariants** - Things that should always be true
 
 Example:
+
 ```javascript
 test('solver should find solution that pens the pet', () => {
     const result = solveMap(map, maxWalls);
@@ -434,16 +453,19 @@ test('Grid should load map and track state correctly', () => {
 ### Common Issues
 
 **Test fails intermittently:**
+
 - Check for race conditions
 - Check for shared state between tests
 - Ensure test is deterministic (no random values)
 
 **Test hangs/times out:**
+
 - Check for infinite loops
 - Check for missing async/await
 - Reduce test complexity (smaller maps)
 
 **Coverage not increasing:**
+
 - Check which lines are uncovered
 - Add tests specifically for those paths
 - Some paths may be unreachable (dead code)
@@ -451,16 +473,19 @@ test('Grid should load map and track state correctly', () => {
 ### Debugging Tools
 
 **Run single test:**
+
 ```bash
 npx jest -t "test name"
 ```
 
 **Debug with Node:**
+
 ```bash
 node --inspect-brk node_modules/.bin/jest --runInBand
 ```
 
 **Add console.log:**
+
 ```javascript
 test('debug this', () => {
     console.log('value:', myValue);
@@ -469,6 +494,7 @@ test('debug this', () => {
 ```
 
 **Use debugger:**
+
 ```javascript
 test('debug this', () => {
     debugger; // Pause here
@@ -482,11 +508,13 @@ test('debug this', () => {
 ### GitHub Actions
 
 Tests run automatically on:
+
 - Every push to main branch
 - Every pull request
 - Workflow: `.github/workflows/test.yml`
 
 **CI runs:**
+
 1. Install dependencies
 2. Run ESLint
 3. Run tests with coverage
@@ -496,6 +524,7 @@ Tests run automatically on:
 ### Local Pre-commit
 
 Before committing:
+
 ```bash
 # Run tests
 npm test
@@ -512,6 +541,7 @@ npm test && npm run lint
 ### When Code Changes
 
 **Always:**
+
 1. Run tests after any code change
 2. Add tests for new features
 3. Update tests if behavior changes
@@ -519,6 +549,7 @@ npm test && npm run lint
 5. Keep tests passing and fast
 
 **Red-Green-Refactor:**
+
 1. **Red**: Write failing test for new feature
 2. **Green**: Write minimal code to pass
 3. **Refactor**: Improve code while keeping tests green
@@ -526,6 +557,7 @@ npm test && npm run lint
 ### Updating Documentation
 
 When tests change:
+
 1. Update coverage numbers in this file if significant change
 2. Add new test files to this documentation
 3. Explain new testing strategies
@@ -533,12 +565,14 @@ When tests change:
 ## Conclusion
 
 Good tests:
+
 - Give confidence to make changes
 - Document expected behavior
 - Catch bugs early
 - Enable refactoring safely
 
 Keep tests:
+
 - Fast (<10 seconds)
 - Focused (one thing per test)
 - Independent (no shared state)

@@ -7,20 +7,24 @@
 **Full Documentation Index:** See [docs/README.md](../docs/README.md) for complete documentation guide with all topics and navigation.
 
 ### Required Reading for ALL Changes
+
 - **[docs/AGENT_GUIDELINES.md](../docs/AGENT_GUIDELINES.md)** - ⚠️ START HERE - Critical requirements for AI agents
 - **[docs/CODE_STRUCTURE.md](../docs/CODE_STRUCTURE.md)** - How the code is organized
 - **[docs/ARCHITECTURE.md](../docs/ARCHITECTURE.md)** - Why design decisions were made
 
 ### Read for Specific Changes
+
 - **Map generation** → [docs/MAP_GENERATION.md](../docs/MAP_GENERATION.md)
 - **Level editor** → [docs/LEVEL_EDITOR.md](../docs/LEVEL_EDITOR.md)
 - **Adding tests** → [docs/TESTING.md](../docs/TESTING.md)  
 - **Development setup** → [docs/DEVELOPMENT.md](../docs/DEVELOPMENT.md)
 
 ### Historical Context (if needed)
+
 - **Change summaries** → [docs/summaries/](../docs/summaries/) - PR and implementation summaries
 
 ### Post-Change Requirements
+
 ✅ Run tests: `npm test`  
 ✅ Update documentation in sync with code changes  
 ✅ Follow patterns in [docs/AGENT_GUIDELINES.md](../docs/AGENT_GUIDELINES.md)
@@ -33,7 +37,7 @@ PenThePet is a browser-based logic puzzle game about fencing in your pet. The ga
 
 ## Project Structure
 
-```
+```text
 PenThePet/
 ├── index.html              # Main HTML file (minimal, references external files)
 ├── css/
@@ -86,6 +90,7 @@ PenThePet/
 ### Script Loading Order
 
 Scripts must be loaded in this specific order (already configured in index.html):
+
 1. constants.js
 2. config.js
 3. tileTypes.js
@@ -164,20 +169,24 @@ Scripts must be loaded in this specific order (already configured in index.html)
 ## Common Tasks
 
 ### Changing Grid Size
+
 - Modify `CONFIG.grid.defaultSize` in config.js
 - Update min/max constraints if needed (current max is 21)
 - Always test on mobile viewports after grid size changes
 
 ### Adjusting Tile Distribution
+
 - Modify `CONFIG.TILE_RATIOS` in config.js to change probability weights
 
 ### Adding New Tile Type
+
 1. Add entry to TILE_TYPES object in tileTypes.js
 2. Add corresponding CSS class in styles.css
 3. Update tile generation logic in Grid.js if needed
 4. Optionally add legend entry in index.html
 
 ### Modifying Visual Appearance
+
 - Cell size: Dynamically calculated by `Game.calculateCellSize()` based on viewport and grid size
   - Min: 20px (for usability on small screens)
   - Max: 50px (for aesthetics on large screens)
@@ -208,6 +217,7 @@ This project is GitHub Pages ready. No build process required - just enable GitH
 ### Overview
 
 PenThePet uses an algorithm to generate valid game maps and calculate the optimal goal (maximum achievable penned area). The system ensures that:
+
 1. Every generated map has a valid path from home to edge (when no walls are placed)
 2. The goal represents the **MAXIMUM** penned area achievable with available walls
 3. Maps are challenging but solvable
@@ -217,18 +227,21 @@ PenThePet uses an algorithm to generate valid game maps and calculate the optima
 Maps are represented as 2D arrays where each cell contains a tile type:
 
 **String Format** (used in maps.json and display):
+
 - `"grass"` - Walkable grass tile
 - `"water"` - Blocking water tile (pet cannot pass)
 - `"home"` - The pet's starting position (center of map)
 - `"wall"` - Player-placed wall (blocking)
 
 **Numeric Format** (used internally by solvers):
+
 - `0` = water
 - `1` = grass
 - `2` = home
 - `5` = wall
 
 Example 5x5 map in maps.json:
+
 ```json
 {
   "2026-02-06": {
@@ -285,6 +298,7 @@ The goal represents the largest area the player can achieve by placing walls opt
 To generate a new daily map for the game, use the production scripts:
 
 **Recommended: Use the generation script**
+
 ```bash
 # Install Python dependencies first
 pip install -r scripts/solver/requirements.txt
@@ -326,6 +340,7 @@ Remember: The goal should be a challenging but achievable target, representing t
 After making ANY code changes, you MUST verify and update:
 
 #### Always Update
+
 - [ ] **JSDoc comments** - In any modified .js files
 - [ ] **Inline comments** - For any complex logic added/changed
 
@@ -345,6 +360,7 @@ After making ANY code changes, you MUST verify and update:
 ### How to Verify Documentation Is Current
 
 Before committing:
+
 ```bash
 # 1. Review what documentation might be affected
 git status  # Check which files changed
@@ -363,6 +379,7 @@ git diff docs/
 ### Documentation Quality Standards
 
 ✅ **Good documentation:**
+
 - Matches current code behavior
 - Includes examples where helpful
 - Explains WHY, not just WHAT
@@ -370,6 +387,7 @@ git diff docs/
 - Links to related documentation
 
 ❌ **Bad documentation:**
+
 - Describes old/removed features
 - Missing for new features
 - No examples for complex features
@@ -399,6 +417,7 @@ git diff docs/
 ### Documentation as First-Class Code
 
 Treat documentation with the same care as code:
+
 - Review it like you review code
 - Test that instructions work
 - Keep it DRY (Don't Repeat Yourself)
@@ -406,4 +425,3 @@ Treat documentation with the same care as code:
 - Version control it properly
 
 **Remember:** Documentation is how future you, future developers, and future AI agents will understand your changes. Keep it excellent!
-
