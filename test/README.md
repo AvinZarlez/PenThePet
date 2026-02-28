@@ -22,32 +22,41 @@ That document includes:
 # Run all tests with coverage
 npm test
 
+# Run webapp tests only
+npm run test:webapp
+
+# Run generation tests only
+npm run test:generation
+
 # Run in watch mode
 npm run test:watch
 
 # Run specific test file
-npx jest test/Grid.test.js
+npx jest test/webapp/Grid.test.js
 
-# Check linting
-npm run lint
+# Check linting (JS, Python, Markdown)
+npm run lint:all
 ```
 
 ### Test Files
 
-**Unit Tests** (`.test.js`):
+**Webapp Tests** (`test/webapp/`) - 189 tests:
 
-- `constants.test.js` - CONSTANTS validation (41 tests)
-- `wordList.test.js` - Word list testing (52 tests)
-- `PathfindingUtils.test.js` - Pathfinding algorithms (35 tests)
-- `Grid.test.js` - Grid class functionality (45 tests)
-- `MapGenerator.test.js` - Map generation (72 tests)
-- `MapValidator.test.js` - Map validation (6 tests)
-- `Menu.test.js` - Menu system (46 tests)
-- `CookieUtils.test.js` - Cookie utilities (11 tests)
+- `constants.test.js` - CONSTANTS validation (32 tests)
+- `wordList.test.js` - Word list testing (30 tests)
+- `PathfindingUtils.test.js` - Pathfinding algorithms (30 tests)
+- `Grid.test.js` - Grid class functionality (34 tests)
+- `Menu.test.js` - Menu system (44 tests)
+- `CookieUtils.test.js` - Cookie utilities (13 tests)
 - `DateUtils.test.js` - Date utilities (6 tests)
-- `generate-maps.test.js` - Map generation script (31 tests)
 
-**Total: 237 tests (2 skipped), ~90% coverage**
+**Generation Tests** (`test/generation/`) - 66 tests:
+
+- `MapGenerator.test.js` - Map generation (39 tests)
+- `MapValidator.test.js` - Map validation (7 tests)
+- `generate-maps.test.js` - Map generation script (20 tests)
+
+**Total: 255 tests, ~91% coverage**
 
 ### Setup File
 
@@ -55,10 +64,10 @@ npm run lint
 
 ## Test Coverage
 
-Current coverage (~90% overall):
+Current coverage (~91% overall):
 
 | File | Coverage | Status |
-|------|----------|--------|
+| ---- | -------- | ------ |
 | Grid.js | 100% | ✅ Excellent |
 | CookieUtils.js | 100% | ✅ Excellent |
 | DateUtils.js | 100% | ✅ Excellent |
@@ -67,7 +76,7 @@ Current coverage (~90% overall):
 | PathfindingUtils.js | 96.38% | ✅ Excellent |
 | MapValidator.js | 93.1% | ✅ Excellent |
 | MapGenerator.js | 90.66% | ✅ Good |
-| Menu.js | 83.33% | ✅ Good |
+| Menu.js | 86.51% | ✅ Good |
 
 **Note:** Some files (Game.js, main.js, config.js, tileTypes.js) are tested manually in browser and excluded from coverage.
 
@@ -75,7 +84,7 @@ Current coverage (~90% overall):
 
 When adding tests:
 
-1. Create or open appropriate `.test.js` file
+1. Place test in appropriate directory (`webapp/` or `generation/`)
 2. Use describe/test pattern with clear names
 3. Follow Arrange-Act-Assert pattern
 4. Test edge cases and error conditions
@@ -89,10 +98,10 @@ describe('MyFunction', () => {
     test('should handle basic case', () => {
         // Arrange
         const input = { ... };
-        
+
         // Act
         const result = myFunction(input);
-        
+
         // Assert
         expect(result).toBe(expected);
     });

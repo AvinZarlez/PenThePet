@@ -596,13 +596,14 @@ if (DEBUG) {
 
 The project uses GitHub Actions for automated testing and deployment:
 
-**test.yml** - Runs on every push and PR:
+**test.yml** - Runs on every push and PR (parallel jobs):
 
-- Lints code with ESLint
-- Runs Jest tests with coverage
-- Posts coverage report to Codecov
-- Uploads coverage report as artifact
-- Comments test results on PRs
+- **Lint JavaScript** - ESLint checks
+- **Lint Python** - ruff checks on solver scripts
+- **Lint Markdown** - markdownlint checks on documentation
+- **Test Webapp** - Jest tests for browser-side components
+- **Test Level Generation** - Jest tests for generation scripts
+- **Full Test Suite & Coverage** - Combined test run with coverage reporting, Codecov upload, and PR comments
 
 **generate-daily-map.yml** - Manual workflow for adding new maps:
 
