@@ -14,7 +14,8 @@
     "lint:python:fix": "ruff check --fix scripts/solver/",
     "lint:markdown": "markdownlint-cli2 \"**/*.md\" \"#node_modules\"",
     "lint:markdown:fix": "markdownlint-cli2 --fix \"**/*.md\" \"#node_modules\"",
-    "lint:all": "npm run lint && npm run lint:python && npm run lint:markdown",
+    "lint:yaml": "yamllint .github/ .yamllint.yml",
+    "lint:all": "npm run lint && npm run lint:python && npm run lint:markdown && npm run lint:yaml",
     "generate-maps": "node scripts/generate-map.js"
   },
   "keywords": [
@@ -31,7 +32,7 @@
   "devDependencies": {
     "@eslint/js": "^10.0.1",
     "@types/jest": "^30.0.0",
-    "eslint": "^10.0.1",
+    "eslint": "^10.0.2",
     "globals": "^17.3.0",
     "jest": "^30.2.0",
     "jest-environment-jsdom": "^30.2.0",

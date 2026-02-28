@@ -16,10 +16,6 @@ All project documentation lives here. Each file covers a single topic — pick w
 | [DEBUGGING_BRANCHES.md](DEBUGGING_BRANCHES.md) | How to test branches before merging (GitHub Pages, local, Codespaces) |
 | [CLOUD_SYNC_SETUP.md](CLOUD_SYNC_SETUP.md) | How to enable optional cross-device cloud sync with Firebase |
 
-## 📝 Change History
-
-Historical summaries of major changes and bug fixes are in the [summaries/](summaries/) folder.
-
 ## 🤖 For AI Coding Agents
 
 Agent instructions live in [.github/copilot-instructions.md](../.github/copilot-instructions.md).
