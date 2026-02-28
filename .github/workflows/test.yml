@@ -2,17 +2,7 @@ name: Test
 
 on:
   push:
-    branches:
-      - main
-      - development
-    paths:
-      - 'js/**'
-      - 'scripts/**'
-      - 'test/**'
-      - 'package.json'
-      - 'package-lock.json'
   pull_request:
-    branches: '**'
   workflow_dispatch:
 
 # Cancel in-progress runs when a new commit is pushed to the same branch/PR
@@ -23,35 +13,9 @@ concurrency:
 jobs:
   check-paths:
     name: Detect Changed Files
-    runs-on: ubuntu-latest
-    outputs:
-      tests: ${{ steps.filter.outputs.tests }}
-
+    uses: ./.github/workflows/check-paths.yml
     permissions:
       contents: read
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Detect changed paths
-        id: filter
-        run: |
-          if [ "${{ github.event_name }}" != "pull_request" ]; then
-            # On push or workflow_dispatch, run all tests.
-            echo "tests=true" >> "$GITHUB_OUTPUT"
-            exit 0
-          fi
-          CHANGED=$(git diff --name-only \
-            "${{ github.event.pull_request.base.sha }}" \
-            "${{ github.event.pull_request.head.sha }}")
-          echo "Changed files:"
-          echo "$CHANGED"
-          echo "tests=$(echo "$CHANGED" | grep -qE \
-            '(^js/|^scripts/|^test/|^package(-lock)?\.json$)' \
-            && echo true || echo false)" >> "$GITHUB_OUTPUT"
 
   test-webapp:
     name: Test Webapp
