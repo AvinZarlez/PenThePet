@@ -33,7 +33,10 @@ function setupDOM() {
         <button id="optionsBtn"></button>
         <select id="petType"></select>
         <select id="hintMode"></select>
-        <div class="debug-section"></div>
+        <div class="debug-section" style="display: none;">
+            <button id="debugResetLevel"></button>
+            <button id="debugResetAll"></button>
+        </div>
     `;
 }
 
@@ -48,13 +51,14 @@ function createMockGame() {
             size: 7,
             loadMap: jest.fn(),
             saveInitialState: jest.fn(),
+            reset: jest.fn(),
             getTile: jest.fn(() => 'grass'),
             setTile: jest.fn()
         },
         wallCount: 0,
         goalAreaSize: 10,
         maxWalls: 9,
-        currentDate: null,
+        currentDate: '2026-02-06',
         optimalSolution: null,
         isSubmitted: false,
         submittedScore: null,
@@ -62,7 +66,10 @@ function createMockGame() {
         viewingOptimal: false,
         updateWallCounter: jest.fn(),
         updateAreaSizeDisplay: jest.fn(),
+        updateResetButton: jest.fn(),
+        updateSolutionToggleBar: jest.fn(),
         loadSubmission: jest.fn(() => null),
+        deleteSubmission: jest.fn(),
         isValidPosition: jest.fn(() => true)
     };
 }
@@ -425,6 +432,86 @@ describe('Menu', () => {
             
             const levelList = document.getElementById('levelList');
             expect(levelList.children.length).toBe(0);
+        });
+    });
+
+    describe('Debug Reset Level', () => {
+        test('should delete submission and reset game state', () => {
+            game.isSubmitted = true;
+            game.submittedScore = 8;
+            game.submittedWalls = [[1, 2], [3, 4]];
+            game.viewingOptimal = true;
+            game.wallCount = 2;
+
+            menu.resetCurrentLevel();
+
+            expect(game.deleteSubmission).toHaveBeenCalledWith('2026-02-06');
+            expect(game.isSubmitted).toBe(false);
+            expect(game.submittedScore).toBe(null);
+            expect(game.submittedWalls).toBe(null);
+            expect(game.viewingOptimal).toBe(false);
+            expect(game.grid.reset).toHaveBeenCalled();
+            expect(game.wallCount).toBe(0);
+            expect(game.render).toHaveBeenCalled();
+            expect(game.updateWallCounter).toHaveBeenCalled();
+            expect(game.updateAreaSizeDisplay).toHaveBeenCalled();
+            expect(game.updateResetButton).toHaveBeenCalled();
+            expect(game.updateSolutionToggleBar).toHaveBeenCalled();
+        });
+
+        test('should do nothing if no current date', () => {
+            game.currentDate = null;
+
+            menu.resetCurrentLevel();
+
+            expect(game.deleteSubmission).not.toHaveBeenCalled();
+        });
+
+        test('should trigger on reset level button click', () => {
+            const resetLevelBtn = document.getElementById('debugResetLevel');
+            const spy = jest.spyOn(menu, 'resetCurrentLevel');
+
+            resetLevelBtn.click();
+
+            expect(spy).toHaveBeenCalled();
+            spy.mockRestore();
+        });
+    });
+
+    describe('Debug Reset All Data', () => {
+        test('should delete all cookies', () => {
+            // Set some cookies first
+            CookieUtils.setCookie('selectedPet', '🐱', 365);
+            CookieUtils.setCookie('debugMode', 'true', 365);
+
+            // Spy on deleteAllCookies to verify it's called
+            const deleteAllSpy = jest.spyOn(CookieUtils, 'deleteAllCookies');
+
+            // jsdom doesn't support navigation, so suppress the error
+            const consoleSpy = jest.spyOn(console, 'error').mockImplementation();
+            try {
+                menu.resetAllData();
+            } catch {
+                // jsdom may throw on reload
+            }
+            consoleSpy.mockRestore();
+
+            expect(deleteAllSpy).toHaveBeenCalled();
+            // Cookies should be cleared
+            expect(CookieUtils.getCookie('selectedPet')).toBe(null);
+            expect(CookieUtils.getCookie('debugMode')).toBe(null);
+
+            deleteAllSpy.mockRestore();
+        });
+
+        test('should trigger on reset all button click', () => {
+            const resetAllBtn = document.getElementById('debugResetAll');
+            const spy = jest.spyOn(menu, 'resetAllData').mockImplementation(() => {});
+
+            resetAllBtn.click();
+
+            expect(spy).toHaveBeenCalled();
+            spy.mockRestore();
         });
     });
 });

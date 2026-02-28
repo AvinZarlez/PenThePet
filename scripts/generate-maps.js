@@ -43,7 +43,8 @@ function generateMapWithMetadata(dayNumber, date, size) {
         size: result.map.length,
         goal: result.goal,
         maxWalls: result.maxWalls,
-        map: result.map
+        map: result.map,
+        optimalSolution: result.optimalSolution
     };
     
     console.log(`  ✓ Generated "${mapName}" (Day ${dayNumber})`);

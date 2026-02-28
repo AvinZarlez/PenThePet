@@ -415,14 +415,26 @@ class Game {
     }
 
     /**
-     * Reset the game to initial state
+     * Reset the game to initial state.
+     * Blocked when the player has already submitted.
      */
     reset() {
+        if (this.isSubmitted) return;
         this.grid.reset();
         this.wallCount = 0;
         this.render();
         this.updateWallCounter();
         this.updateAreaSizeDisplay();
+    }
+
+    /**
+     * Update the Reset button's enabled/disabled state based on submission
+     */
+    updateResetButton() {
+        const resetBtn = document.getElementById('resetBtn');
+        if (resetBtn) {
+            resetBtn.disabled = this.isSubmitted;
+        }
     }
 
     /**
@@ -432,6 +444,7 @@ class Game {
         const resetBtn = document.getElementById('resetBtn');
         const statusBtn = document.getElementById('pennedStatus');
         const exitViewerBtn = document.getElementById('exitViewer');
+        const solutionToggleBtn = document.getElementById('solutionToggleBtn');
         
         if (resetBtn) {
             resetBtn.addEventListener('click', () => this.reset());
@@ -443,6 +456,10 @@ class Game {
 
         if (exitViewerBtn) {
             exitViewerBtn.addEventListener('click', () => this.hideRoamingArea());
+        }
+
+        if (solutionToggleBtn) {
+            solutionToggleBtn.addEventListener('click', () => this.toggleSolution());
         }
 
         // Add arrow key navigation (using bound function for potential cleanup)
@@ -563,6 +580,11 @@ class Game {
         
         // Update the submit button text
         this.updatePennedStatus(true);
+        // Disable the reset button after submission
+        this.updateResetButton();
+        
+        // Show solution toggle bar if optimal solution is available
+        this.updateSolutionToggleBar();
     }
     
     /**
@@ -632,7 +654,13 @@ class Game {
         }
         
         // Update button text based on current state
-        toggleBtn.textContent = this.viewingOptimal ? 'View Your Solution' : 'View Optimal Solution';
+        toggleBtn.textContent = this.viewingOptimal ? 'View Your Solution' : 'View Optimal Result';
+        
+        // Update the metric label to show which solution is being viewed
+        const metricLabel = document.querySelector('.metric-label');
+        if (metricLabel) {
+            metricLabel.textContent = this.viewingOptimal ? 'Optimal Result Score' : 'Your Solution Score';
+        }
     }
     
     /**
@@ -653,11 +681,44 @@ class Game {
             this.viewingOptimal = true;
         }
         
-        // Update button text
+        // Update sidebar button text
         this.addOptimalSolutionToggle();
+        
+        // Update main toggle bar
+        this.updateSolutionToggleBar();
         
         // Re-render
         this.render();
+    }
+    
+    /**
+     * Update the solution toggle bar on the main screen
+     * Shows after submission when optimal solution is available
+     */
+    updateSolutionToggleBar() {
+        const toggleBar = document.getElementById('solutionToggleBar');
+        const viewLabel = document.getElementById('solutionViewLabel');
+        const toggleBtn = document.getElementById('solutionToggleBtn');
+        
+        if (!toggleBar || !viewLabel || !toggleBtn) return;
+        
+        // Only show if submitted and optimal solution exists
+        if (!this.isSubmitted || !this.optimalSolution) {
+            toggleBar.style.display = 'none';
+            return;
+        }
+        
+        toggleBar.style.display = 'flex';
+        
+        if (this.viewingOptimal) {
+            viewLabel.textContent = 'Viewing: Optimal Result';
+            toggleBtn.textContent = 'View Your Solution';
+            toggleBar.classList.add('viewing-optimal');
+        } else {
+            viewLabel.textContent = 'Viewing: Your Solution';
+            toggleBtn.textContent = 'View Optimal Result';
+            toggleBar.classList.remove('viewing-optimal');
+        }
     }
     
     /**
@@ -701,6 +762,7 @@ class Game {
         if (this.viewingOptimal && this.submittedWalls) {
             this.loadWallPositions(this.submittedWalls);
             this.viewingOptimal = false;
+            this.updateSolutionToggleBar();
             this.render();
         }
     }
@@ -916,6 +978,15 @@ class Game {
      */
     hasSubmission(dateString) {
         return this.loadSubmission(dateString) !== null;
+    }
+
+    /**
+     * Delete saved submission for a specific puzzle
+     * @param {string} dateString - Date of the puzzle
+     */
+    deleteSubmission(dateString) {
+        const cookieName = `submission_${dateString}`;
+        CookieUtils.deleteCookie(cookieName);
     }
 }
 

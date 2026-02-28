@@ -32,6 +32,27 @@ const CookieUtils = {
         date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
         const expires = `expires=${date.toUTCString()}`;
         document.cookie = `${name}=${encodeURIComponent(value)};${expires};path=/;SameSite=Lax`;
+    },
+
+    /**
+     * Delete a cookie by name
+     * @param {string} name - Cookie name to delete
+     */
+    deleteCookie(name) {
+        document.cookie = `${name}=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/;SameSite=Lax`;
+    },
+
+    /**
+     * Delete all cookies set by this application
+     */
+    deleteAllCookies() {
+        const cookies = document.cookie.split(';');
+        for (const cookie of cookies) {
+            const name = cookie.split('=')[0].trim();
+            if (name) {
+                this.deleteCookie(name);
+            }
+        }
     }
 };
 

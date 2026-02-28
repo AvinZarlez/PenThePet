@@ -47,7 +47,7 @@ GitHub Pages can deploy from **any branch**, not just `main`. This lets you test
 
 4. **Test your changes**
    - Visit: `https://<username>.github.io/<repository>/`
-   - Example: `https://avinzarlez.github.io/PenThePet/`
+   - Example: `https://avinzarlez.github.io/penthepet/`
    - The site now shows your branch's code!
 
 **Making updates:**

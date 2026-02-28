@@ -103,6 +103,58 @@ class Menu {
                 this.updateDebugToolsVisibility(enabled);
             });
         }
+
+        // Debug tool buttons
+        this.attachDebugListeners();
+    }
+
+    /**
+     * Attach listeners for debug tool buttons
+     */
+    attachDebugListeners() {
+        const resetLevelBtn = document.getElementById('debugResetLevel');
+        const resetAllBtn = document.getElementById('debugResetAll');
+
+        if (resetLevelBtn) {
+            resetLevelBtn.addEventListener('click', () => this.resetCurrentLevel());
+        }
+        if (resetAllBtn) {
+            resetAllBtn.addEventListener('click', () => this.resetAllData());
+        }
+    }
+
+    /**
+     * Reset the current level by deleting the player's saved submission
+     * and reloading the level to its initial state
+     */
+    resetCurrentLevel() {
+        const currentDate = this.game.currentDate;
+        if (!currentDate) return;
+
+        this.game.deleteSubmission(currentDate);
+
+        // Reset submission state on the game object
+        this.game.isSubmitted = false;
+        this.game.submittedScore = null;
+        this.game.submittedWalls = null;
+        this.game.viewingOptimal = false;
+
+        // Reset the grid to its initial state
+        this.game.grid.reset();
+        this.game.wallCount = 0;
+        this.game.render();
+        this.game.updateWallCounter();
+        this.game.updateAreaSizeDisplay();
+        this.game.updateResetButton();
+        this.game.updateSolutionToggleBar();
+    }
+
+    /**
+     * Reset all local data by deleting all cookies and reloading the page
+     */
+    resetAllData() {
+        CookieUtils.deleteAllCookies();
+        window.location.reload();
     }
 
     /**
@@ -267,6 +319,8 @@ class Menu {
         this.game.render();
         this.game.updateWallCounter();
         this.game.updateAreaSizeDisplay();
+        this.game.updateResetButton();
+        this.game.updateSolutionToggleBar();
         this.game.updateLegend();
     }
 

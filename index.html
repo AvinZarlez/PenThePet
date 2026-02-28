@@ -52,6 +52,13 @@
 
         <div id="notification" class="notification"></div>
 
+        <div id="solutionToggleBar" class="solution-toggle-bar" style="display: none;">
+            <span id="solutionViewLabel" class="solution-view-label">Viewing: Your Solution</span>
+            <button id="solutionToggleBtn" class="solution-toggle-btn" aria-label="Toggle between your solution and optimal result">
+                View Optimal Result
+            </button>
+        </div>
+
         <aside id="roamSpaceViewer" class="roam-viewer-sidebar">
             <article class="viewer-card">
                 <header class="viewer-header">Pet Containment Summary</header>
@@ -68,6 +75,18 @@
 
         <div class="grid-container">
             <div id="grid" class="grid"></div>
+        </div>
+
+        <div class="debug-section" style="display: none;">
+            <h3>🛠️ Debug Tools</h3>
+            <div class="debug-content">
+                <div class="debug-item">
+                    <button id="debugResetLevel">Reset Level</button>
+                </div>
+                <div class="debug-item">
+                    <button id="debugResetAll">Reset All Data</button>
+                </div>
+            </div>
         </div>
 
         <footer>

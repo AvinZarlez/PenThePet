@@ -335,4 +335,70 @@ describe('Map Database Validation', () => {
             expect(validation.issues).toHaveLength(0);
         });
     });
+
+    describe('maps.json structure', () => {
+        let maps;
+        
+        beforeAll(() => {
+            const mapsPath = require('path').join(__dirname, '../maps.json');
+            const data = fs.readFileSync(mapsPath, 'utf8');
+            maps = JSON.parse(data);
+        });
+        
+        test('all maps should have optimalSolution field', () => {
+            const dates = Object.keys(maps);
+            expect(dates.length).toBeGreaterThan(0);
+            
+            for (const date of dates) {
+                const map = maps[date];
+                expect(map).toHaveProperty('optimalSolution');
+                expect(Array.isArray(map.optimalSolution)).toBe(true);
+                expect(map.optimalSolution.length).toBeGreaterThan(0);
+            }
+        });
+        
+        test('optimalSolution entries should be [row, col] coordinate pairs', () => {
+            const dates = Object.keys(maps);
+            
+            for (const date of dates) {
+                const map = maps[date];
+                for (const coord of map.optimalSolution) {
+                    expect(Array.isArray(coord)).toBe(true);
+                    expect(coord).toHaveLength(2);
+                    expect(typeof coord[0]).toBe('number');
+                    expect(typeof coord[1]).toBe('number');
+                    // Coordinates should be within grid bounds
+                    expect(coord[0]).toBeGreaterThanOrEqual(0);
+                    expect(coord[0]).toBeLessThan(map.size);
+                    expect(coord[1]).toBeGreaterThanOrEqual(0);
+                    expect(coord[1]).toBeLessThan(map.size);
+                }
+            }
+        });
+        
+        test('optimalSolution wall count should not exceed maxWalls', () => {
+            const dates = Object.keys(maps);
+            
+            for (const date of dates) {
+                const map = maps[date];
+                expect(map.optimalSolution.length).toBeLessThanOrEqual(map.maxWalls);
+            }
+        });
+        
+        test('all maps should have required fields', () => {
+            const dates = Object.keys(maps);
+            const requiredFields = ['dayNumber', 'mapName', 'date', 'size', 'goal', 'maxWalls', 'map', 'optimalSolution'];
+            
+            for (const date of dates) {
+                for (const field of requiredFields) {
+                    expect(maps[date]).toHaveProperty(field);
+                }
+            }
+        });
+        
+        test('should have at least 7 maps for a full week', () => {
+            const dates = Object.keys(maps);
+            expect(dates.length).toBeGreaterThanOrEqual(7);
+        });
+    });
 });
