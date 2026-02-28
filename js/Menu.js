@@ -126,6 +126,7 @@ class Menu {
         if (showAllLevelsCheckbox) {
             showAllLevelsCheckbox.addEventListener('change', (e) => {
                 this.showAllLevels = e.target.checked;
+                this.populateLevelList();
             });
         }
     }
