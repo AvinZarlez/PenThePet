@@ -598,16 +598,26 @@ if (DEBUG) {
 
 ### GitHub Actions Workflows
 
-The project uses GitHub Actions for automated testing and deployment:
+The project uses GitHub Actions for automated testing and deployment. Each workflow is **path-filtered** so it only runs when relevant files change, avoiding unnecessary CI minutes.
 
-**test.yml** - Runs on every push and PR (parallel jobs):
+**lint-js.yml** - ESLint on JavaScript changes:
 
-- **Lint JavaScript** - ESLint checks
-- **Lint Python** - ruff checks on solver scripts
-- **Lint Markdown** - markdownlint checks on documentation
+- Triggers when `js/**`, `scripts/**/*.js`, `test/**/*.js`, `eslint.config.mjs`, `package.json`, or `package-lock.json` change
+
+**lint-python.yml** - ruff on Python changes:
+
+- Triggers when `scripts/solver/**` or `ruff.toml` change
+
+**lint-markdown.yml** - markdownlint on documentation changes:
+
+- Triggers when any `*.md` file or `.markdownlint-cli2.jsonc` changes
+
+**test.yml** - Runs tests when code changes (parallel jobs, then combined coverage):
+
+- Triggers when `js/**`, `scripts/**`, `test/**`, `package.json`, or `package-lock.json` change
 - **Test Webapp** - Jest tests for browser-side components
 - **Test Level Generation** - Jest tests for generation scripts
-- **Full Test Suite & Coverage** - Combined test run with coverage reporting, Codecov upload, and PR comments
+- **Full Test Suite & Coverage** - Combined test run with coverage reporting, Codecov upload, and PR comments (runs after both test jobs pass)
 
 **generate-daily-map.yml** - Manual workflow for adding new maps:
 
@@ -642,6 +652,22 @@ The `main` branch must be protected so that only @AvinZarlez can merge pull requ
 
 > **Why this is safe with "Allow GitHub Actions to create PRs" enabled:**
 > GitHub Actions can *create* PRs and push branches, but it **cannot merge** them when the branch protection rules above are active. Only @AvinZarlez (as Code Owner and the sole allowed merger) can approve and merge. A malicious action could open a PR with bad code, but it would sit there waiting for your review — it could never reach `main` on its own.
+
+#### Required Status Checks and Path-Filtered Workflows
+
+**The short answer:** Path-filtered workflows work correctly as required status checks. When a workflow is skipped because no relevant files changed, GitHub marks it as **skipped** — and GitHub treats a skipped required status check as **passing**. The PR can still be merged.
+
+**Recommended required status checks (minimum viable set):**
+
+Only add the `coverage` job from `test.yml` as a required status check. This is sufficient because:
+
+- `coverage` only runs after both `test-webapp` and `test-generation` pass (it uses `needs: [test-webapp, test-generation]`)
+- If any test job fails, `coverage` will not run, blocking the merge
+- If no code files changed (path filter not triggered), the entire `test.yml` workflow is skipped, which GitHub counts as passing
+
+The lint workflows (`lint-js`, `lint-python`, `lint-markdown`) do **not** need to be required status checks. They will still run and show as failed in the PR checks UI, making the issue visible, but they won't add extra branch rules to maintain.
+
+**In practice, do not add the individual lint jobs as required.** Fewer required rules = less configuration to keep in sync as workflows evolve.
 
 The `.github/CODEOWNERS` file enforces that @AvinZarlez must approve every PR:
 
