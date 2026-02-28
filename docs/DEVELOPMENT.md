@@ -623,7 +623,7 @@ git commit -m "Update game"
 git push origin main
 
 # GitHub Actions automatically deploys to:
-# https://avinzarlez.github.io/PenThePet/
+# https://avinzarlez.github.io/penthepet/
 ```
 
 **Verify deployment:**

@@ -2,11 +2,11 @@
 
 A browser-based logic puzzle game where you fence in your pet! Built with vanilla JavaScript, HTML, and CSS - no frameworks or build tools required.
 
-[![Tests](https://github.com/AvinZarlez/PenThePet/actions/workflows/test.yml/badge.svg)](https://github.com/AvinZarlez/PenThePet/actions/workflows/test.yml)
+[![Tests](https://github.com/AvinZarlez/penthepet/actions/workflows/test.yml/badge.svg)](https://github.com/AvinZarlez/penthepet/actions/workflows/test.yml)
 
 ## 🎮 Play the Game
 
-The game is deployed on GitHub Pages: [Play PenThePet](https://avinzarlez.github.io/PenThePet/)
+The game is deployed on GitHub Pages: [Play PenThePet](https://avinzarlez.github.io/penthepet/)
 
 ## 📖 About
 
