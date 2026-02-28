@@ -225,6 +225,63 @@ const CloudSync = (function () {
     }
 
     // ----------------------------------------------------------------
+    // Data sync — delete
+    // ----------------------------------------------------------------
+
+    /**
+     * Delete a single submission from Firestore.
+     * Called automatically from Game.deleteSubmission().
+     * @param {string} dateString - Puzzle date (YYYY-MM-DD)
+     */
+    async function deleteSubmission(dateString) {
+        if (!db || !currentUser) return;
+        try {
+            isSyncing = true;
+            updateSyncStatus('syncing');
+            const docRef = db
+                .collection('users')
+                .doc(currentUser.uid)
+                .collection(COLLECTION_NAME)
+                .doc(dateString);
+            await docRef.delete();
+            updateSyncStatus('synced');
+        } catch (e) {
+            console.error('CloudSync: Failed to delete submission:', e);
+            updateSyncStatus('error', getSyncErrorMessage(e));
+        } finally {
+            isSyncing = false;
+        }
+    }
+
+    /**
+     * Delete ALL submissions and settings from Firestore.
+     * Called from Menu.resetAllData() (debug "Reset All Data" button).
+     */
+    async function deleteAllSubmissions() {
+        if (!db || !currentUser) return;
+        try {
+            isSyncing = true;
+            updateSyncStatus('syncing');
+            const collRef = db
+                .collection('users')
+                .doc(currentUser.uid)
+                .collection(COLLECTION_NAME);
+            const snapshot = await collRef.get();
+            const batch = db.batch();
+            snapshot.forEach(function (doc) {
+                batch.delete(doc.ref);
+            });
+            await batch.commit();
+            updateSyncStatus('synced');
+        } catch (e) {
+            console.error('CloudSync: Failed to delete all submissions:', e);
+            updateSyncStatus('error', getSyncErrorMessage(e));
+        } finally {
+            isSyncing = false;
+        }
+    }
+
+    // ----------------------------------------------------------------
     // Data sync — download & merge
     // ----------------------------------------------------------------
 
@@ -482,6 +539,8 @@ const CloudSync = (function () {
         isConfigured: isConfigured,
         isLoggedIn: function () { return currentUser !== null; },
         saveSubmission: saveSubmission,
+        deleteSubmission: deleteSubmission,
+        deleteAllSubmissions: deleteAllSubmissions,
         saveSettings: saveSettings,
         signIn: signIn,
         signUp: signUp,

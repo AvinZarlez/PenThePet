@@ -1032,6 +1032,11 @@ class Game {
     deleteSubmission(dateString) {
         const cookieName = `submission_${dateString}`;
         CookieUtils.deleteCookie(cookieName);
+
+        // Delete from cloud if available
+        if (typeof CloudSync !== 'undefined' && CloudSync.isConfigured() && CloudSync.isLoggedIn()) {
+            CloudSync.deleteSubmission(dateString);
+        }
     }
 }
 

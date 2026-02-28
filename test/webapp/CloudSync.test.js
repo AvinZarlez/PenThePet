@@ -46,6 +46,18 @@ describe('CloudSync', () => {
         });
     });
 
+    describe('deleteSubmission()', () => {
+        test('should not throw when not logged in', async () => {
+            await expect(CloudSync.deleteSubmission('2026-01-01')).resolves.toBeUndefined();
+        });
+    });
+
+    describe('deleteAllSubmissions()', () => {
+        test('should not throw when not logged in', async () => {
+            await expect(CloudSync.deleteAllSubmissions()).resolves.toBeUndefined();
+        });
+    });
+
     describe('signOut()', () => {
         test('should not throw when not initialized', async () => {
             await expect(CloudSync.signOut()).resolves.toBeUndefined();
