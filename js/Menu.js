@@ -139,7 +139,7 @@ class Menu {
         this.game.submittedWalls = null;
         this.game.viewingOptimal = false;
 
-        // Reload the level from maps database or reset the grid
+        // Reset the grid to its initial state
         this.game.grid.reset();
         this.game.wallCount = 0;
         this.game.render();
