@@ -38,7 +38,7 @@
 - Key points:
   - Real-world example of human-AI collaboration
   - Specific strengths and weaknesses of AI coding assistants
-  - Technical lessons from 42 pull requests
+  - Technical lessons from 48 pull requests
   - Insights on when to trust AI and when to intervene
 - Target audience: Developers curious about AI-assisted development
 
@@ -440,6 +440,73 @@
 
 ---
 
+## VI-B. Phase 6: The Great Refactor — Rethinking the Architecture (5-6 paragraphs, ~1000 words)
+
+**Purpose**: Tell the story of the most dramatic architectural change — replacing the JavaScript solver entirely with a Python MILP solver, making the browser code checker-only.
+
+**Paragraph 1: When JavaScript Isn't Enough**
+- Length: 150 words
+- Key points:
+  - JS solver was correct after 6 iterations, but fundamentally limited
+  - Exhaustive combinatorial search doesn't scale in browser JavaScript
+  - 9×9 grids were slow; larger grids were impractical
+  - The problem wasn't code quality—it was the technology choice
+- Technical details: Combinatorial explosion (C(n,k) combinations), JavaScript heap limits
+- AI insight: AI never suggested "this is the wrong language for this problem"
+
+**Paragraph 2: The Python MILP Solver (PR #63)**
+- Length: 200 words
+- Key points:
+  - Sweeping refactor: 4,200 lines deleted, 35 files changed
+  - Core insight: separate browser (checker) from pipeline (solver)
+  - Python solver uses PuLP + CBC for proper MILP formulation
+  - Binary decision variables, network flow constraints, vertex-cut boundaries
+  - What took seconds in JS completes in milliseconds in Python
+  - Provably optimal solutions, not approximations
+- Technical details: MILP formulation, PuLP library, CBC solver
+- Show code: Python MILP variable setup and objective function
+
+**Paragraph 3: What Got Removed**
+- Length: 150 words
+- Key points:
+  - MILPSolver.js deleted from browser
+  - Level editor removed entirely (no client-side solver)
+  - Grid.js stripped to pure state management
+  - Game.js stripped of init/newGame/debug methods
+  - Debug tools UI removed
+  - Browser went from ~3,000 to ~2,000 lines
+- Lesson: Fewer lines = fewer bugs, faster loading, simpler mental model
+
+**Paragraph 4: Wall Budget Formula**
+- Length: 100 words
+- Key points:
+  - Fixed wall count → dynamic formula: floor(size × 0.75)
+  - maxWalls is now player budget, not optimal count
+  - Scales intuitively: 5 walls for 7×7, 6 for 9×9, 15 for 21×21
+- Technical details: Why 0.75 multiplier (balances challenge vs. solvability)
+
+**Paragraph 5: The Code Audit (PR #64)**
+- Length: 150 words
+- Key points:
+  - Extracted CookieUtils.js, DateUtils.js (removed duplication)
+  - Consolidated 3 BFS implementations into one PathfindingUtils.hasPathToEdge()
+  - Fixed level selector crash when switching map sizes
+  - Updated all documentation to match new architecture
+- Lesson: Major refactors create opportunities for cleanup
+
+**Paragraph 6: Lessons from the Refactor**
+- Length: 200 words
+- Key points:
+  - First solution to a hard problem is rarely the final one
+  - JS solver wasn't wrong to build—it validated the concept
+  - But it was a compromise: general-purpose language for specialized optimization
+  - AI can build correct code but can't evaluate technology choices
+  - Good modular architecture made the refactor possible and clean
+  - Cascading effects: removing solver meant removing level editor
+- Key insight: Technology choice remains a human judgment call
+
+---
+
 ## VII. What AI Does Well (3-4 paragraphs, ~500 words)
 
 **Purpose**: Analyze specific AI strengths with concrete examples.
@@ -652,12 +719,12 @@
 **Paragraph 1: By the Numbers**
 - Length: 150 words
 - Statistics:
-  - 42 merged pull requests
-  - ~3,000 lines of production code
+  - 48 merged pull requests
+  - ~2,000 lines of browser JavaScript (down from ~3,000 after refactor)
   - ~1,500 lines of test code
-  - 274 tests, 91% coverage
-  - 6 major development phases
-  - 2 months of development
+  - 237 tests, ~90% coverage
+  - 7 major development phases
+  - ~3 weeks of active development
 - Code quality:
   - Zero framework dependencies
   - Vanilla JavaScript throughout
@@ -754,6 +821,6 @@
 
 ---
 
-## Total Word Count: ~6,500 words
-## Estimated Reading Time: 25-30 minutes
+## Total Word Count: ~8,500 words
+## Estimated Reading Time: 30-35 minutes
 ## Style: Wired magazine - technical but accessible, fact-based not sensational

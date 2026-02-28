@@ -1,6 +1,6 @@
 # Building PenThePet: A Daily Puzzle Game with AI as Co-Pilot
 
-*A technical journey through 42 pull requests, exploring what works—and what doesn't—when building software with AI coding assistants.*
+*A technical journey through 48 pull requests, exploring what works—and what doesn't—when building software with AI coding assistants.*
 
 ---
 
@@ -12,7 +12,7 @@ I chose GitHub Pages for hosting and decided to build it in pure HTML5 and JavaS
 
 The twist: I wanted to use GitHub Copilot extensively as my primary development tool. Could AI build most of the game structure without me touching code directly? The hypothesis was intriguing—let the AI handle the boilerplate, the repetitive patterns, the scaffolding, while I focused on design decisions and verification. Some areas would prove this hypothesis brilliantly correct. Others, particularly the puzzle generation algorithms, would require far more human intervention than expected.
 
-This article chronicles that journey through 42 merged pull requests, examining what AI coding assistants excel at, where they struggle, and the lessons learned about effective human-AI collaboration in software development. Whether you're a developer curious about AI-assisted coding or skeptical about its practical value, this real-world example offers concrete insights into both the promise and limitations of this emerging development paradigm.
+This article chronicles that journey through 48 merged pull requests, examining what AI coding assistants excel at, where they struggle, and the lessons learned about effective human-AI collaboration in software development. Whether you're a developer curious about AI-assisted coding or skeptical about its practical value, this real-world example offers concrete insights into both the promise and limitations of this emerging development paradigm.
 
 ---
 
@@ -258,6 +258,8 @@ This consolidation removed time limits, heuristics, and fallbacks. Maps might ta
 
 Pull request #51 reinforced this by removing fallback logic and clarifying the architecture in documentation. The principle was established: **one authoritative implementation, verified by testing, no compromises**.
 
+This consolidation was significant, but it wasn't the end of the solver story. The JavaScript exhaustive search worked for small grids but hit fundamental scalability limits on larger maps. The real resolution would come later, in the project's most dramatic architectural change—a complete rethinking of where computation should happen (covered in Phase 6).
+
 ### Lessons from the Puzzle Generation Saga
 
 Six pull requests and multiple iterations to get puzzle generation right. What went wrong, and what can we learn?
@@ -473,6 +475,8 @@ class LevelEditor {
 
 Copilot generated the editor UI, grid manipulation tools, and export/import functionality. It correctly integrated the existing solver without duplicating code. The architecture—well-documented, thoroughly tested, cleanly separated—enabled AI to build on it effectively.
 
+However, the level editor would later be removed as part of a larger architectural shift (PR #63). When the solver was moved from browser JavaScript to a Python pipeline, the editor lost its ability to compute goals client-side. Rather than maintain a feature that could no longer function independently, it was cut entirely—an example of how architectural decisions cascade through a codebase.
+
 ---
 
 ## Phase 5: Maintenance and Refinement
@@ -528,7 +532,92 @@ Pull requests #50-53 were periodic cleanup:
 
 These PRs addressed **architecture drift**—the gradual accumulation of inconsistencies as new features are added. Without periodic refactoring, codebases become increasingly tangled. AI tends to add rather than consolidate, so human-driven reviews are essential for maintaining coherence.
 
-The pattern: every 5-10 PRs, pause and review the overall structure. Are there redundant files? Inconsistent patterns? Code in the wrong place? Then consolidate. This rhythm—build features, consolidate, build more features—keeps the codebase maintainable.
+The pattern: every 5-10 PRs, pause and review the overall structure. Are there redundant files? Inconsistent patterns? Code in the wrong place? Then consolidate. This rhythm—build features, consolidate, build more features—keeps the codebase maintainable. The most dramatic consolidation was still to come.
+
+---
+
+## Phase 6: The Great Refactor — Rethinking the Architecture
+
+### When JavaScript Isn't Enough
+
+By PR #55, the game worked. But a fundamental tension had been building: the JavaScript solver running in the browser was adequate for small grids (5×5, 7×7) but struggled with larger puzzles. The exhaustive combinatorial search that made the solver *correct* also made it *slow*. A 9×9 grid with a reasonable wall budget could take seconds to solve in the browser; anything larger was impractical.
+
+The AI-generated JavaScript solver had gone through six iterations to become correct (PRs #15-18, #48, #51). Each iteration improved accuracy but didn't address the core scalability problem: JavaScript in a browser isn't the right tool for solving Mixed Integer Linear Programs. The problem wasn't the code quality—it was the choice of language and runtime for this particular task.
+
+This realization led to the project's most significant architectural change.
+
+### The Python MILP Solver (PR #63)
+
+Pull request #63, titled "Remove all JS solver code, level editor; browser is checker-only with Python MILP generation pipeline," was a sweeping refactor that deleted over 4,200 lines of code and touched 35 files. The core insight: **separate what the browser needs to do (check if the pet is penned) from what a build pipeline should do (generate optimal puzzles).**
+
+The new architecture was clean:
+
+- **Browser**: Pure checker. Loads a pre-generated map from `maps.json`, lets the player place walls, and uses BFS to determine if the pet is penned. No solver, no generator, no debug tools. Eight JavaScript files, each with a focused responsibility.
+
+- **Build pipeline**: A Python solver using PuLP (a linear programming library) and the CBC solver. Formulates wall placement as a proper Mixed Integer Linear Program with binary decision variables, network flow constraints, and vertex-cut boundaries. Runs server-side via Node.js wrapper scripts that call Python.
+
+```python
+# Python MILP formulation (scripts/solver/solve.py)
+# Binary variables: is this cell a wall? Is this cell in the pen?
+wall_vars = {(r, c): LpVariable(f'wall_{r}_{c}', cat='Binary')
+             for r, c in grass_cells}
+pen_vars  = {(r, c): LpVariable(f'pen_{r}_{c}', cat='Binary')
+             for r, c in walkable_cells}
+
+# Objective: maximize pen area
+prob += lpSum(pen_vars.values())
+
+# Constraint: wall count within budget
+prob += lpSum(wall_vars.values()) <= max_walls
+
+# Constraint: pen boundary must be walls or map edges
+# (network flow constraints ensure connectivity)
+```
+
+This was a fundamentally better approach. PuLP + CBC is a mature optimization toolkit designed specifically for this class of problem. What took seconds (or failed entirely) in JavaScript completed in milliseconds in Python. The solver could now handle any grid size the game supported, producing provably optimal solutions.
+
+### The Wall Budget Formula
+
+PR #63 also replaced the fixed wall count (previously a hardcoded constant of 15) with a formula that scales with grid size:
+
+```
+maxWalls = floor(size × 0.75)
+```
+
+This produced intuitive budgets: 5 walls for a 7×7 grid, 6 for 9×9, 8 for 11×11, 15 for 21×21. The wall count was now a player *budget*—the number of walls available to place—rather than the optimal wall count from the solver. This distinction mattered: players should have walls to spare, making the puzzle about placement strategy rather than using every wall.
+
+### What Got Removed
+
+The refactor was as much about deletion as addition:
+
+- **`js/MILPSolver.js`**: Deleted from the browser entirely. The JavaScript solver that took six PRs to build was replaced by a Python solver that was correct from the start (because PuLP handles the optimization mathematics).
+- **`editor.html`, `js/LevelEditor.js`, `css/editor.css`**: The level editor was removed. Without a client-side solver, it couldn't calculate goals.
+- **`Grid.js` generation methods**: `generate()`, `resize()`, `_generateRandomTile()`, `_placeHomeTile()` were all stripped. The browser `Grid` class became pure state management—it loaded maps, it didn't create them.
+- **`Game.js` initialization methods**: `init()`, `newGame()`, `changeGridSize()`, `generateDebugMap()` were removed. Maps came only from `maps.json`.
+- **Debug tools UI**: The entire debug section in `index.html` was deleted.
+- **Test files**: `MILPSolver.test.js`, `BruteForceSolver.js`, and `test-map-generation.js` were removed since the code they tested no longer existed in the browser.
+
+The browser JavaScript went from roughly 3,000 lines to under 2,000. Fewer lines meant fewer bugs, faster loading, and a simpler mental model.
+
+### The Code Audit (PR #64)
+
+Immediately after the refactor, PR #64 performed a full code audit. With the solver gone from the browser, several patterns that had been justified by solver integration now stuck out as redundant:
+
+- **Cookie utilities** were duplicated across `Game.js`, `Menu.js`, and `main.js`. Extracted into `js/CookieUtils.js`.
+- **Date formatting** was duplicated in `Menu.js` and `main.js`. Extracted into `js/DateUtils.js`.
+- **BFS pathfinding** had three separate implementations: `MapGenerator._validateMap()`, `MapValidator._hasPathToEdge()`, and `PathfindingUtils`. Consolidated into a single `PathfindingUtils.hasPathToEdge()` method.
+
+PR #64 also fixed a real bug: the level selector crashed when switching between maps of different sizes (e.g., 7×7 → 9×9) because `Grid.loadMap()` didn't adapt to the new dimensions. The fix: make `loadMap()` auto-detect and adapt to the incoming map's size.
+
+### Lessons from the Refactor
+
+The solver saga—from PR #15's greedy algorithm through PR #63's Python MILP—illustrates a pattern that recurs in software development: **the first solution to a hard problem is rarely the final one.**
+
+The JavaScript solver wasn't wrong to build. It validated the concept, proved the game was fun, and shipped playable puzzles. But it was always a compromise—using a general-purpose browser language for a specialized optimization problem. The Python MILP solver was the right tool for the job, and it took building the wrong tool first to understand *why*.
+
+For AI-assisted development, this has a specific implication: **AI can build working solutions quickly, but it can't evaluate whether the technology choice is right.** Copilot generated correct JavaScript solver code (eventually), but it never suggested, "This problem would be better solved with a dedicated optimization library in Python." That architectural judgment—choosing the right tool, not just writing correct code—remains firmly human.
+
+The refactor also demonstrated something positive about the project's architecture: the modular design meant the solver could be extracted cleanly. The browser code didn't break when the solver was removed because the concerns were already separated. Good architecture makes refactoring possible; bad architecture makes it terrifying.
 
 ---
 
@@ -565,7 +654,7 @@ For boilerplate-heavy work—HTML structure, CSS layout, event listener setup—
 
 ### Test Generation
 
-Writing comprehensive test suites is tedious but essential. AI excels here because tests are formulaic: set up state, call function, assert result. Copilot generated 274 tests for this project, covering:
+Writing comprehensive test suites is tedious but essential. AI excels here because tests are formulaic: set up state, call function, assert result. Copilot generated hundreds of tests for this project over its development lifecycle. Even after the major refactor (which removed solver-related tests), 237 tests remained, covering:
 
 ```javascript
 // Example: AI-generated test covering edge case
@@ -611,7 +700,7 @@ The key insight: **AI works best on well-trod ground**. For problems that have b
 
 ### Optimization Problems
 
-Puzzle generation required combinatorial optimization: finding the optimal wall placement from billions of possibilities. This is where AI struggled most, requiring six iterations and significant human intervention. The problems:
+Puzzle generation required combinatorial optimization: finding the optimal wall placement from billions of possibilities. This is where AI struggled most, requiring six iterations and significant human intervention just to get a correct JavaScript solver—and ultimately, recognition that JavaScript was the wrong tool entirely. The eventual solution used a Python MILP solver (PuLP + CBC), a specialized optimization toolkit that AI never suggested. The problems:
 
 - **Choosing algorithms**: AI suggested greedy approaches when exhaustive search was needed
 - **Understanding objectives**: Minimizing vs maximizing—AI got it backwards
@@ -692,7 +781,7 @@ After adding this, AI-generated PRs aligned better with project principles. Copi
 ### Test Everything
 
 Comprehensive testing catches AI mistakes before they reach production. For this project:
-- 274 tests, 91% coverage
+- 237 tests, ~90% coverage
 - Tests caught maximize/minimize bug, memory overflow, grid clipping issues
 - CI runs tests on every PR, preventing regressions
 
@@ -702,7 +791,7 @@ Without testing, AI mistakes accumulate. With testing, they're caught immediatel
 
 ### Iterate and Refactor
 
-Accept that first implementations won't be perfect. Build features incrementally, then periodically consolidate. For puzzle generation, it took six PRs to get right:
+Accept that first implementations won't be perfect. Build features incrementally, then periodically consolidate. For puzzle generation, it took eight PRs across two languages to get right:
 
 1. PR #15: Initial attempt (greedy, incorrect)
 2. PR #16: Add exhaustive solver (alongside greedy)
@@ -710,8 +799,10 @@ Accept that first implementations won't be perfect. Build features incrementally
 4. PR #18: Deduplicate pathfinding
 5. PR #48: Consolidate to single approach
 6. PR #51: Remove last fallback logic
+7. PR #63: Replace JS solver with Python MILP (the correct tool)
+8. PR #64: Clean up residual duplication
 
-This iterative process—build, test, identify issues, refine—is natural for AI-assisted development. Don't expect perfection immediately; expect rapid iteration toward correctness.
+This iterative process—build, test, identify issues, refine, and eventually rethink the entire approach—is natural for AI-assisted development. Don't expect perfection immediately; expect rapid iteration toward correctness. Sometimes that iteration includes recognizing the initial technology choice was wrong.
 
 **Actionable advice**: Build features in small PRs. Review regularly for duplication or inconsistency. Periodically refactor to consolidate. The rhythm is: build, consolidate, build more.
 
@@ -722,7 +813,7 @@ AI will implement what you ask for, but it won't know if the result is *right* u
 - Valid path from home to edge when no walls placed
 - Goal area ≥ 5 tiles (not trivially small)
 - Walls placed strategically (not all on edges)
-- Solution found with ≤15 walls
+- Solution found within the wall budget (floor(size × 0.75))
 
 These criteria weren't obvious to AI. They emerged through iteration and were eventually codified in `MapValidator`. Once formalized, AI could generate maps that met them consistently.
 
@@ -734,22 +825,22 @@ These criteria weren't obvious to AI. They emerged through iteration and were ev
 
 ### By the Numbers
 
-After two months of development:
-- **42 merged pull requests**
-- **~3,000 lines of production code**
-- **~1,500 lines of test code**
-- **274 tests, 91% coverage**
-- **Zero framework dependencies**
+After roughly three weeks of active development:
+- **48 merged pull requests**
+- **~2,000 lines of browser JavaScript** (down from ~3,000 after the refactor)
+- **~1,500 lines of test code** (237 tests, ~90% coverage)
+- **Python MILP solver** for optimal puzzle generation
+- **Zero browser framework dependencies**
 - **Works on all devices** (320px to 1920px+)
 
 Features shipped:
 - Daily puzzle system with date-based maps
 - Menu with level selector (browse all puzzles)
 - Score tracking and persistence (localStorage)
-- Standalone level editor for custom puzzles
 - 25 customizable pet emojis
 - Three hint modes for different difficulties
 - Comprehensive accessibility (ARIA labels, keyboard nav)
+- Python-based puzzle generation pipeline with provably optimal solutions
 
 The game is deployed at [avinzarlez.github.io/PenThePet](https://avinzarlez.github.io/PenThePet), playable on any device with a browser. It works. Friends actually use it. The experiment succeeded.
 
@@ -758,16 +849,17 @@ The game is deployed at [avinzarlez.github.io/PenThePet](https://avinzarlez.gith
 Estimating the human/AI split:
 
 - **~70% of code written by AI**: Boilerplate, UI scaffolding, tests, standard algorithms
-- **~30% written or heavily modified by human**: Complex algorithms, architecture decisions, bug fixes, consolidation
+- **~30% written or heavily modified by human**: Complex algorithms, architecture decisions, bug fixes, consolidation, Python solver
 
 Time saved by AI:
-- **50+ hours on test writing** (274 tests generated rapidly)
+- **40+ hours on test writing** (237 tests generated rapidly)
 - **20+ hours on HTML/CSS scaffolding** (modals, menus, layout)
 - **10+ hours on documentation** (API docs, usage guides)
 
 Where humans were essential:
-- **Puzzle generation algorithm**: Design, debugging, consolidation (6 PRs)
-- **Architectural decisions**: Modular structure, solver choice, production/test separation
+- **Puzzle generation algorithm**: Design, debugging, consolidation (8 PRs spanning JS and Python)
+- **Architectural decisions**: Modular structure, solver choice, checker/solver separation, production/test boundaries
+- **Technology choices**: Recognizing JavaScript wasn't the right tool for MILP; choosing Python + PuLP
 - **Bug identification**: Finding maximize/minimize inversion, memory overflow, responsive issues
 - **Validation**: Testing on real devices, verifying correctness, ensuring quality
 
@@ -798,15 +890,15 @@ Future expectations: As AI improves (GPT-5, Claude 4, specialized code models), 
 
 ### The Experiment's Success
 
-The original goal was to build a usable daily puzzle game using AI as the primary development tool, adding features the original lacked, and deploying it for actual use. That goal was achieved. PenThePet is a complete, functional game: daily puzzles, customizable pets, score tracking, level editor, menu system. It's deployed on GitHub Pages, works across all devices, and friends use it regularly.
+The original goal was to build a usable daily puzzle game using AI as the primary development tool, adding features the original lacked, and deploying it for actual use. That goal was achieved. PenThePet is a complete, functional game: daily puzzles, customizable pets, score tracking, menu system. It's deployed on GitHub Pages, works across all devices, and friends use it regularly.
 
-Most of the code was AI-generated. The modular architecture, UI components, test suite, and documentation—roughly 70% of the codebase—came from Copilot with minimal human modification. For well-defined tasks, AI was transformative. Build a menu system? Done in minutes. Add 274 tests? Done in an hour. Implement BFS pathfinding? Correct on first try.
+Most of the browser code was AI-generated. The modular architecture, UI components, test suite, and documentation—roughly 70% of the codebase—came from Copilot with minimal human modification. For well-defined tasks, AI was transformative. Build a menu system? Done in minutes. Add 237 tests? Done in an hour. Implement BFS pathfinding? Correct on first try.
 
 The validation is simple: the game exists, it works, people play it. AI can build real, production-ready software when properly directed.
 
 ### The Human-AI Partnership
 
-But "properly directed" is doing heavy lifting. The puzzle generation saga—six PRs, multiple bugs, architectural consolidation—illustrates that AI needs significant human oversight for complex work. The maximize/minimize bug went undetected by AI for multiple iterations; only human play-testing found it. The memory overflow required human recognition that generator patterns were needed. The architectural consolidation required human recognition that multiple solvers were causing confusion.
+But "properly directed" is doing heavy lifting. The puzzle generation saga—eight PRs, multiple bugs, an entire language migration—illustrates that AI needs significant human oversight for complex work. The maximize/minimize bug went undetected by AI for multiple iterations; only human play-testing found it. The memory overflow required human recognition that generator patterns were needed. The architectural consolidation required human recognition that multiple solvers were causing confusion. And the ultimate resolution—replacing JavaScript with a Python MILP solver—required human recognition that the *technology choice* was wrong, not just the implementation.
 
 The analogy that fits: **AI is like a very fast junior developer**. It produces working code quickly, follows existing patterns effectively, and handles well-defined tasks with minimal supervision. But it needs clear direction, makes mistakes that require review, and doesn't inherently maintain big-picture coherence.
 
@@ -818,7 +910,7 @@ As AI improves, the balance will shift—AI will handle more complex tasks indep
 
 If you're a developer curious about AI-assisted development: try it. Start with a small project, establish clear architecture, document your principles, and iterate. You'll quickly discover what AI is good at (boilerplate, tests, standard patterns) and where it struggles (optimization, architecture, subtle bugs). The learning curve is short—a few weeks of experimentation will teach you effective collaboration patterns.
 
-PenThePet is open source: [github.com/AvinZarlez/PenThePet](https://github.com/AvinZarlez/PenThePet). Explore the code, read the comprehensive documentation in `docs/`, review the 42 pull requests to see the development journey. Play the game at [avinzarlez.github.io/PenThePet](https://avinzarlez.github.io/PenThePet) to see the result.
+PenThePet is open source: [github.com/AvinZarlez/PenThePet](https://github.com/AvinZarlez/PenThePet). Explore the code, read the comprehensive documentation in `docs/`, review the 48 pull requests to see the development journey. Play the game at [avinzarlez.github.io/PenThePet](https://avinzarlez.github.io/PenThePet) to see the result.
 
 The final thought: AI won't replace programmers. But programmers using AI will replace those who don't. The productivity gains are real, the tools are available now, and the learning curve is manageable. The question isn't whether to learn AI-assisted development—it's how quickly you can master it.
 
