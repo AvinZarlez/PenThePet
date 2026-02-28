@@ -16,8 +16,8 @@ Comprehensive guide to testing in PenThePet.
 ## Overview
 
 PenThePet has a comprehensive test suite with:
-- **240 unit tests** across 7 test suites
-- **77% code coverage** (statements, branches, functions, lines)
+- **237 unit tests** across 10 test suites
+- **~90% code coverage** (statements, branches, functions, lines)
 - **Jest** testing framework
 - **ESLint** for code quality
 - **GitHub Actions** CI/CD pipeline
@@ -34,9 +34,9 @@ PenThePet has a comprehensive test suite with:
 
 ### Tools
 
-- **Jest 29.7.0** - Testing framework
+- **Jest 30.x** - Testing framework
 - **jest-environment-jsdom** - DOM simulation for browser code
-- **ESLint 8.x** - Code linting
+- **ESLint 10.x** - Code linting
 - **GitHub Actions** - Automated testing on push/PR
 
 ### Configuration
@@ -75,11 +75,7 @@ PenThePet has a comprehensive test suite with:
 ```
 test/
 ├── setup.js                    # Jest setup and global mocks
-├── *.test.js                   # Unit test files
-├── BruteForceSolver.js         # Test utility (exhaustive solver, TEST ONLY)
-├── test-map-generation.js      # Ground truth generator for test data
-├── test-maps-db.json           # Verified test maps with optimal solutions
-└── README.md                   # Test documentation
+└── *.test.js                   # Unit test files
 ```
 
 ## Running Tests
@@ -91,24 +87,10 @@ test/
 npm test
 
 # Expected output:
-# Test Suites: 7 passed, 7 total
-# Tests:       3 skipped, 237 passed, 240 total
-# Time:        ~5-7 seconds
+# Test Suites: 10 passed, 10 total
+# Tests:       237 passed, 239 total (2 skipped)
+# Time:        ~2-3 seconds
 ```
-
-### Performance Tests
-
-Some slow performance tests are skipped by default to keep the test suite fast:
-
-```bash
-# Run only the skipped performance tests (30-60+ seconds each)
-npx jest --testNamePattern="Performance"
-
-# Or run all tests including slow ones
-npx jest --testNamePattern=""
-```
-
-Note: Performance tests use large maps (7x7) and exhaustive search, checking millions of combinations. They're useful for validating solver behavior on large inputs but are not needed for regular development.
 
 ### Watch Mode
 
@@ -154,11 +136,14 @@ npm test -- --coverage --coverageDirectory=coverage
 ---------------------|---------|----------|---------|---------|
 File                 | % Stmts | % Branch | % Funcs | % Lines |
 ---------------------|---------|----------|---------|---------|
-All files            |   76.61 |     73.3 |   81.03 |   76.53 |
- Grid.js             |     100 |    97.05 |     100 |     100 |
- MILPSolver.js       |   60.71 |    54.12 |   60.71 |   59.91 |
- MapGenerator.js     |   95.53 |    81.81 |     100 |      95 |
- PathfindingUtils.js |   97.82 |    94.11 |     100 |   97.82 |
+All files            |   90.07 |    76.57 |   88.15 |   91.39 |
+ CookieUtils.js      |     100 |    83.33 |     100 |     100 |
+ DateUtils.js        |     100 |       75 |     100 |     100 |
+ Grid.js             |     100 |    95.65 |     100 |     100 |
+ MapGenerator.js     |   90.66 |       75 |     100 |   89.39 |
+ MapValidator.js     |    93.1 |    81.25 |     100 |    93.1 |
+ Menu.js             |   83.33 |    58.13 |   76.92 |   87.05 |
+ PathfindingUtils.js |   96.38 |    93.54 |     100 |    96.2 |
  constants.js        |     100 |       75 |     100 |     100 |
  wordList.js         |     100 |       75 |     100 |     100 |
 ---------------------|---------|----------|---------|---------|
@@ -177,13 +162,13 @@ These files are excluded because they're UI/config and tested manually:
 - **Core algorithms**: 95%+ (PathfindingUtils, MapGenerator)
 - **Data structures**: 95%+ (Grid)
 - **Utilities**: 100% (constants, wordList)
-- **Complex algorithms**: 60%+ (MILPSolver - difficult to test all paths)
+- **Validation**: 85%+ (MapValidator)
 
 ## Test Files
 
 ### Unit Tests
 
-#### 1. constants.test.js (38 tests)
+#### 1. constants.test.js (41 tests)
 
 **Purpose:** Validate all CONSTANTS values are properly defined
 
@@ -203,7 +188,7 @@ test('should have MAX_WALLS constant', () => {
 });
 ```
 
-#### 2. wordList.test.js (24 tests)
+#### 2. wordList.test.js (52 tests)
 
 **Purpose:** Test word list for map naming
 
@@ -253,48 +238,10 @@ test('should detect pet is penned when surrounded by walls', () => {
 **Test Groups:**
 - Constructor: Size validation, initialization
 - Map Loading: Load from map data, validate structure
-- Map Generation: Random generation, retry logic
 - State Management: Reset, save/restore state
 - Tile Operations: Get/set tiles, bounds checking
-- Statistics: Wall counts, goal tracking
 
-**Example:**
-```javascript
-test('should reset to initial state', () => {
-    const grid = new Grid(5);
-    grid.loadFromMapData(testMap);
-    grid.setTile(0, 0, 'wall');
-    grid.reset();
-    expect(grid.getTile(0, 0)).toBe('grass');
-});
-```
-
-#### 5. MILPSolver.test.js (40 tests)
-
-**Purpose:** Test optimal wall placement solver
-
-**Test Groups:**
-- Basic solving: Simple maps with known solutions
-- Edge cases: No solution, immediate solution
-- Optimization: Finds maximum area
-- Performance: Completes in reasonable time
-- Various map sizes and configurations
-
-**Example:**
-```javascript
-test('should find optimal solution for simple map', () => {
-    const map = [
-        [1, 1, 1],
-        [1, 2, 1], // 2 = home
-        [1, 1, 1]
-    ];
-    const result = solveMap(map, 4);
-    expect(result).not.toBeNull();
-    expect(result.goalArea).toBeGreaterThan(0);
-});
-```
-
-#### 6. MapGenerator.test.js (27 tests)
+#### 5. MapGenerator.test.js (72 tests)
 
 **Purpose:** Test map generation and validation
 
@@ -303,20 +250,44 @@ test('should find optimal solution for simple map', () => {
 - Validation: Path to edge exists
 - Goal calculation: Uses solver correctly
 - Retry logic: Handles unsolvable maps
-- Metadata: Includes goal, maxWalls, date
+- Metadata: Includes goal, maxWalls
 
-**Example:**
-```javascript
-test('should generate valid map with path to edge', () => {
-    const generator = new MapGenerator(7);
-    const result = generator.generate(null, 9);
-    expect(result).not.toBeNull();
-    expect(result.map.length).toBe(7);
-    expect(result.goal).toBeGreaterThan(0);
-});
-```
+#### 6. Menu.test.js (46 tests)
 
-#### 7. generate-maps.test.js (31 tests)
+**Purpose:** Test menu system and level loading
+
+**Test Groups:**
+- Modal management: Open/close modals
+- Cookie persistence: Save/load preferences via CookieUtils
+- Level selector: Load maps database, populate list
+- Level loading: Full game state reset on level switch
+- Options: Pet type and hint mode syncing
+- Error handling: Network failures, missing elements
+
+#### 7. MapValidator.test.js (6 tests)
+
+**Purpose:** Test map quality validation rules
+
+#### 8. CookieUtils.test.js (11 tests)
+
+**Purpose:** Test shared cookie get/set helpers
+
+**Tests:**
+- Read existing and non-existent cookies
+- Set and overwrite cookies
+- Handle emoji and JSON values
+- Distinguish similar cookie names
+
+#### 9. DateUtils.test.js (6 tests)
+
+**Purpose:** Test shared date formatting helpers
+
+**Tests:**
+- Get today's date in ISO format
+- Format dates for display
+- Handle various months and single-digit days
+
+#### 10. generate-maps.test.js (31 tests)
 
 **Purpose:** Test map generation script functionality
 
@@ -326,13 +297,6 @@ test('should generate valid map with path to edge', () => {
 - Metadata fields present and valid
 - Date handling works correctly
 - Fresh vs append modes work
-
-### Utility Scripts (Not Unit Tests)
-
-These are in `test/` but are utilities, not tests:
-
-- **BruteForceSolver.js** - Exhaustive search for test validation (⚠️ TEST ONLY - never use in production)
-- **test-map-generation.js** - Generates verified test maps with ground truth optimal solutions using brute force
 
 ## Writing Tests
 
@@ -415,12 +379,11 @@ test('should calculate penned area for simple enclosed region', () => {
 
 ### Algorithm Testing
 
-For complex algorithms (MILPSolver, MapGenerator):
+For complex algorithms (MapGenerator, PathfindingUtils):
 
 1. **Test with known inputs/outputs** - Simple cases where you know answer
 2. **Test properties** - Result should have certain properties
 3. **Test invariants** - Things that should always be true
-4. **Compare to reference** - BruteForceSolver as ground truth
 
 Example:
 ```javascript
@@ -458,18 +421,17 @@ For pure functions (PathfindingUtils):
 Test how components work together:
 
 ```javascript
-test('Grid should generate map and calculate goal correctly', () => {
+test('Grid should load map and track state correctly', () => {
     const grid = new Grid(7);
-    grid.generateMap();
+    grid.loadMap(testMapData);
     
     // Verify map structure
     expect(grid.tiles.length).toBe(7);
     
-    // Verify goal calculated
-    expect(grid.goal).toBeGreaterThan(0);
-    
-    // Verify walls tracked
-    expect(grid.maxWalls).toBeGreaterThan(0);
+    // Verify state management
+    grid.setTile(0, 0, 'wall');
+    grid.reset();
+    expect(grid.getTile(0, 0)).not.toBe('wall');
 });
 ```
 

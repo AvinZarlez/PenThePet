@@ -48,6 +48,15 @@ if (walls > CONSTANTS.MAX_WALLS) { ... }
 // ❌ DON'T: Hardcode values
 if (walls > 15) { ... }
 
+// ✅ DO: Use shared utilities for cookies and dates
+CookieUtils.setCookie('myPref', 'value', 365);
+const saved = CookieUtils.getCookie('myPref');
+const today = DateUtils.getTodayDate();
+const display = DateUtils.formatDate('2026-02-06');
+
+// ❌ DON'T: Duplicate cookie/date logic in individual files
+document.cookie = `myPref=${value};expires=...`;
+
 // ✅ DO: Follow existing patterns
 class NewFeature {
     constructor() { ... }
@@ -249,7 +258,11 @@ import React from 'react';
 <!-- DON'T change this order -->
 <script src="js/constants.js"></script>
 <script src="js/config.js"></script>
-<!-- ... specific order matters ... -->
+<script src="js/tileTypes.js"></script>
+<script src="js/CookieUtils.js"></script>
+<script src="js/DateUtils.js"></script>
+<script src="js/PathfindingUtils.js"></script>
+<!-- ... remaining scripts in order ... -->
 ```
 
 ❌ **Commit without testing**
@@ -559,35 +572,30 @@ Thank you for helping maintain PenThePet! 🐕
 
 ### Solver Usage Policy
 
-**MILPSolver (js/MILPSolver.js):**
+**Python MILP Solver (scripts/solver/solve.py):**
 - ✅ Production solver - used for ALL map generation
-- ✅ Exhaustive search up to 50M combinations per wall count
-- ✅ Accurate and verified against test data
+- ✅ Provably optimal using PuLP + CBC
+- ✅ Called via Node.js wrapper (scripts/solver/MILPSolver.js)
 - ✅ ONLY solver used in production code
-- ✅ No fallbacks, no heuristics
+- ✅ Requires Python 3 + PuLP
 
-**BruteForceSolver (test/BruteForceSolver.js):**
-- ✅ Test verification ONLY
-- ✅ Generates ground truth for test-maps-db.json
-- ✅ Validates MILPSolver accuracy on small maps (≤7x7)
-- ❌ NEVER used in production
-- ❌ NEVER used in map generation
-- ❌ NEVER as a fallback
+**Browser JS has NO solver:**
+- ❌ No MILPSolver.js in js/ directory
+- ❌ No solver code loaded in the browser
+- ❌ Game only checks if pet is penned, does not solve
 
 ### Generation Flow (No Fallbacks)
 
 1. **Production Maps** (GitHub Actions or local script)
    - Use: `scripts/generate-single-map.js` or GitHub Actions
-   - Method: MILPSolver exhaustive search (ONLY method)
+   - Method: Python MILP solver via Node.js wrapper (ONLY method)
    - Validation: MapValidator (all quality rules)
-   - Verification: BruteForceSolver for ≤7x7 maps (optional, for confidence)
    - **On failure**: Throw error (no fallback to simplified maps)
 
-2. **Test Maps** (test setup)
-   - Use: BruteForceSolver for ground truth
-   - Only for maps ≤7x7 with ≤15 walls
-   - Provides verified optimal solutions for testing
-   - Saves to test-maps-db.json
+2. **Maps are pre-generated** (maps.json)
+   - Browser loads maps from maps.json only
+   - No map generation happens in the browser
+   - Game.js is a checker, not a solver
 
 ### Map Quality Rules
 
@@ -638,12 +646,11 @@ node scripts/audit-maps.js
 
 ### DO NOT
 
-❌ Fall back to BruteForceSolver in production  
 ❌ Fall back to simplified/guaranteed valid maps  
 ❌ Skip MapValidator checks  
 ❌ Generate maps without validation  
 ❌ Change CONSTANTS.MAX_WALLS without regenerating all maps  
 ❌ Allow goalArea < 5 (too easy)  
 ❌ Allow all walls on edges only (too easy)  
-❌ Use multiple solver methods (use MILPSolver consistently)
+❌ Add solver code to browser JS (solver is scripts/ only)
 

@@ -172,9 +172,10 @@ class Grid {
 
 **Layers:**
 1. **Data Layer** (`Grid.js`) - Grid state and tile management
-2. **Logic Layer** (`MapGenerator.js`, `MILPSolver.js`) - Algorithms and game rules
-3. **Controller Layer** (`Game.js`) - Coordinates data and UI
+2. **Logic Layer** (`PathfindingUtils.js`) - Pathfinding and penning checks
+3. **Controller Layer** (`Game.js`) - Coordinates data and UI, checks win condition
 4. **View Layer** (`index.html`, `styles.css`) - User interface
+5. **Generation Pipeline** (`scripts/`, `MapGenerator.js`, `MapValidator.js`) - Offline map generation (not loaded in browser)
 
 **Why:**
 - Each layer has single responsibility
@@ -192,12 +193,22 @@ js/
 ├── config.js             # Derived config
 ├── tileTypes.js          # Data definitions
 ├── wordList.js           # Static data
+├── CookieUtils.js        # Cookie helpers
+├── DateUtils.js          # Date helpers
 ├── PathfindingUtils.js   # Shared utilities
-├── MILPSolver.js         # Algorithm
-├── MapGenerator.js       # Algorithm
 ├── Grid.js               # Data structure
-├── Game.js               # Controller
+├── Game.js               # Controller (checker)
+├── Menu.js               # Menu system
 └── main.js               # Entry point
+
+scripts/
+├── solver/
+│   ├── MILPSolver.js     # Node.js wrapper
+│   ├── solve.py          # Python MILP solver
+│   └── requirements.txt  # Python deps
+├── generate-maps.js      # Batch generation
+├── generate-single-map.js # Single map generation
+└── audit-maps.js         # Map validation
 ```
 
 **Why:**
@@ -288,7 +299,7 @@ for (let i = 0; i < combinationCount; i++) {
 
 ### Test Performance
 
-**Decision:** 240 tests should run in <10 seconds
+**Decision:** 237 tests should run in <10 seconds
 
 **Why:**
 - Fast tests encourage running them frequently
@@ -366,25 +377,26 @@ class Game {
 
 ### Adding Persistence
 
-**Design:** Cookie-based preferences already implemented
+**Design:** Cookie-based preferences via shared CookieUtils
 
 **Current:**
-- Selected pet emoji stored in cookie
+- Selected pet emoji, hint mode, current level, debug mode, and submissions stored in cookies
+- All cookie operations use `CookieUtils.getCookie()` and `CookieUtils.setCookie()`
+- Date formatting uses `DateUtils.formatDate()`
 - Expires after 1 year
 
 **Easy to Add:**
-- Hint mode preference
-- Grid size preference
-- Daily puzzle completion tracking
 - Statistics (games played, win rate)
+- Theme preferences
+- Additional game modes
 
 **Pattern:**
 ```javascript
-_savePrefToCookie(key, value) {
-    const date = new Date();
-    date.setTime(date.getTime() + (365 * 24 * 60 * 60 * 1000));
-    document.cookie = `${key}=${encodeURIComponent(value)};expires=${date.toUTCString()};path=/;SameSite=Lax`;
-}
+// Save a preference
+CookieUtils.setCookie('myKey', 'myValue', 365);
+
+// Load a preference
+const saved = CookieUtils.getCookie('myKey');
 ```
 
 ### Internationalization (i18n)

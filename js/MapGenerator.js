@@ -2,19 +2,22 @@
  * Map Generator
  * 
  * Generates valid game maps that ensure the pet can always reach an edge
- * when no walls are placed. Uses BFS pathfinding to validate connectivity.
+ * when no walls are placed. Delegates path validation to PathfindingUtils.
  */
 
-// For Node.js environment - import dependencies if not in browser
+// Node.js-only module - used by generation scripts, never loaded in browser
 (function() {
     if (typeof require !== 'undefined') {
-        if (typeof CONSTANTS === 'undefined' && typeof global !== 'undefined') {
+        if (typeof global.CONSTANTS === 'undefined') {
             global.CONSTANTS = require('./constants.js');
         }
-        if (typeof MILPSolver === 'undefined' && typeof global !== 'undefined') {
-            global.MILPSolver = require('./MILPSolver.js');
+        if (typeof global.PathfindingUtils === 'undefined') {
+            global.PathfindingUtils = require('./PathfindingUtils.js');
         }
-        if (typeof MapValidator === 'undefined' && typeof global !== 'undefined') {
+        if (typeof global.MILPSolver === 'undefined') {
+            global.MILPSolver = require('../scripts/solver/MILPSolver.js');
+        }
+        if (typeof global.MapValidator === 'undefined') {
             global.MapValidator = require('./MapValidator.js');
         }
     }
@@ -34,13 +37,13 @@ class MapGenerator {
 
     /**
      * Generate a valid map with guaranteed path to edge and goal calculation
-     * Uses CONSTANTS.MAX_WALLS for maximum wall count
+     * Uses CONSTANTS.maxWallsForSize(size) for wall count based on grid size
      * Retries generation if map doesn't meet quality standards
      * @param {string} _dateString - Optional date string for seeded generation (unused)
      * @returns {Object} Object containing map and goal, or throws error if unable to generate
      */
     generate(_dateString = null) {
-        const maxWalls = CONSTANTS.MAX_WALLS;
+        const maxWalls = CONSTANTS.maxWallsForSize(this.size);
         
         // Keep trying until we get a valid map that meets quality standards
         let totalAttempts = 0;
@@ -48,8 +51,8 @@ class MapGenerator {
         
         while (totalAttempts < maxTotalAttempts) {
             let attempts = 0;
-            let map = null;
-            let result = null;
+            let map;
+            let result;
             
             // Try to generate a valid random map
             while (attempts < this.maxAttempts) {
@@ -67,7 +70,7 @@ class MapGenerator {
                             return { 
                                 map, 
                                 goal: result.goalArea, 
-                                maxWalls: result.optimalWallCount,
+                                maxWalls: maxWalls,
                                 optimalSolution: result.optimalSolution
                             };
                         } else {
@@ -129,60 +132,14 @@ class MapGenerator {
     }
 
     /**
-     * Validate that a map has a path from home to edge with no walls
+     * Validate that a map has a path from home to edge with no walls.
+     * Delegates to PathfindingUtils.hasPathToEdge() for shared BFS logic.
      * @private
      * @param {Array} map - 2D array of tile types
      * @returns {boolean} True if map is valid
      */
     _validateMap(map) {
-        const centerRow = Math.floor(this.size / 2);
-        const centerCol = Math.floor(this.size / 2);
-        
-        // BFS to check if there's a path to any edge
-        const visited = new Set();
-        const queue = [[centerRow, centerCol]];
-        visited.add(`${centerRow},${centerCol}`);
-        
-        const directions = [[-1, 0], [1, 0], [0, -1], [0, 1]];
-        
-        while (queue.length > 0) {
-            const [row, col] = queue.shift();
-            
-            // Check if we reached an edge
-            if (row === 0 || row === this.size - 1 || col === 0 || col === this.size - 1) {
-                return true;
-            }
-            
-            // Explore neighbors
-            for (const [dr, dc] of directions) {
-                const newRow = row + dr;
-                const newCol = col + dc;
-                const coordKey = `${newRow},${newCol}`;
-                
-                // Check bounds
-                if (newRow < 0 || newRow >= this.size || newCol < 0 || newCol >= this.size) {
-                    continue;
-                }
-                
-                // Check if already visited
-                if (visited.has(coordKey)) {
-                    continue;
-                }
-                
-                const tileType = map[newRow][newCol];
-                
-                // Only grass and home tiles are passable (water blocks)
-                if (tileType === 'water') {
-                    continue;
-                }
-                
-                visited.add(coordKey);
-                queue.push([newRow, newCol]);
-            }
-        }
-        
-        // No path to edge found
-        return false;
+        return PathfindingUtils.hasPathToEdge(map);
     }
 
     /**

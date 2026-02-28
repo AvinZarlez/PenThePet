@@ -46,30 +46,11 @@ class Game {
         // init() is only used for debug map generation
     }
 
-    /**
-     * Initialize a new game
-     */
-    init() {
-        // Use today's date for consistent daily maps
-        const today = new Date().toISOString().split('T')[0];
-        const result = this.grid.generate(today);
-        
-        if (result === null) {
-            console.error('Failed to initialize game - could not generate valid map');
-            return;
-        }
-        
-        // Update goal and maxWalls from generation (uses optimal wall count)
-        this.goalAreaSize = result.goal;
-        this.maxWalls = result.maxWalls;  // Use optimal wall count from generator
-        
-        this.grid.saveInitialState();
-        this.wallCount = 0;
-        this.render();
-        this.updateWallCounter();
-        this.updateAreaSizeDisplay();
-        this.updateLegend();  // Update legend to show loaded pet emoji
-    }
+    // Note: init(), newGame(), and generateDebugMap() have been removed.
+    // Maps are loaded from maps.json only. The Game class is now a pure
+    // checker/renderer - it checks if the pet is penned with current wall
+    // placement, not a solver that generates new maps.
+    // All map generation happens in the Python MILP pipeline (scripts/solver/solve.py).
 
     /**
      * Render the grid to the DOM
@@ -445,85 +426,12 @@ class Game {
     }
 
     /**
-     * Start a new game with a fresh grid
-     */
-    newGame() {
-        const result = this.grid.generate(null);
-        
-        if (result === null) {
-            console.error('Failed to generate new game');
-            return;
-        }
-        
-        // Update goal and maxWalls from generation (uses optimal wall count)
-        this.goalAreaSize = result.goal;
-        this.maxWalls = result.maxWalls;  // Use optimal wall count from generator
-        
-        this.grid.saveInitialState();
-        this.wallCount = 0;
-        this.render();
-        this.updateWallCounter();
-        this.updateAreaSizeDisplay();
-    }
-
-    /**
-     * Change the grid size
-     * @param {number} newSize - The new grid size
-     */
-    changeGridSize(newSize) {
-        if (newSize >= CONFIG.grid.minSize && newSize <= CONFIG.grid.maxSize) {
-            this.grid = new Grid(newSize);
-            this.newGame();
-        }
-    }
-
-    /**
-     * Generate a debug map with specified size (not saved, for testing)
-     * Uses full exhaustive search to ensure quality (accuracy over speed).
-     * @param {number} size - The size of the debug map
-     */
-    generateDebugMap(size) {
-        if (size >= CONFIG.grid.minSize && size <= CONFIG.grid.maxSize) {
-            this.grid = new Grid(size);
-            
-            console.log(`Generating debug map ${size}x${size} with exhaustive search...`);
-            const result = this.grid.generate(null); // Use same method as production
-            
-            if (result === null) {
-                console.error('Failed to generate debug map');
-                this.showNotification('Failed to generate a valid map. Try again.');
-                return;
-            }
-            
-            // Update goal and maxWalls from generation
-            // The solver finds the largest achievable area and minimum walls needed
-            this.goalAreaSize = result.goal;
-            this.maxWalls = result.maxWalls;
-            console.log(`Generated debug map (size: ${size}x${size}, goal: ${result.goal}, maxWalls: ${this.maxWalls})`);
-            
-            this.grid.saveInitialState();
-            this.wallCount = 0;
-            this.render();
-            this.updateWallCounter();
-            this.updateAreaSizeDisplay();
-        }
-    }
-
-    /**
      * Attach event listeners to UI controls
      */
     attachEventListeners() {
-        const newGameBtn = document.getElementById('newGameBtn');
         const resetBtn = document.getElementById('resetBtn');
         const statusBtn = document.getElementById('pennedStatus');
         const exitViewerBtn = document.getElementById('exitViewer');
-        const debugGridSizeSlider = document.getElementById('debugGridSize');
-        const debugSizeValue = document.getElementById('debugSizeValue');
-        const generateDebugMapBtn = document.getElementById('generateDebugMapBtn');
-        
-        if (newGameBtn) {
-            newGameBtn.addEventListener('click', () => this.newGame());
-        }
         
         if (resetBtn) {
             resetBtn.addEventListener('click', () => this.reset());
@@ -535,20 +443,6 @@ class Game {
 
         if (exitViewerBtn) {
             exitViewerBtn.addEventListener('click', () => this.hideRoamingArea());
-        }
-
-        // Debug Tools event listeners
-        if (debugGridSizeSlider && debugSizeValue) {
-            debugGridSizeSlider.addEventListener('input', (e) => {
-                debugSizeValue.textContent = e.target.value;
-            });
-        }
-
-        if (generateDebugMapBtn && debugGridSizeSlider) {
-            generateDebugMapBtn.addEventListener('click', () => {
-                const debugSize = parseInt(debugGridSizeSlider.value);
-                this.generateDebugMap(debugSize);
-            });
         }
 
         // Add arrow key navigation (using bound function for potential cleanup)
@@ -687,12 +581,9 @@ class Game {
         const isPerfect = userScoreNum === goalScoreNum;
         
         // Build the display text
-        let displayText = '';
-        if (isPerfect) {
-            displayText = `🎉 ${userScoreNum} 🎉`;
-        } else {
-            displayText = userScoreNum.toString();
-        }
+        const displayText = isPerfect 
+            ? `🎉 ${userScoreNum} 🎉`
+            : userScoreNum.toString();
         
         metricOutput.innerHTML = displayText;
         
@@ -947,12 +838,7 @@ class Game {
      * @returns {string|null} Saved pet emoji or null if not found
      */
     _loadPetFromCookie() {
-        const value = `; ${document.cookie}`;
-        const parts = value.split('; selectedPet=');
-        if (parts.length === 2) {
-            return decodeURIComponent(parts.pop().split(';').shift());
-        }
-        return null;
+        return CookieUtils.getCookie('selectedPet');
     }
 
     /**
@@ -961,39 +847,30 @@ class Game {
      * @param {string} petEmoji - Pet emoji to save
      */
     _savePetToCookie(petEmoji) {
-        const date = new Date();
-        date.setTime(date.getTime() + (365 * 24 * 60 * 60 * 1000)); // 1 year
-        const expires = `expires=${date.toUTCString()}`;
-        document.cookie = `selectedPet=${encodeURIComponent(petEmoji)};${expires};path=/;SameSite=Lax`;
+        CookieUtils.setCookie('selectedPet', petEmoji, 365);
     }
     
     /**
-     * Helper method to get a cookie value
+     * Helper method to get a cookie value.
+     * Delegates to CookieUtils for shared implementation.
      * @private
      * @param {string} name - Cookie name
      * @returns {string|null} Cookie value or null
      */
     _getCookie(name) {
-        const value = `; ${document.cookie}`;
-        const parts = value.split(`; ${name}=`);
-        if (parts.length === 2) {
-            return decodeURIComponent(parts.pop().split(';').shift());
-        }
-        return null;
+        return CookieUtils.getCookie(name);
     }
     
     /**
-     * Helper method to set a cookie
+     * Helper method to set a cookie.
+     * Delegates to CookieUtils for shared implementation.
      * @private
      * @param {string} name - Cookie name
      * @param {string} value - Cookie value
      * @param {number} days - Expiration in days
      */
     _setCookie(name, value, days) {
-        const date = new Date();
-        date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
-        const expires = `expires=${date.toUTCString()}`;
-        document.cookie = `${name}=${encodeURIComponent(value)};${expires};path=/;SameSite=Lax`;
+        CookieUtils.setCookie(name, value, days);
     }
     
     /**
