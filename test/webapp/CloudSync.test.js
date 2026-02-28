@@ -47,7 +47,7 @@ describe('CloudSync', () => {
     });
 
     describe('signOut()', () => {
-        test('should not throw when not initialised', async () => {
+        test('should not throw when not initialized', async () => {
             await expect(CloudSync.signOut()).resolves.toBeUndefined();
         });
     });
