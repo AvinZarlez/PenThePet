@@ -38,7 +38,7 @@ PenThePet/
 │       ├── MILPSolver.js      # Node.js wrapper that calls Python solver
 │       ├── solve.py           # Python MILP solver using PuLP + CBC
 │       └── requirements.txt   # Python dependencies (PuLP)
-├── test/                   # Test suite (237 tests)
+├── test/                   # Test suite
 │   └── *.test.js              # Unit tests for each module
 ├── docs/                   # 📚 Comprehensive documentation
 │   ├── CODE_STRUCTURE.md   # This file

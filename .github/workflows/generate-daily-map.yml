@@ -4,8 +4,8 @@ on:
   workflow_dispatch:
     inputs:
       date:
-        description: 'Date for the map (YYYY-MM-DD)'
-        required: true
+        description: 'Date for the map (YYYY-MM-DD). Leave empty to auto-assign the next date.'
+        required: false
         default: ''
       size:
         description: 'Map size (7, 9, 11, etc.)'
@@ -25,6 +25,9 @@ on:
 jobs:
   generate-map:
     runs-on: ubuntu-latest
+    
+    permissions:
+      contents: write
     
     steps:
       - name: Checkout repository
@@ -48,10 +51,17 @@ jobs:
       - name: Generate map
         id: generate
         run: |
-          echo "Generating map for ${{ github.event.inputs.date }} (size: ${{ github.event.inputs.size }})"
-          node scripts/generate-single-map.js \
-            --date "${{ github.event.inputs.date }}" \
-            --size "${{ github.event.inputs.size }}"
+          DATE_ARG="${{ github.event.inputs.date }}"
+          SIZE_ARG="${{ github.event.inputs.size }}"
+          CMD="node scripts/generate-single-map.js --size ${SIZE_ARG}"
+          
+          if [ -n "$DATE_ARG" ]; then
+            echo "Generating map for ${DATE_ARG} (size: ${SIZE_ARG})"
+            $CMD --date "${DATE_ARG}"
+          else
+            echo "Generating map with auto-assigned date (size: ${SIZE_ARG})"
+            $CMD
+          fi
           
       - name: Check for changes
         id: check_changes
@@ -68,7 +78,12 @@ jobs:
           git config user.name "GitHub Actions Bot"
           git config user.email "actions@github.com"
           git add maps.json
-          git commit -m "Add daily map for ${{ github.event.inputs.date }}"
+          DATE_ARG="${{ github.event.inputs.date }}"
+          if [ -n "$DATE_ARG" ]; then
+            git commit -m "Add daily map for ${DATE_ARG}"
+          else
+            git commit -m "Add new daily map (auto-assigned date)"
+          fi
           git push
           
       - name: No changes

@@ -502,7 +502,7 @@ Before submitting changes, review:
 - Class-based components (Grid, Game, MapGenerator)
 - Configuration-driven behavior (CONSTANTS, CONFIG)
 - BFS for pathfinding
-- Exhaustive search for optimization
+- MILP solver for optimal map generation
 - JSDoc for documentation
 - Jest for testing
 

@@ -566,7 +566,15 @@ The project uses GitHub Actions for automated testing and deployment:
 - Lints code with ESLint
 - Runs Jest tests with coverage
 - Posts coverage report to Codecov
+- Uploads coverage report as artifact
 - Comments test results on PRs
+
+**generate-daily-map.yml** - Manual workflow for adding new maps:
+- Triggered via workflow_dispatch
+- Date is optional (auto-assigns next available date if omitted)
+- Generates map using Python MILP solver
+- Validates map quality
+- Commits new map to maps.json
 
 **static.yml** - Deploys to GitHub Pages on main branch:
 - Uploads entire repository as artifact

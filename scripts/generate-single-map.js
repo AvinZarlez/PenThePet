@@ -96,6 +96,33 @@ async function generateSingleMap(date, size, _maxWalls) {
 }
 
 /**
+ * Get the next available date from maps.json (day after the latest existing date).
+ * If no maps exist, returns today's date.
+ */
+function getNextAvailableDate(mapsPath) {
+    if (!fs.existsSync(mapsPath)) {
+        return new Date().toISOString().split('T')[0];
+    }
+    
+    const data = fs.readFileSync(mapsPath, 'utf8');
+    const maps = JSON.parse(data);
+    const dates = Object.keys(maps).sort();
+    
+    if (dates.length === 0) {
+        return new Date().toISOString().split('T')[0];
+    }
+    
+    // Get the day after the latest date (parse manually to avoid timezone issues)
+    const [year, month, day] = dates[dates.length - 1].split('-').map(Number);
+    const latestDate = new Date(year, month - 1, day);
+    latestDate.setDate(latestDate.getDate() + 1);
+    const y = latestDate.getFullYear();
+    const m = String(latestDate.getMonth() + 1).padStart(2, '0');
+    const d = String(latestDate.getDate()).padStart(2, '0');
+    return `${y}-${m}-${d}`;
+}
+
+/**
  * Main function
  */
 async function main() {
@@ -115,9 +142,12 @@ async function main() {
         }
     }
     
+    const mapsPath = path.join(__dirname, '../maps.json');
+    
+    // Auto-assign date if not provided
     if (!date) {
-        console.error('Error: --date parameter is required (YYYY-MM-DD format)');
-        process.exit(1);
+        date = getNextAvailableDate(mapsPath);
+        console.log(`No date provided, auto-assigned: ${date}`);
     }
     
     // Validate date format
@@ -125,8 +155,6 @@ async function main() {
         console.error('Error: Date must be in YYYY-MM-DD format');
         process.exit(1);
     }
-    
-    const mapsPath = path.join(__dirname, '../maps.json');
     
     // Load existing maps
     let maps = {};
@@ -186,4 +214,4 @@ if (require.main === module) {
     });
 }
 
-module.exports = { generateSingleMap, getNextDayNumber };
+module.exports = { generateSingleMap, getNextDayNumber, getNextAvailableDate };
