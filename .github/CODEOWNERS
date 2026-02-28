@@ -1,0 +1,5 @@
+# All changes require review from @AvinZarlez before merging
+* @AvinZarlez
+
+# Workflow and CI config changes are especially sensitive
+.github/ @AvinZarlez

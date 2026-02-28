@@ -623,6 +623,36 @@ The project uses GitHub Actions for automated testing and deployment:
 - Uploads entire repository as artifact
 - Deploys to GitHub Pages automatically
 
+### Branch Protection & Merge Security
+
+The `main` branch must be protected so that only @AvinZarlez can merge pull requests. Apply these settings under **Settings → Branches → Branch protection rules → `main`**:
+
+| Setting | Value | Why |
+|---|---|---|
+| **Require a pull request before merging** | ✅ On | Prevents direct pushes to `main` |
+| **Required approvals** | `1` | At least one human review before merge |
+| **Dismiss stale pull request approvals when new commits are pushed** | ✅ On | Forces re-review if the PR changes after approval |
+| **Require review from Code Owners** | ✅ On | CODEOWNERS file requires @AvinZarlez approval |
+| **Restrict who can dismiss pull request reviews** | ✅ On, only @AvinZarlez | Prevents bots from dismissing reviews |
+| **Require status checks to pass before merging** | ✅ On | CI must be green |
+| **Do not allow bypassing the above settings** | ✅ On | Even admins go through the same rules |
+| **Restrict who can push to matching branches** | ✅ On, only @AvinZarlez | Only you can push/merge to `main` |
+| **Allow force pushes** | ❌ Off | Prevents history rewriting |
+| **Allow deletions** | ❌ Off | Prevents branch deletion |
+
+> **Why this is safe with "Allow GitHub Actions to create PRs" enabled:**
+> GitHub Actions can *create* PRs and push branches, but it **cannot merge** them when the branch protection rules above are active. Only @AvinZarlez (as Code Owner and the sole allowed merger) can approve and merge. A malicious action could open a PR with bad code, but it would sit there waiting for your review — it could never reach `main` on its own.
+
+The `.github/CODEOWNERS` file enforces that @AvinZarlez must approve every PR:
+
+```text
+# All changes require review from @AvinZarlez
+* @AvinZarlez
+
+# Workflow and CI config changes are especially sensitive
+.github/ @AvinZarlez
+```
+
 ### Dependabot Configuration
 
 **Purpose:** Dependabot is configured to monitor dependencies and create PRs for updates.
