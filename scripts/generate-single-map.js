@@ -90,7 +90,8 @@ async function generateSingleMap(date, size, _maxWalls) {
         size: size,
         goal: result.goal,
         maxWalls: result.maxWalls,
-        map: result.map
+        map: result.map,
+        optimalSolution: result.optimalSolution
     };
 }
 
