@@ -4,12 +4,11 @@ This folder contains the MILP solver pipeline used during map generation to find
 
 ## What belongs here
 
-- `MILPSolver.js` — Node.js wrapper that spawns the Python solver as a subprocess
-- `solve.py` — Python MILP solver using PuLP + CBC
-- `requirements.txt` — Python dependencies (`pulp`)
+- The Node.js solver wrapper and Python MILP solver
+- Python dependency specification (`requirements.txt`)
 
 This code runs offline only (locally or in GitHub Actions). It is never loaded in the browser.
 
 ## Documentation
 
-For a full explanation of the algorithm, solver constraints, and how to run map generation, see **[../../docs/MAP_GENERATION.md](../../docs/MAP_GENERATION.md)**.
+For a full explanation of the algorithm, solver constraints, file descriptions, and how to run map generation, see **[../../docs/MAP_GENERATION.md](../../docs/MAP_GENERATION.md)**.

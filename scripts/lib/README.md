@@ -4,10 +4,8 @@ This folder contains shared pure utility functions used by the map generation an
 
 ## What belongs here
 
-- `mapUtils.js` — helpers for size parsing, date arithmetic, day numbering, and maps-database validation
-
-These utilities have no side effects and do not depend on the browser environment.
+- Shared utility modules with no side effects and no browser dependencies
 
 ## Documentation
 
-For function-level descriptions and how these utilities fit into the generation pipeline, see **[../../docs/MAP_GENERATION.md](../../docs/MAP_GENERATION.md)** and **[../../docs/CODE_STRUCTURE.md](../../docs/CODE_STRUCTURE.md)**.
+For function-level descriptions, see the **scripts/lib/mapUtils.js** section in **[../../docs/CODE_STRUCTURE.md#scripts-scripts-directory](../../docs/CODE_STRUCTURE.md#scripts-scripts-directory)**.

@@ -4,14 +4,12 @@ This folder contains the offline Node.js scripts used to generate and audit maps
 
 ## What belongs here
 
-- `generate-map.js` — entry point for generating one or more maps and appending them to `maps.json`
-- `audit-maps.js` — validates every map in `maps.json` against `MapValidator` rules
-- `lib/` — shared pure utility functions used by the scripts above
-- `solver/` — the MILP solver pipeline (Node.js wrapper + Python solver)
+- Offline map generation and audit scripts (Node.js)
+- Subdirectories for shared utilities (`lib/`) and the MILP solver pipeline (`solver/`)
 
 Do **not** add browser-loaded code here. Browser code lives in `js/`.
 
 ## Documentation
 
-- Map generation algorithm, CLI usage, and metadata structure: **[../docs/MAP_GENERATION.md](../docs/MAP_GENERATION.md)**
-- File-by-file descriptions: **[../docs/CODE_STRUCTURE.md](../docs/CODE_STRUCTURE.md)**
+- File-by-file descriptions and CLI usage: **[../docs/CODE_STRUCTURE.md#scripts-scripts-directory](../docs/CODE_STRUCTURE.md#scripts-scripts-directory)**
+- Map generation algorithm and metadata structure: **[../docs/MAP_GENERATION.md](../docs/MAP_GENERATION.md)**

@@ -4,7 +4,7 @@ This folder contains all SVG art assets used as tile backgrounds and overlays in
 
 ## What belongs here
 
-- SVG files for each tile type (`grass.svg`, `water.svg`, `wall.svg`, `home.svg`, `penned.svg`, `paw.svg`)
+- SVG artwork files for each tile type
 - Any replacement or additional tile artwork in SVG (or PNG/JPEG) format
 
 ## Documentation
