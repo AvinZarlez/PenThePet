@@ -34,6 +34,7 @@ function setupDOM() {
         <select id="petType"></select>
         <select id="hintMode"></select>
         <div class="debug-section" style="display: none;">
+            <input type="checkbox" id="debugShowAllLevels">
             <button id="debugResetLevel"></button>
             <button id="debugResetAll"></button>
         </div>
@@ -97,6 +98,15 @@ function mockFetch() {
                     goal: 8,
                     maxWalls: 4,
                     map: []
+                },
+                '2099-12-31': {
+                    dayNumber: 999,
+                    mapName: 'Future',
+                    date: '2099-12-31',
+                    size: 7,
+                    goal: 15,
+                    maxWalls: 5,
+                    map: []
                 }
             })
         })
@@ -127,6 +137,7 @@ describe('Menu', () => {
         test('should set initial properties', () => {
             expect(menu.currentLevel).toBe(null);
             expect(menu.mapsDatabase).toBe(null);
+            expect(menu.showAllLevels).toBe(false);
         });
     });
 
@@ -432,6 +443,65 @@ describe('Menu', () => {
             
             const levelList = document.getElementById('levelList');
             expect(levelList.children.length).toBe(0);
+        });
+    });
+
+    describe('Level Selector Date Filtering', () => {
+        test('should hide future levels by default', async () => {
+            await menu.loadMapsDatabase();
+            menu.populateLevelList();
+
+            const levelList = document.getElementById('levelList');
+            const levelTexts = Array.from(levelList.children).map(el => el.textContent);
+            
+            // Past levels should be present
+            expect(levelTexts.some(t => t.includes('Canyon'))).toBe(true);
+            expect(levelTexts.some(t => t.includes('River'))).toBe(true);
+            // Future level should be hidden
+            expect(levelTexts.some(t => t.includes('Future'))).toBe(false);
+        });
+
+        test('should show all levels when showAllLevels is true', async () => {
+            await menu.loadMapsDatabase();
+            menu.showAllLevels = true;
+            menu.populateLevelList();
+
+            const levelList = document.getElementById('levelList');
+            const levelTexts = Array.from(levelList.children).map(el => el.textContent);
+            
+            // All levels should be present, including future
+            expect(levelTexts.some(t => t.includes('Canyon'))).toBe(true);
+            expect(levelTexts.some(t => t.includes('River'))).toBe(true);
+            expect(levelTexts.some(t => t.includes('Future'))).toBe(true);
+        });
+
+        test('should toggle showAllLevels via debug checkbox', () => {
+            const checkbox = document.getElementById('debugShowAllLevels');
+            
+            expect(menu.showAllLevels).toBe(false);
+            
+            checkbox.checked = true;
+            checkbox.dispatchEvent(new Event('change'));
+            expect(menu.showAllLevels).toBe(true);
+            
+            checkbox.checked = false;
+            checkbox.dispatchEvent(new Event('change'));
+            expect(menu.showAllLevels).toBe(false);
+        });
+
+        test('should only show levels dated today or before', async () => {
+            await menu.loadMapsDatabase();
+            menu.populateLevelList();
+
+            const levelList = document.getElementById('levelList');
+            const today = DateUtils.getTodayDate();
+            
+            // Every rendered level-item-date should be <= today
+            const dateElements = levelList.querySelectorAll('.level-item-date');
+            expect(dateElements.length).toBeGreaterThan(0);
+            
+            // All levels in the list are past/today (no future)
+            expect(levelList.children.length).toBe(2); // Canyon + River only
         });
     });
 
