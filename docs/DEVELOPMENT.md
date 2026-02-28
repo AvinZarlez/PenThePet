@@ -64,9 +64,10 @@ PenThePet/
 │   ├── Menu.js          # Menu system
 │   └── main.js          # Entry point
 ├── scripts/
-│   ├── generate-maps.js # Generate daily maps
-│   ├── generate-single-map.js # Single map generator
-│   ├── audit-maps.js    # Validate maps
+│   ├── generate-single-map.js # Map generation entry point (single, batch, or fresh)
+│   ├── audit-maps.js    # Validate all maps in maps.json
+│   ├── lib/
+│   │   └── mapUtils.js  # Shared utilities (dates, size parsing, DB validation)
 │   └── solver/          # MILP solver pipeline
 │       ├── MILPSolver.js    # Node.js wrapper
 │       ├── solve.py         # Python MILP solver
@@ -427,7 +428,7 @@ font-size: clamp(12px, 2vw, 16px);
 2. **Regenerate maps** (if needed)
 
    ```bash
-   node scripts/generate-maps.js --fresh --count 10
+   node scripts/generate-single-map.js --fresh --count 10
    ```
 
 3. **Test**
@@ -500,11 +501,14 @@ font-size: clamp(12px, 2vw, 16px);
 # Install Python dependencies first
 pip install -r scripts/solver/requirements.txt
 
-# Generate 10 fresh maps
-node scripts/generate-maps.js --fresh --count 10 --sizes 7,9,11
+# Generate a single map (auto-assigned date)
+node scripts/generate-single-map.js --size 9
 
-# Append 5 more maps
-node scripts/generate-maps.js --count 5 --start-date 2026-02-16
+# Generate 5 maps with random sizes (7–13)
+node scripts/generate-single-map.js --size 7-13 --count 5
+
+# Replace all maps with 10 fresh ones
+node scripts/generate-single-map.js --fresh --count 10 --date 2026-03-01 --size 9
 
 # Test generated maps
 npm test
@@ -609,9 +613,10 @@ The project uses GitHub Actions for automated testing and deployment:
 
 - Triggered via workflow_dispatch
 - Date is optional (auto-assigns next available date if omitted)
-- Generates map using Python MILP solver
-- Validates map quality
-- Commits new map to maps.json
+- Size accepts an exact value (`9`) or a random range (`7-13`)
+- Count defaults to 1; set higher to generate a batch
+- Generates maps using Python MILP solver and validates quality
+- Creates a new branch and opens a pull request against `main`
 
 **static.yml** - Deploys to GitHub Pages on main branch:
 

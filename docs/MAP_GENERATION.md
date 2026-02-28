@@ -89,6 +89,10 @@ Each map in `maps.json` contains the following fields:
   "map": [                 // 2D array of tile types
     ["grass", "water", ...],
     ...
+  ],
+  "optimalSolution": [     // Wall coordinates for the optimal solution
+    [row, col],
+    ...
   ]
 }
 ```
@@ -101,7 +105,8 @@ Each map in `maps.json` contains the following fields:
 - **size**: Grid dimensions (always square: size x size)
 - **goal**: The maximum area achievable with optimal wall placement within the wall budget
 - **maxWalls**: The wall budget for the player, computed as `floor(size * 0.75)`
-- **map**: 2D array where each cell is "grass", "water", or "home"
+- **map**: 2D array where each cell is `"grass"`, `"water"`, or `"home"`
+- **optimalSolution**: Array of `[row, col]` coordinate pairs identifying where the optimal walls are placed
 
 ## Constants Configuration
 
@@ -389,7 +394,7 @@ console.log('Walls:', result.maxWalls);
 "
 
 # Run the generation script with test data
-node scripts/generate-maps.js --count 3 --sizes 7
+node scripts/generate-single-map.js --count 3 --size 7
 ```
 
 ## Summary for Future Agents

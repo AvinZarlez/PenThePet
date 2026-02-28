@@ -293,7 +293,7 @@ git commit -m "changes" # without running npm test
 ```javascript
 // If you change CONSTANTS.MAX_WALLS, you MUST:
 // 1. Update the constant
-// 2. Regenerate ALL maps with scripts/generate-maps.js --fresh
+// 2. Regenerate ALL maps with scripts/generate-single-map.js --fresh
 // 3. Run scripts/audit-maps.js to verify
 // 4. Update tests
 // 5. Update documentation
@@ -664,7 +664,7 @@ node scripts/generate-single-map.js --date 2026-02-15 --size 9
 **Option 3: Batch Generation**
 
 ```bash
-node scripts/generate-maps.js --count 10 --start-date 2026-02-15
+node scripts/generate-single-map.js --size 7-13 --count 5
 ```
 
 ### Auditing Maps
