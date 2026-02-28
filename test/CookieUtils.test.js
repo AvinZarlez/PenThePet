@@ -64,4 +64,36 @@ describe('CookieUtils', () => {
             expect(JSON.parse(result)).toEqual({ score: 10, walls: [[1, 2]] });
         });
     });
+
+    describe('deleteCookie()', () => {
+        test('should delete an existing cookie', () => {
+            CookieUtils.setCookie('toDelete', 'value', 1);
+            expect(CookieUtils.getCookie('toDelete')).toBe('value');
+
+            CookieUtils.deleteCookie('toDelete');
+            expect(CookieUtils.getCookie('toDelete')).toBe(null);
+        });
+
+        test('should not throw when deleting non-existent cookie', () => {
+            expect(() => CookieUtils.deleteCookie('nonexistent')).not.toThrow();
+        });
+    });
+
+    describe('deleteAllCookies()', () => {
+        test('should delete all cookies', () => {
+            CookieUtils.setCookie('cookie1', 'a', 1);
+            CookieUtils.setCookie('cookie2', 'b', 1);
+            CookieUtils.setCookie('cookie3', 'c', 1);
+
+            CookieUtils.deleteAllCookies();
+
+            expect(CookieUtils.getCookie('cookie1')).toBe(null);
+            expect(CookieUtils.getCookie('cookie2')).toBe(null);
+            expect(CookieUtils.getCookie('cookie3')).toBe(null);
+        });
+
+        test('should handle when no cookies exist', () => {
+            expect(() => CookieUtils.deleteAllCookies()).not.toThrow();
+        });
+    });
 });

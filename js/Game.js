@@ -415,14 +415,26 @@ class Game {
     }
 
     /**
-     * Reset the game to initial state
+     * Reset the game to initial state.
+     * Blocked when the player has already submitted.
      */
     reset() {
+        if (this.isSubmitted) return;
         this.grid.reset();
         this.wallCount = 0;
         this.render();
         this.updateWallCounter();
         this.updateAreaSizeDisplay();
+    }
+
+    /**
+     * Update the Reset button's enabled/disabled state based on submission
+     */
+    updateResetButton() {
+        const resetBtn = document.getElementById('resetBtn');
+        if (resetBtn) {
+            resetBtn.disabled = this.isSubmitted;
+        }
     }
 
     /**
@@ -568,6 +580,8 @@ class Game {
         
         // Update the submit button text
         this.updatePennedStatus(true);
+        // Disable the reset button after submission
+        this.updateResetButton();
         
         // Show solution toggle bar if optimal solution is available
         this.updateSolutionToggleBar();
@@ -964,6 +978,15 @@ class Game {
      */
     hasSubmission(dateString) {
         return this.loadSubmission(dateString) !== null;
+    }
+
+    /**
+     * Delete saved submission for a specific puzzle
+     * @param {string} dateString - Date of the puzzle
+     */
+    deleteSubmission(dateString) {
+        const cookieName = `submission_${dateString}`;
+        CookieUtils.deleteCookie(cookieName);
     }
 }
 
