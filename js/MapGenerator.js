@@ -2,7 +2,7 @@
  * Map Generator
  * 
  * Generates valid game maps that ensure the pet can always reach an edge
- * when no walls are placed. Uses BFS pathfinding to validate connectivity.
+ * when no walls are placed. Delegates path validation to PathfindingUtils.
  */
 
 // Node.js-only module - used by generation scripts, never loaded in browser
@@ -10,6 +10,9 @@
     if (typeof require !== 'undefined') {
         if (typeof global.CONSTANTS === 'undefined') {
             global.CONSTANTS = require('./constants.js');
+        }
+        if (typeof global.PathfindingUtils === 'undefined') {
+            global.PathfindingUtils = require('./PathfindingUtils.js');
         }
         if (typeof global.MILPSolver === 'undefined') {
             global.MILPSolver = require('../scripts/solver/MILPSolver.js');
@@ -129,60 +132,14 @@ class MapGenerator {
     }
 
     /**
-     * Validate that a map has a path from home to edge with no walls
+     * Validate that a map has a path from home to edge with no walls.
+     * Delegates to PathfindingUtils.hasPathToEdge() for shared BFS logic.
      * @private
      * @param {Array} map - 2D array of tile types
      * @returns {boolean} True if map is valid
      */
     _validateMap(map) {
-        const centerRow = Math.floor(this.size / 2);
-        const centerCol = Math.floor(this.size / 2);
-        
-        // BFS to check if there's a path to any edge
-        const visited = new Set();
-        const queue = [[centerRow, centerCol]];
-        visited.add(`${centerRow},${centerCol}`);
-        
-        const directions = [[-1, 0], [1, 0], [0, -1], [0, 1]];
-        
-        while (queue.length > 0) {
-            const [row, col] = queue.shift();
-            
-            // Check if we reached an edge
-            if (row === 0 || row === this.size - 1 || col === 0 || col === this.size - 1) {
-                return true;
-            }
-            
-            // Explore neighbors
-            for (const [dr, dc] of directions) {
-                const newRow = row + dr;
-                const newCol = col + dc;
-                const coordKey = `${newRow},${newCol}`;
-                
-                // Check bounds
-                if (newRow < 0 || newRow >= this.size || newCol < 0 || newCol >= this.size) {
-                    continue;
-                }
-                
-                // Check if already visited
-                if (visited.has(coordKey)) {
-                    continue;
-                }
-                
-                const tileType = map[newRow][newCol];
-                
-                // Only grass and home tiles are passable (water blocks)
-                if (tileType === 'water') {
-                    continue;
-                }
-                
-                visited.add(coordKey);
-                queue.push([newRow, newCol]);
-            }
-        }
-        
-        // No path to edge found
-        return false;
+        return PathfindingUtils.hasPathToEdge(map);
     }
 
     /**

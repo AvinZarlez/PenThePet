@@ -57,59 +57,14 @@ class MapValidator {
     }
     
     /**
-     * Check if map has a valid path from home to edge
+     * Check if map has a valid path from home to edge.
+     * Delegates to PathfindingUtils.hasPathToEdge() for shared BFS logic.
      * @private
+     * @param {Array} map - 2D array of tile type strings
+     * @returns {boolean} True if path exists from home to edge
      */
     static _hasPathToEdge(map) {
-        const size = map.length;
-        const centerRow = Math.floor(size / 2);
-        const centerCol = Math.floor(size / 2);
-        
-        // Verify home is at center
-        if (map[centerRow][centerCol] !== 'home') {
-            return false;
-        }
-        
-        // BFS to check path to edge
-        const visited = new Set();
-        const queue = [[centerRow, centerCol]];
-        visited.add(`${centerRow},${centerCol}`);
-        
-        const directions = [[-1, 0], [1, 0], [0, -1], [0, 1]];
-        
-        while (queue.length > 0) {
-            const [row, col] = queue.shift();
-            
-            // Check if reached edge
-            if (row === 0 || row === size - 1 || col === 0 || col === size - 1) {
-                return true;
-            }
-            
-            // Explore neighbors
-            for (const [dr, dc] of directions) {
-                const newRow = row + dr;
-                const newCol = col + dc;
-                const coordKey = `${newRow},${newCol}`;
-                
-                if (newRow < 0 || newRow >= size || newCol < 0 || newCol >= size) {
-                    continue;
-                }
-                
-                if (visited.has(coordKey)) {
-                    continue;
-                }
-                
-                const tileType = map[newRow][newCol];
-                if (tileType === 'water') {
-                    continue;
-                }
-                
-                visited.add(coordKey);
-                queue.push([newRow, newCol]);
-            }
-        }
-        
-        return false;
+        return PathfindingUtils.hasPathToEdge(map);
     }
     
     /**

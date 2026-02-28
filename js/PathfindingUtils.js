@@ -1,18 +1,18 @@
 /**
  * Pathfinding Utilities
  * 
- * Shared BFS pathfinding logic used by both MILPSolver and BruteForceSolver
- * to ensure consistency between test and production code.
+ * Shared BFS pathfinding logic used by the game, solver pipeline,
+ * map generator, and map validator.
  * 
  * This module is the single source of truth for:
- * - Checking if the pet is penned in
- * - Calculating penned area size
+ * - Checking if the pet is penned in (numeric map format)
+ * - Calculating penned area size (numeric map format)
+ * - Checking if home has a path to an edge (string map format)
  */
 
 class PathfindingUtils {
     /**
-     * Check if home is penned in (cannot reach any edge)
-     * 
+     * Check if home is penned in (cannot reach any edge).
      * Uses BFS to explore all reachable tiles from home.
      * If any edge tile is reached, the pet can escape.
      * 
@@ -65,8 +65,7 @@ class PathfindingUtils {
     }
     
     /**
-     * Calculate the penned area size (number of tiles reachable from home)
-     * 
+     * Calculate the penned area size (number of tiles reachable from home).
      * Uses BFS to count all tiles reachable from home without crossing water or walls.
      * 
      * @param {Array} map - 2D array where 0=water, 1=grass, 2=home, 5=wall
@@ -110,6 +109,77 @@ class PathfindingUtils {
         }
         
         return visited.size;
+    }
+
+    /**
+     * Check if home has a path to any edge tile (string map format).
+     * Used by MapGenerator and MapValidator to verify map connectivity.
+     * Water tiles block movement; grass and home tiles are passable.
+     * 
+     * @param {Array} map - 2D array of tile type strings ('grass', 'water', 'home')
+     * @returns {boolean} True if home can reach an edge, false otherwise
+     */
+    static hasPathToEdge(map) {
+        const size = map.length;
+
+        // Find home position
+        let homeRow = -1, homeCol = -1;
+        for (let i = 0; i < size; i++) {
+            for (let j = 0; j < map[i].length; j++) {
+                if (map[i][j] === 'home') {
+                    homeRow = i;
+                    homeCol = j;
+                    break;
+                }
+            }
+            if (homeRow >= 0) break;
+        }
+
+        if (homeRow < 0) {
+            return false; // No home found
+        }
+
+        // If home is already on the edge, it can escape
+        if (homeRow === 0 || homeRow === size - 1 || homeCol === 0 || homeCol === map[0].length - 1) {
+            return true;
+        }
+
+        const visited = new Set([`${homeRow},${homeCol}`]);
+        const queue = [[homeRow, homeCol]];
+        const directions = [[-1, 0], [1, 0], [0, -1], [0, 1]];
+
+        while (queue.length > 0) {
+            const [row, col] = queue.shift();
+
+            // Check if reached edge
+            if (row === 0 || row === size - 1 || col === 0 || col === map[0].length - 1) {
+                return true;
+            }
+
+            // Explore neighbors
+            for (const [dr, dc] of directions) {
+                const newRow = row + dr;
+                const newCol = col + dc;
+                const coordKey = `${newRow},${newCol}`;
+
+                if (newRow < 0 || newRow >= size || newCol < 0 || newCol >= map[0].length) {
+                    continue;
+                }
+
+                if (visited.has(coordKey)) {
+                    continue;
+                }
+
+                if (map[newRow][newCol] === 'water') {
+                    continue;
+                }
+
+                visited.add(coordKey);
+                queue.push([newRow, newCol]);
+            }
+        }
+
+        return false;
     }
 }
 

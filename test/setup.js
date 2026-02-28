@@ -22,6 +22,8 @@ global.localStorage = localStorageMock;
 // It is NOT used by browser-side code (Grid.test.js, Menu.test.js, etc.)
 global.CONSTANTS = require('../js/constants.js');
 global.CONFIG = require('../js/config.js');
+global.CookieUtils = require('../js/CookieUtils.js');
+global.DateUtils = require('../js/DateUtils.js');
 global.PathfindingUtils = require('../js/PathfindingUtils.js');
 global.MILPSolver = require('../scripts/solver/MILPSolver.js');
 global.MapGenerator = require('../js/MapGenerator.js');

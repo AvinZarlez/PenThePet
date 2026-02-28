@@ -211,13 +211,21 @@ class Menu {
     }
 
     /**
-     * Load a specific level into the game
-     * @param {Object} mapData - Map data object
+     * Load a specific level into the game.
+     * Fully resets game state to match the new level, including grid size,
+     * submission state, and optimal solution data.
+     * @param {Object} mapData - Map data object from maps.json
      */
     async loadLevel(mapData) {
         // Update map info display
         if (typeof updateMapInfo === 'function') {
             updateMapInfo(mapData);
+        }
+
+        // Update grid size if it changed (e.g., switching from 9x9 to 7x7)
+        const newSize = mapData.map.length;
+        if (this.game.grid.size !== newSize) {
+            this.game.grid.size = newSize;
         }
 
         // Load the map
@@ -233,10 +241,39 @@ class Menu {
             this.game.maxWalls = mapData.maxWalls;
         }
 
+        // Update current date and optimal solution
+        this.game.currentDate = mapData.date || null;
+        this.game.optimalSolution = mapData.optimalSolution || null;
+
+        // Reset submission state for the new level
+        this.game.isSubmitted = false;
+        this.game.submittedScore = null;
+        this.game.submittedWalls = null;
+        this.game.viewingOptimal = false;
+
+        // Check if user has already submitted for this puzzle
+        if (mapData.date) {
+            const submission = this.game.loadSubmission(mapData.date);
+            if (submission) {
+                this.game.isSubmitted = true;
+                this.game.submittedScore = submission.score;
+                this.game.submittedWalls = submission.walls;
+
+                // Restore submitted wall positions
+                for (const [row, col] of submission.walls) {
+                    if (this.game.isValidPosition(row, col) && this.game.grid.getTile(row, col) === 'grass') {
+                        this.game.grid.setTile(row, col, 'wall');
+                        this.game.wallCount++;
+                    }
+                }
+            }
+        }
+
         // Render the game
         this.game.render();
         this.game.updateWallCounter();
         this.game.updateAreaSizeDisplay();
+        this.game.updateLegend();
     }
 
     /**
@@ -338,21 +375,13 @@ class Menu {
     }
 
     /**
-     * Format date string for display
-     * Uses formatDate from main.js if available, otherwise formats locally
+     * Format date string for display.
+     * Delegates to DateUtils for shared implementation.
      * @param {string} dateStr - ISO date string
      * @returns {string} Formatted date
      */
     _formatDate(dateStr) {
-        // Try to use global formatDate function from main.js
-        if (typeof formatDate === 'function') {
-            return formatDate(dateStr);
-        }
-        
-        // Fallback to local formatting
-        const date = new Date(dateStr + 'T00:00:00');
-        const options = { year: 'numeric', month: 'short', day: 'numeric' };
-        return date.toLocaleDateString('en-US', options);
+        return DateUtils.formatDate(dateStr);
     }
 
     /**
@@ -360,12 +389,9 @@ class Menu {
      * @returns {string} Date string
      */
     _getCurrentLevelDate() {
-        const saved = this._getCookie('currentLevel');
+        const saved = CookieUtils.getCookie('currentLevel');
         if (saved) return saved;
-
-        // Default to today
-        const today = new Date();
-        return today.toISOString().split('T')[0];
+        return DateUtils.getTodayDate();
     }
 
     /**
@@ -373,7 +399,7 @@ class Menu {
      * @param {string} date - Date string to save
      */
     _saveCurrentLevelToCookie(date) {
-        this._setCookie('currentLevel', date, 365);
+        CookieUtils.setCookie('currentLevel', date, 365);
     }
 
     /**
@@ -381,7 +407,7 @@ class Menu {
      * @param {string} petEmoji - Pet emoji to save
      */
     _savePetToCookie(petEmoji) {
-        this._setCookie('selectedPet', petEmoji, 365);
+        CookieUtils.setCookie('selectedPet', petEmoji, 365);
     }
 
     /**
@@ -389,7 +415,7 @@ class Menu {
      * @param {string} hintMode - Hint mode to save
      */
     _saveHintModeToCookie(hintMode) {
-        this._setCookie('hintMode', hintMode, 365);
+        CookieUtils.setCookie('hintMode', hintMode, 365);
     }
 
     /**
@@ -397,7 +423,7 @@ class Menu {
      * @param {boolean} enabled - Debug mode state
      */
     _saveDebugModeToCookie(enabled) {
-        this._setCookie('debugMode', enabled ? 'true' : 'false', 365);
+        CookieUtils.setCookie('debugMode', enabled ? 'true' : 'false', 365);
     }
 
     /**
@@ -405,36 +431,10 @@ class Menu {
      * @returns {boolean} Debug mode state
      */
     _loadDebugModeFromCookie() {
-        const value = this._getCookie('debugMode');
+        const value = CookieUtils.getCookie('debugMode');
         return value === 'true';
     }
 
-    /**
-     * Get a cookie value
-     * @param {string} name - Cookie name
-     * @returns {string|null} Cookie value or null
-     */
-    _getCookie(name) {
-        const value = `; ${document.cookie}`;
-        const parts = value.split(`; ${name}=`);
-        if (parts.length === 2) {
-            return decodeURIComponent(parts.pop().split(';').shift());
-        }
-        return null;
-    }
-
-    /**
-     * Set a cookie
-     * @param {string} name - Cookie name
-     * @param {string} value - Cookie value
-     * @param {number} days - Expiration in days
-     */
-    _setCookie(name, value, days) {
-        const date = new Date();
-        date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
-        const expires = `expires=${date.toUTCString()}`;
-        document.cookie = `${name}=${encodeURIComponent(value)};${expires};path=/;SameSite=Lax`;
-    }
 }
 
 // Export for use in other modules

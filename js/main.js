@@ -9,15 +9,6 @@ let game;
 let menu;
 
 /**
- * Get today's date in ISO format (YYYY-MM-DD)
- * @returns {string} Today's date
- */
-function getTodayDate() {
-    const today = new Date();
-    return today.toISOString().split('T')[0];
-}
-
-/**
  * Load today's map from the database or from cookie selection
  * @returns {Promise<Object|null>} Map data or null if not found
  */
@@ -31,13 +22,13 @@ async function loadTodayMap() {
         const mapsDb = await response.json();
         
         // Check if user has a selected level in cookie
-        const savedLevel = getCookie('currentLevel');
+        const savedLevel = CookieUtils.getCookie('currentLevel');
         if (savedLevel && mapsDb[savedLevel]) {
             return mapsDb[savedLevel];
         }
         
         // Otherwise use today's map
-        const today = getTodayDate();
+        const today = DateUtils.getTodayDate();
         return mapsDb[today] || null;
     } catch (error) {
         console.error('Error loading maps database:', error);
@@ -57,7 +48,7 @@ function showNoMapError() {
             
             <div class="error-message">
                 <h2>No Map Available</h2>
-                <p>Sorry, there is no puzzle available for today (${getTodayDate()}).</p>
+                <p>Sorry, there is no puzzle available for today (${DateUtils.getTodayDate()}).</p>
                 <p>Please check back tomorrow for a new puzzle!</p>
             </div>
             
@@ -66,31 +57,6 @@ function showNoMapError() {
             </footer>
         `;
     }
-}
-
-/**
- * Get a cookie value by name
- * @param {string} name - Cookie name
- * @returns {string|null} Cookie value or null if not found
- */
-function getCookie(name) {
-    const value = `; ${document.cookie}`;
-    const parts = value.split(`; ${name}=`);
-    if (parts.length === 2) {
-        return decodeURIComponent(parts.pop().split(';').shift());
-    }
-    return null;
-}
-
-/**
- * Format date string for display
- * @param {string} dateStr - ISO date string (YYYY-MM-DD)
- * @returns {string} Formatted date (e.g., "Feb 6, 2026")
- */
-function formatDate(dateStr) {
-    const date = new Date(dateStr + 'T00:00:00');
-    const options = { year: 'numeric', month: 'short', day: 'numeric' };
-    return date.toLocaleDateString('en-US', options);
 }
 
 /**
@@ -111,7 +77,7 @@ function updateMapInfo(mapData) {
     }
     
     if (mapDateElement && mapData.date) {
-        mapDateElement.textContent = formatDate(mapData.date);
+        mapDateElement.textContent = DateUtils.formatDate(mapData.date);
     }
 }
 
@@ -131,7 +97,7 @@ async function initGame() {
     game = new Game(mapData.size);
     
     // Load hint mode from cookie if available
-    const savedHintMode = getCookie('hintMode');
+    const savedHintMode = CookieUtils.getCookie('hintMode');
     if (savedHintMode) {
         game.hintMode = savedHintMode;
     }
@@ -188,7 +154,7 @@ async function initGame() {
     menu = new Menu(game);
     
     // Load debug mode setting and apply visibility
-    const debugMode = getCookie('debugMode') === 'true';
+    const debugMode = CookieUtils.getCookie('debugMode') === 'true';
     menu.updateDebugToolsVisibility(debugMode);
     
     // Set grid size input attributes from config
