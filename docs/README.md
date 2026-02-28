@@ -15,10 +15,6 @@ All project documentation lives here. Each file covers a single topic — pick w
 | [TESTING.md](TESTING.md) | Test infrastructure, running tests, writing tests, and debugging failures |
 | [DEBUGGING_BRANCHES.md](DEBUGGING_BRANCHES.md) | How to test branches before merging (GitHub Pages, local, Codespaces) |
 
-## 📝 Change History
-
-Historical summaries of major changes and bug fixes are in the [summaries/](summaries/) folder.
-
 ## 🤖 For AI Coding Agents
 
 Agent instructions live in [.github/copilot-instructions.md](../.github/copilot-instructions.md).
