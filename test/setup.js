@@ -38,6 +38,7 @@ global.getTileType = function(tileType) {
             clickable: true,
             cssClass: 'grass',
             gradient: 'linear-gradient(135deg, #a8e063 0%, #56ab2f 100%)',
+            image: 'assets/grass.svg',
             ariaLabel: (row, col) => `Grass tile at row ${row + 1}, column ${col + 1}. Click to place a wall.`,
         },
         water: {
@@ -47,6 +48,7 @@ global.getTileType = function(tileType) {
             clickable: false,
             cssClass: 'water',
             gradient: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+            image: 'assets/water.svg',
             ariaLabel: (row, col) => `Water tile at row ${row + 1}, column ${col + 1}. Blocks movement.`,
         },
         wall: {
@@ -56,6 +58,7 @@ global.getTileType = function(tileType) {
             clickable: true,
             cssClass: 'wall',
             gradient: 'linear-gradient(135deg, #b0b0b0 0%, #606060 100%)',
+            image: 'assets/wall.svg',
             ariaLabel: (row, col) => `Wall at row ${row + 1}, column ${col + 1}. Click to remove.`,
         },
         home: {
@@ -65,6 +68,7 @@ global.getTileType = function(tileType) {
             clickable: false,
             cssClass: 'home',
             gradient: 'linear-gradient(135deg, #ffd89b 0%, #19547b 100%)',
+            image: 'assets/home.svg',
             ariaLabel: (row, col) => `Home tile at row ${row + 1}, column ${col + 1}. Your pet starts here.`,
         },
     };

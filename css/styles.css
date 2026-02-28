@@ -345,25 +345,25 @@ button:active {
 
 /* Tile Type Styles */
 .cell.grass {
-    background: linear-gradient(135deg, #7ed957 0%, #4caf50 100%);
+    background: url('../assets/grass.svg') center/cover no-repeat;
 }
 
 .cell.grass.penned {
-    background: linear-gradient(135deg, #ffeb3b 0%, #ffc107 100%);
+    background: url('../assets/penned.svg') center/cover no-repeat;
 }
 
 .cell.water {
-    background: linear-gradient(135deg, #4fc3f7 0%, #2196f3 100%);
+    background: url('../assets/water.svg') center/cover no-repeat;
     cursor: not-allowed;
 }
 
 .cell.wall {
-    background: linear-gradient(135deg, #8d6e63 0%, #5d4037 100%);
+    background: url('../assets/wall.svg') center/cover no-repeat;
     cursor: pointer;
 }
 
 .cell.home {
-    background: linear-gradient(135deg, #ffeb3b 0%, #ffc107 100%);
+    background: url('../assets/home.svg') center/cover no-repeat;
     cursor: default;
     display: flex;
     align-items: center;
@@ -381,7 +381,18 @@ button:active {
     box-shadow: none;
 }
 
-/* Path overlay */
+/* Path overlay - paw image */
+.cell .paw-overlay {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 60%;
+    height: 60%;
+    pointer-events: none;
+    transform-origin: center center;
+}
+
+/* Legacy path overlay for data-overlay fallback */
 .cell::after {
     content: attr(data-overlay);
     position: absolute;

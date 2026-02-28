@@ -3,6 +3,7 @@
 **For comprehensive documentation, see the [docs/](.) directory:**
 
 - **[ARCHITECTURE.md](ARCHITECTURE.md)** - Design decisions and philosophy
+- **[ART_ASSETS.md](ART_ASSETS.md)** - Art asset inventory and guidelines
 - **[TESTING.md](TESTING.md)** - Testing guide and coverage
 - **[DEVELOPMENT.md](DEVELOPMENT.md)** - Developer workflow and setup
 - **[MAP_GENERATION.md](MAP_GENERATION.md)** - Algorithm details
@@ -14,6 +15,13 @@
 ```text
 PenThePet/
 ├── index.html              # Main HTML file (minimal, references external files)
+├── assets/                 # Art assets (SVG tile images, paw icon)
+│   ├── grass.svg           # Grass tile texture
+│   ├── water.svg           # Water tile texture
+│   ├── wall.svg            # Wall/fence tile texture
+│   ├── home.svg            # Dog house tile artwork
+│   ├── penned.svg          # Penned area (yellow-tinted grass) texture
+│   └── paw.svg             # Paw print path overlay icon
 ├── css/
 │   └── styles.css          # All game styling
 ├── js/
@@ -150,7 +158,8 @@ Defines all tile types and their properties:
 
 - Name, display name, and description
 - Whether the tile is clickable
-- CSS class and gradient colors
+- CSS class and gradient colors (fallback)
+- Image path to SVG art asset
 - ARIA labels for accessibility
 
 **To add new tile types:** Add a new entry to the TILE_TYPES object with all required properties.
@@ -307,6 +316,7 @@ sand: {
     clickable: true,
     cssClass: 'sand',
     gradient: 'linear-gradient(135deg, #ffd54f 0%, #ffb300 100%)',
+    image: 'assets/sand.svg',
     ariaLabel: (row, col) => `Sand tile at row ${row + 1}, column ${col + 1}.`,
 }
 ```
@@ -315,7 +325,7 @@ sand: {
 
 ```css
 .cell.sand {
-    background: linear-gradient(135deg, #ffd54f 0%, #ffb300 100%);
+    background: url('../assets/sand.svg') center/cover no-repeat;
 }
 ```
 
@@ -444,6 +454,7 @@ No build step required - everything runs in the browser.
 ## 📚 Related Documentation
 
 - **[ARCHITECTURE.md](ARCHITECTURE.md)** - Design philosophy and decisions
+- **[ART_ASSETS.md](ART_ASSETS.md)** - Art asset inventory and guidelines
 - **[TESTING.md](TESTING.md)** - Complete testing guide
 - **[DEVELOPMENT.md](DEVELOPMENT.md)** - Development workflow and setup
 - **[MAP_GENERATION.md](MAP_GENERATION.md)** - Algorithm and map generation details

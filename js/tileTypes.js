@@ -13,6 +13,7 @@ const TILE_TYPES = {
         clickable: true,
         cssClass: 'grass',
         gradient: 'linear-gradient(135deg, #7ed957 0%, #4caf50 100%)',
+        image: 'assets/grass.svg',
         ariaLabel: (row, col) => `Grass tile at row ${row + 1}, column ${col + 1}. Click to build a wall.`,
     },
 
@@ -23,6 +24,7 @@ const TILE_TYPES = {
         clickable: false,
         cssClass: 'water',
         gradient: 'linear-gradient(135deg, #4fc3f7 0%, #2196f3 100%)',
+        image: 'assets/water.svg',
         ariaLabel: (row, col) => `Water tile at row ${row + 1}, column ${col + 1}. Cannot be clicked.`,
     },
 
@@ -33,6 +35,7 @@ const TILE_TYPES = {
         clickable: true,
         cssClass: 'wall',
         gradient: 'linear-gradient(135deg, #8d6e63 0%, #5d4037 100%)',
+        image: 'assets/wall.svg',
         ariaLabel: (row, col) => `Wall at row ${row + 1}, column ${col + 1}. Click to remove.`,
     },
 
@@ -43,6 +46,7 @@ const TILE_TYPES = {
         clickable: false,
         cssClass: 'home',
         gradient: 'linear-gradient(135deg, #ffeb3b 0%, #ffc107 100%)',
+        image: 'assets/home.svg',
         emoji: '🏠🐾',
         ariaLabel: (row, col) => `Home tile at row ${row + 1}, column ${col + 1}. Pet starting location.`,
     },
