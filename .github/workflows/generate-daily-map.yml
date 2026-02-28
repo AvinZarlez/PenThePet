@@ -53,13 +53,14 @@ jobs:
         run: |
           DATE_ARG="${{ github.event.inputs.date }}"
           SIZE_ARG="${{ github.event.inputs.size }}"
+          CMD="node scripts/generate-single-map.js --size ${SIZE_ARG}"
           
           if [ -n "$DATE_ARG" ]; then
             echo "Generating map for ${DATE_ARG} (size: ${SIZE_ARG})"
-            node scripts/generate-single-map.js --date "${DATE_ARG}" --size "${SIZE_ARG}"
+            $CMD --date "${DATE_ARG}"
           else
             echo "Generating map with auto-assigned date (size: ${SIZE_ARG})"
-            node scripts/generate-single-map.js --size "${SIZE_ARG}"
+            $CMD
           fi
           
       - name: Check for changes

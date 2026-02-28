@@ -112,10 +112,14 @@ function getNextAvailableDate(mapsPath) {
         return new Date().toISOString().split('T')[0];
     }
     
-    // Get the day after the latest date
-    const latestDate = new Date(dates[dates.length - 1]);
+    // Get the day after the latest date (parse manually to avoid timezone issues)
+    const [year, month, day] = dates[dates.length - 1].split('-').map(Number);
+    const latestDate = new Date(year, month - 1, day);
     latestDate.setDate(latestDate.getDate() + 1);
-    return latestDate.toISOString().split('T')[0];
+    const y = latestDate.getFullYear();
+    const m = String(latestDate.getMonth() + 1).padStart(2, '0');
+    const d = String(latestDate.getDate()).padStart(2, '0');
+    return `${y}-${m}-${d}`;
 }
 
 /**
