@@ -14,7 +14,8 @@
     "lint:python:fix": "ruff check --fix scripts/solver/",
     "lint:markdown": "markdownlint-cli2 \"**/*.md\" \"#node_modules\"",
     "lint:markdown:fix": "markdownlint-cli2 --fix \"**/*.md\" \"#node_modules\"",
-    "lint:all": "npm run lint && npm run lint:python && npm run lint:markdown",
+    "lint:yaml": "yamllint .github/ .yamllint.yml",
+    "lint:all": "npm run lint && npm run lint:python && npm run lint:markdown && npm run lint:yaml",
     "generate-maps": "node scripts/generate-map.js"
   },
   "keywords": [

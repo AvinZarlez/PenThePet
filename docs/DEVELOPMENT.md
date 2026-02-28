@@ -605,17 +605,20 @@ The project uses two consolidated GitHub Actions workflows for linting and testi
 **lint.yml** - Runs all linters; always produces a `Lint` status on every PR:
 
 - PR trigger: no path filter — always fires
-- Push trigger: only when JS, Python solver, or Markdown files change
+- Push trigger: only when JS, Python solver, Markdown, or YAML files change; each linter only runs when its specific files changed
+- Manual trigger: `workflow_dispatch` — run on any branch via **Actions → Lint → Run workflow** (always runs all linters)
 - **Detect Changed Files** — determines which linters are needed
 - **Lint JavaScript** — ESLint; runs only when `js/**`, `scripts/**/*.js`, `test/**/*.js`, `eslint.config.mjs`, or `package*.json` change
 - **Lint Python** — ruff; runs only when `scripts/solver/**` or `ruff.toml` change
 - **Lint Markdown** — markdownlint; runs only when `*.md` or `.markdownlint-cli2.jsonc` change
+- **Lint YAML** — yamllint; runs only when `.github/**/*.yml`, `.github/**/*.yaml`, or `.yamllint.yml` change
 - **Lint** *(gate)* — always runs; fails if any linter failed, passes if all passed or were skipped
 
 **test.yml** - Runs the test suite; always produces a `Test` status on every PR:
 
 - PR trigger: no path filter — always fires
 - Push trigger: only when `js/**`, `scripts/**`, `test/**`, or `package*.json` change
+- Manual trigger: `workflow_dispatch` — run on any branch via **Actions → Test → Run workflow**
 - **Detect Changed Files** — determines if tests are needed
 - **Test Webapp** — Jest tests for browser-side components; conditional
 - **Test Level Generation** — Jest tests for generation scripts; conditional
@@ -676,7 +679,7 @@ Both gate jobs always run on every PR and always report a result, so they never 
 5. In the **Search for status checks** box, search for `Lint` and `Test` and add both
 6. Click **Save changes**
 
-> **Can't find a check in the search box?** The check name only appears after at least one PR has run that workflow. Open a draft PR to any branch to populate the list.
+> **Can't find a check in the search box?** The check name only appears after at least one run of that workflow. Use **Actions → Lint → Run workflow** (or **Test → Run workflow**) to trigger a manual run on any branch and populate the list.
 
 The `.github/CODEOWNERS` file enforces that @AvinZarlez must approve every PR:
 
