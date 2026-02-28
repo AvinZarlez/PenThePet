@@ -1,0 +1,8 @@
+{
+  "recommendations": [
+    "dbaeumer.vscode-eslint",
+    "charliermarsh.ruff",
+    "DavidAnson.vscode-markdownlint",
+    "orta.vscode-jest"
+  ]
+}

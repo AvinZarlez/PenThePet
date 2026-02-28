@@ -5,11 +5,11 @@
  * Grid no longer generates maps - it only loads pre-generated maps from maps.json.
  */
 
-const Grid = require('../js/Grid.js');
+const Grid = require('../../js/Grid.js');
 
 // Mock CONFIG if not available
 if (typeof global.CONFIG === 'undefined') {
-    global.CONFIG = require('../js/config.js');
+    global.CONFIG = require('../../js/config.js');
 }
 
 describe('Grid', () => {

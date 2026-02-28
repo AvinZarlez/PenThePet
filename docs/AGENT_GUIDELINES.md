@@ -131,12 +131,14 @@ npm test
 ```
 
 **When to add tests:**
+
 - ✅ Adding new feature → Add tests for it
 - ✅ Fixing bug → Add test that would have caught it
 - ✅ Coverage <70% → Add tests to reach 70%+
 - ✅ Modifying algorithm → Add tests for edge cases
 
 **Test quality requirements:**
+
 - Tests must be documented with purpose
 - Tests must be independent (no shared state)
 - Tests must be deterministic (no random failures)
@@ -176,12 +178,14 @@ npm test
 ### JSDoc Comments
 
 **Required for:**
+
 - All exported functions
 - All class methods (public and private)
 - Complex algorithms
 - Non-obvious logic
 
 **Format:**
+
 ```javascript
 /**
  * Brief description of what function does.
@@ -204,6 +208,7 @@ function myFunction(paramName, optionalParam = 10) { ... }
 ### Markdown Documentation
 
 **Structure:**
+
 ```markdown
 # Title
 
@@ -228,6 +233,7 @@ More content...
 ```
 
 **Style:**
+
 - Use headers for structure (# ## ###)
 - Use code blocks with language tags
 - Use bullet points for lists
@@ -240,12 +246,14 @@ More content...
 ### Never Do These Things
 
 ❌ **Add frameworks or libraries**
+
 ```javascript
 // DON'T add React, Vue, Angular, jQuery, lodash, etc.
 import React from 'react';
 ```
 
 ❌ **Add build tools**
+
 ```json
 // DON'T add webpack, rollup, vite, parcel
 "scripts": {
@@ -254,6 +262,7 @@ import React from 'react';
 ```
 
 ❌ **Break the script loading order**
+
 ```html
 <!-- DON'T change this order -->
 <script src="js/constants.js"></script>
@@ -266,18 +275,21 @@ import React from 'react';
 ```
 
 ❌ **Commit without testing**
+
 ```bash
 # DON'T do this:
 git commit -m "changes" # without running npm test
 ```
 
 ❌ **Ignore linting errors**
+
 ```bash
 # DON'T commit with linting errors
 # Run: npm run lint:fix
 ```
 
 ❌ **Change CONSTANTS without regenerating maps**
+
 ```javascript
 // If you change CONSTANTS.MAX_WALLS, you MUST:
 // 1. Update the constant
@@ -288,6 +300,7 @@ git commit -m "changes" # without running npm test
 ```
 
 ❌ **Skip map validation**
+
 ```javascript
 // DON'T skip MapValidator checks
 const result = generator.generate();
@@ -297,6 +310,7 @@ if (!validation.valid) { /* handle errors */ }
 ```
 
 ❌ **Leave debug code**
+
 ```javascript
 // DON'T leave these in code:
 console.log('debug:', value);
@@ -305,6 +319,7 @@ debugger;
 ```
 
 ❌ **Hardcode configuration values**
+
 ```javascript
 // DON'T:
 if (size > 21) { ... }
@@ -318,6 +333,7 @@ if (size > CONSTANTS.MAX_GRID_SIZE) { ... }
 **AFTER making changes, you MUST:**
 
 1. ✅ **Verify code quality**
+
    ```bash
    # Run linter
    npm run lint:fix
@@ -329,6 +345,7 @@ if (size > CONSTANTS.MAX_GRID_SIZE) { ... }
    ```
 
 2. ✅ **Test functionality**
+
    ```bash
    # Start server
    python3 -m http.server 8080
@@ -348,6 +365,7 @@ if (size > CONSTANTS.MAX_GRID_SIZE) { ... }
    - [ ] Reviewed copilot-instructions.md
 
 4. ✅ **Verify git status**
+
    ```bash
    # Check what's being committed
    git status
@@ -361,6 +379,7 @@ if (size > CONSTANTS.MAX_GRID_SIZE) { ... }
    ```
 
 5. ✅ **Write good commit message**
+
    ```bash
    # Format: Brief summary (50 chars max)
    # 
@@ -411,12 +430,14 @@ if (size > CONSTANTS.MAX_GRID_SIZE) { ... }
 Before submitting changes, review:
 
 **Functionality:**
+
 - [ ] Feature works as intended
 - [ ] Edge cases handled
 - [ ] Error cases handled
 - [ ] No regressions in existing features
 
 **Code Quality:**
+
 - [ ] Follows project conventions
 - [ ] Uses constants not magic numbers
 - [ ] Has appropriate comments
@@ -424,18 +445,21 @@ Before submitting changes, review:
 - [ ] Efficient implementation
 
 **Testing:**
+
 - [ ] All tests pass
 - [ ] New tests added for new code
 - [ ] Coverage maintained/improved
 - [ ] Tests are documented
 
 **Documentation:**
+
 - [ ] JSDoc comments added/updated
 - [ ] Relevant docs updated
 - [ ] README updated if user-facing
 - [ ] ARCHITECTURE.md updated if design changed
 
 **Clean Up:**
+
 - [ ] No console.log statements
 - [ ] No commented-out code
 - [ ] No TODO comments
@@ -444,10 +468,12 @@ Before submitting changes, review:
 ## 📚 Key Documents to Reference
 
 **Before ANY change:**
+
 1. [CODE_STRUCTURE.md](CODE_STRUCTURE.md) - How code is organized
 2. [ARCHITECTURE.md](ARCHITECTURE.md) - Why it's organized this way
 
 **For specific changes:**
+
 - Map generation → [MAP_GENERATION.md](MAP_GENERATION.md)
 - Adding tests → [TESTING.md](TESTING.md)
 - Development setup → [DEVELOPMENT.md](DEVELOPMENT.md)
@@ -456,18 +482,21 @@ Before submitting changes, review:
 ## 🤝 Working with Human Developers
 
 **Communication:**
+
 - Explain what you changed and why
 - Highlight any decisions you made
 - Note any potential issues or tradeoffs
 - Ask for clarification if requirements unclear
 
 **Transparency:**
+
 - Document your reasoning in code comments
 - Explain complex algorithms
 - Note any limitations or assumptions
 - Highlight areas that may need review
 
 **Collaboration:**
+
 - Follow human developer's preferences
 - Ask before making major architectural changes
 - Propose alternatives when appropriate
@@ -499,6 +528,7 @@ Before submitting changes, review:
 5. **Run the game** - Experience it as a user
 
 **Common patterns to follow:**
+
 - Class-based components (Grid, Game, MapGenerator)
 - Configuration-driven behavior (CONSTANTS, CONFIG)
 - BFS for pathfinding
@@ -533,6 +563,7 @@ Breaking these rules will cause issues and may require reverting changes.
 5. Ask the human developer - better to ask than guess
 
 **Don't:**
+
 - Make assumptions about requirements
 - Introduce new patterns without justification
 - Skip documentation because you're unsure
@@ -541,6 +572,7 @@ Breaking these rules will cause issues and may require reverting changes.
 ## 📊 Metrics to Track
 
 **After your changes:**
+
 - Test count: Should increase or stay same
 - Coverage: Should be 70%+ (ideally increase)
 - File size: Minimal increase (surgical changes)
@@ -550,6 +582,7 @@ Breaking these rules will cause issues and may require reverting changes.
 ## 🎉 Summary
 
 **Remember:**
+
 - Read documentation BEFORE coding
 - Make MINIMAL, focused changes
 - Follow EXISTING patterns
@@ -565,7 +598,6 @@ Make the smallest, highest-quality change that solves the problem while maintain
 
 Thank you for helping maintain PenThePet! 🐕
 
-
 ## 🗺️ Map Generation Guidelines
 
 **CRITICAL: Single consistent solver, no fallbacks.**
@@ -573,6 +605,7 @@ Thank you for helping maintain PenThePet! 🐕
 ### Solver Usage Policy
 
 **Python MILP Solver (scripts/solver/solve.py):**
+
 - ✅ Production solver - used for ALL map generation
 - ✅ Provably optimal using PuLP + CBC
 - ✅ Called via Node.js wrapper (scripts/solver/MILPSolver.js)
@@ -580,6 +613,7 @@ Thank you for helping maintain PenThePet! 🐕
 - ✅ Requires Python 3 + PuLP
 
 **Browser JS has NO solver:**
+
 - ❌ No MILPSolver.js in js/ directory
 - ❌ No solver code loaded in the browser
 - ❌ Game only checks if pet is penned, does not solve
@@ -607,6 +641,7 @@ Thank you for helping maintain PenThePet! 🐕
 ✅ **Strategic placement** - At least one optimal wall not on edge  
 
 **If map fails quality checks:**
+
 - Discard map
 - Generate new random map
 - Retry up to 1000 times
@@ -615,16 +650,19 @@ Thank you for helping maintain PenThePet! 🐕
 ### Adding New Maps
 
 **Option 1: GitHub Actions (Recommended)**
+
 1. Go to Actions → "Generate Daily Map"
 2. Fill in date, size, max_walls
 3. Workflow auto-commits to maps.json
 
 **Option 2: Local Script**
+
 ```bash
 node scripts/generate-single-map.js --date 2026-02-15 --size 9
 ```
 
 **Option 3: Batch Generation**
+
 ```bash
 node scripts/generate-maps.js --count 10 --start-date 2026-02-15
 ```
@@ -632,6 +670,7 @@ node scripts/generate-maps.js --count 10 --start-date 2026-02-15
 ### Auditing Maps
 
 Check existing maps meet standards:
+
 ```bash
 node scripts/audit-maps.js
 ```
@@ -653,4 +692,3 @@ node scripts/audit-maps.js
 ❌ Allow goalArea < 5 (too easy)  
 ❌ Allow all walls on edges only (too easy)  
 ❌ Add solver code to browser JS (solver is scripts/ only)
-

@@ -40,19 +40,24 @@ Rather than implementing a new ASP solver (which would require external dependen
 ### Code Changes
 
 #### 1. MapGenerator.js
+
 **Removed:**
+
 - `_generateGuaranteedValidMap()` method (50+ lines)
 - Fallback logic that called it
 - `maxRandomRounds` counter and related logic
 
 **Added:**
+
 - Clear error message when generation fails after 1000 attempts
 - Proper JSDoc for `_mapToNumeric()` helper
 
 **Result:** Simplified, single-path generation that throws errors instead of falling back
 
 #### 2. MILPSolver.js
+
 **Removed (290+ lines):**
+
 - `_heuristicSearch()` - unused experimental method
 - `_generateEnclosureCandidates()` - helper for heuristic search
 - `_findCriticalPathCells()` - helper for heuristic search
@@ -60,6 +65,7 @@ Rather than implementing a new ASP solver (which would require external dependen
 - `_findBestPathBlocking()` - helper for heuristic search
 
 **Enhanced:**
+
 - Comprehensive documentation header clarifying:
   - This IS the production solver
   - Uses exhaustive search (not true MILP despite name)
@@ -69,7 +75,9 @@ Rather than implementing a new ASP solver (which would require external dependen
 **Result:** Cleaner, more focused solver with clear documentation
 
 #### 3. BruteForceSolver.js
+
 **Enhanced:**
+
 - Extensive usage policy documentation
 - Clear warnings: ⚠️ TESTING ONLY - DO NOT USE IN PRODUCTION
 - Listed specific allowed and forbidden uses
@@ -78,7 +86,9 @@ Rather than implementing a new ASP solver (which would require external dependen
 **Result:** No confusion about when to use this solver
 
 #### 4. Tests
+
 **Updated:**
+
 - Removed tests for deleted heuristic methods in `MILPSolver.test.js`
 - Converted `_generateGuaranteedValidMap()` tests to explanatory comment in `MapGenerator.test.js`
 - Added comments explaining why methods were removed
@@ -88,18 +98,21 @@ Rather than implementing a new ASP solver (which would require external dependen
 ### Documentation Changes
 
 #### 1. MAP_GENERATION.md
+
 - Updated generation flow diagram (removed fallback path)
 - Added "NO FALLBACKS" to key invariants
 - Created comprehensive "Solver Usage Policy" section
 - Updated algorithm limits (50M combinations)
 
 #### 2. AGENT_GUIDELINES.md
+
 - Complete solver usage policy section
 - Clear separation of production vs test solvers
 - Updated DO NOT list with fallback restrictions
 - Generation flow without fallbacks
 
 #### 3. copilot-instructions.md
+
 - Updated architecture section
 - Marked MILPSolver as PRODUCTION SOLVER
 - Marked BruteForceSolver as TEST ONLY
@@ -109,7 +122,7 @@ Rather than implementing a new ASP solver (which would require external dependen
 
 ### Single Solver Approach
 
-```
+```text
 ┌─────────────────────────────────────────────────┐
 │              Production Path                    │
 │                                                 │
@@ -167,11 +180,13 @@ Rather than implementing a new ASP solver (which would require external dependen
 ## Test Results
 
 ### Before Changes
+
 - 280 tests (including tests for unused methods)
 - Some confusion about which solver to use
 
 ### After Changes
-```
+
+```text
 ✅ Test Suites: 9 passed, 9 total
 ✅ Tests: 274 passed, 3 skipped, 277 total
 ✅ Coverage:
@@ -182,33 +197,39 @@ Rather than implementing a new ASP solver (which would require external dependen
 ```
 
 ### Security Scan
-```
+
+```text
 ✅ CodeQL: 0 alerts found (javascript)
 ```
 
 ## Benefits
 
 ### 1. Consistency
+
 - All production maps use same generation method
 - No variation in quality due to fallbacks
 - Predictable behavior
 
 ### 2. Clarity
+
 - Clear documentation of solver roles
 - No confusion about which solver to use
 - Obvious when something fails
 
 ### 3. Maintainability
+
 - Less code to maintain (removed 340+ lines)
 - Single code path easier to understand
 - Fewer edge cases to handle
 
 ### 4. Transparency
+
 - Errors visible instead of silent fallbacks
 - Problems detected immediately
 - No degraded quality maps sneaking through
 
 ### 5. Performance
+
 - Removed unused heuristic code
 - Cleaner, more focused solver
 - Same or better performance
@@ -216,12 +237,14 @@ Rather than implementing a new ASP solver (which would require external dependen
 ## Key Takeaways
 
 ### What Was Wrong
+
 - ❌ Fallback to guaranteed valid maps (lower quality)
 - ❌ Unused experimental heuristic code
 - ❌ Unclear which solver for which purpose
 - ❌ Silent quality degradation on failures
 
 ### What's Right Now
+
 - ✅ Single consistent solver for production (MILPSolver)
 - ✅ Clear test-only solver for verification (BruteForceSolver)
 - ✅ Errors thrown instead of fallbacks
@@ -230,17 +253,20 @@ Rather than implementing a new ASP solver (which would require external dependen
 ### For Future Developers
 
 **When generating maps:**
+
 - Use MILPSolver (via MapGenerator.generate())
 - Don't try to optimize by using BruteForceSolver
 - Don't add fallback logic
 - Let errors bubble up
 
 **When testing:**
+
 - Use BruteForceSolver to verify MILPSolver accuracy
 - Create ground truth data for test-maps-db.json
 - Compare solver results for validation
 
 **When solving the puzzle:**
+
 - The issue was about MAP GENERATION, not gameplay
 - The in-game puzzle solving is separate
 - No changes needed to gameplay solver
@@ -248,15 +274,18 @@ Rather than implementing a new ASP solver (which would require external dependen
 ## Files Modified
 
 ### Production Code
+
 - js/MapGenerator.js (removed fallback, cleaned up)
 - js/MILPSolver.js (removed heuristics, enhanced docs)
 - test/BruteForceSolver.js (enhanced usage policy docs)
 
 ### Tests
+
 - test/MILPSolver.test.js (removed heuristic tests)
 - test/MapGenerator.test.js (converted tests to comments)
 
 ### Documentation
+
 - docs/MAP_GENERATION.md (updated flow, added policy)
 - docs/AGENT_GUIDELINES.md (added solver policy)
 - .github/copilot-instructions.md (updated architecture)

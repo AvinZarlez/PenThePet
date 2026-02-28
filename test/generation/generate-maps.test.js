@@ -8,7 +8,7 @@ const {
     validateMapsDatabase, 
     fixMapsDatabase, 
     getNextDayNumber 
-} = require('../scripts/generate-maps.js');
+} = require('../../scripts/generate-maps.js');
 const fs = require('fs');
 
 describe('Map Database Validation', () => {
@@ -340,7 +340,7 @@ describe('Map Database Validation', () => {
         let maps;
         
         beforeAll(() => {
-            const mapsPath = require('path').join(__dirname, '../maps.json');
+            const mapsPath = require('path').join(__dirname, '../../maps.json');
             const data = fs.readFileSync(mapsPath, 'utf8');
             maps = JSON.parse(data);
         });

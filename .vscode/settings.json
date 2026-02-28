@@ -1,7 +1,7 @@
 {
   "editor.formatOnSave": true,
   "editor.codeActionsOnSave": {
-    "source.fixAll.eslint": true
+    "source.fixAll.eslint": "explicit"
   },
   "eslint.validate": [
     "javascript"
@@ -15,6 +15,14 @@
     "editor.defaultFormatter": "dbaeumer.vscode-eslint",
     "editor.tabSize": 4
   },
+  "[python]": {
+    "editor.defaultFormatter": "charliermarsh.ruff",
+    "editor.tabSize": 4
+  },
+  "[markdown]": {
+    "editor.wordWrap": "on"
+  },
+  "python.analysis.typeCheckingMode": "off",
   "search.exclude": {
     "**/node_modules": true,
     "**/coverage": true

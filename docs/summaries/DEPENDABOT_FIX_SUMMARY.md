@@ -9,7 +9,8 @@
 When GitHub Copilot agents completed their work, there was a consistent ~2 minute delay before the process would terminate. The logs showed multiple errors related to Dependabot trying (and failing) to scan GitHub Actions dependencies:
 
 ### Error Symptoms
-```
+
+```text
 updater | Dependabot encountered '1' error(s) during execution
 updater | snapshots_unavailable_graph_error
 updater | Unable to submit data to the Dependency Snapshot API
@@ -29,6 +30,7 @@ cli | updater failure: updater exited with code 1
 ## Solution
 
 Created an explicit Dependabot configuration file that:
+
 - ✅ Enables npm dependency monitoring (useful)
 - ✅ Disables GitHub Actions monitoring (problematic)
 - ✅ Sets reasonable update schedules
@@ -62,12 +64,14 @@ updates:
 ## Impact
 
 ### Before Fix
+
 - ⏱️ Agent completion: ~2 minutes delay
 - ❌ Multiple SSL handshake errors in logs
 - ❌ "snapshots_unavailable_graph_error" every time
 - ❌ Confusing error messages in CI logs
 
 ### After Fix
+
 - ✅ Agent completion: No delay
 - ✅ No SSL handshake errors
 - ✅ No Dependabot graph errors
@@ -77,16 +81,19 @@ updates:
 ## Trade-offs
 
 ### What We Lose
+
 - Automatic Dependabot PRs for GitHub Actions updates
 - Need to manually check for Actions updates
 
 ### What We Gain
+
 - Fast agent completion (saves ~2 minutes every time)
 - Clean error logs
 - Less noise in CI/CD
 - Still get npm dependency monitoring (more important)
 
 ### Why This Is Acceptable
+
 - GitHub Actions in this project use stable, well-maintained versions
 - Actions are updated infrequently compared to npm packages
 - Manual updates are simple (just bump version numbers)
@@ -111,6 +118,7 @@ If you want to update GitHub Actions manually:
    - `actions/deploy-pages@v4`
 
 3. Check for updates:
+
    ```bash
    # Visit each Action's repository on GitHub
    # Look for newer stable versions
@@ -124,6 +132,7 @@ If you want to update GitHub Actions manually:
 ## Documentation Updates
 
 Updated `docs/DEVELOPMENT.md` with:
+
 - CI/CD and Automation section
 - Explanation of Dependabot configuration
 - Why GitHub Actions monitoring is disabled
@@ -138,13 +147,15 @@ Updated `docs/DEVELOPMENT.md` with:
 
 ## Expected Behavior Going Forward
 
-### Dependabot Will:
+### Dependabot Will
+
 - ✅ Monitor npm packages weekly
 - ✅ Create PRs for npm dependency updates
 - ✅ Group development dependency updates
 - ✅ Work without errors in agent environments
 
-### Dependabot Will NOT:
+### Dependabot Will NOT
+
 - ❌ Monitor GitHub Actions versions
 - ❌ Create PRs for Actions updates
 - ❌ Cause agent hang issues
@@ -172,12 +183,14 @@ Updated `docs/DEVELOPMENT.md` with:
 ## Future Considerations
 
 ### If Agent Hangs Return
+
 1. Check if new GitHub features are being automatically enabled
 2. Look for other services trying to reach external APIs
 3. Review CI/CD logs for timeout patterns
 4. Consider network permission requirements
 
 ### If We Need Actions Monitoring
+
 1. Could set up separate CI job that runs only on main branch
 2. Could use a different tool for Actions updates
 3. Could periodically run Dependabot locally where network is available

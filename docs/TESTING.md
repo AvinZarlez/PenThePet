@@ -16,9 +16,12 @@ Comprehensive guide to testing in PenThePet.
 ## Overview
 
 PenThePet has a comprehensive test suite with:
+
 - **Jest** testing framework
-- **ESLint** for code quality
-- **GitHub Actions** CI/CD pipeline
+- **ESLint** for JavaScript code quality
+- **ruff** for Python code quality
+- **markdownlint** for Markdown documentation quality
+- **GitHub Actions** CI/CD pipeline with parallel jobs
 - Test results and coverage are available in the [CI pipeline](https://github.com/AvinZarlez/penthepet/actions/workflows/test.yml)
 
 ### Test Philosophy
@@ -29,41 +32,46 @@ PenThePet has a comprehensive test suite with:
 4. **Skip UI testing** - Manual browser testing for UI
 5. **Keep tests fast** - <10 seconds for full suite
 
+### Test Organization
+
+Tests are split into two categories:
+
+- **Webapp tests** (`test/webapp/`) - Tests for browser-side components
+- **Generation tests** (`test/generation/`) - Tests for level generation scripts
+
 ## Test Infrastructure
 
 ### Tools
 
 - **Jest 30.x** - Testing framework
 - **jest-environment-jsdom** - DOM simulation for browser code
-- **ESLint 10.x** - Code linting
+- **ESLint 10.x** - JavaScript linting
+- **ruff** - Python linting
+- **markdownlint-cli2** - Markdown linting
 - **GitHub Actions** - Automated testing on push/PR
 
 ### Configuration
 
-**package.json:**
+**package.json scripts:**
+
 ```json
 {
   "scripts": {
     "test": "jest --coverage",
+    "test:webapp": "jest --testPathPatterns=test/webapp/",
+    "test:generation": "jest --testPathPatterns=test/generation/",
     "test:watch": "jest --watch",
     "lint": "eslint js/**/*.js test/**/*.js scripts/**/*.js",
-    "lint:fix": "eslint --fix"
-  },
-  "jest": {
-    "testEnvironment": "jsdom",
-    "coverageThreshold": {
-      "global": {
-        "branches": 70,
-        "functions": 75,
-        "lines": 70,
-        "statements": 70
-      }
-    }
+    "lint:fix": "eslint js/**/*.js test/**/*.js scripts/**/*.js --fix",
+    "lint:python": "ruff check scripts/solver/",
+    "lint:markdown": "markdownlint-cli2 \"**/*.md\" \"#node_modules\"",
+    "lint:all": "npm run lint && npm run lint:python && npm run lint:markdown"
   }
 }
 ```
 
 **Coverage Targets:**
+
 - Branches: 70%
 - Functions: 75%
 - Lines: 70%
@@ -71,10 +79,22 @@ PenThePet has a comprehensive test suite with:
 
 ### File Structure
 
-```
+```text
 test/
-├── setup.js                    # Jest setup and global mocks
-└── *.test.js                   # Unit test files
+├── setup.js                          # Jest setup and global mocks
+├── README.md                         # Quick reference
+├── webapp/                           # Browser-side tests
+│   ├── constants.test.js             # CONSTANTS validation
+│   ├── wordList.test.js              # Word list testing
+│   ├── PathfindingUtils.test.js      # Pathfinding algorithms
+│   ├── Grid.test.js                  # Grid class functionality
+│   ├── Menu.test.js                  # Menu system
+│   ├── CookieUtils.test.js           # Cookie utilities
+│   └── DateUtils.test.js             # Date utilities
+└── generation/                       # Level generation tests
+    ├── MapGenerator.test.js          # Map generation
+    ├── MapValidator.test.js          # Map validation
+    └── generate-maps.test.js         # Generation script
 ```
 
 ## Running Tests
@@ -84,6 +104,20 @@ test/
 ```bash
 # Run all tests with coverage
 npm test
+```
+
+### Webapp Tests Only
+
+```bash
+# Run only browser-side component tests
+npm run test:webapp
+```
+
+### Generation Tests Only
+
+```bash
+# Run only level generation tests
+npm run test:generation
 ```
 
 ### Watch Mode
@@ -97,7 +131,7 @@ npm run test:watch
 
 ```bash
 # Run a specific test file
-npx jest test/Grid.test.js
+npx jest test/webapp/Grid.test.js
 
 # Run tests matching a pattern
 npx jest --testNamePattern="Grid constructor"
@@ -106,37 +140,52 @@ npx jest --testNamePattern="Grid constructor"
 ### Linting
 
 ```bash
-# Check code style
+# JavaScript linting
 npm run lint
-
-# Auto-fix issues
 npm run lint:fix
+
+# Python linting
+npm run lint:python
+npm run lint:python:fix
+
+# Markdown linting
+npm run lint:markdown
+npm run lint:markdown:fix
+
+# All linters
+npm run lint:all
 ```
 
-### Coverage Report
+### VSCode
 
-```bash
-# Generate HTML coverage report
-npm test -- --coverage --coverageDirectory=coverage
+The project includes VSCode configurations for easy test running:
 
-# Open coverage/index.html in browser
-```
+- **Launch configurations** (`.vscode/launch.json`):
+  - "Jest: Run All Tests"
+  - "Jest: Run Webapp Tests"
+  - "Jest: Run Generation Tests"
+  - "Jest: Run Current Test File"
+- **Tasks** (`.vscode/tasks.json`):
+  - "Run All Tests", "Run Webapp Tests", "Run Generation Tests"
+  - "Lint JavaScript", "Lint Python", "Lint Markdown", "Lint All"
+- **Recommended extensions** (`.vscode/extensions.json`):
+  - ESLint, Ruff, markdownlint, Jest
 
 ## Test Coverage
 
-### Current Coverage (as of last update)
+### Current Coverage
 
-```
+```text
 ---------------------|---------|----------|---------|---------|
 File                 | % Stmts | % Branch | % Funcs | % Lines |
 ---------------------|---------|----------|---------|---------|
-All files            |   90.07 |    76.57 |   88.15 |   91.39 |
- CookieUtils.js      |     100 |    83.33 |     100 |     100 |
+All files            |   91.18 |    77.06 |   89.41 |   92.14 |
+ CookieUtils.js      |     100 |     87.5 |     100 |     100 |
  DateUtils.js        |     100 |       75 |     100 |     100 |
  Grid.js             |     100 |    95.65 |     100 |     100 |
  MapGenerator.js     |   90.66 |       75 |     100 |   89.39 |
  MapValidator.js     |    93.1 |    81.25 |     100 |    93.1 |
- Menu.js             |   83.33 |    58.13 |   76.92 |   87.05 |
+ Menu.js             |   86.51 |    60.63 |   80.43 |   89.05 |
  PathfindingUtils.js |   96.38 |    93.54 |     100 |    96.2 |
  constants.js        |     100 |       75 |     100 |     100 |
  wordList.js         |     100 |       75 |     100 |     100 |
@@ -146,6 +195,7 @@ All files            |   90.07 |    76.57 |   88.15 |   91.39 |
 ### Excluded from Coverage
 
 These files are excluded because they're UI/config and tested manually:
+
 - `js/main.js` - Entry point (tested via browser)
 - `js/Game.js` - UI controller (manual testing)
 - `js/config.js` - Configuration (no logic)
@@ -160,97 +210,60 @@ These files are excluded because they're UI/config and tested manually:
 
 ## Test Files
 
-### Unit Tests
+### Webapp Tests (189 tests)
 
-#### 1. constants.test.js (41 tests)
+#### 1. constants.test.js (32 tests)
 
 **Purpose:** Validate all CONSTANTS values are properly defined
 
 **Tests:**
+
 - CONSTANTS object exists and is exported
 - All required fields present (MAX_WALLS, MAX_GRID_SIZE, etc.)
 - Values are correct types (numbers, objects)
 - Values are in reasonable ranges
 - Tile distribution sums to ~1.0
 
-**Example:**
-```javascript
-test('should have MAX_WALLS constant', () => {
-    expect(CONSTANTS.MAX_WALLS).toBeDefined();
-    expect(typeof CONSTANTS.MAX_WALLS).toBe('number');
-    expect(CONSTANTS.MAX_WALLS).toBe(15);
-});
-```
-
-#### 2. wordList.test.js (52 tests)
+#### 2. wordList.test.js (30 tests)
 
 **Purpose:** Test word list for map naming
 
 **Tests:**
+
 - Word list exists and is non-empty
 - All words are strings
 - No duplicate words
 - Helper functions work correctly (getRandomWord, getWordCount)
 - Exported functions return expected types
 
-**Example:**
-```javascript
-test('should not have duplicate words', () => {
-    const wordSet = new Set(WORDS);
-    expect(wordSet.size).toBe(WORDS.length);
-});
-```
-
-#### 3. PathfindingUtils.test.js (35 tests)
+#### 3. PathfindingUtils.test.js (30 tests)
 
 **Purpose:** Test pathfinding and pet penning algorithms
 
 **Tests:**
+
 - `isPenned()` correctly detects if pet can reach edge
 - `calculatePennedArea()` correctly counts reachable tiles
 - Edge cases: all grass, all water, single path
 - Various map configurations and sizes
 
-**Example:**
-```javascript
-test('should detect pet is penned when surrounded by walls', () => {
-    const map = [
-        [1, 1, 1, 1, 1],
-        [1, 5, 5, 5, 1],
-        [1, 5, 2, 5, 1], // 2 = home, 5 = wall
-        [1, 5, 5, 5, 1],
-        [1, 1, 1, 1, 1]
-    ];
-    expect(isPenned(map)).toBe(true);
-});
-```
-
-#### 4. Grid.test.js (45 tests)
+#### 4. Grid.test.js (34 tests)
 
 **Purpose:** Test Grid class functionality
 
 **Test Groups:**
+
 - Constructor: Size validation, initialization
 - Map Loading: Load from map data, validate structure
 - State Management: Reset, save/restore state
 - Tile Operations: Get/set tiles, bounds checking
 
-#### 5. MapGenerator.test.js (72 tests)
-
-**Purpose:** Test map generation and validation
-
-**Test Groups:**
-- Basic generation: Correct size, has home tile
-- Validation: Path to edge exists
-- Goal calculation: Uses solver correctly
-- Retry logic: Handles unsolvable maps
-- Metadata: Includes goal, maxWalls
-
-#### 6. Menu.test.js (46 tests)
+#### 5. Menu.test.js (44 tests)
 
 **Purpose:** Test menu system and level loading
 
 **Test Groups:**
+
 - Modal management: Open/close modals
 - Cookie persistence: Save/load preferences via CookieUtils
 - Level selector: Load maps database, populate list
@@ -258,39 +271,55 @@ test('should detect pet is penned when surrounded by walls', () => {
 - Options: Pet type and hint mode syncing
 - Error handling: Network failures, missing elements
 
-#### 7. MapValidator.test.js (6 tests)
-
-**Purpose:** Test map quality validation rules
-
-#### 8. CookieUtils.test.js (11 tests)
+#### 6. CookieUtils.test.js (13 tests)
 
 **Purpose:** Test shared cookie get/set helpers
 
 **Tests:**
+
 - Read existing and non-existent cookies
 - Set and overwrite cookies
 - Handle emoji and JSON values
 - Distinguish similar cookie names
 
-#### 9. DateUtils.test.js (6 tests)
+#### 7. DateUtils.test.js (6 tests)
 
 **Purpose:** Test shared date formatting helpers
 
 **Tests:**
+
 - Get today's date in ISO format
 - Format dates for display
 - Handle various months and single-digit days
 
-#### 10. generate-maps.test.js (31 tests)
+### Generation Tests (66 tests)
+
+#### 8. MapGenerator.test.js (39 tests)
+
+**Purpose:** Test map generation and validation
+
+**Test Groups:**
+
+- Basic generation: Correct size, has home tile
+- Validation: Path to edge exists
+- Goal calculation: Uses solver correctly
+- Retry logic: Handles unsolvable maps
+- Metadata: Includes goal, maxWalls
+
+#### 9. MapValidator.test.js (7 tests)
+
+**Purpose:** Test map quality validation rules
+
+#### 10. generate-maps.test.js (20 tests)
 
 **Purpose:** Test map generation script functionality
 
 **Tests:**
-- Script loads and runs without errors
-- Generates correct number of maps
+
+- Database validation and fixing logic
+- Day number calculation
+- Maps.json structure validation
 - Metadata fields present and valid
-- Date handling works correctly
-- Fresh vs append modes work
 
 ## Writing Tests
 
@@ -357,11 +386,13 @@ test('should calculate penned area for simple enclosed region', () => {
 ### Adding New Tests
 
 **When to add tests:**
+
 - Adding new feature
 - Fixing a bug (add test that would have caught it)
 - Code has low coverage (<70%)
 
 **Steps:**
+
 1. Create or open appropriate `.test.js` file
 2. Add describe block for feature
 3. Add test cases for normal and edge cases
@@ -380,6 +411,7 @@ For complex algorithms (MapGenerator, PathfindingUtils):
 3. **Test invariants** - Things that should always be true
 
 Example:
+
 ```javascript
 test('solver should find solution that pens the pet', () => {
     const result = solveMap(map, maxWalls);
@@ -434,16 +466,19 @@ test('Grid should load map and track state correctly', () => {
 ### Common Issues
 
 **Test fails intermittently:**
+
 - Check for race conditions
 - Check for shared state between tests
 - Ensure test is deterministic (no random values)
 
 **Test hangs/times out:**
+
 - Check for infinite loops
 - Check for missing async/await
 - Reduce test complexity (smaller maps)
 
 **Coverage not increasing:**
+
 - Check which lines are uncovered
 - Add tests specifically for those paths
 - Some paths may be unreachable (dead code)
@@ -451,16 +486,19 @@ test('Grid should load map and track state correctly', () => {
 ### Debugging Tools
 
 **Run single test:**
+
 ```bash
 npx jest -t "test name"
 ```
 
 **Debug with Node:**
+
 ```bash
 node --inspect-brk node_modules/.bin/jest --runInBand
 ```
 
 **Add console.log:**
+
 ```javascript
 test('debug this', () => {
     console.log('value:', myValue);
@@ -469,6 +507,7 @@ test('debug this', () => {
 ```
 
 **Use debugger:**
+
 ```javascript
 test('debug this', () => {
     debugger; // Pause here
@@ -482,11 +521,13 @@ test('debug this', () => {
 ### GitHub Actions
 
 Tests run automatically on:
+
 - Every push to main branch
 - Every pull request
 - Workflow: `.github/workflows/test.yml`
 
 **CI runs:**
+
 1. Install dependencies
 2. Run ESLint
 3. Run tests with coverage
@@ -496,6 +537,7 @@ Tests run automatically on:
 ### Local Pre-commit
 
 Before committing:
+
 ```bash
 # Run tests
 npm test
@@ -512,6 +554,7 @@ npm test && npm run lint
 ### When Code Changes
 
 **Always:**
+
 1. Run tests after any code change
 2. Add tests for new features
 3. Update tests if behavior changes
@@ -519,6 +562,7 @@ npm test && npm run lint
 5. Keep tests passing and fast
 
 **Red-Green-Refactor:**
+
 1. **Red**: Write failing test for new feature
 2. **Green**: Write minimal code to pass
 3. **Refactor**: Improve code while keeping tests green
@@ -526,6 +570,7 @@ npm test && npm run lint
 ### Updating Documentation
 
 When tests change:
+
 1. Update coverage numbers in this file if significant change
 2. Add new test files to this documentation
 3. Explain new testing strategies
@@ -533,12 +578,14 @@ When tests change:
 ## Conclusion
 
 Good tests:
+
 - Give confidence to make changes
 - Document expected behavior
 - Catch bugs early
 - Enable refactoring safely
 
 Keep tests:
+
 - Fast (<10 seconds)
 - Focused (one thing per test)
 - Independent (no shared state)

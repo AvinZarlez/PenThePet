@@ -1,9 +1,11 @@
 # Codebase Refactoring Summary - 2026-02-07
 
 ## Objective
+
 Clean up unnecessary files in the repository, particularly redundant generation scripts that went against design principles.
 
 ## Problem Statement
+
 The repository had unnecessary files, especially in the scripts folder. Generation scripts went against design ideas like using test generation brute force in production contexts. The code needed refactoring into a more slim set of files with cleaner separation of responsibilities.
 
 ## Changes Made
@@ -65,11 +67,13 @@ The repository had unnecessary files, especially in the scripts folder. Generati
 ### Clear Separation of Concerns
 
 **Production Scripts** (`scripts/` directory):
+
 - ✅ `generate-maps.js` - Batch map generation
 - ✅ `generate-single-map.js` - Single map for GitHub Actions
 - ✅ `audit-maps.js` - Validation tool
 
 **Test Utilities** (`test/` directory):
+
 - ✅ `BruteForceSolver.js` - Ground truth solver (TEST ONLY)
 - ✅ `test-map-generation.js` - Generate verified test data
 - ✅ `*.test.js` - Unit tests (9 test suites)
@@ -78,11 +82,13 @@ The repository had unnecessary files, especially in the scripts folder. Generati
 ### Solver Usage Policy
 
 **MILPSolver** (Production):
+
 - ✅ ONLY solver used in production
 - ✅ Used by all map generation scripts
 - ✅ No fallbacks or alternatives
 
 **BruteForceSolver** (Test Only):
+
 - ✅ Located in `test/` directory
 - ✅ Only used for verification of small maps (≤7x7)
 - ✅ Generates ground truth for test data
@@ -91,7 +97,8 @@ The repository had unnecessary files, especially in the scripts folder. Generati
 ## Verification
 
 ### Tests
-```
+
+```text
 Test Suites: 9 passed, 9 total
 Tests:       5 skipped, 274 passed, 279 total
 Coverage:    91.41% overall
@@ -99,12 +106,14 @@ Time:        ~5 seconds
 ```
 
 ### GitHub Actions
+
 - ✅ Workflow uses `scripts/generate-single-map.js` (kept)
 - ✅ No references to deleted files
 - ✅ Will work correctly on next run
 
 ### File Structure
-```
+
+```text
 scripts/
 ├── audit-maps.js              # Validation tool
 ├── generate-maps.js           # Batch generation
@@ -153,6 +162,7 @@ test/
 ## Conclusion
 
 The codebase is now:
+
 1. ✅ Cleaner and more organized
 2. ✅ Following documented design principles
 3. ✅ Easier to understand for new developers
@@ -166,42 +176,52 @@ No further immediate refactoring needed. The structure is now consistent with th
 ## Follow-up Fix (2026-02-07 - Later)
 
 ### Issue Identified
+
 After the initial refactoring, a code review revealed that `scripts/generate-single-map.js` was still importing and using `BruteForceSolver` from the test directory. This violated the core design principle that BruteForceSolver should ONLY be used for test verification, never in production code paths.
 
 ### Root Cause
+
 The script was using BruteForceSolver to verify map generation accuracy for small maps (≤7x7). While well-intentioned, this mixed test utilities into production code and created an unnecessary dependency on test code.
 
 ### Fix Applied
+
 Removed BruteForceSolver usage from `scripts/generate-single-map.js`:
+
 - Removed the `require('../test/BruteForceSolver.js')` import
 - Removed the `mapToNumeric()` helper function (only used for brute force)
 - Removed the brute force verification section (lines 90-119)
 - Simplified to trust MILPSolver results directly
 
 ### Rationale
+
 1. **MILPSolver is already verified accurate**: It has been tested against BruteForceSolver in the test suite
 2. **Clear separation**: Production code should never import from test/ directory
 3. **Design compliance**: Aligns with documented architecture where MILPSolver is the ONLY production solver
 4. **Simplification**: Removes complexity and conditional logic from production script
 
 ### Updated Files
+
 - `scripts/generate-single-map.js` - Removed BruteForceSolver usage
 - `docs/MAP_GENERATION.md` - Updated workflow description
 - `.github/copilot-instructions.md` - Fixed example code to not use BruteForceSolver
 
 ### Verification
+
 - All 274 tests still pass
 - Coverage maintained at 91.41%
 - No BruteForceSolver references in production code (scripts/, js/)
 - Production scripts now only use MILPSolver via MapGenerator
 
 ### Final State
+
 **Production code** (scripts/, js/):
+
 - Uses ONLY MILPSolver for map generation
 - No dependencies on test/ directory
 - Clean architecture separation
 
 **Test code** (test/):
+
 - BruteForceSolver available for ground truth verification
 - test-map-generation.js uses it to validate MILPSolver accuracy
 - Properly isolated from production code

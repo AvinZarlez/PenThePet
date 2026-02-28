@@ -5,7 +5,7 @@
  * instructions, about, and options modals.
  */
 
-const Menu = require('../js/Menu.js');
+const Menu = require('../../js/Menu.js');
 
 // Mock DOM elements for testing
 function setupDOM() {
@@ -494,7 +494,6 @@ describe('Menu', () => {
             menu.populateLevelList();
 
             const levelList = document.getElementById('levelList');
-            const today = DateUtils.getTodayDate();
             
             // Every rendered level-item-date should be <= today
             const dateElements = levelList.querySelectorAll('.level-item-date');

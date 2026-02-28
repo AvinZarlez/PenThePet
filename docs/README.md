@@ -75,12 +75,14 @@ Historical documentation of major changes, bug fixes, and implementations:
 ## 🚀 Quick Start Guides
 
 ### For New Developers
+
 1. Read [CODE_STRUCTURE.md](CODE_STRUCTURE.md) to understand the architecture
 2. Review [DEVELOPMENT.md](DEVELOPMENT.md) for setup instructions
 3. Check [DEBUGGING_BRANCHES.md](DEBUGGING_BRANCHES.md) for testing branches
 4. Review [TESTING.md](TESTING.md) to learn about the test suite
 
 ### For AI Coding Agents
+
 1. **Must read first:** [AGENT_GUIDELINES.md](AGENT_GUIDELINES.md)
 2. Then read relevant docs based on your task:
    - Code changes → [CODE_STRUCTURE.md](CODE_STRUCTURE.md)
@@ -88,6 +90,7 @@ Historical documentation of major changes, bug fixes, and implementations:
    - Testing → [TESTING.md](TESTING.md)
 
 ### For Contributors
+
 1. Read [ARCHITECTURE.md](ARCHITECTURE.md) to understand design decisions
 2. Follow [DEVELOPMENT.md](DEVELOPMENT.md) for workflow
 3. Maintain [AGENT_GUIDELINES.md](AGENT_GUIDELINES.md) standards
@@ -97,40 +100,48 @@ Historical documentation of major changes, bug fixes, and implementations:
 ### By Topic
 
 **Architecture & Design:**
+
 - [ARCHITECTURE.md](ARCHITECTURE.md) - Why decisions were made
 - [CODE_STRUCTURE.md](CODE_STRUCTURE.md) - How code is organized
 
 **Development:**
+
 - [DEVELOPMENT.md](DEVELOPMENT.md) - Day-to-day workflow
 - [DEBUGGING_BRANCHES.md](DEBUGGING_BRANCHES.md) - Testing branches
 - [TESTING.md](TESTING.md) - Test infrastructure
 
 **Map Generation:**
+
 - [MAP_GENERATION.md](MAP_GENERATION.md) - Current implementation
 - [summaries/MAP_GENERATION_AUDIT_SUMMARY.md](summaries/MAP_GENERATION_AUDIT_SUMMARY.md) - Recent audit
 
 **Guidelines:**
+
 - [AGENT_GUIDELINES.md](AGENT_GUIDELINES.md) - For AI agents
 - [DEVELOPMENT.md](DEVELOPMENT.md) - For human developers
 
 ### By Activity
 
 **Making Code Changes:**
+
 1. [AGENT_GUIDELINES.md](AGENT_GUIDELINES.md) - Requirements
 2. [CODE_STRUCTURE.md](CODE_STRUCTURE.md) - Architecture
 3. [DEBUGGING_BRANCHES.md](DEBUGGING_BRANCHES.md) - Testing branches
 4. [TESTING.md](TESTING.md) - Testing
 
 **Adding Features:**
+
 1. [ARCHITECTURE.md](ARCHITECTURE.md) - Design philosophy
 2. [CODE_STRUCTURE.md](CODE_STRUCTURE.md) - Where to add code
 3. [DEVELOPMENT.md](DEVELOPMENT.md) - Development workflow
 
 **Generating Maps:**
+
 1. [MAP_GENERATION.md](MAP_GENERATION.md) - Complete guide
 2. [AGENT_GUIDELINES.md](AGENT_GUIDELINES.md) - Quality rules
 
 **Understanding History:**
+
 1. [HISTORY.md](HISTORY.md) - Project overview and development story
 2. [summaries/](summaries/) - All change summaries
 3. Git history - Commit messages
@@ -150,6 +161,7 @@ See [AGENT_GUIDELINES.md](AGENT_GUIDELINES.md) for detailed documentation requir
 ## 🆘 Getting Help
 
 **Can't find what you need?**
+
 1. Check the [main README](../README.md) for project overview
 2. Search documentation files for keywords
 3. Look at code comments (JSDoc)
@@ -157,6 +169,7 @@ See [AGENT_GUIDELINES.md](AGENT_GUIDELINES.md) for detailed documentation requir
 5. Review [summaries/](summaries/) for recent changes
 
 **Found a documentation bug?**
+
 1. Fix it yourself (small changes)
 2. Open an issue (larger changes)
 3. Keep docs in sync with code changes
@@ -164,6 +177,7 @@ See [AGENT_GUIDELINES.md](AGENT_GUIDELINES.md) for detailed documentation requir
 ## 🤝 Contributing to Documentation
 
 When updating documentation:
+
 - Keep formatting consistent
 - Update all affected files
 - Check and fix any broken links
