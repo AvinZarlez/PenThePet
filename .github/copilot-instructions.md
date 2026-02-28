@@ -67,6 +67,5 @@ For deeper context beyond this file, see:
 - [docs/TESTING.md](../docs/TESTING.md) — Testing guide with file-by-file breakdown
 - [docs/DEVELOPMENT.md](../docs/DEVELOPMENT.md) — Dev setup, workflow, CI/CD
 - [docs/MAP_GENERATION.md](../docs/MAP_GENERATION.md) — Generation algorithm and solver details
-- [docs/AGENT_GUIDELINES.md](../docs/AGENT_GUIDELINES.md) — Coding standards and examples
 
 Keep documentation in sync when making code changes — update the relevant docs above if your changes affect their content.

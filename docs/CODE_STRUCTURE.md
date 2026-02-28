@@ -6,7 +6,6 @@
 - **[TESTING.md](TESTING.md)** - Testing guide and coverage
 - **[DEVELOPMENT.md](DEVELOPMENT.md)** - Developer workflow and setup
 - **[MAP_GENERATION.md](MAP_GENERATION.md)** - Algorithm details
-- **[AGENT_GUIDELINES.md](AGENT_GUIDELINES.md)** - Requirements for AI agents
 
 ---
 
@@ -48,7 +47,7 @@ PenThePet/
 │   ├── TESTING.md          # Testing guide
 │   ├── DEVELOPMENT.md      # Developer guide
 │   ├── MAP_GENERATION.md   # Algorithm details
-│   └── AGENT_GUIDELINES.md # AI agent requirements
+│   └── README.md          # Documentation index
 └── maps.json               # Generated maps with metadata (dayNumber, mapName, etc.)
 ```
 
@@ -448,5 +447,4 @@ No build step required - everything runs in the browser.
 - **[TESTING.md](TESTING.md)** - Complete testing guide
 - **[DEVELOPMENT.md](DEVELOPMENT.md)** - Development workflow and setup
 - **[MAP_GENERATION.md](MAP_GENERATION.md)** - Algorithm and map generation details
-- **[AGENT_GUIDELINES.md](AGENT_GUIDELINES.md)** - Requirements for AI coding agents
 - **[../README.md](../README.md)** - Project overview and quick start
