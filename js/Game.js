@@ -689,8 +689,14 @@ class Game {
                 footer.appendChild(toggleBtn);
             }
             
-            // Add event listener
-            toggleBtn.addEventListener('click', () => this.toggleSolution());
+            // Add event listener - toggle solution and close sidebar so the board is visible
+            toggleBtn.addEventListener('click', () => {
+                this.toggleSolution();
+                const viewerPanel = document.getElementById('roamSpaceViewer');
+                if (viewerPanel) {
+                    viewerPanel.classList.remove('active');
+                }
+            });
         }
         
         // Update button text based on current state
