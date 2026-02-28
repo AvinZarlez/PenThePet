@@ -1,5 +1,5 @@
 # Dependabot configuration to prevent agent hang issues
-# 
+#
 # This configuration explicitly controls what Dependabot monitors.
 # By default, GitHub enables Dependabot which tries to scan GitHub Actions
 # dependencies, but this causes errors in Copilot agent environments where

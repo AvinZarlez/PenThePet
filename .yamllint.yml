@@ -1,0 +1,21 @@
+---
+extends: default
+
+rules:
+  # GitHub Actions workflows don't use document-start markers
+  document-start: disable
+
+  # Workflow files often have long lines (URLs, shell commands, descriptions)
+  line-length:
+    max: 160
+    level: warning
+
+  # GitHub Actions uses 'on:' as a key, which yamllint's truthy rule flags.
+  # check-keys: false skips the key check so 'on:' is allowed.
+  truthy:
+    allowed-values: ['true', 'false']
+    check-keys: false
+
+  # Comment alignment is a style preference, not a correctness issue
+  comments-indentation:
+    level: warning

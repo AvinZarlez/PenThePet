@@ -611,6 +611,7 @@ The project uses two consolidated GitHub Actions workflows for linting and testi
 - **Lint JavaScript** — ESLint; runs only when `js/**`, `scripts/**/*.js`, `test/**/*.js`, `eslint.config.mjs`, or `package*.json` change
 - **Lint Python** — ruff; runs only when `scripts/solver/**` or `ruff.toml` change
 - **Lint Markdown** — markdownlint; runs only when `*.md` or `.markdownlint-cli2.jsonc` change
+- **Lint YAML** — yamllint; runs only when `.github/**/*.yml`, `.github/**/*.yaml`, or `.yamllint.yml` change
 - **Lint** *(gate)* — always runs; fails if any linter failed, passes if all passed or were skipped
 
 **test.yml** - Runs the test suite; always produces a `Test` status on every PR:
