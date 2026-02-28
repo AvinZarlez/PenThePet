@@ -14,13 +14,6 @@ on:
       - 'package-lock.json'
   pull_request:
     branches: '**'
-    paths:
-      - 'js/**'
-      - 'scripts/**/*.js'
-      - 'test/**/*.js'
-      - 'eslint.config.mjs'
-      - 'package.json'
-      - 'package-lock.json'
 
 # Cancel in-progress runs when a new commit is pushed to the same branch/PR
 concurrency:

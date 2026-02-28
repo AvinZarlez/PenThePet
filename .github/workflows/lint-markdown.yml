@@ -10,9 +10,6 @@ on:
       - '.markdownlint-cli2.jsonc'
   pull_request:
     branches: '**'
-    paths:
-      - '**/*.md'
-      - '.markdownlint-cli2.jsonc'
 
 # Cancel in-progress runs when a new commit is pushed to the same branch/PR
 concurrency:

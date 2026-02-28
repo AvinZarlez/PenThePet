@@ -598,23 +598,31 @@ if (DEBUG) {
 
 ### GitHub Actions Workflows
 
-The project uses GitHub Actions for automated testing and deployment. Each workflow is **path-filtered** so it only runs when relevant files change, avoiding unnecessary CI minutes.
+The project uses GitHub Actions for automated testing and deployment.
 
-**lint-js.yml** - ESLint on JavaScript changes:
+**PR trigger design:** All four lint/test workflows run on **every PR** (no path filter on the `pull_request` trigger). This is intentional — GitHub classic branch protection requires a status check to actually report a result; if a workflow never runs, the check stays in "expected — waiting for status" and permanently blocks the PR. Running all checks on every PR guarantees a result is always reported.
 
-- Triggers when `js/**`, `scripts/**/*.js`, `test/**/*.js`, `eslint.config.mjs`, `package.json`, or `package-lock.json` change
+**Push trigger design:** Path filters are still applied on `push` to `main`/`development` to avoid redundant CI on merge commits.
 
-**lint-python.yml** - ruff on Python changes:
+**lint-js.yml** - ESLint on all JavaScript:
 
-- Triggers when `scripts/solver/**` or `ruff.toml` change
+- PR: always runs
+- Push: only when `js/**`, `scripts/**/*.js`, `test/**/*.js`, `eslint.config.mjs`, `package.json`, or `package-lock.json` change
 
-**lint-markdown.yml** - markdownlint on documentation changes:
+**lint-python.yml** - ruff on Python solver code:
 
-- Triggers when any `*.md` file or `.markdownlint-cli2.jsonc` changes
+- PR: always runs
+- Push: only when `scripts/solver/**` or `ruff.toml` change
 
-**test.yml** - Runs tests when code changes (parallel jobs, then combined coverage):
+**lint-markdown.yml** - markdownlint on documentation:
 
-- Triggers when `js/**`, `scripts/**`, `test/**`, `package.json`, or `package-lock.json` change
+- PR: always runs
+- Push: only when any `*.md` file or `.markdownlint-cli2.jsonc` changes
+
+**test.yml** - Runs tests (parallel jobs, then combined coverage):
+
+- PR: always runs
+- Push: only when `js/**`, `scripts/**`, `test/**`, `package.json`, or `package-lock.json` change
 - **Test Webapp** - Jest tests for browser-side components
 - **Test Level Generation** - Jest tests for generation scripts
 - **Full Test Suite & Coverage** - Combined test run with coverage reporting, Codecov upload, and PR comments (runs after both test jobs pass)
@@ -653,18 +661,18 @@ The `main` branch must be protected so that only @AvinZarlez can merge pull requ
 > **Why this is safe with "Allow GitHub Actions to create PRs" enabled:**
 > GitHub Actions can *create* PRs and push branches, but it **cannot merge** them when the branch protection rules above are active. Only @AvinZarlez (as Code Owner and the sole allowed merger) can approve and merge. A malicious action could open a PR with bad code, but it would sit there waiting for your review — it could never reach `main` on its own.
 
-#### Required Status Checks and Path-Filtered Workflows
+#### Required Status Checks
 
 **Goal:** If a lint or test workflow runs on a PR, it must pass before the PR can be merged.
 
-**How path filters make this safe:** Every workflow uses `paths:` filters so it only triggers when relevant files change. When a workflow is not triggered at all, GitHub treats the check as **not required** for that PR — so requiring these checks never blocks merges where none of the relevant files changed.
+**Why all four workflows run on every PR:** GitHub classic branch protection requires a status check to actually *report* a result. If the workflow never runs (because a path filter prevented it from triggering), GitHub shows the check as "Expected — Waiting for status to be reported" and the PR is permanently blocked. To avoid this, the `pull_request` trigger on each workflow has **no path filter** — every PR always gets a result from all four checks.
 
-| Check name (use exactly as shown) | Workflow file | Triggered when |
-|---|---|---|
-| `Lint JavaScript` | `lint-js.yml` | JS source, test, or ESLint config changes |
-| `Lint Python` | `lint-python.yml` | Python solver or `ruff.toml` changes |
-| `Lint Markdown` | `lint-markdown.yml` | Any `.md` or markdownlint config changes |
-| `Full Test Suite & Coverage` | `test.yml` | JS source, scripts, or test file changes |
+| Check name (use exactly as shown) | Workflow file |
+|---|---|
+| `Lint JavaScript` | `lint-js.yml` |
+| `Lint Python` | `lint-python.yml` |
+| `Lint Markdown` | `lint-markdown.yml` |
+| `Full Test Suite & Coverage` | `test.yml` |
 
 > **Note on `Full Test Suite & Coverage`:** this job uses `needs: [test-webapp, test-generation]`, so it only runs after both parallel test jobs pass. Requiring this single check is enough to enforce all three test jobs together.
 
@@ -677,7 +685,7 @@ The `main` branch must be protected so that only @AvinZarlez can merge pull requ
 5. In the **Search for status checks** box, search for and add all four check names from the table above
 6. Click **Save changes**
 
-> **Can't find a check in the search box?** The check name only appears after at least one PR has run that workflow. Open a draft PR that touches each relevant file type (e.g., edit a `.md` file, a `.js` file, a `.py` file) to populate the list.
+> **Can't find a check in the search box?** The check name only appears after at least one PR has run that workflow. Open a draft PR to any branch to populate the list.
 
 The `.github/CODEOWNERS` file enforces that @AvinZarlez must approve every PR:
 
