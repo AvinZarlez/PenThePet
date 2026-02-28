@@ -1,0 +1,79 @@
+name: Detect Changed Files
+
+on:
+  workflow_call:
+    outputs:
+      js:
+        description: 'Whether JS-related files changed'
+        value: ${{ jobs.detect.outputs.js }}
+      python:
+        description: 'Whether Python files changed'
+        value: ${{ jobs.detect.outputs.python }}
+      markdown:
+        description: 'Whether Markdown files changed'
+        value: ${{ jobs.detect.outputs.markdown }}
+      yaml:
+        description: 'Whether YAML files changed'
+        value: ${{ jobs.detect.outputs.yaml }}
+      tests:
+        description: 'Whether test-related files changed'
+        value: ${{ jobs.detect.outputs.tests }}
+
+jobs:
+  detect:
+    name: Detect Changed Files
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+
+    outputs:
+      js: ${{ steps.filter.outputs.js }}
+      python: ${{ steps.filter.outputs.python }}
+      markdown: ${{ steps.filter.outputs.markdown }}
+      yaml: ${{ steps.filter.outputs.yaml }}
+      tests: ${{ steps.filter.outputs.tests }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Detect changed paths
+        id: filter
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "js=true" >> "$GITHUB_OUTPUT"
+            echo "python=true" >> "$GITHUB_OUTPUT"
+            echo "markdown=true" >> "$GITHUB_OUTPUT"
+            echo "yaml=true" >> "$GITHUB_OUTPUT"
+            echo "tests=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            BASE="${{ github.event.pull_request.base.sha }}"
+            HEAD="${{ github.event.pull_request.head.sha }}"
+          else
+            # Branches in this repo always have at least one parent commit.
+            BASE=$(git rev-parse HEAD^1)
+            HEAD="${{ github.sha }}"
+          fi
+          CHANGED=$(git diff --name-only "$BASE" "$HEAD")
+          echo "Changed files:"
+          echo "$CHANGED"
+          echo "js=$(echo "$CHANGED" | grep -qE \
+            '(^js/|^scripts/.*\.js$|^test/.*\.js$|^eslint\.config\.mjs$|^package(-lock)?\.json$)' \
+            && echo true || echo false)" >> "$GITHUB_OUTPUT"
+          echo "python=$(echo "$CHANGED" | grep -qE \
+            '(^scripts/solver/|^ruff\.toml$)' \
+            && echo true || echo false)" >> "$GITHUB_OUTPUT"
+          echo "markdown=$(echo "$CHANGED" | grep -qE \
+            '(\.md$|\.markdownlint-cli2\.jsonc$)' \
+            && echo true || echo false)" >> "$GITHUB_OUTPUT"
+          echo "yaml=$(echo "$CHANGED" | grep -qE \
+            '(^\.github/.*\.(yml|yaml)$|^\.yamllint\.yml$)' \
+            && echo true || echo false)" >> "$GITHUB_OUTPUT"
+          echo "tests=$(echo "$CHANGED" | grep -qE \
+            '(^js/|^scripts/|^test/|^package(-lock)?\.json$)' \
+            && echo true || echo false)" >> "$GITHUB_OUTPUT"
