@@ -191,6 +191,11 @@ async function initGame() {
         window.game = game;
         window.menu = menu;
     }
+
+    // Initialise cloud sync (no-ops if Firebase is not configured)
+    if (typeof CloudSync !== 'undefined') {
+        CloudSync.init();
+    }
 }
 
 // Start the game when the DOM is fully loaded

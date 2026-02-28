@@ -37,6 +37,8 @@ PenThePet/
 │   ├── Grid.js             # Grid state management (load, get/set, reset)
 │   ├── Game.js             # Game controller and checker (checks if pet is penned)
 │   ├── Menu.js             # Menu system (level selector, options, etc.)
+│   ├── firebase-config.js  # Firebase configuration (empty = cloud sync disabled)
+│   ├── CloudSync.js        # Optional cloud sync module (Firebase Auth + Firestore)
 │   └── main.js             # Application entry point and initialization
 ├── scripts/
 │   ├── generate-map.js # Map generation entry point (GitHub Actions + local)

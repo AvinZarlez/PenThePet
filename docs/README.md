@@ -14,6 +14,7 @@ All project documentation lives here. Each file covers a single topic — pick w
 | [DEVELOPMENT.md](DEVELOPMENT.md) | How to clone, run, lint, test, and debug locally (including VS Code setup) |
 | [TESTING.md](TESTING.md) | Test infrastructure, running tests, writing tests, and debugging failures |
 | [DEBUGGING_BRANCHES.md](DEBUGGING_BRANCHES.md) | How to test branches before merging (GitHub Pages, local, Codespaces) |
+| [CLOUD_SYNC_SETUP.md](CLOUD_SYNC_SETUP.md) | How to enable optional cross-device cloud sync with Firebase |
 
 ## 📝 Change History
 

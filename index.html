@@ -13,6 +13,17 @@
         <!-- Menu Button -->
         <button id="menuBtn" class="menu-btn" aria-label="Open menu">☰</button>
         
+        <!-- Cloud Sync UI (hidden until Firebase is configured) -->
+        <div id="cloudSyncBar" class="cloud-sync-bar">
+            <button id="cloudSyncLoginBtn" class="cloud-sync-login-btn" style="display: none;"
+                    onclick="CloudSync.openAuthModal()">☁️ Sign In to Sync</button>
+            <div id="cloudSyncUserInfo" class="cloud-sync-user-info" style="display: none;">
+                <span id="cloudSyncUserEmail" class="cloud-sync-email"></span>
+                <span id="cloudSyncStatus" class="cloud-sync-status" style="display: none;"></span>
+                <button class="cloud-sync-signout-btn" onclick="CloudSync.handleSignOut()">Sign Out</button>
+            </div>
+        </div>
+
         <h1><span aria-hidden="true">🐾</span> Pen the Pet</h1>
         <p class="subtitle">A Logic Puzzle Game About Fencing</p>
         
@@ -232,7 +243,32 @@
         </div>
     </div>
 
-    <!-- Game Scripts (Load in order: constants -> config -> types -> utils -> pathfinding -> grid -> game -> menu -> main) -->
+    <!-- Cloud Sync Auth Modal -->
+    <div id="cloudSyncModal" class="modal">
+        <div class="modal-content cloud-sync-modal-content">
+            <button class="modal-close" aria-label="Close sign in" onclick="CloudSync.closeAuthModal()">&times;</button>
+            <h2>☁️ Cloud Sync</h2>
+            <p class="modal-description">Sign in to sync your puzzle progress across devices</p>
+            <div class="auth-form">
+                <label for="authEmail">Email</label>
+                <input type="email" id="authEmail" class="auth-input" placeholder="you@example.com" autocomplete="email">
+                <label for="authPassword">Password</label>
+                <input type="password" id="authPassword" class="auth-input" placeholder="Password (min 6 characters)" autocomplete="current-password">
+                <div id="authError" class="auth-error" style="display: none;"></div>
+                <div class="auth-buttons">
+                    <button id="authSignInBtn" class="auth-btn auth-btn-primary" onclick="CloudSync.handleSignIn()">Sign In</button>
+                    <button id="authSignUpBtn" class="auth-btn auth-btn-secondary" onclick="CloudSync.handleSignUp()">Create Account</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase SDK (compat) — loaded only when needed; CloudSync gracefully no-ops if missing -->
+    <script src="https://www.gstatic.com/firebasejs/11.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/11.7.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/11.7.1/firebase-firestore-compat.js"></script>
+
+    <!-- Game Scripts (Load in order: constants -> config -> types -> utils -> pathfinding -> grid -> game -> cloud -> menu -> main) -->
     <script src="js/constants.js"></script>
     <script src="js/config.js"></script>
     <script src="js/tileTypes.js"></script>
@@ -240,6 +276,8 @@
     <script src="js/DateUtils.js"></script>
     <script src="js/PathfindingUtils.js"></script>
     <script src="js/Grid.js"></script>
+    <script src="js/firebase-config.js"></script>
+    <script src="js/CloudSync.js"></script>
     <script src="js/Game.js"></script>
     <script src="js/Menu.js"></script>
     <script src="js/main.js"></script>
