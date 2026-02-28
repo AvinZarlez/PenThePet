@@ -60,6 +60,8 @@ These are the core documentation files that describe the current state of the pr
 
 Historical documentation of major changes, bug fixes, and implementations:
 
+- **[HISTORY.md](HISTORY.md)** - How this project was built (AI-assisted development experiment)
+
 - **[summaries/](summaries/)** - PR and change summaries
   - [DEPENDABOT_FIX_SUMMARY.md](summaries/DEPENDABOT_FIX_SUMMARY.md) - Fixed agent hang issues
   - [FIXES_SUMMARY_2026-02-06.md](summaries/FIXES_SUMMARY_2026-02-06.md) - Puzzle scoring fixes
@@ -67,6 +69,8 @@ Historical documentation of major changes, bug fixes, and implementations:
   - [MAPGEN_FIX_SUMMARY.md](summaries/MAPGEN_FIX_SUMMARY.md) - Goal calculation bug fix
   - [MAP_GENERATION_AUDIT_SUMMARY.md](summaries/MAP_GENERATION_AUDIT_SUMMARY.md) - Generation system audit
   - [MENU_IMPLEMENTATION.md](summaries/MENU_IMPLEMENTATION.md) - Menu system implementation
+  - [REFACTORING_2026-02-07.md](summaries/REFACTORING_2026-02-07.md) - Code refactoring changes
+  - [SOLVER_CLEANUP_SUMMARY.md](summaries/SOLVER_CLEANUP_SUMMARY.md) - Solver consolidation
 
 ## 🚀 Quick Start Guides
 
@@ -127,8 +131,9 @@ Historical documentation of major changes, bug fixes, and implementations:
 2. [AGENT_GUIDELINES.md](AGENT_GUIDELINES.md) - Quality rules
 
 **Understanding History:**
-1. [summaries/](summaries/) - All change summaries
-2. Git history - Commit messages
+1. [HISTORY.md](HISTORY.md) - Project overview and development story
+2. [summaries/](summaries/) - All change summaries
+3. Git history - Commit messages
 
 ## 📖 Documentation Standards
 
@@ -169,5 +174,5 @@ When updating documentation:
 ---
 
 **Last Updated:** 2026-02-28  
-**Total Documentation Files:** 13 (7 main + 6 summaries)  
+**Total Documentation Files:** 16 (8 main + 8 summaries)  
 **Lines of Documentation:** ~20,000+

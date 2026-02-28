@@ -13,6 +13,7 @@ class Menu {
         this.game = game;
         this.currentLevel = null; // Track current level date
         this.mapsDatabase = null; // Store loaded maps
+        this.showAllLevels = false; // Debug: show future levels in selector
         
         this.attachEventListeners();
     }
@@ -114,12 +115,19 @@ class Menu {
     attachDebugListeners() {
         const resetLevelBtn = document.getElementById('debugResetLevel');
         const resetAllBtn = document.getElementById('debugResetAll');
+        const showAllLevelsCheckbox = document.getElementById('debugShowAllLevels');
 
         if (resetLevelBtn) {
             resetLevelBtn.addEventListener('click', () => this.resetCurrentLevel());
         }
         if (resetAllBtn) {
             resetAllBtn.addEventListener('click', () => this.resetAllData());
+        }
+        if (showAllLevelsCheckbox) {
+            showAllLevelsCheckbox.addEventListener('change', (e) => {
+                this.showAllLevels = e.target.checked;
+                this.populateLevelList();
+            });
         }
     }
 
@@ -204,7 +212,8 @@ class Menu {
     }
 
     /**
-     * Populate the level list with available maps
+     * Populate the level list with available maps.
+     * Only shows levels dated today or before, unless showAllLevels debug flag is set.
      */
     populateLevelList() {
         const levelList = document.getElementById('levelList');
@@ -214,9 +223,15 @@ class Menu {
 
         // Get current level from cookie or today's date
         const currentDate = this._getCurrentLevelDate();
+        const today = DateUtils.getTodayDate();
 
         // Sort dates in reverse chronological order
-        const dates = Object.keys(this.mapsDatabase).sort().reverse();
+        let dates = Object.keys(this.mapsDatabase).sort().reverse();
+
+        // Filter out future dates unless debug showAllLevels is enabled
+        if (!this.showAllLevels) {
+            dates = dates.filter(date => date <= today);
+        }
 
         dates.forEach(date => {
             const mapData = this.mapsDatabase[date];

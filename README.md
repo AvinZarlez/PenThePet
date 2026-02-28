@@ -83,6 +83,7 @@ This project has comprehensive documentation for both human developers and AI co
 
 ### Project History
 
+- **[Project History](docs/HISTORY.md)** - How this project was built (AI-assisted development experiment)
 - **[Implementation Summary](docs/summaries/IMPLEMENTATION_SUMMARY.md)** - Changes made during initial development
 - **[Map Generation Fix](docs/summaries/MAPGEN_FIX_SUMMARY.md)** - Critical bug fix in goal calculation
 - **[All Change Summaries](docs/summaries/)** - Complete history of PRs and major changes
