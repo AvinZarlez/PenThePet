@@ -13,12 +13,6 @@ on:
       - 'package-lock.json'
   pull_request:
     branches: '**'
-    paths:
-      - 'js/**'
-      - 'scripts/**'
-      - 'test/**'
-      - 'package.json'
-      - 'package-lock.json'
 
 # Cancel in-progress runs when a new commit is pushed to the same branch/PR
 concurrency:
@@ -26,8 +20,41 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  check-paths:
+    name: Detect Changed Files
+    runs-on: ubuntu-latest
+    outputs:
+      tests: ${{ steps.filter.outputs.tests }}
+
+    permissions:
+      contents: read
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Detect changed paths
+        id: filter
+        run: |
+          if [ "${{ github.event_name }}" != "pull_request" ]; then
+            # On push the workflow-level paths filter already ensures only
+            # relevant changes reach here, so run all tests.
+            echo "tests=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          CHANGED=$(git diff --name-only \
+            "${{ github.event.pull_request.base.sha }}" \
+            "${{ github.event.pull_request.head.sha }}")
+          echo "Changed files:"
+          echo "$CHANGED"
+          echo "tests=$(echo "$CHANGED" | grep -qE \
+            '(^js/|^scripts/|^test/|^package(-lock)?\.json$)' \
+            && echo true || echo false)" >> "$GITHUB_OUTPUT"
+
   test-webapp:
     name: Test Webapp
+    needs: check-paths
+    if: needs.check-paths.outputs.tests == 'true'
     runs-on: ubuntu-latest
 
     permissions:
@@ -51,6 +78,8 @@ jobs:
 
   test-generation:
     name: Test Level Generation
+    needs: check-paths
+    if: needs.check-paths.outputs.tests == 'true'
     runs-on: ubuntu-latest
 
     permissions:
@@ -171,3 +200,27 @@ jobs:
               repo: context.repo.repo,
               body: body
             });
+
+  test:
+    name: Test
+    needs: [check-paths, test-webapp, test-generation, coverage]
+    if: always()
+    runs-on: ubuntu-latest
+
+    permissions: {}
+
+    steps:
+      - name: Check test results
+        run: |
+          for result in \
+              "${{ needs.check-paths.result }}" \
+              "${{ needs.test-webapp.result }}" \
+              "${{ needs.test-generation.result }}" \
+              "${{ needs.coverage.result }}"; do
+            if [[ "$result" == "failure" || "$result" == "cancelled" ]]; then
+              echo "Test pipeline failed or was cancelled."
+              exit 1
+            fi
+          done
+          echo "All test checks passed (or were not required)."
+

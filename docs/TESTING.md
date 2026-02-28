@@ -22,7 +22,7 @@ PenThePet has a comprehensive test suite with:
 - **ruff** for Python code quality
 - **markdownlint** for Markdown documentation quality
 - **GitHub Actions** CI/CD pipeline with parallel jobs
-- Test results and coverage are available in the [CI pipeline](https://github.com/AvinZarlez/penthepet/actions/workflows/test.yml)
+- Test results and coverage are available in the [Test pipeline](https://github.com/AvinZarlez/penthepet/actions/workflows/test.yml) and [Lint pipeline](https://github.com/AvinZarlez/penthepet/actions/workflows/lint.yml)
 
 ### Test Philosophy
 
@@ -508,19 +508,22 @@ test('debug this', () => {
 
 ### GitHub Actions
 
-Tests run automatically on:
+Tests and linting run automatically on every pull request and on every push to `main`. Two consolidated workflows handle CI:
 
-- Every push to main branch
-- Every pull request
-- Workflow: `.github/workflows/test.yml`
+**Lint** (`.github/workflows/lint.yml`):
 
-**CI runs:**
+1. Detect which files changed
+2. Run ESLint if JS files changed
+3. Run ruff if Python solver files changed
+4. Run markdownlint if Markdown files changed
+5. Gate job reports `Lint` status — always, even if all sub-jobs were skipped
 
-1. Install dependencies
-2. Run ESLint
-3. Run tests with coverage
-4. Upload coverage to Codecov
-5. Fail if tests fail or coverage drops
+**Test** (`.github/workflows/test.yml`):
+
+1. Detect which files changed
+2. Run Jest webapp tests and generation tests in parallel (if test-relevant files changed)
+3. Run full test suite with coverage, upload to Codecov, comment on PR
+4. Gate job reports `Test` status — always, even if all sub-jobs were skipped
 
 ### Local Pre-commit
 

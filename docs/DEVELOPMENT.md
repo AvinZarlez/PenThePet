@@ -598,26 +598,29 @@ if (DEBUG) {
 
 ### GitHub Actions Workflows
 
-The project uses GitHub Actions for automated testing and deployment. Each workflow is **path-filtered** so it only runs when relevant files change, avoiding unnecessary CI minutes.
+The project uses two consolidated GitHub Actions workflows for linting and testing, plus standalone workflows for deployment and map generation.
 
-**lint-js.yml** - ESLint on JavaScript changes:
+**How required checks work:** GitHub classic branch protection requires a status check to actually *report* a result. If a workflow never fires (because a path filter prevented it), the check stays "Expected — Waiting for status to be reported" and permanently blocks the PR. To avoid this, each workflow has a **gate job** (`Lint` / `Test`) that always runs regardless of which files changed. Actual lint and test work is done by conditional sub-jobs — they run only when relevant files changed, and are skipped otherwise. The gate job checks whether any sub-job failed; if all were skipped it passes in under a second.
 
-- Triggers when `js/**`, `scripts/**/*.js`, `test/**/*.js`, `eslint.config.mjs`, `package.json`, or `package-lock.json` change
+**lint.yml** - Runs all linters; always produces a `Lint` status on every PR:
 
-**lint-python.yml** - ruff on Python changes:
+- PR trigger: no path filter — always fires
+- Push trigger: only when JS, Python solver, or Markdown files change
+- **Detect Changed Files** — determines which linters are needed
+- **Lint JavaScript** — ESLint; runs only when `js/**`, `scripts/**/*.js`, `test/**/*.js`, `eslint.config.mjs`, or `package*.json` change
+- **Lint Python** — ruff; runs only when `scripts/solver/**` or `ruff.toml` change
+- **Lint Markdown** — markdownlint; runs only when `*.md` or `.markdownlint-cli2.jsonc` change
+- **Lint** *(gate)* — always runs; fails if any linter failed, passes if all passed or were skipped
 
-- Triggers when `scripts/solver/**` or `ruff.toml` change
+**test.yml** - Runs the test suite; always produces a `Test` status on every PR:
 
-**lint-markdown.yml** - markdownlint on documentation changes:
-
-- Triggers when any `*.md` file or `.markdownlint-cli2.jsonc` changes
-
-**test.yml** - Runs tests when code changes (parallel jobs, then combined coverage):
-
-- Triggers when `js/**`, `scripts/**`, `test/**`, `package.json`, or `package-lock.json` change
-- **Test Webapp** - Jest tests for browser-side components
-- **Test Level Generation** - Jest tests for generation scripts
-- **Full Test Suite & Coverage** - Combined test run with coverage reporting, Codecov upload, and PR comments (runs after both test jobs pass)
+- PR trigger: no path filter — always fires
+- Push trigger: only when `js/**`, `scripts/**`, `test/**`, or `package*.json` change
+- **Detect Changed Files** — determines if tests are needed
+- **Test Webapp** — Jest tests for browser-side components; conditional
+- **Test Level Generation** — Jest tests for generation scripts; conditional
+- **Full Test Suite & Coverage** — combined test run with coverage reporting, Codecov upload, and PR comments; runs only after both test jobs pass
+- **Test** *(gate)* — always runs; fails if any job failed, passes if all passed or were skipped
 
 **generate-daily-map.yml** - Manual workflow for adding new maps:
 
@@ -653,21 +656,27 @@ The `main` branch must be protected so that only @AvinZarlez can merge pull requ
 > **Why this is safe with "Allow GitHub Actions to create PRs" enabled:**
 > GitHub Actions can *create* PRs and push branches, but it **cannot merge** them when the branch protection rules above are active. Only @AvinZarlez (as Code Owner and the sole allowed merger) can approve and merge. A malicious action could open a PR with bad code, but it would sit there waiting for your review — it could never reach `main` on its own.
 
-#### Required Status Checks and Path-Filtered Workflows
+#### Required Status Checks
 
-**The short answer:** Path-filtered workflows work correctly as required status checks. When a workflow is skipped because no relevant files changed, GitHub marks it as **skipped** — and GitHub treats a skipped required status check as **passing**. The PR can still be merged.
+There are exactly **two** required status checks to register in branch protection — one per consolidated workflow:
 
-**Recommended required status checks (minimum viable set):**
+| Check name (use exactly as shown) | Workflow file | What it gates |
+|---|---|---|
+| `Lint` | `lint.yml` | ESLint, ruff, markdownlint |
+| `Test` | `test.yml` | Jest webapp tests, generation tests, coverage |
 
-Only add the `coverage` job from `test.yml` as a required status check. This is sufficient because:
+Both gate jobs always run on every PR and always report a result, so they never block a merge with "Expected — Waiting for status to be reported." Sub-jobs inside each workflow run only when relevant files changed.
 
-- `coverage` only runs after both `test-webapp` and `test-generation` pass (it uses `needs: [test-webapp, test-generation]`)
-- If any test job fails, `coverage` will not run, blocking the merge
-- If no code files changed (path filter not triggered), the entire `test.yml` workflow is skipped, which GitHub counts as passing
+**Step-by-step setup in GitHub:**
 
-The lint workflows (`lint-js`, `lint-python`, `lint-markdown`) do **not** need to be required status checks. They will still run and show as failed in the PR checks UI, making the issue visible, but they won't add extra branch rules to maintain.
+1. Go to **Settings → Branches**
+2. Click **Edit** next to the `main` branch protection rule (or **Add rule** if none exists)
+3. Enable **Require status checks to pass before merging**
+4. Enable **Require branches to be up to date before merging**
+5. In the **Search for status checks** box, search for `Lint` and `Test` and add both
+6. Click **Save changes**
 
-**In practice, do not add the individual lint jobs as required.** Fewer required rules = less configuration to keep in sync as workflows evolve.
+> **Can't find a check in the search box?** The check name only appears after at least one PR has run that workflow. Open a draft PR to any branch to populate the list.
 
 The `.github/CODEOWNERS` file enforces that @AvinZarlez must approve every PR:
 
