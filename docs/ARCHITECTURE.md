@@ -106,8 +106,7 @@ css/
 ├── base.css     — global reset, body, container, typography, buttons, footer, responsive
 ├── game.css     — game board, controls, grid, cells, sidebar, debug section
 ├── modals.css   — modal overlay, animations, shared modal content styles
-├── menu.css     — menu modal, calendar/level selector, cloud sync UI
-└── styles.css   — legacy @import shim (backward compatibility only)
+└── menu.css     — menu modal, calendar/level selector, cloud sync UI
 ```
 
 **Structure within each file:**
@@ -197,7 +196,7 @@ class Grid {
 1. **Data Layer** (`Grid.js`) - Grid state and tile management
 2. **Logic Layer** (`PathfindingUtils.js`) - Pathfinding and penning checks
 3. **Controller Layer** (`Game.js`) - Coordinates data and UI, checks win condition
-4. **View Layer** (`index.html`, `styles.css`) - User interface
+4. **View Layer** (`index.html`, `css/`) - User interface
 5. **Generation Pipeline** (`scripts/`, `MapGenerator.js`, `MapValidator.js`) - Offline map generation (not loaded in browser)
 
 **Why:**

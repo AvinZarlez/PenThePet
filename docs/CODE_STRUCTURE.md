@@ -26,8 +26,7 @@ PenThePet/
 │   ├── base.css            # Global reset, container, typography, buttons, footer, responsive
 │   ├── game.css            # Game board, controls, grid, cells, sidebar, debug section
 │   ├── modals.css          # Modal overlay, animations, shared modal content styles
-│   ├── menu.css            # Menu modal, calendar/level selector, cloud sync UI
-│   └── styles.css          # Legacy entry point — @imports the four files above
+│   └── menu.css            # Menu modal, calendar/level selector, cloud sync UI
 ├── js/
 │   ├── constants.js        # Centralized constants for game parameters
 │   ├── config.js           # Game configuration (references constants)
@@ -127,10 +126,6 @@ Styles for menu-driven content:
 **To customize the look:** Modify colors or sizes in the relevant CSS file.
 
 **To add a new tile CSS class:** Add it to `css/game.css` under "Cell Styles".
-
-### `css/styles.css` (legacy)
-
-A thin `@import` shim retained for backward compatibility. `index.html` links to the four files above directly for parallel loading.
 
 ### `js/constants.js`
 
