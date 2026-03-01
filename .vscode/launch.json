@@ -61,14 +61,14 @@
         "7,9"
       ],
       "console": "integratedTerminal"
-    },
+    }
+  ],
+  "compounds": [
     {
-      "type": "chrome",
-      "request": "launch",
-      "name": "Launch Game in Chrome",
-      "url": "http://localhost:8080",
-      "webRoot": "${workspaceFolder}",
-      "preLaunchTask": "Start HTTP Server"
+      "name": "Start in web browser",
+      "configurations": [],
+      "preLaunchTask": "Start HTTP Server",
+      "stopAll": true
     }
   ]
 }
