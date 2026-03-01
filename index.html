@@ -57,6 +57,10 @@
                 <span class="counter-label">Area Size:</span>
                 <span id="areaSize" class="counter-value">∞</span>
             </div>
+            <button id="timerBtn" class="timer-btn" title="Pause timer" aria-label="Pause timer">
+                <span id="timerValue" class="timer-value">00:00</span>
+                <span id="timerIcon" class="timer-icon" aria-hidden="true">⏸</span>
+            </button>
             <button class="penned-status not-penned" id="pennedStatus" 
                     title="Pet can still escape - keep building walls!" 
                     data-interactive="false">
@@ -89,6 +93,12 @@
 
         <div class="grid-container">
             <div id="grid" class="grid"></div>
+            <div id="pauseOverlay" class="pause-overlay" style="display: none;" aria-live="polite">
+                <div class="pause-content">
+                    <div class="pause-title">PAUSED</div>
+                    <button id="resumeBtn" class="resume-btn">▶ Resume</button>
+                </div>
+            </div>
         </div>
 
         <div class="debug-section" style="display: none;">
