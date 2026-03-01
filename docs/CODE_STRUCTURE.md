@@ -23,7 +23,11 @@ PenThePet/
 │   ├── penned.svg          # Penned area (yellow-tinted grass) texture
 │   └── paw.svg             # Paw print path overlay icon
 ├── css/
-│   └── styles.css          # All game styling
+│   ├── base.css            # Global reset, container, typography, buttons, footer, responsive
+│   ├── game.css            # Game board, controls, grid, cells, sidebar, debug section
+│   ├── modals.css          # Modal overlay, animations, shared modal content styles
+│   ├── menu.css            # Menu modal, calendar/level selector, cloud sync UI
+│   └── styles.css          # Legacy entry point — @imports the four files above
 ├── js/
 │   ├── constants.js        # Centralized constants for game parameters
 │   ├── config.js           # Game configuration (references constants)
@@ -79,22 +83,54 @@ The main entry point for the game. Contains the HTML structure:
 
 **Keep this minimal** - structure only, no inline styles or scripts.
 
-### `css/styles.css`
+### `css/base.css`
 
-Contains all visual styling for the game:
+Global foundation used across all views:
 
-- Global styles (body, container)
-- Typography (headings, text)
-- Map info display (Day, name, date)
+- CSS reset (`*`), body, container
+- Typography (headings, subtitle)
+- Generic button styles
+- Footer and error message
+- Responsive media queries for layout breakpoints
+
+### `css/game.css`
+
+Styles for the main game view:
+
 - Menu button (top-right circular button)
-- Modal system (overlay, content, animations)
-- Level list (selectable level items)
-- Info panel and legend
-- Button styles
-- Grid and cell styles
-- Responsive media queries
+- Map info header (Day, name, date)
+- Controls bar (reset button, wall counter, area size display, penned status)
+- Solution toggle bar
+- Notification toast
+- Grid container and cell styles (tile types, paw overlay)
+- Roaming area viewer sidebar
+- Debug tools section
 
-**To customize the look:** Modify colors, sizes, or add new CSS classes here.
+### `css/modals.css`
+
+Shared modal dialog system used by all popups:
+
+- Modal overlay backdrop with blur
+- Fade-in and slide-in animations
+- Modal content container, close button
+- Shared section typography (description, section, lists, help text)
+
+### `css/menu.css`
+
+Styles for menu-driven content:
+
+- Menu modal layout and option buttons
+- Level selector list and calendar grid (navigation, day cells, status badges)
+- Cloud sync bar, sign-in/sign-out buttons, status indicators
+- Cloud sync auth modal and form (inputs, error, action buttons)
+
+**To customize the look:** Modify colors or sizes in the relevant CSS file.
+
+**To add a new tile CSS class:** Add it to `css/game.css` under "Cell Styles".
+
+### `css/styles.css` (legacy)
+
+A thin `@import` shim retained for backward compatibility. `index.html` links to the four files above directly for parallel loading.
 
 ### `js/constants.js`
 
@@ -326,7 +362,7 @@ sand: {
 }
 ```
 
-1. **Add the CSS styling** in `css/styles.css`:
+1. **Add the CSS styling** in `css/game.css` under "Cell Styles":
 
 ```css
 .cell.sand {
