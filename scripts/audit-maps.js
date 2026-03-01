@@ -1,27 +1,26 @@
 #!/usr/bin/env node
 
 /**
- * Audit existing maps in maps.json — validates every map against MapValidator.
+ * Audit existing maps in maps/ — validates every map against MapValidator.
  * Exits with code 1 if any map fails validation.
  */
 
-const fs = require('fs');
 const path = require('path');
 const MapValidator = require('../js/MapValidator.js');
+const { readAllMaps } = require('./lib/mapUtils.js');
 
 function auditMaps() {
-    const mapsPath = path.join(__dirname, '../maps.json');
-    
-    if (!fs.existsSync(mapsPath)) {
-        console.error('maps.json not found');
+    const mapsDir = path.join(__dirname, '../maps');
+
+    const maps = readAllMaps(mapsDir);
+
+    if (Object.keys(maps).length === 0) {
+        console.error('No maps found in maps/ directory');
         process.exit(1);
     }
-    
-    const data = fs.readFileSync(mapsPath, 'utf8');
-    const maps = JSON.parse(data);
-    
+
     console.log('='.repeat(60));
-    console.log('Auditing Maps in maps.json');
+    console.log('Auditing Maps in maps/ directory');
     console.log('='.repeat(60));
     
     const dates = Object.keys(maps).sort();

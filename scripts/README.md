@@ -1,6 +1,6 @@
 # scripts/
 
-This folder contains the offline Node.js scripts used to generate and audit maps. These scripts run outside the browser (locally or via GitHub Actions) and write to `maps.json`.
+This folder contains the offline Node.js scripts used to generate and audit maps. These scripts run outside the browser (locally or via GitHub Actions) and write to `maps/YYYY.json` (one file per year in the `maps/` directory).
 
 ## What belongs here
 

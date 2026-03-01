@@ -2,7 +2,7 @@
  * Grid Class
  * 
  * Manages the game grid data structure and tile state.
- * Maps are loaded from maps.json (generated offline by the Python solver pipeline).
+ * Maps are loaded from maps/YYYY.json (generated offline by the Python solver pipeline).
  * This class handles state management: loading maps, tracking tiles, saving/restoring state.
  *
  * Compact map format helpers (parseCompactMap, parseCompactSolution) are also defined here

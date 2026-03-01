@@ -3,11 +3,17 @@
  *
  * Tests for loadTodayMap() – specifically the fallback behaviour when
  * today's puzzle does not exist in the maps database.
+ *
+ * loadTodayMap() fetches one or more maps/YYYY.json files and merges them.
+ * Each fetch call in the test receives the same mock payload so that all
+ * relevant dates are always available regardless of which year file is
+ * requested.
  */
 
 const { loadTodayMap } = require('../../js/main.js');
 
-// Helper: build a resolved fetch mock that returns the given maps object.
+// Helper: build a resolved fetch mock that returns the given maps object
+// for every request (year file, previous year, or saved-level year).
 function makeFetch(mapsDb) {
     return jest.fn(() =>
         Promise.resolve({
@@ -78,34 +84,37 @@ describe('loadTodayMap()', () => {
 
     test('uses cookie-selected level when it exists in the database', async () => {
         DateUtils.getTodayDate = () => '2026-03-01';
-        document.cookie = 'currentLevel=2026-02-15';
+        document.cookie = 'currentLevel=2026-02-28; path=/';
         global.fetch = makeFetch({
-            '2026-02-15': { date: '2026-02-15', dayNumber: 5 },
-            '2026-03-01': { date: '2026-03-01', dayNumber: 10 },
+            '2026-03-01': { date: '2026-03-01', dayNumber: 2 },
+            '2026-02-28': { date: '2026-02-28', dayNumber: 1 },
         });
 
         const result = await loadTodayMap();
-        expect(result).toEqual({ date: '2026-02-15', dayNumber: 5 });
+        expect(result).toEqual({ date: '2026-02-28', dayNumber: 1 });
     });
 
-    test('ignores cookie when that level is not in the database', async () => {
+    test('ignores cookie-selected level when it is not in the database', async () => {
         DateUtils.getTodayDate = () => '2026-03-01';
-        document.cookie = 'currentLevel=2025-01-01';
+        document.cookie = 'currentLevel=2025-12-31; path=/';
         global.fetch = makeFetch({
-            '2026-03-01': { date: '2026-03-01', dayNumber: 10 },
+            '2026-03-01': { date: '2026-03-01', dayNumber: 1 },
         });
 
         const result = await loadTodayMap();
-        // Falls through to today's map
-        expect(result).toEqual({ date: '2026-03-01', dayNumber: 10 });
+        // Cookie level not found → falls back to today
+        expect(result).toEqual({ date: '2026-03-01', dayNumber: 1 });
     });
 
     test('returns null when fetch fails', async () => {
         DateUtils.getTodayDate = () => '2026-03-01';
         global.fetch = jest.fn(() => Promise.reject(new Error('Network error')));
+        const consoleSpy = jest.spyOn(console, 'error').mockImplementation();
 
         const result = await loadTodayMap();
         expect(result).toBeNull();
+
+        consoleSpy.mockRestore();
     });
 
     test('returns null when fetch response is not ok', async () => {

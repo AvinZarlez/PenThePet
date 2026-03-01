@@ -339,13 +339,11 @@ describe('Menu', () => {
     describe('Error Handling', () => {
         test('should handle fetch failure gracefully', async () => {
             global.fetch = jest.fn(() => Promise.reject(new Error('Network error')));
-            const consoleSpy = jest.spyOn(console, 'error').mockImplementation();
-            
+
             await menu.loadMapsDatabase();
-            
+
+            // Year files that fail to fetch are silently skipped; result is an empty database
             expect(menu.mapsDatabase).toEqual({});
-            expect(consoleSpy).toHaveBeenCalled();
-            consoleSpy.mockRestore();
         });
 
         test('should handle fetch not ok response', async () => {
@@ -354,13 +352,11 @@ describe('Menu', () => {
                     ok: false
                 })
             );
-            const consoleSpy = jest.spyOn(console, 'error').mockImplementation();
-            
+
             await menu.loadMapsDatabase();
-            
+
+            // Non-ok responses are silently skipped (year file may simply not exist yet)
             expect(menu.mapsDatabase).toEqual({});
-            expect(consoleSpy).toHaveBeenCalled();
-            consoleSpy.mockRestore();
         });
 
         test('should handle null modal element gracefully', () => {

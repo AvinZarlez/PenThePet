@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 /**
- * Map generation entry point — generates one or more maps and adds them to maps.json.
+ * Map generation entry point — generates one or more maps and adds them to maps/YYYY.json.
  * Used by the GitHub Actions workflow and for local map generation.
  *
  * Supports:
@@ -14,7 +14,6 @@
  * BruteForceSolver is NOT used here — it is only for test verification in test/.
  */
 
-const fs = require('fs');
 const path = require('path');
 const MapGenerator = require('../js/MapGenerator.js');
 const MapValidator = require('../js/MapValidator.js');
@@ -23,6 +22,8 @@ const {
     parseSizeInput,
     getRandomSize,
     incrementDate,
+    readAllMaps,
+    saveMapsToDirectory,
     getNextAvailableDate,
     getNextDayNumber,
     validateMapsDatabase,
@@ -138,7 +139,7 @@ async function main() {
         }
     }
 
-    const mapsPath = path.join(__dirname, '../maps.json');
+    const mapsDir = path.join(__dirname, '../maps');
 
     // Parse size input — supports an exact value ("9") or a range ("7-13")
     let parsedSize;
@@ -159,17 +160,18 @@ async function main() {
 
     // Load existing maps (skipped when --fresh replaces everything)
     let maps = {};
-    if (!fresh && fs.existsSync(mapsPath)) {
-        const data = fs.readFileSync(mapsPath, 'utf8');
-        maps = JSON.parse(data);
-        console.log(`\nLoaded ${Object.keys(maps).length} existing maps`);
-    } else if (fresh) {
+    if (!fresh) {
+        maps = readAllMaps(mapsDir);
+        if (Object.keys(maps).length > 0) {
+            console.log(`\nLoaded ${Object.keys(maps).length} existing maps`);
+        }
+    } else {
         console.log('\nStarting fresh — all existing maps will be replaced');
     }
 
     // Auto-assign start date if not provided
     if (!startDate) {
-        startDate = fresh ? new Date().toISOString().split('T')[0] : getNextAvailableDate(mapsPath);
+        startDate = fresh ? new Date().toISOString().split('T')[0] : getNextAvailableDate(mapsDir);
         console.log(`No date provided, auto-assigned${count > 1 ? ' start' : ''}: ${startDate}`);
     }
 
@@ -186,7 +188,7 @@ async function main() {
         process.exit(1);
     }
 
-    let nextDayNumber = fresh ? 1 : getNextDayNumber(mapsPath);
+    let nextDayNumber = fresh ? 1 : getNextDayNumber(mapsDir);
     let currentDate = startDate;
 
     for (let i = 0; i < count; i++) {
@@ -210,7 +212,7 @@ async function main() {
         maps[currentDate] = mapData;
 
         console.log(`\n${'='.repeat(60)}`);
-        console.log('✓ Added to maps.json');
+        console.log('✓ Added to maps database');
         console.log(`  Day Number: ${mapData.dayNumber}`);
         console.log(`  Date:       ${currentDate}`);
         console.log(`  Name:       "${mapData.mapName}"`);
@@ -238,20 +240,19 @@ async function main() {
         console.log('✓ Database validation passed');
     }
 
-    // Sort by date before saving so maps.json stays ordered
-    const sortedMaps = {};
-    Object.keys(maps).sort().forEach(key => { sortedMaps[key] = maps[key]; });
-    fs.writeFileSync(mapsPath, JSON.stringify(sortedMaps, null, 2));
+    // Save maps split by year to the maps/ directory
+    saveMapsToDirectory(mapsDir, maps);
 
-    console.log(`\n✓ Saved ${Object.keys(sortedMaps).length} maps to maps.json`);
+    const sortedDates = Object.keys(maps).sort();
+    console.log(`\n✓ Saved ${sortedDates.length} maps to maps/ directory`);
     if (count > 1) {
         console.log(`✓ Generated ${count} new maps`);
     }
 
-    // Print a summary of all maps now in the file
+    // Print a summary of all maps now in the directory
     console.log('\nMap Summary:');
-    Object.keys(sortedMaps).sort().forEach(date => {
-        const m = sortedMaps[date];
+    sortedDates.forEach(date => {
+        const m = maps[date];
         console.log(`  Day ${m.dayNumber}: ${date} - "${m.mapName}" (${m.size}x${m.size}, goal: ${m.goal}, walls: ${m.maxWalls})`);
     });
 }

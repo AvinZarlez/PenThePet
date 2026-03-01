@@ -296,7 +296,7 @@ These files are excluded because they're UI/config and tested manually:
 - `validateMapsDatabase` — detects gaps, duplicates, missing fields
 - `fixMapsDatabase` — repairs gaps and duplicate names
 - `getNextDayNumber` — correct next sequential day number
-- maps.json structure validation (required fields, optimalSolution format)
+- maps/ directory structure validation (required fields, optimalSolution format)
 
 #### 11. generate-map.test.js
 

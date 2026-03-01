@@ -78,7 +78,7 @@ This ensures all maps in the game meet quality standards.
 
 ### Compact Format
 
-Maps are stored in a compact format in `maps.json` to minimise load time. Each map entry (keyed by date) contains:
+Maps are stored in a compact format in per-year files under `maps/` to minimise load time. Each year's data lives in `maps/YYYY.json` (e.g. `maps/2026.json`). Every entry is keyed by date and contains:
 
 ```json
 {
@@ -121,7 +121,7 @@ Use `parseCompactSolution(flatArr)` (defined in `js/Grid.js`) to decode this int
 
 - **dayNumber**: Sequential number for ordering maps. First map is 1, second is 2, etc.
 - **mapName**: Random English word from `js/wordList.js` for memorable map identification
-- **date**: Date string used as the map key in maps.json
+- **date**: Date string used as the map key in `maps/YYYY.json`
 - **size**: Grid side length (grid is always square: size × size)
 - **goal**: The maximum area achievable with optimal wall placement within the wall budget
 - **maxWalls**: The wall budget for this map (stored explicitly per-map; computed as `floor(size * 0.75)` during generation)
@@ -228,7 +228,7 @@ The workflow will:
 - Create a new branch (`maps/add-maps-YYYYMMDD-HHMMSS`)
 - Generate the requested number of maps using the Python MILP solver
 - Validate each map meets quality standards
-- Commit the updated `maps.json` to the branch
+- Commit the updated `maps/YYYY.json` file(s) to the branch
 - Open a pull request against `main` for review and merge
 
 > **Why a pull request?** The `main` branch is protected, so the workflow cannot push directly. A PR lets you review the generated maps before merging.
@@ -276,7 +276,7 @@ node scripts/generate-map.js --fresh --count 10 --date 2026-03-01 --size 9
 
 ### Auditing Existing Maps
 
-Check if all maps in maps.json meet validation standards:
+Check if all maps in the `maps/` directory meet validation standards:
 
 ```bash
 node scripts/audit-maps.js
@@ -309,7 +309,7 @@ Each generated map is validated to ensure:
 9. **scripts/solver/requirements.txt**: Python dependencies
 10. **scripts/generate-map.js**: Generation entry point — single map, batch, or fresh replacement (used by GitHub Actions and locally); encodes maps using `encodeCompactMap` / `encodeCompactSolution`
 11. **scripts/lib/mapUtils.js**: Shared pure utilities — date helpers, size parsing, database validation/fix
-12. **scripts/audit-maps.js**: Validates all maps in maps.json against MapValidator
+12. **scripts/audit-maps.js**: Validates all maps in the `maps/` directory against MapValidator
 
 ### Generation Flow
 
@@ -435,7 +435,7 @@ node scripts/generate-map.js --count 3 --size 7
 3. Run `scripts/audit-maps.js` to validate existing maps (checks all quality rules including strategic wall placement)
 4. Ensure CONSTANTS.MAX_WALLS = 15 (never change without regenerating all maps)
 5. All maps MUST pass MapValidator checks (goal >= 5, not all walls on edges, etc.)
-6. Verify maps.json has correct JSON format after generation
+6. Verify each `maps/YYYY.json` has correct JSON format after generation
 7. Test at least one generated map in the game to ensure it works
 
 **When modifying generation:**
@@ -449,7 +449,7 @@ node scripts/generate-map.js --count 3 --size 7
 
 **Key Invariants:**
 
-- maxWalls = floor(size × 0.75) per grid size (stored explicitly per-map in maps.json)
+- maxWalls = floor(size × 0.75) per grid size (stored explicitly per-map in `maps/YYYY.json`)
 - Goal = maximum achievable area
 - goalArea >= 5 (minimum difficulty)
 - At least one wall not on edge (strategic placement)
@@ -468,7 +468,7 @@ node scripts/generate-map.js --count 3 --size 7
 2. **Browser**: Checker only
    - Game.js checks if pet is penned using PathfindingUtils
    - No solver or map generation in the browser
-   - Maps are loaded from maps.json only
+   - Maps are loaded from `maps/YYYY.json` per-year files only
 
 3. **No Fallback Logic**:
    - Map generation uses single consistent method

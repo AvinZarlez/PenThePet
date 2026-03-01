@@ -97,34 +97,36 @@ describe('incrementDate', () => {
 });
 
 describe('getNextAvailableDate', () => {
-    test('returns today when file does not exist', () => {
-        const fakePath = '/tmp/nonexistent-maps-' + Date.now() + '.json';
+    test('returns today when directory does not exist', () => {
+        const fakeDir = '/tmp/nonexistent-maps-dir-' + Date.now();
         const today = new Date().toISOString().split('T')[0];
-        expect(getNextAvailableDate(fakePath)).toBe(today);
+        expect(getNextAvailableDate(fakeDir)).toBe(today);
     });
 
-    test('returns day after latest date in existing file', () => {
-        const testPath = '/tmp/test-maps-next-date-' + Date.now() + '.json';
+    test('returns day after latest date in existing directory', () => {
+        const testDir = '/tmp/test-maps-next-date-dir-' + Date.now();
+        fs.mkdirSync(testDir);
         const testMaps = {
             '2026-01-01': { dayNumber: 1, mapName: 'Alpha' },
             '2026-01-05': { dayNumber: 2, mapName: 'Beta' },
         };
-        fs.writeFileSync(testPath, JSON.stringify(testMaps));
+        fs.writeFileSync(`${testDir}/2026.json`, JSON.stringify(testMaps));
         try {
-            expect(getNextAvailableDate(testPath)).toBe('2026-01-06');
+            expect(getNextAvailableDate(testDir)).toBe('2026-01-06');
         } finally {
-            if (fs.existsSync(testPath)) fs.unlinkSync(testPath);
+            fs.rmSync(testDir, { recursive: true });
         }
     });
 
-    test('returns today when file has no dates', () => {
-        const testPath = '/tmp/test-maps-empty-date-' + Date.now() + '.json';
-        fs.writeFileSync(testPath, JSON.stringify({}));
+    test('returns today when directory has no dates', () => {
+        const testDir = '/tmp/test-maps-empty-date-dir-' + Date.now();
+        fs.mkdirSync(testDir);
+        fs.writeFileSync(`${testDir}/2026.json`, JSON.stringify({}));
         const today = new Date().toISOString().split('T')[0];
         try {
-            expect(getNextAvailableDate(testPath)).toBe(today);
+            expect(getNextAvailableDate(testDir)).toBe(today);
         } finally {
-            if (fs.existsSync(testPath)) fs.unlinkSync(testPath);
+            fs.rmSync(testDir, { recursive: true });
         }
     });
 });

@@ -2,7 +2,7 @@
  * Unit Tests for Grid.js
  * 
  * Tests the Grid class for game state management.
- * Grid no longer generates maps - it only loads pre-generated maps from maps.json.
+ * Grid no longer generates maps - it only loads pre-generated maps from maps/YYYY.json.
  */
 
 const Grid = require('../../js/Grid.js');

@@ -5,6 +5,7 @@
  */
 
 const fs = require('fs');
+const path = require('path');
 const CONSTANTS = require('../../js/constants.js');
 
 // ---------------------------------------------------------------------------
@@ -79,18 +80,54 @@ function incrementDate(dateStr) {
 }
 
 /**
- * Get the next available date from maps.json (day after the latest existing date).
+ * Read all maps from the maps directory (one JSON file per year).
+ * Returns a merged object keyed by date, or {} if the directory does not exist.
+ * @param {string} mapsDir - Path to the maps/ directory
+ * @returns {Object} Merged maps object keyed by date
+ */
+function readAllMaps(mapsDir) {
+    if (!fs.existsSync(mapsDir)) {
+        return {};
+    }
+    const merged = {};
+    const files = fs.readdirSync(mapsDir).filter(f => /^\d{4}\.json$/.test(f)).sort();
+    for (const file of files) {
+        const data = fs.readFileSync(path.join(mapsDir, file), 'utf8');
+        Object.assign(merged, JSON.parse(data));
+    }
+    return merged;
+}
+
+/**
+ * Save a maps object to the maps directory, splitting by year.
+ * Each year's maps are written to maps/YYYY.json.
+ * @param {string} mapsDir - Path to the maps/ directory
+ * @param {Object} maps - Maps object keyed by date
+ */
+function saveMapsToDirectory(mapsDir, maps) {
+    if (!fs.existsSync(mapsDir)) {
+        fs.mkdirSync(mapsDir, { recursive: true });
+    }
+    const byYear = {};
+    for (const date of Object.keys(maps).sort()) {
+        const year = date.substring(0, 4);
+        if (!byYear[year]) byYear[year] = {};
+        byYear[year][date] = maps[date];
+    }
+    for (const [year, yearMaps] of Object.entries(byYear)) {
+        const filePath = path.join(mapsDir, `${year}.json`);
+        fs.writeFileSync(filePath, JSON.stringify(yearMaps, null, 2));
+    }
+}
+
+/**
+ * Get the next available date from the maps directory (day after the latest existing date).
  * If no maps exist, returns today's date.
- * @param {string} mapsPath - Path to maps.json
+ * @param {string} mapsDir - Path to the maps/ directory
  * @returns {string} Date in YYYY-MM-DD format
  */
-function getNextAvailableDate(mapsPath) {
-    if (!fs.existsSync(mapsPath)) {
-        return new Date().toISOString().split('T')[0];
-    }
-
-    const data = fs.readFileSync(mapsPath, 'utf8');
-    const maps = JSON.parse(data);
+function getNextAvailableDate(mapsDir) {
+    const maps = readAllMaps(mapsDir);
     const dates = Object.keys(maps).sort();
 
     if (dates.length === 0) {
@@ -105,18 +142,13 @@ function getNextAvailableDate(mapsPath) {
 // ---------------------------------------------------------------------------
 
 /**
- * Get the next sequential day number from maps.json.
- * Returns 1 if the file does not exist or has no maps.
- * @param {string} mapsPath - Path to maps.json
+ * Get the next sequential day number from the maps directory.
+ * Returns 1 if the directory does not exist or has no maps.
+ * @param {string} mapsDir - Path to the maps/ directory
  * @returns {number}
  */
-function getNextDayNumber(mapsPath) {
-    if (!fs.existsSync(mapsPath)) {
-        return 1;
-    }
-
-    const data = fs.readFileSync(mapsPath, 'utf8');
-    const maps = JSON.parse(data);
+function getNextDayNumber(mapsDir) {
+    const maps = readAllMaps(mapsDir);
 
     let maxDay = 0;
     for (const dateKey in maps) {
@@ -236,8 +268,11 @@ module.exports = {
     parseSizeInput,
     getRandomSize,
     incrementDate,
+    readAllMaps,
+    saveMapsToDirectory,
     getNextAvailableDate,
     getNextDayNumber,
     validateMapsDatabase,
     fixMapsDatabase,
 };
+
