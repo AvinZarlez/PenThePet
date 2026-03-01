@@ -14,12 +14,12 @@
  */
 
 const FIREBASE_CONFIG = {
-    apiKey: '',
-    authDomain: '',
-    projectId: '',
-    storageBucket: '',
-    messagingSenderId: '',
-    appId: ''
+    apiKey: 'AIzaSyAzCvpQeLuaix4qoTxehbEos2PBTh1d_RU',
+    authDomain: 'pen-the-pet.firebaseapp.com',
+    projectId: 'pen-the-pet',
+    storageBucket: 'pen-the-pet.firebasestorage.app',
+    messagingSenderId: '583837321004',
+    appId: '1:583837321004:web:10ee4c2ce4fed8b1dd4e89'
 };
 
 // Export for use in other modules
