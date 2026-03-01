@@ -95,23 +95,26 @@ class Game {
         
         // Add penned class if this tile is accessible when pet is penned
         const coordKey = `${row},${col}`;
-        if (accessibleTiles.has(coordKey)) {
+        const isPennedTile = accessibleTiles.has(coordKey);
+        if (isPennedTile) {
             cell.classList.add('penned');
         }
         
         cell.dataset.row = row;
         cell.dataset.col = col;
         
-        // Add emoji overlay if defined on the tile type (e.g. pet on home tile)
-        if (tileInfo.emoji) {
-            cell.textContent = this.petEmoji;
+        // Choose asset list: use enclosedAssets when tile is penned and they're defined
+        const assetList = getTileAssets(tileType, isPennedTile);
+        
+        // Set background from first asset via inline style (data-driven, overrides CSS)
+        if (assetList && assetList.length > 0) {
+            cell.style.background = `url('assets/${assetList[0]}') center/cover no-repeat`;
         }
         
-        // Render additional asset overlays from the tile's assets list.
-        // The first asset is the CSS background; subsequent assets are overlays.
-        if (tileInfo.assets && tileInfo.assets.length > 1) {
-            for (let i = 1; i < tileInfo.assets.length; i++) {
-                const asset = tileInfo.assets[i];
+        // Render additional asset overlays from the chosen list (index 1+)
+        if (assetList && assetList.length > 1) {
+            for (let i = 1; i < assetList.length; i++) {
+                const asset = assetList[i];
                 if (asset.endsWith('.svg')) {
                     const overlay = document.createElement('img');
                     overlay.src = `assets/${asset}`;
@@ -130,8 +133,17 @@ class Game {
             }
         }
         
+        // Add pet emoji overlay on top of all other layers
+        if (tileInfo.emoji) {
+            const petSpan = document.createElement('span');
+            petSpan.className = 'pet-emoji';
+            petSpan.textContent = this.petEmoji;
+            petSpan.setAttribute('aria-hidden', 'true');
+            cell.appendChild(petSpan);
+        }
+        
         // Add paw image overlay if this cell is on the escape path
-        if (pathSet && pathSet.has(coordKey) && tileType !== 'home') {
+        if (pathSet && pathSet.has(coordKey) && showsPawOverlay(tileType)) {
             const paw = document.createElement('img');
             paw.src = 'assets/paw.svg';
             paw.alt = '';

@@ -33,6 +33,8 @@ export default [
                 getEligibleTileTypes: 'readonly',
                 getTileType: 'readonly',
                 isTileClickable: 'readonly',
+                getTileAssets: 'readonly',
+                showsPawOverlay: 'readonly',
                 Grid: 'readonly',
                 Game: 'readonly',
                 CloudSync: 'readonly',

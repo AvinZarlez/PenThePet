@@ -20,8 +20,13 @@
  *   cssClass      - CSS class applied to the cell element
  *   gradient      - CSS gradient for fallback background styling
  *   assets        - Ordered list of visual layers rendered on the cell.
- *                   Strings ending in ".svg" are loaded as <img>; others are
- *                   rendered as text/emoji overlays.
+ *                   The first entry is the base background; subsequent entries
+ *                   are overlays. Strings ending in ".svg" are loaded as <img>;
+ *                   others are rendered as text/emoji overlays.
+ *   enclosedAssets - Optional. When defined and the tile is inside the penned
+ *                   (enclosed) area, these assets are used instead of `assets`.
+ *                   Falls back to `assets` if not defined.
+ *   showPawOverlay - Whether escape-path paw prints can appear on this tile
  *   emoji         - Optional emoji shown inside the tile (e.g. home pet)
  *   ariaLabel     - Function (row, col) => string for screen reader label
  */
@@ -41,6 +46,8 @@ const TILE_DATA = {
         cssClass: 'grass',
         gradient: 'linear-gradient(135deg, #7ed957 0%, #4caf50 100%)',
         assets: ['grass.svg'],
+        enclosedAssets: ['penned.svg'],
+        showPawOverlay: true,
         ariaLabel: (row, col) => `Grass tile at row ${row + 1}, column ${col + 1}. Click to build a wall.`,
     },
     water: {
@@ -57,6 +64,7 @@ const TILE_DATA = {
         cssClass: 'water',
         gradient: 'linear-gradient(135deg, #4fc3f7 0%, #2196f3 100%)',
         assets: ['water.svg'],
+        showPawOverlay: false,
         ariaLabel: (row, col) => `Water tile at row ${row + 1}, column ${col + 1}. Cannot be clicked.`,
     },
     wall: {
@@ -73,6 +81,7 @@ const TILE_DATA = {
         cssClass: 'wall',
         gradient: 'linear-gradient(135deg, #8d6e63 0%, #5d4037 100%)',
         assets: ['wall.svg'],
+        showPawOverlay: false,
         ariaLabel: (row, col) => `Wall at row ${row + 1}, column ${col + 1}. Click to remove.`,
     },
     home: {
@@ -88,7 +97,9 @@ const TILE_DATA = {
         numericId: 2,
         cssClass: 'home',
         gradient: 'linear-gradient(135deg, #ffeb3b 0%, #ffc107 100%)',
-        assets: ['home.svg'],
+        assets: ['grass.svg', 'home.svg'],
+        enclosedAssets: ['penned.svg', 'home.svg'],
+        showPawOverlay: false,
         emoji: '🏠🐾',
         ariaLabel: (row, col) => `Home tile at row ${row + 1}, column ${col + 1}. Pet starting location.`,
     },
@@ -106,6 +117,8 @@ const TILE_DATA = {
         cssClass: 'grass',
         gradient: 'linear-gradient(135deg, #7ed957 0%, #4caf50 100%)',
         assets: ['grass.svg', 'star.svg'],
+        enclosedAssets: ['penned.svg', 'star.svg'],
+        showPawOverlay: true,
         ariaLabel: (row, col) => `Star tile at row ${row + 1}, column ${col + 1}. Worth 3 points. Click to build a wall.`,
     },
 };
@@ -267,6 +280,31 @@ function isTileClickable(typeName) {
     return data ? data.clickable : false;
 }
 
+/**
+ * Get the asset list for a tile, using enclosedAssets when enclosed.
+ * @param {string} tileName - Tile type name
+ * @param {boolean} isEnclosed - Whether the tile is inside the penned area
+ * @returns {string[]} Ordered list of asset filenames to render
+ */
+function getTileAssets(tileName, isEnclosed) {
+    const data = TILE_DATA[tileName];
+    if (!data) return ['grass.svg'];
+    if (isEnclosed && data.enclosedAssets) {
+        return data.enclosedAssets;
+    }
+    return data.assets || ['grass.svg'];
+}
+
+/**
+ * Check if a tile type shows paw overlay on escape path.
+ * @param {string} tileName - Tile type name
+ * @returns {boolean}
+ */
+function showsPawOverlay(tileName) {
+    const data = TILE_DATA[tileName];
+    return data ? data.showPawOverlay !== false : true;
+}
+
 // Export for use in other modules
 if (typeof module !== 'undefined' && module.exports) {
     module.exports = {
@@ -286,5 +324,7 @@ if (typeof module !== 'undefined' && module.exports) {
         getEligibleTileTypes,
         getTileType,
         isTileClickable,
+        getTileAssets,
+        showsPawOverlay,
     };
 }

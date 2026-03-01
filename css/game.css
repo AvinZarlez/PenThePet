@@ -279,27 +279,27 @@
     z-index: 10;
 }
 
-/* Tile Type Styles */
+/* Tile Type Styles — backgrounds set inline from tileData.js assets */
 .cell.grass {
-    background: url('../assets/grass.svg') center/cover no-repeat;
+    /* background set inline from TILE_DATA.grass.assets[0] */
 }
 
 .cell.grass.penned {
-    background: url('../assets/penned.svg') center/cover no-repeat;
+    /* background set inline from TILE_DATA.grass.enclosedAssets[0] */
 }
 
 .cell.water {
-    background: url('../assets/water.svg') center/cover no-repeat;
+    /* background set inline from TILE_DATA.water.assets[0] */
     cursor: not-allowed;
 }
 
 .cell.wall {
-    background: url('../assets/wall.svg') center/cover no-repeat;
+    /* background set inline from TILE_DATA.wall.assets[0] */
     cursor: pointer;
 }
 
 .cell.home {
-    background: url('../assets/home.svg') center/cover no-repeat;
+    /* background set inline from TILE_DATA.home.assets[0] */
     cursor: default;
     display: flex;
     align-items: center;
@@ -346,6 +346,13 @@
     left: 50%;
     transform: translate(-50%, -50%);
     font-size: clamp(0.8em, calc(var(--cell-size, 50px) / 22), 1.6em);
+    pointer-events: none;
+}
+
+/* Pet emoji overlay — rendered above all tile-overlay layers */
+.cell .pet-emoji {
+    position: relative;
+    z-index: 2;
     pointer-events: none;
 }
 

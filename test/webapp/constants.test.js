@@ -192,8 +192,43 @@ describe('CONSTANTS', () => {
                 expect(data).toHaveProperty('compactChar');
                 expect(data).toHaveProperty('numericId');
                 expect(data).toHaveProperty('assets');
+                expect(data).toHaveProperty('showPawOverlay');
                 expect(data.name).toBe(name);
             }
+        });
+
+        test('enclosedAssets should fall back to assets when not defined', () => {
+            expect(getTileAssets('water', true)).toEqual(['water.svg']);
+            expect(getTileAssets('wall', true)).toEqual(['wall.svg']);
+        });
+
+        test('enclosedAssets should override assets when tile is enclosed', () => {
+            expect(getTileAssets('grass', true)).toEqual(['penned.svg']);
+            expect(getTileAssets('star', true)).toEqual(['penned.svg', 'star.svg']);
+            expect(getTileAssets('home', true)).toEqual(['penned.svg', 'home.svg']);
+        });
+
+        test('getTileAssets returns normal assets when not enclosed', () => {
+            expect(getTileAssets('grass', false)).toEqual(['grass.svg']);
+            expect(getTileAssets('home', false)).toEqual(['grass.svg', 'home.svg']);
+            expect(getTileAssets('star', false)).toEqual(['grass.svg', 'star.svg']);
+        });
+
+        test('getTileAssets falls back to grass.svg for unknown tile', () => {
+            expect(getTileAssets('nonexistent', false)).toEqual(['grass.svg']);
+        });
+
+        test('showsPawOverlay returns correct values', () => {
+            expect(showsPawOverlay('grass')).toBe(true);
+            expect(showsPawOverlay('star')).toBe(true);
+            expect(showsPawOverlay('home')).toBe(false);
+            expect(showsPawOverlay('water')).toBe(false);
+            expect(showsPawOverlay('wall')).toBe(false);
+        });
+
+        test('home tile has grass base asset', () => {
+            expect(TILE_DATA.home.assets[0]).toBe('grass.svg');
+            expect(TILE_DATA.home.assets[1]).toBe('home.svg');
         });
     });
 
