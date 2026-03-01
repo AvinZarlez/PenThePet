@@ -447,6 +447,15 @@ describe('parseCompactMap', () => {
         expect(result[0]).toEqual(['grass', 'home', 'water']);
     });
 
+    test('recognizes star tile character', () => {
+        const result = Grid.parseCompactMap('gshwsgswg', 3);
+        expect(result).toEqual([
+            ['grass', 'star', 'home'],
+            ['water', 'star', 'grass'],
+            ['star', 'water', 'grass'],
+        ]);
+    });
+
     test('defaults unknown characters to grass', () => {
         const result = Grid.parseCompactMap('x', 1);
         expect(result[0][0]).toBe('grass');

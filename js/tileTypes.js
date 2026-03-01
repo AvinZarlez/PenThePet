@@ -51,17 +51,16 @@ const TILE_TYPES = {
         ariaLabel: (row, col) => `Home tile at row ${row + 1}, column ${col + 1}. Pet starting location.`,
     },
 
-    // Add more tile types here for future expansion
-    // Example:
-    // sand: {
-    //     name: 'sand',
-    //     displayName: 'Sand',
-    //     description: 'Sand tile - special properties',
-    //     clickable: true,
-    //     cssClass: 'sand',
-    //     gradient: 'linear-gradient(135deg, #ffd54f 0%, #ffb300 100%)',
-    //     ariaLabel: (row, col) => `Sand tile at row ${row + 1}, column ${col + 1}.`,
-    // },
+    star: {
+        name: 'star',
+        displayName: 'Star',
+        description: 'Star tile - worth 3 points, click to build a wall',
+        clickable: true,
+        cssClass: 'grass',
+        gradient: 'linear-gradient(135deg, #7ed957 0%, #4caf50 100%)',
+        image: 'assets/grass.svg',
+        ariaLabel: (row, col) => `Star tile at row ${row + 1}, column ${col + 1}. Worth 3 points. Click to build a wall.`,
+    },
 };
 
 /**

@@ -145,7 +145,7 @@ class MapGenerator {
     /**
      * Convert map from string format to numeric format
      * @param {Array} stringMap - 2D array of tile type strings
-     * @returns {Array} 2D array of numeric tile values (0=water, 1=grass, 2=home, 5=wall)
+     * @returns {Array} 2D array of numeric tile values (0=water, 1=grass, 2=home, 3=star, 5=wall)
      * @private
      */
     _mapToNumeric(stringMap) {
@@ -153,6 +153,7 @@ class MapGenerator {
             if (tile === 'water') return 0;
             if (tile === 'grass') return 1;
             if (tile === 'home') return 2;
+            if (tile === 'star') return 3;
             if (tile === 'wall') return 5;
             return 1; // default to grass
         }));

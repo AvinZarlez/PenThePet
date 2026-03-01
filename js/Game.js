@@ -107,6 +107,16 @@ class Game {
             cell.textContent = this.petEmoji;
         }
         
+        // Add star overlay on star tiles
+        if (tileType === 'star') {
+            const star = document.createElement('img');
+            star.src = 'assets/star.svg';
+            star.alt = '';
+            star.className = 'star-overlay';
+            star.setAttribute('aria-hidden', 'true');
+            cell.appendChild(star);
+        }
+        
         // Add paw image overlay if this cell is on the escape path
         if (pathSet && pathSet.has(coordKey) && tileType !== 'home') {
             const paw = document.createElement('img');
@@ -160,8 +170,8 @@ class Game {
         
         const currentTileType = this.grid.getTile(row, col);
         
-        // Allow clicking on grass tiles (convert to wall)
-        if (currentTileType === 'grass') {
+        // Allow clicking on grass or star tiles (convert to wall)
+        if (currentTileType === 'grass' || currentTileType === 'star') {
             // Check if wall limit reached
             if (this.wallCount >= this.maxWalls) {
                 this.showNotification(`All ${this.maxWalls} walls have been placed!`);
@@ -172,9 +182,10 @@ class Game {
             this.render();
             this.updateWallCounter();
         }
-        // Allow clicking on walls to remove them
+        // Allow clicking on walls to remove them (revert to original tile type)
         else if (currentTileType === 'wall') {
-            this.grid.setTile(row, col, 'grass');
+            const originalTile = this.grid.initialTiles[row] && this.grid.initialTiles[row][col];
+            this.grid.setTile(row, col, originalTile || 'grass');
             this.wallCount = Math.max(0, this.wallCount - 1);
             this.render();
             this.updateWallCounter();
@@ -387,13 +398,29 @@ class Game {
     }
 
     /**
+     * Calculate the score from accessible tiles.
+     * Star tiles count as STAR_SCORE_VALUE (3), all other tiles count as 1.
+     * @returns {number} Weighted score of the penned area
+     */
+    calculateScore() {
+        const accessible = this.getAccessibleTiles();
+        let score = 0;
+        for (const coordKey of accessible) {
+            const [row, col] = coordKey.split(',').map(Number);
+            const tileType = this.grid.getTile(row, col);
+            score += tileType === 'star' ? CONSTANTS.STAR_SCORE_VALUE : 1;
+        }
+        return score;
+    }
+
+    /**
      * Update the penned status indicator
      * @param {boolean} isPenned - Whether the pet is penned
      */
     updatePennedStatus(isPenned) {
         const statusElement = document.getElementById('pennedStatus');
         if (statusElement) {
-            const yellowTileCount = isPenned ? this.getAccessibleTiles().size : 0;
+            const yellowTileCount = isPenned ? this.calculateScore() : 0;
             
             if (isPenned) {
                 // Change button text based on submission state
@@ -441,7 +468,7 @@ class Game {
             const isPenned = !pathInfo.hasPath;
             
             if (isPenned) {
-                const areaSize = this.getAccessibleTiles().size;
+                const areaSize = this.calculateScore();
                 
                 // Display area size based on hint mode
                 if (this.hintMode === 'revealTarget') {
@@ -770,19 +797,21 @@ class Game {
      * @param {Array} wallPositions - Array of [row, col] positions
      */
     loadWallPositions(wallPositions) {
-        // Clear all existing walls first
+        // Clear all existing walls first (revert to original tile type)
         for (let i = 0; i < this.grid.size; i++) {
             for (let j = 0; j < this.grid.size; j++) {
                 if (this.grid.getTile(i, j) === 'wall') {
-                    this.grid.setTile(i, j, 'grass');
+                    const originalTile = this.grid.initialTiles[i] && this.grid.initialTiles[i][j];
+                    this.grid.setTile(i, j, originalTile || 'grass');
                 }
             }
         }
         
-        // Place new walls
+        // Place new walls (on grass or star tiles)
         this.wallCount = 0;
         for (const [row, col] of wallPositions) {
-            if (this.isValidPosition(row, col) && this.grid.getTile(row, col) === 'grass') {
+            const tile = this.isValidPosition(row, col) ? this.grid.getTile(row, col) : null;
+            if (tile === 'grass' || tile === 'star') {
                 this.grid.setTile(row, col, 'wall');
                 this.wallCount++;
             }

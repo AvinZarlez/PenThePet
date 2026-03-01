@@ -79,6 +79,16 @@ global.getTileType = function(tileType) {
             image: 'assets/home.svg',
             ariaLabel: (row, col) => `Home tile at row ${row + 1}, column ${col + 1}. Your pet starts here.`,
         },
+        star: {
+            name: 'star',
+            displayName: 'Star',
+            description: 'Star tile - worth 3 points, click to build a wall',
+            clickable: true,
+            cssClass: 'grass',
+            gradient: 'linear-gradient(135deg, #7ed957 0%, #4caf50 100%)',
+            image: 'assets/grass.svg',
+            ariaLabel: (row, col) => `Star tile at row ${row + 1}, column ${col + 1}. Worth 3 points. Click to build a wall.`,
+        },
     };
     return TILE_TYPES[tileType] || TILE_TYPES.grass;
 };

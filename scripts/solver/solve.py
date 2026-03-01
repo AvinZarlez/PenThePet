@@ -49,6 +49,7 @@ def solve_map(map_data, max_walls):
     # Identify tile positions
     non_water = []      # All passable tile positions (r, c)
     grass_tiles = []    # Grass tiles where walls can be placed
+    star_tiles = set()  # Star tiles (worth 3 in scoring)
     home = None
     boundary = set()    # Boundary tile positions
 
@@ -59,8 +60,10 @@ def solve_map(map_data, max_walls):
             if tile != 'water':
                 non_water.append((r, c))
                 tile_set.add((r, c))
-                if tile == 'grass':
+                if tile == 'grass' or tile == 'star':
                     grass_tiles.append((r, c))
+                if tile == 'star':
+                    star_tiles.add((r, c))
                 if tile == 'home':
                     home = (r, c)
                 # Boundary = edge of grid
@@ -111,8 +114,12 @@ def solve_map(map_data, max_walls):
     for (i, j) in edges:
         f[(i, j)] = LpVariable(f"f_{i[0]}_{i[1]}_{j[0]}_{j[1]}", lowBound=0)
 
-    # Objective: maximize enclosed area
-    prob += lpSum(s[tile] for tile in non_water)
+    # Objective: maximize enclosed area (star tiles worth 3, others worth 1)
+    STAR_VALUE = 3
+    prob += lpSum(
+        (STAR_VALUE if tile in star_tiles else 1) * s[tile]
+        for tile in non_water
+    )
 
     # Constraint 1: home is in the pen
     prob += s[home] == 1

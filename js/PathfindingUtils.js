@@ -112,7 +112,57 @@ class PathfindingUtils {
     }
 
     /**
-     * Check if home has a path to any edge tile (string map format).
+     * Calculate the penned score (weighted sum of tiles reachable from home).
+     * Star tiles (numeric 3) count as starValue points each; all other passable tiles count as 1.
+     * Uses BFS to find all tiles reachable from home without crossing water or walls.
+     * 
+     * @param {Array} map - 2D array where 0=water, 1=grass, 2=home, 3=star, 5=wall
+     * @param {number} homeRow - Row index of home tile
+     * @param {number} homeCol - Column index of home tile
+     * @param {number} starValue - Score value for each star tile (default 3)
+     * @returns {number} Weighted score of the penned area
+     */
+    static calculatePennedScore(map, homeRow, homeCol, starValue = 3) {
+        const verticalTiles = map.length;
+        const horizontalTiles = map[0].length;
+        
+        const visited = new Set([`${homeRow},${homeCol}`]);
+        const queue = [[homeRow, homeCol]];
+        const directions = [[-1, 0], [1, 0], [0, -1], [0, 1]];
+        let score = map[homeRow][homeCol] === 3 ? starValue : 1; // home tile score
+        
+        while (queue.length > 0) {
+            const [row, col] = queue.shift();
+            
+            // Explore neighbors
+            for (const [dr, dc] of directions) {
+                const newRow = row + dr;
+                const newCol = col + dc;
+                const key = `${newRow},${newCol}`;
+                
+                if (newRow < 0 || newRow >= verticalTiles || newCol < 0 || newCol >= horizontalTiles) {
+                    continue;
+                }
+                
+                if (visited.has(key)) {
+                    continue;
+                }
+                
+                const tileType = map[newRow][newCol];
+                if (tileType === 0 || tileType === 5) { // water or wall
+                    continue;
+                }
+                
+                visited.add(key);
+                queue.push([newRow, newCol]);
+                score += tileType === 3 ? starValue : 1;
+            }
+        }
+        
+        return score;
+    }
+
+    /**
      * Used by MapGenerator and MapValidator to verify map connectivity.
      * Water tiles block movement; grass and home tiles are passable.
      * 

@@ -25,6 +25,7 @@ describe('CONSTANTS', () => {
             expect(CONSTANTS).toHaveProperty('ALLOW_WALL_REMOVAL');
             expect(CONSTANTS).toHaveProperty('AUTO_SAVE_STATE');
             expect(CONSTANTS).toHaveProperty('HINT_MODE_DEFAULT');
+            expect(CONSTANTS).toHaveProperty('STAR_SCORE_VALUE');
         });
     });
 
@@ -171,6 +172,17 @@ describe('CONSTANTS', () => {
         test('HINT_MODE_DEFAULT should be a valid mode', () => {
             const validModes = ['disabled', 'checkOptimal', 'revealTarget'];
             expect(validModes).toContain(CONSTANTS.HINT_MODE_DEFAULT);
+        });
+    });
+
+    describe('Star Score Configuration', () => {
+        test('STAR_SCORE_VALUE should be a positive number', () => {
+            expect(typeof CONSTANTS.STAR_SCORE_VALUE).toBe('number');
+            expect(CONSTANTS.STAR_SCORE_VALUE).toBeGreaterThan(0);
+        });
+
+        test('STAR_SCORE_VALUE should be 3', () => {
+            expect(CONSTANTS.STAR_SCORE_VALUE).toBe(3);
         });
     });
 

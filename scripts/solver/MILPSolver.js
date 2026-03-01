@@ -46,10 +46,10 @@ class MILPSolver {
 
         // Check if already penned (no walls needed)
         if (PathfindingUtils.isPenned(map, homeRow, homeCol)) {
-            const area = PathfindingUtils.calculatePennedArea(map, homeRow, homeCol);
+            const score = PathfindingUtils.calculatePennedScore(map, homeRow, homeCol);
             return {
                 walls: Array(verticalTiles).fill(null).map(() => Array(horizontalTiles).fill(0)),
-                goalArea: area,
+                goalArea: score,
                 optimalWallCount: 0
             };
         }
@@ -71,6 +71,7 @@ class MILPSolver {
             if (tile === 0) return 'water';
             if (tile === 1) return 'grass';
             if (tile === 2) return 'home';
+            if (tile === 3) return 'star';
             if (tile === 5) return 'wall';
             return 'grass';
         }));

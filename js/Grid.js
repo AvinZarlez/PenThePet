@@ -14,7 +14,7 @@
  * 'g' = grass, 'w' = water, 'h' = home
  * @type {Object}
  */
-const COMPACT_TILE_CHARS = { g: 'grass', w: 'water', h: 'home' };
+const COMPACT_TILE_CHARS = { g: 'grass', w: 'water', h: 'home', s: 'star' };
 
 /**
  * Parse a compact map string into a 2D array of tile type names.
