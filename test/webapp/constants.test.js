@@ -185,14 +185,13 @@ describe('CONSTANTS', () => {
         });
 
         test('all tiles should have required properties', () => {
-            for (const [name, data] of Object.entries(TILE_DATA)) {
+            for (const [, data] of Object.entries(TILE_DATA)) {
                 expect(data).toHaveProperty('score');
                 expect(data).toHaveProperty('wallPlaceable');
                 expect(data).toHaveProperty('chance');
                 expect(data).toHaveProperty('compactChar');
                 expect(data).toHaveProperty('numericId');
                 expect(data).toHaveProperty('assets');
-                expect(data.name).toBe(name);
             }
         });
 

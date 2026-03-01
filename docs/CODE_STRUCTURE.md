@@ -189,15 +189,12 @@ Shared pathfinding utilities used by game logic, generation scripts, and validat
 
 ### `js/tileTypes.js`
 
-Defines all tile types and their properties:
+Compatibility wrapper that builds `TILE_TYPES` programmatically from `TILE_DATA`:
 
-- Name, display name, and description
-- Whether the tile is clickable
-- CSS class and gradient colors (fallback)
-- Image path to SVG art asset
-- ARIA labels for accessibility
+- All tile properties live in `tileData.js` (single source of truth)
+- `tileTypes.js` is a thin loop that copies `TILE_DATA` entries into `TILE_TYPES`
 
-**To add new tile types:** Add a new entry to the TILE_TYPES object with all required properties.
+**To add new tile types:** Add a new entry to `TILE_DATA` in `tileData.js` with all required properties.
 
 ### `js/MapGenerator.js`
 

@@ -33,7 +33,7 @@ Each tile type defined in `js/tileTypes.js` has an `image` property pointing to 
 }
 ```
 
-A CSS gradient fallback is retained in `tileTypes.js` via the `gradient` property for contexts where images may not load.
+Cell backgrounds are set inline from `TILE_DATA` assets in `Game._createCellElement()`, so no CSS background rules are needed per tile type.
 
 ### Paw Overlay
 

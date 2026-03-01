@@ -448,52 +448,40 @@ font-size: clamp(12px, 2vw, 16px);
 
 **Example: Add "ice" tile**
 
-1. **Define tile type**
+1. **Define tile in `tileData.js`** (single file — all properties in one place)
 
    ```javascript
-   // js/tileTypes.js
+   // js/tileData.js
    ice: {
-       name: 'ice',
-       displayName: 'Ice',
-       description: 'Slippery ice tile',
+       score: 0,
+       wallPlaceable: false,
        clickable: false,
+       blocksMovement: false,
+       chance: 0.10,
+       compactChar: 'i',
+       numericId: 4,
        cssClass: 'ice',
-       gradient: 'linear-gradient(135deg, #e0f7ff 0%, #b3e5fc 100%)',
+       assets: ['ice.svg'],
        ariaLabel: (row, col) => `Ice tile at row ${row + 1}, column ${col + 1}`
    }
    ```
 
-2. **Add CSS styling**
+2. **Add CSS styling** (cursor and hover behavior only — background is set inline from assets)
 
    ```css
    /* css/game.css */
    .cell.ice {
-       background: linear-gradient(135deg, #e0f7ff 0%, #b3e5fc 100%);
+       cursor: not-allowed;
+   }
+   .cell.ice:hover {
+       transform: none;
+       box-shadow: none;
    }
    ```
 
-3. **Update tile distribution**
+3. **Add art asset** — create `assets/ice.svg`
 
-   ```javascript
-   // js/constants.js
-   TILE_DISTRIBUTION: {
-       grass: 0.6,  // Reduced from 0.7
-       water: 0.3,
-       ice: 0.1     // New tile
-   }
-   ```
-
-4. **Update legend** (optional)
-
-   ```html
-   <!-- index.html -->
-   <div class="legend-item">
-       <div class="legend-box ice"></div>
-       <span>Ice (slippery)</span>
-   </div>
-   ```
-
-5. **Test**
+4. **Test**
    - Generate new maps with ice tiles
    - Verify rendering
    - Add unit tests if tile has special behavior

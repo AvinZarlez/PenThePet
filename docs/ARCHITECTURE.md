@@ -350,14 +350,17 @@ All targets met without optimization needed.
 **Example:**
 
 ```javascript
-// tileTypes.js
+// js/tileData.js
 ice: {
-    name: 'ice',
-    displayName: 'Ice',
-    description: 'Slippery ice tile',
+    score: 0,
+    wallPlaceable: false,
     clickable: false,
+    blocksMovement: false,
+    chance: 0.10,
+    compactChar: 'i',
+    numericId: 4,
     cssClass: 'ice',
-    gradient: 'linear-gradient(135deg, #e0f7ff, #b3e5fc)',
+    assets: ['ice.svg'],
     ariaLabel: (row, col) => `Ice at ${row}, ${col}`
 }
 ```
