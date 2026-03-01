@@ -21,6 +21,8 @@ PenThePet/
 │   ├── wall.svg            # Wall/fence tile texture
 │   ├── home.svg            # Dog house tile artwork
 │   ├── penned.svg          # Penned area (yellow-tinted grass) texture
+│   ├── star.svg            # Star tile overlay (3 points)
+│   ├── bee.svg             # Bee tile overlay (-3 points)
 │   └── paw.svg             # Paw print path overlay icon
 ├── css/
 │   ├── base.css            # Global reset, container, typography, buttons, footer, responsive
@@ -196,7 +198,7 @@ Compatibility wrapper that builds `TILE_TYPES` programmatically from `TILE_DATA`
 - Python solver reads tile data via Node.js subprocess
 - `tileTypes.js` is a thin loop that copies `TILE_DATA` entries into `TILE_TYPES`
 
-**To add new tile types:** See [TILE_SYSTEM.md](../docs/TILE_SYSTEM.md). Add a single entry to `js/tileData.js`.
+**To add new tile types:** See [TILE_SYSTEM.md](TILE_SYSTEM.md). Add a single entry to `js/tileData.js`.
 
 ### `js/MapGenerator.js`
 

@@ -77,7 +77,7 @@ def load_tile_data():
 
 def load_tile_scores():
     """
-    Load tile score values from the shared tileData.json.
+    Load tile score values from js/tileData.js (single source of truth).
 
     Returns:
         dict mapping tile name (str) → score (int)
@@ -88,7 +88,7 @@ def load_tile_scores():
 
 def load_tile_properties():
     """
-    Load tile properties from the shared tileData.json.
+    Load tile properties from js/tileData.js (single source of truth).
 
     Returns:
         dict mapping tile name (str) → dict with blocksMovement, wallPlaceable
