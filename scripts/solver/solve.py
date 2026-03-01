@@ -48,16 +48,30 @@ def load_tile_data():
     js_path = os.path.abspath(
         os.path.join(os.path.dirname(__file__), '..', '..', 'js', 'tileData.js')
     )
-    result = subprocess.run(
-        ['node', '-e',
-         'const t = require("' + js_path.replace('\\', '/') + '"); '
-         'const d = {}; '
-         'for (const [k, v] of Object.entries(t.TILE_DATA)) { '
-         '  const e = {...v}; delete e.ariaLabel; d[k] = e; '
-         '} '
-         'console.log(JSON.stringify(d));'],
-        capture_output=True, text=True, check=True,
+    # Use JSON to safely escape the path in the Node.js expression
+    safe_path = json.dumps(js_path.replace('\\', '/'))
+    node_script = (
+        f'const t = require({safe_path}); '
+        'const d = {}; '
+        'for (const [k, v] of Object.entries(t.TILE_DATA)) { '
+        '  const e = {...v}; delete e.ariaLabel; d[k] = e; '
+        '} '
+        'console.log(JSON.stringify(d));'
     )
+    try:
+        result = subprocess.run(
+            ['node', '-e', node_script],
+            capture_output=True, text=True, check=True,
+        )
+    except FileNotFoundError:
+        raise RuntimeError(
+            'Node.js is required to load tile data from js/tileData.js. '
+            'Please install Node.js (v20+).'
+        )
+    except subprocess.CalledProcessError as exc:
+        raise RuntimeError(
+            f'Failed to load tile data from {js_path}: {exc.stderr.strip()}'
+        )
     return json.loads(result.stdout)
 
 
