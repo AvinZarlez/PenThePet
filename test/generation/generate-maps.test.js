@@ -363,14 +363,15 @@ describe('Map Database Validation', () => {
             }
         });
         
-        test('optimalSolution wall count should not exceed maxWalls', () => {
+        test('optimalSolution wall count should equal maxWalls (all walls needed)', () => {
             const dates = Object.keys(maps);
             
             for (const date of dates) {
                 const map = maps[date];
                 // Flat array: divide by 2 to get number of walls
                 const wallCount = map.optimalSolution.length / 2;
-                expect(wallCount).toBeLessThanOrEqual(map.maxWalls);
+                // Rule 1: maxWalls is the minimum needed, so wall count must equal it
+                expect(wallCount).toBe(map.maxWalls);
             }
         });
         

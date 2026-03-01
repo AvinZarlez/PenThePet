@@ -54,8 +54,8 @@ player instructions, and the Python solver read from `js/tileData.js` automatica
 |---|---|---|---|---|
 | Grass | 1 | ✅ | ❌ | 65% |
 | Water | 0 | ❌ | ✅ | 30% |
-| Star | 3 | ✅ | ❌ | 5% |
-| Bee | -3 | ✅ | ❌ | 3% |
+| Star | 3 | ❌ | ❌ | 5% |
+| Bee | -3 | ❌ | ❌ | 3% |
 | Home | 1 | ❌ | ❌ | Placed at center |
 | Wall | 0 | ❌ | ✅ | Player-placed only |
 

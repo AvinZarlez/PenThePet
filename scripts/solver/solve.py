@@ -190,11 +190,16 @@ def solve_map(map_data, max_walls):
     for (i, j) in edges:
         f[(i, j)] = LpVariable(f"f_{i[0]}_{i[1]}_{j[0]}_{j[1]}", lowBound=0)
 
-    # Objective: maximize enclosed area using per-tile score values from tileData
+    # Objective: maximize enclosed area using per-tile score values from tileData.
+    # The tiny wall penalty (0.0001 per wall) acts as a tiebreaker so the solver
+    # naturally uses the *minimum* number of walls needed for the maximum score.
+    # For a 21×21 grid (MAX_GRID_SIZE) the maximum wall-placeable tiles is about
+    # 440, giving a worst-case penalty of ~0.044 — well under 0.5, so integer
+    # rounding of goalArea is never affected.
     prob += lpSum(
         tile_score_map.get(tile, 1) * s[tile]
         for tile in non_water
-    )
+    ) - 0.0001 * lpSum(w[tile] for tile in wall_placeable)
 
     # Constraint 1: home is in the pen
     prob += s[home] == 1

@@ -55,6 +55,16 @@ class MapValidator {
             errors.push('Not all walkable tiles are reachable from home');
         }
         
+        // Validation 6: All available walls must be required for optimal score
+        // When maxWalls is provided in the solution, the level must require every
+        // single wall to achieve the goal. This prevents the player from having
+        // "leftover" walls that aren't needed.
+        if (solution.maxWalls !== undefined) {
+            if (solution.optimalWallCount !== solution.maxWalls) {
+                errors.push(`Not all walls needed for optimal score (uses ${solution.optimalWallCount} of ${solution.maxWalls} walls)`);
+            }
+        }
+        
         return {
             valid: errors.length === 0,
             errors: errors
