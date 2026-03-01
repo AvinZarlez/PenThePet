@@ -514,6 +514,18 @@ const CloudSync = (function () {
             'auth/invalid-api-key': 'Invalid Firebase API key. Check firebase-config.js.',
             'auth/configuration-not-found': 'Firebase Authentication is not configured. Enable it in the Firebase console.'
         };
+        if (code && code.startsWith('auth/requests-from-referer-') && code.endsWith('-are-blocked')) {
+            const blockedDomain = code
+                .replace('auth/requests-from-referer-', '')
+                .replace(/-are-blocked$/, '');
+            return 'The domain "' + blockedDomain + '" is not authorised to use Firebase. ' +
+                'Check: (1) Google Cloud Console → API key → HTTP referrers includes ' +
+                blockedDomain + '/* (Step 6), ' +
+                '(2) Firebase console → Authentication → Settings → Authorised Domains ' +
+                'includes ' + blockedDomain + ' (Step 7), ' +
+                'and (3) the <meta name="referrer" content="no-referrer-when-downgrade"> ' +
+                'tag is present in index.html. See docs/CLOUD_SYNC_SETUP.md for instructions.';
+        }
         return messages[code] || 'Authentication error (' + code + '). Check the browser console.';
     }
 
