@@ -80,24 +80,19 @@ def load_tile_properties():
         import re
         with open(tile_data_path, 'r') as fh:
             content = fh.read()
-        # Extract blocksMovement for each tile
-        for match in re.finditer(
-            r"(\w+):\s*\{[^}]*?blocksMovement:\s*(true|false)[^}]*?wallPlaceable:\s*(true|false)",
-            content,
+        # Extract each tile block and its properties
+        # Match tile name followed by { ... } block
+        for block_match in re.finditer(
+            r"(\w+):\s*\{([^}]+)\}", content
         ):
-            props[match.group(1)] = {
-                'blocksMovement': match.group(2) == 'true',
-                'wallPlaceable': match.group(3) == 'true',
-            }
-        if not props:
-            # Try alternate order (wallPlaceable before blocksMovement)
-            for match in re.finditer(
-                r"(\w+):\s*\{[^}]*?wallPlaceable:\s*(true|false)[^}]*?blocksMovement:\s*(true|false)",
-                content,
-            ):
-                props[match.group(1)] = {
-                    'wallPlaceable': match.group(2) == 'true',
-                    'blocksMovement': match.group(3) == 'true',
+            name = block_match.group(1)
+            block = block_match.group(2)
+            blocks = re.search(r"blocksMovement:\s*(true|false)", block)
+            placeable = re.search(r"wallPlaceable:\s*(true|false)", block)
+            if blocks and placeable:
+                props[name] = {
+                    'blocksMovement': blocks.group(1) == 'true',
+                    'wallPlaceable': placeable.group(1) == 'true',
                 }
     # Fallback defaults
     if not props:
