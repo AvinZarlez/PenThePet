@@ -604,6 +604,64 @@ describe('Menu', () => {
             expect(levelTexts.some(t => t.includes('Canyon'))).toBe(true);
             expect(levelTexts.some(t => t.includes('River'))).toBe(true);
         });
+
+        test('should render a "Go To Today" button at the top of the level list', async () => {
+            await menu.loadMapsDatabase();
+            menu.populateLevelList();
+
+            const levelList = document.getElementById('levelList');
+            const todayBtn = levelList.querySelector('.calendar-today-btn');
+            expect(todayBtn).not.toBeNull();
+            expect(todayBtn.textContent).toBe('Go To Today');
+
+            // It should be the first child of levelList
+            expect(levelList.firstChild).toBe(todayBtn);
+        });
+
+        test('should navigate to today\'s month when "Go To Today" is clicked', async () => {
+            jest.spyOn(DateUtils, 'getTodayDate').mockReturnValue('2026-02-06');
+            await menu.loadMapsDatabase();
+            menu.showAllLevels = true;
+            menu.populateLevelList();
+
+            const levelList = document.getElementById('levelList');
+
+            // Navigate away from today's month first (to Dec 2099)
+            const navBtns = levelList.querySelectorAll('.calendar-nav-btn');
+            const nextBtn = navBtns[1];
+            nextBtn.click();
+
+            // Calendar should now show Dec 2099 (with Future level)
+            const monthLabel = levelList.querySelector('.calendar-month-label');
+            expect(monthLabel.textContent).toContain('2099');
+
+            // Click "Go To Today" - today is mocked as 2026-02-06
+            const todayBtn = levelList.querySelector('.calendar-today-btn');
+            const selectLevelSpy = jest.spyOn(menu, 'selectLevel').mockImplementation(async () => {});
+            todayBtn.click();
+
+            expect(monthLabel.textContent).toContain('2026');
+            expect(selectLevelSpy).toHaveBeenCalled();
+            selectLevelSpy.mockRestore();
+            DateUtils.getTodayDate.mockRestore();
+        });
+
+        test('should select today\'s level when "Go To Today" is clicked and today has a level', async () => {
+            jest.spyOn(DateUtils, 'getTodayDate').mockReturnValue('2026-02-06');
+            await menu.loadMapsDatabase();
+            menu.populateLevelList();
+
+            const levelList = document.getElementById('levelList');
+            const todayBtn = levelList.querySelector('.calendar-today-btn');
+
+            const selectLevelSpy = jest.spyOn(menu, 'selectLevel').mockImplementation(async () => {});
+            todayBtn.click();
+
+            // Today is mocked as 2026-02-06 which has the Canyon level
+            expect(selectLevelSpy).toHaveBeenCalledWith('2026-02-06');
+            selectLevelSpy.mockRestore();
+            DateUtils.getTodayDate.mockRestore();
+        });
     });
 
     describe('Debug Reset Level', () => {

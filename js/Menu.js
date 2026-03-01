@@ -17,6 +17,7 @@ class Menu {
         this.mapsDatabase = null; // Store loaded maps
         this.showAllLevels = false; // Debug: show future levels in selector
         this.currentCalendarMonth = null; // Track which month is shown in the calendar
+        this._loadedYears = new Set(); // Track which years have been fetched
 
         this.attachEventListeners();
     }
@@ -204,21 +205,15 @@ class Menu {
 
     /**
      * Load maps database from per-year files in the maps/ directory.
-     * Loads all years from CONSTANTS.FIRST_MAP_YEAR up to the current year + 1.
+     * Initially loads the current year and the previous year; additional years
+     * are loaded lazily via _loadYearIfNeeded() as the user navigates.
      */
     async loadMapsDatabase() {
         try {
+            this.mapsDatabase = {};
             const currentYear = new Date().getFullYear();
-            const merged = {};
-            for (let year = CONSTANTS.FIRST_MAP_YEAR; year <= currentYear + 1; year++) {
-                try {
-                    const response = await fetch(`maps/${year}.json`);
-                    if (response.ok) {
-                        Object.assign(merged, await response.json());
-                    }
-                } catch { /* year file not found — stop */ }
-            }
-            this.mapsDatabase = merged;
+            await this._loadYearIfNeeded(currentYear);
+            await this._loadYearIfNeeded(currentYear - 1);
         } catch (error) {
             console.error('Error loading maps database:', error);
             this.mapsDatabase = {};
@@ -226,8 +221,27 @@ class Menu {
     }
 
     /**
+     * Fetch a year's map file and merge it into mapsDatabase if not already loaded.
+     * Silently skips years that have no file yet.
+     * @param {number} year - The four-digit year to load
+     * @returns {Promise<void>}
+     */
+    async _loadYearIfNeeded(year) {
+        if (this._loadedYears.has(year)) return;
+        this._loadedYears.add(year); // mark as attempted even on failure
+        try {
+            const response = await fetch(`maps/${year}.json`);
+            if (response.ok) {
+                Object.assign(this.mapsDatabase, await response.json());
+            }
+        } catch { /* year file not found — skip */ }
+    }
+
+    /**
      * Populate the level list as a calendar view, grouped by month.
      * Only shows levels dated today or before, unless showAllLevels debug flag is set.
+     * When the user reaches the first or last loaded month, adjacent years are
+     * fetched on demand from maps/YYYY.json.
      */
     populateLevelList() {
         const levelList = document.getElementById('levelList');
@@ -261,6 +275,21 @@ class Menu {
         if (!this.currentCalendarMonth || !monthGroups[this.currentCalendarMonth]) {
             this.currentCalendarMonth = sortedMonths[sortedMonths.length - 1];
         }
+
+        // "Go To Today" button
+        const todayBtn = document.createElement('button');
+        todayBtn.className = 'calendar-today-btn';
+        todayBtn.textContent = 'Go To Today';
+        todayBtn.addEventListener('click', () => {
+            const todayMonth = today.substring(0, 7);
+            if (monthGroups[todayMonth]) {
+                renderMonth(todayMonth);
+            }
+            if (this.mapsDatabase[today]) {
+                this.selectLevel(today);
+            }
+        });
+        levelList.appendChild(todayBtn);
 
         // Build navigation bar
         const nav = document.createElement('div');
@@ -303,14 +332,43 @@ class Menu {
             this._renderCalendarGrid(calendarContainer, yearMonth, monthGroups[yearMonth] || [], currentDate);
         };
 
-        prevBtn.addEventListener('click', () => {
+        prevBtn.addEventListener('click', async () => {
             const idx = sortedMonths.indexOf(this.currentCalendarMonth);
-            if (idx > 0) renderMonth(sortedMonths[idx - 1]);
+            if (idx > 0) {
+                renderMonth(sortedMonths[idx - 1]);
+            } else {
+                // At the earliest loaded month — try to fetch the previous year
+                const prevYear = parseInt(sortedMonths[0].substring(0, 4)) - 1;
+                if (prevYear >= CONSTANTS.FIRST_MAP_YEAR) {
+                    const before = Object.keys(this.mapsDatabase).length;
+                    await this._loadYearIfNeeded(prevYear);
+                    if (Object.keys(this.mapsDatabase).length > before) {
+                        // New data loaded: navigate to December of that year then rebuild
+                        this.currentCalendarMonth = `${prevYear}-12`;
+                        this.populateLevelList();
+                    }
+                }
+            }
         });
 
-        nextBtn.addEventListener('click', () => {
+        nextBtn.addEventListener('click', async () => {
             const idx = sortedMonths.indexOf(this.currentCalendarMonth);
-            if (idx < sortedMonths.length - 1) renderMonth(sortedMonths[idx + 1]);
+            if (idx < sortedMonths.length - 1) {
+                renderMonth(sortedMonths[idx + 1]);
+            } else {
+                // At the latest loaded month — try to fetch the next year
+                const nextYear = parseInt(sortedMonths[sortedMonths.length - 1].substring(0, 4)) + 1;
+                const maxLoadYear = parseInt(today.substring(0, 4)) + 1;
+                if (nextYear <= maxLoadYear) {
+                    const before = Object.keys(this.mapsDatabase).length;
+                    await this._loadYearIfNeeded(nextYear);
+                    if (Object.keys(this.mapsDatabase).length > before) {
+                        // New data loaded: navigate to January of that year then rebuild
+                        this.currentCalendarMonth = `${nextYear}-01`;
+                        this.populateLevelList();
+                    }
+                }
+            }
         });
 
         renderMonth(this.currentCalendarMonth);

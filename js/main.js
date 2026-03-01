@@ -216,3 +216,8 @@ async function initGame() {
 // Start the game when the DOM is fully loaded
 window.addEventListener('DOMContentLoaded', initGame);
 
+// Export for use in Node.js testing
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = { loadTodayMap };
+}
+

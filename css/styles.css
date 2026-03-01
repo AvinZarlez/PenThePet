@@ -967,10 +967,28 @@ footer {
     color: #333;
 }
 
+.calendar-today-btn {
+    width: 100%;
+    padding: 8px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.9em;
+    font-weight: bold;
+    cursor: pointer;
+    transition: opacity 0.2s ease;
+}
+
+.calendar-today-btn:hover {
+    opacity: 0.85;
+}
+
 /* -------- Calendar Grid -------- */
 .calendar-grid {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
+    grid-template-rows: auto repeat(6, minmax(60px, auto));
     gap: 4px;
 }
 
