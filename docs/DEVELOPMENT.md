@@ -450,26 +450,31 @@ See [TILE_SYSTEM.md](TILE_SYSTEM.md) for full documentation of the tile system, 
 
 **Example: Add "ice" tile**
 
-1. **Define tile in `tileData.js`** (single file — all properties in one place)
+1. **Define tile in `tileData.json`** (shared source of truth for JS and Python)
 
-   ```javascript
-   // js/tileData.js
-   ice: {
-       score: 0,
-       wallPlaceable: false,
-       clickable: false,
-       blocksMovement: false,
-       chance: 0.10,
-       compactChar: 'i',
-       numericId: 4,
-       cssClass: 'ice',
-       description: 'Ice tiles are slippery and cannot have walls placed on them.',
-       assets: ['ice.svg'],
-       ariaLabel: (row, col) => `Ice tile at row ${row + 1}, column ${col + 1}`
+   ```json
+   "ice": {
+       "score": 0,
+       "wallPlaceable": false,
+       "clickable": false,
+       "blocksMovement": false,
+       "chance": 0.10,
+       "compactChar": "i",
+       "numericId": 6,
+       "cssClass": "ice",
+       "description": "Ice tiles are slippery and cannot have walls placed on them.",
+       "assets": ["ice.svg"],
+       "ariaLabel": "Ice tile at row {row}, column {col}."
    }
    ```
 
-2. **Add CSS styling** (cursor and hover behavior only — background is set inline from assets)
+2. **Regenerate `js/tileData.js`** from the JSON:
+
+   ```bash
+   npm run generate-tile-data
+   ```
+
+3. **Add CSS styling** (cursor and hover behavior only — background is set inline from assets)
 
    ```css
    /* css/game.css */
@@ -482,9 +487,9 @@ See [TILE_SYSTEM.md](TILE_SYSTEM.md) for full documentation of the tile system, 
    }
    ```
 
-3. **Add art asset** — create `assets/ice.svg`
+4. **Add art asset** — create `assets/ice.svg`
 
-4. **Test**
+5. **Test**
    - Generate new maps with ice tiles
    - Verify rendering
    - Add unit tests if tile has special behavior

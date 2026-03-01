@@ -338,26 +338,25 @@ All targets met without optimization needed.
 
 ### Adding New Tile Types
 
-**Design:** Tile types are data-driven in `tileData.js`. See [TILE_SYSTEM.md](TILE_SYSTEM.md) for full documentation.
+**Design:** Tile types are data-driven in `tileData.json`. See [TILE_SYSTEM.md](TILE_SYSTEM.md) for full documentation.
 
-**To Add:** Define a single entry in `js/tileData.js` — all game logic, rendering, generation, scoring, and player instructions are built automatically.
+**To Add:** Define a single entry in `tileData.json`, then run `npm run generate-tile-data` — all game logic, rendering, generation, scoring, the Python solver, and player instructions are built automatically.
 
 **Example:**
 
-```javascript
-// js/tileData.js
-ice: {
-    score: 0,
-    wallPlaceable: false,
-    clickable: false,
-    blocksMovement: false,
-    chance: 0.10,
-    compactChar: 'i',
-    numericId: 4,
-    cssClass: 'ice',
-    description: 'Ice tiles are slippery and cannot have walls placed on them.',
-    assets: ['ice.svg'],
-    ariaLabel: (row, col) => `Ice at ${row}, ${col}`
+```json
+"ice": {
+    "score": 0,
+    "wallPlaceable": false,
+    "clickable": false,
+    "blocksMovement": false,
+    "chance": 0.10,
+    "compactChar": "i",
+    "numericId": 6,
+    "cssClass": "ice",
+    "description": "Ice tiles are slippery and cannot have walls placed on them.",
+    "assets": ["ice.svg"],
+    "ariaLabel": "Ice at row {row}, column {col}."
 }
 ```
 

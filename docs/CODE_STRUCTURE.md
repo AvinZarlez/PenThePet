@@ -15,6 +15,7 @@
 ```text
 PenThePet/
 ├── index.html              # Main HTML file (minimal, references external files)
+├── tileData.json           # Shared tile data (source of truth for JS and Python)
 ├── assets/                 # Art assets (SVG tile images, paw icon)
 │   ├── grass.svg           # Grass tile texture
 │   ├── water.svg           # Water tile texture
@@ -30,6 +31,7 @@ PenThePet/
 ├── js/
 │   ├── constants.js        # Centralized constants for game parameters
 │   ├── config.js           # Game configuration (references constants)
+│   ├── tileData.js         # Tile data (GENERATED from tileData.json — do not edit directly)
 │   ├── tileTypes.js        # Tile type definitions and properties
 │   ├── wordList.js         # Random English words for map naming
 │   ├── CookieUtils.js      # Shared cookie get/set helpers
@@ -45,6 +47,7 @@ PenThePet/
 │   └── main.js             # Application entry point and initialization
 ├── scripts/
 │   ├── generate-map.js # Map generation entry point (GitHub Actions + local)
+│   ├── generate-tile-data.js  # Generate js/tileData.js from tileData.json
 │   ├── audit-maps.js          # Validate all existing maps in maps/ directory
 │   ├── lib/
 │   │   └── mapUtils.js        # Shared pure utilities (dates, size parsing, DB validation)
@@ -191,10 +194,11 @@ Shared pathfinding utilities used by game logic, generation scripts, and validat
 
 Compatibility wrapper that builds `TILE_TYPES` programmatically from `TILE_DATA`:
 
-- All tile properties live in `tileData.js` (single source of truth)
+- All tile properties live in `tileData.json` (single source of truth)
+- `tileData.js` is generated from JSON via `npm run generate-tile-data`
 - `tileTypes.js` is a thin loop that copies `TILE_DATA` entries into `TILE_TYPES`
 
-**To add new tile types:** See [TILE_SYSTEM.md](../docs/TILE_SYSTEM.md). Add a single entry to `TILE_DATA` in `tileData.js`.
+**To add new tile types:** See [TILE_SYSTEM.md](../docs/TILE_SYSTEM.md). Add a single entry to `tileData.json` and run `npm run generate-tile-data`.
 
 ### `js/MapGenerator.js`
 
@@ -339,7 +343,7 @@ Comprehensive documentation for map generation:
 
 ### Adding a New Tile Type
 
-See [TILE_SYSTEM.md](TILE_SYSTEM.md) for full details. In short: add a single entry to `TILE_DATA` in `js/tileData.js` — all game logic, rendering, generation, scoring, and player instructions are built automatically from this data.
+See [TILE_SYSTEM.md](TILE_SYSTEM.md) for full details. In short: add a single entry to `tileData.json` and run `npm run generate-tile-data` — all game logic, rendering, generation, scoring, the Python solver, and player instructions are built automatically from this data.
 
 ### Adding a Character
 
