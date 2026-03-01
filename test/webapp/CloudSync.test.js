@@ -2,15 +2,24 @@
  * CloudSync Tests
  *
  * Tests for the cloud sync module.
- * Since Firebase is not available in the test environment, these tests
- * verify that the module behaves correctly in local-only (unconfigured) mode.
+ * These tests verify that the module behaves correctly both when Firebase
+ * is configured with real credentials and when it is in local-only mode.
  */
+
+const hasFirebaseConfig = typeof FIREBASE_CONFIG !== 'undefined' &&
+    !!FIREBASE_CONFIG.apiKey;
 
 describe('CloudSync', () => {
     describe('isConfigured()', () => {
-        test('should return falsy when apiKey is empty', () => {
-            expect(CloudSync.isConfigured()).toBeFalsy();
-        });
+        if (hasFirebaseConfig) {
+            test('should return truthy when apiKey is defined', () => {
+                expect(CloudSync.isConfigured()).toBeTruthy();
+            });
+        } else {
+            test('should return falsy when apiKey is empty', () => {
+                expect(CloudSync.isConfigured()).toBeFalsy();
+            });
+        }
     });
 
     describe('isLoggedIn()', () => {
