@@ -29,20 +29,36 @@ Output JSON:
 import sys
 import json
 import os
+import subprocess
 import argparse
 from pulp import LpProblem, LpMaximize, LpVariable, lpSum, value, PULP_CBC_CMD
 
 
 def load_tile_data():
     """
-    Load tile data from the shared tileData.json (single source of truth).
+    Load tile data from js/tileData.js (single source of truth).
+
+    Uses Node.js to require() the JS module and output tile data as JSON.
+    This avoids duplicating tile definitions — the JS file is the only place
+    where score, wallPlaceable, blocksMovement, etc. are defined.
 
     Returns:
         dict mapping tile name (str) → dict of all tile properties
     """
-    json_path = os.path.join(os.path.dirname(__file__), '..', '..', 'tileData.json')
-    with open(json_path, 'r') as fh:
-        return json.load(fh)
+    js_path = os.path.abspath(
+        os.path.join(os.path.dirname(__file__), '..', '..', 'js', 'tileData.js')
+    )
+    result = subprocess.run(
+        ['node', '-e',
+         'const t = require("' + js_path.replace('\\', '/') + '"); '
+         'const d = {}; '
+         'for (const [k, v] of Object.entries(t.TILE_DATA)) { '
+         '  const e = {...v}; delete e.ariaLabel; d[k] = e; '
+         '} '
+         'console.log(JSON.stringify(d));'],
+        capture_output=True, text=True, check=True,
+    )
+    return json.loads(result.stdout)
 
 
 def load_tile_scores():

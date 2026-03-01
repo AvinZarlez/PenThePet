@@ -16,8 +16,7 @@
     "lint:markdown:fix": "markdownlint-cli2 --fix \"**/*.md\" \"#node_modules\"",
     "lint:yaml": "yamllint .github/ .yamllint.yml",
     "lint:all": "npm run lint && npm run lint:python && npm run lint:markdown && npm run lint:yaml",
-    "generate-maps": "node scripts/generate-map.js",
-    "generate-tile-data": "node scripts/generate-tile-data.js"
+    "generate-maps": "node scripts/generate-map.js"
   },
   "keywords": [
     "game",
