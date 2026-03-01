@@ -328,8 +328,8 @@
     transform-origin: center center;
 }
 
-/* Star overlay */
-.cell .star-overlay {
+/* Tile asset overlays (rendered from tileData.assets list) */
+.cell .tile-overlay {
     position: absolute;
     top: 50%;
     left: 50%;
@@ -337,6 +337,16 @@
     height: 70%;
     pointer-events: none;
     transform: translate(-50%, -50%);
+}
+
+/* Emoji/text tile overlays */
+.cell .tile-overlay-emoji {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: clamp(0.8em, calc(var(--cell-size, 50px) / 22), 1.6em);
+    pointer-events: none;
 }
 
 /* Path overlay using data-overlay attribute */

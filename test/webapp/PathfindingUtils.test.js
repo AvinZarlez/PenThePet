@@ -413,13 +413,14 @@ describe('PathfindingUtils', () => {
             expect(score).toBe(25);
         });
 
-        test('should accept custom star value', () => {
+        test('should accept custom score map', () => {
             const map = [
                 [5, 5, 5],
                 [5, 2, 3],
                 [5, 5, 5]
             ];
-            const score = PathfindingUtils.calculatePennedScore(map, 1, 1, 5);
+            const customScores = {0:0, 1:1, 2:1, 3:5, 5:0};
+            const score = PathfindingUtils.calculatePennedScore(map, 1, 1, customScores);
             expect(score).toBe(6); // 1 home + 1 star * 5
         });
 

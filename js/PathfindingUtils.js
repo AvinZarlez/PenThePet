@@ -113,23 +113,25 @@ class PathfindingUtils {
 
     /**
      * Calculate the penned score (weighted sum of tiles reachable from home).
-     * Star tiles (numeric 3) count as starValue points each; all other passable tiles count as 1.
-     * Uses BFS to find all tiles reachable from home without crossing water or walls.
+     * Uses score values from TILE_DATA (via NUMERIC_ID_TO_SCORE lookup).
+     * Uses BFS to find all tiles reachable from home without crossing blocking tiles.
      * 
-     * @param {Array} map - 2D array where 0=water, 1=grass, 2=home, 3=star, 5=wall
+     * @param {Array} map - 2D array of numeric tile IDs (see tileData.js numericId)
      * @param {number} homeRow - Row index of home tile
      * @param {number} homeCol - Column index of home tile
-     * @param {number} starValue - Score value for each star tile (default 3)
+     * @param {Object} scoreMap - Optional map of numericId→score (default: NUMERIC_ID_TO_SCORE from tileData)
      * @returns {number} Weighted score of the penned area
      */
-    static calculatePennedScore(map, homeRow, homeCol, starValue = 3) {
+    static calculatePennedScore(map, homeRow, homeCol, scoreMap) {
+        // Use provided score map or fall back to the global NUMERIC_ID_TO_SCORE
+        const scores = scoreMap || (typeof NUMERIC_ID_TO_SCORE !== 'undefined' ? NUMERIC_ID_TO_SCORE : {0:0, 1:1, 2:1, 3:3, 5:0});
         const verticalTiles = map.length;
         const horizontalTiles = map[0].length;
         
         const visited = new Set([`${homeRow},${homeCol}`]);
         const queue = [[homeRow, homeCol]];
         const directions = [[-1, 0], [1, 0], [0, -1], [0, 1]];
-        let score = 1; // home tile always counts as 1
+        let score = scores[map[homeRow][homeCol]] !== undefined ? scores[map[homeRow][homeCol]] : 1;
         
         while (queue.length > 0) {
             const [row, col] = queue.shift();
@@ -155,7 +157,7 @@ class PathfindingUtils {
                 
                 visited.add(key);
                 queue.push([newRow, newCol]);
-                score += tileType === 3 ? starValue : 1;
+                score += scores[tileType] !== undefined ? scores[tileType] : 1;
             }
         }
         

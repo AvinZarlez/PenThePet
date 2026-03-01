@@ -25,7 +25,6 @@ describe('CONSTANTS', () => {
             expect(CONSTANTS).toHaveProperty('ALLOW_WALL_REMOVAL');
             expect(CONSTANTS).toHaveProperty('AUTO_SAVE_STATE');
             expect(CONSTANTS).toHaveProperty('HINT_MODE_DEFAULT');
-            expect(CONSTANTS).toHaveProperty('STAR_SCORE_VALUE');
         });
     });
 
@@ -175,14 +174,26 @@ describe('CONSTANTS', () => {
         });
     });
 
-    describe('Star Score Configuration', () => {
-        test('STAR_SCORE_VALUE should be a positive number', () => {
-            expect(typeof CONSTANTS.STAR_SCORE_VALUE).toBe('number');
-            expect(CONSTANTS.STAR_SCORE_VALUE).toBeGreaterThan(0);
+    describe('Tile Data Integration', () => {
+        test('TILE_DATA should define score for star tiles', () => {
+            expect(typeof TILE_DATA.star.score).toBe('number');
+            expect(TILE_DATA.star.score).toBe(3);
         });
 
-        test('STAR_SCORE_VALUE should be 3', () => {
-            expect(CONSTANTS.STAR_SCORE_VALUE).toBe(3);
+        test('TILE_DATA should define score for grass tiles', () => {
+            expect(TILE_DATA.grass.score).toBe(1);
+        });
+
+        test('all tiles should have required properties', () => {
+            for (const [name, data] of Object.entries(TILE_DATA)) {
+                expect(data).toHaveProperty('score');
+                expect(data).toHaveProperty('wallPlaceable');
+                expect(data).toHaveProperty('chance');
+                expect(data).toHaveProperty('compactChar');
+                expect(data).toHaveProperty('numericId');
+                expect(data).toHaveProperty('assets');
+                expect(data.name).toBe(name);
+            }
         });
     });
 

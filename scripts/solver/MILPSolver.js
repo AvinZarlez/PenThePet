@@ -13,6 +13,12 @@
  */
 
 const PathfindingUtils = require('../../js/PathfindingUtils.js');
+const { NUMERIC_TO_TILE, NUMERIC_ID_TO_SCORE } = require('../../js/tileData.js');
+
+// Make NUMERIC_ID_TO_SCORE available globally for PathfindingUtils.calculatePennedScore
+if (typeof global !== 'undefined' && typeof global.NUMERIC_ID_TO_SCORE === 'undefined') {
+    global.NUMERIC_ID_TO_SCORE = NUMERIC_ID_TO_SCORE;
+}
 
 class MILPSolver {
     /**
@@ -68,12 +74,7 @@ class MILPSolver {
 
         // Convert numeric map to string format for the Python solver
         const stringMap = numericMap.map(row => row.map(tile => {
-            if (tile === 0) return 'water';
-            if (tile === 1) return 'grass';
-            if (tile === 2) return 'home';
-            if (tile === 3) return 'star';
-            if (tile === 5) return 'wall';
-            return 'grass';
+            return NUMERIC_TO_TILE[tile] || 'grass';
         }));
 
         const input = JSON.stringify({ map: stringMap, maxWalls: maxWalls });

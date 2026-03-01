@@ -107,14 +107,27 @@ class Game {
             cell.textContent = this.petEmoji;
         }
         
-        // Add star overlay on star tiles
-        if (tileType === 'star') {
-            const star = document.createElement('img');
-            star.src = 'assets/star.svg';
-            star.alt = '';
-            star.className = 'star-overlay';
-            star.setAttribute('aria-hidden', 'true');
-            cell.appendChild(star);
+        // Render additional asset overlays from the tile's assets list.
+        // The first asset is the CSS background; subsequent assets are overlays.
+        if (tileInfo.assets && tileInfo.assets.length > 1) {
+            for (let i = 1; i < tileInfo.assets.length; i++) {
+                const asset = tileInfo.assets[i];
+                if (asset.endsWith('.svg')) {
+                    const overlay = document.createElement('img');
+                    overlay.src = `assets/${asset}`;
+                    overlay.alt = '';
+                    overlay.className = 'tile-overlay';
+                    overlay.setAttribute('aria-hidden', 'true');
+                    cell.appendChild(overlay);
+                } else {
+                    // Treat as emoji / text overlay
+                    const emojiSpan = document.createElement('span');
+                    emojiSpan.className = 'tile-overlay-emoji';
+                    emojiSpan.textContent = asset;
+                    emojiSpan.setAttribute('aria-hidden', 'true');
+                    cell.appendChild(emojiSpan);
+                }
+            }
         }
         
         // Add paw image overlay if this cell is on the escape path
@@ -170,8 +183,8 @@ class Game {
         
         const currentTileType = this.grid.getTile(row, col);
         
-        // Allow clicking on grass or star tiles (convert to wall)
-        if (currentTileType === 'grass' || currentTileType === 'star') {
+        // Allow clicking on wall-placeable tiles (convert to wall)
+        if (isWallPlaceable(currentTileType)) {
             // Check if wall limit reached
             if (this.wallCount >= this.maxWalls) {
                 this.showNotification(`All ${this.maxWalls} walls have been placed!`);
@@ -399,7 +412,7 @@ class Game {
 
     /**
      * Calculate the score from accessible tiles.
-     * Star tiles count as STAR_SCORE_VALUE (3), all other tiles count as 1.
+     * Uses score values from TILE_DATA for each tile type.
      * @returns {number} Weighted score of the penned area
      */
     calculateScore() {
@@ -408,7 +421,7 @@ class Game {
         for (const coordKey of accessible) {
             const [row, col] = coordKey.split(',').map(Number);
             const tileType = this.grid.getTile(row, col);
-            score += tileType === 'star' ? CONSTANTS.STAR_SCORE_VALUE : 1;
+            score += getTileScore(tileType);
         }
         return score;
     }
@@ -807,11 +820,11 @@ class Game {
             }
         }
         
-        // Place new walls (on grass or star tiles)
+        // Place new walls (on wall-placeable tiles)
         this.wallCount = 0;
         for (const [row, col] of wallPositions) {
             const tile = this.isValidPosition(row, col) ? this.grid.getTile(row, col) : null;
-            if (tile === 'grass' || tile === 'star') {
+            if (tile && isWallPlaceable(tile)) {
                 this.grid.setTile(row, col, 'wall');
                 this.wallCount++;
             }

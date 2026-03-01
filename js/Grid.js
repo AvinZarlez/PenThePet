@@ -9,12 +9,21 @@
  * for use by both the browser (main.js, Menu.js) and Node.js scripts.
  */
 
+// Import TILE_DATA lookup if in Node.js environment
+if (typeof TILE_DATA === 'undefined' && typeof require !== 'undefined') {
+    const _td = require('./tileData.js');
+    global.TILE_DATA = _td.TILE_DATA;
+    global.COMPACT_CHAR_TO_TILE = _td.COMPACT_CHAR_TO_TILE;
+}
+
 /**
  * Character-to-tile mapping used in the compact map string format.
- * 'g' = grass, 'w' = water, 'h' = home
+ * Derived from TILE_DATA in tileData.js — single source of truth.
  * @type {Object}
  */
-const COMPACT_TILE_CHARS = { g: 'grass', w: 'water', h: 'home', s: 'star' };
+const COMPACT_TILE_CHARS = (typeof COMPACT_CHAR_TO_TILE !== 'undefined')
+    ? COMPACT_CHAR_TO_TILE
+    : { g: 'grass', w: 'water', h: 'home', s: 'star' };
 
 /**
  * Parse a compact map string into a 2D array of tile type names.

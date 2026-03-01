@@ -32,9 +32,6 @@ const CONSTANTS = {
     // Map generation
     MAX_GENERATION_ATTEMPTS: 100,  // Maximum attempts to generate a valid map
     
-    // Star tile scoring
-    STAR_SCORE_VALUE: 3,        // Star tiles count as 3 in scoring
-
     // Tile distribution (probabilities should sum to 1.0)
     TILE_DISTRIBUTION: {
         grass: 0.7,             // 70% chance of grass tiles

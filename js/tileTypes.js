@@ -1,19 +1,27 @@
 /**
  * Tile Type Definitions
  * 
- * Defines the properties and behavior of different tile types in the game.
- * Add new tile types here to extend the game with additional block types.
+ * Defines the visual/rendering properties of each tile type.
+ * Uses TILE_DATA from tileData.js as the source of truth for game-logic
+ * properties (score, wallPlaceable, chance, etc.).
+ *
+ * Add new tile types here AND in tileData.js to extend the game.
  */
+
+// Import TILE_DATA if in Node.js environment
+if (typeof TILE_DATA === 'undefined' && typeof require !== 'undefined') {
+    global.TILE_DATA = require('./tileData.js').TILE_DATA;
+}
 
 const TILE_TYPES = {
     grass: {
         name: 'grass',
         displayName: 'Grass',
         description: 'Grass tile - click to build a wall',
-        clickable: true,
+        clickable: TILE_DATA.grass.wallPlaceable,
         cssClass: 'grass',
         gradient: 'linear-gradient(135deg, #7ed957 0%, #4caf50 100%)',
-        image: 'assets/grass.svg',
+        assets: TILE_DATA.grass.assets,
         ariaLabel: (row, col) => `Grass tile at row ${row + 1}, column ${col + 1}. Click to build a wall.`,
     },
 
@@ -21,10 +29,10 @@ const TILE_TYPES = {
         name: 'water',
         displayName: 'Water',
         description: 'Water tile - cannot be clicked',
-        clickable: false,
+        clickable: TILE_DATA.water.wallPlaceable,
         cssClass: 'water',
         gradient: 'linear-gradient(135deg, #4fc3f7 0%, #2196f3 100%)',
-        image: 'assets/water.svg',
+        assets: TILE_DATA.water.assets,
         ariaLabel: (row, col) => `Water tile at row ${row + 1}, column ${col + 1}. Cannot be clicked.`,
     },
 
@@ -32,10 +40,10 @@ const TILE_TYPES = {
         name: 'wall',
         displayName: 'Wall',
         description: 'Wall - placed by player',
-        clickable: true,
+        clickable: true,   // walls are removable when clicked, handled separately
         cssClass: 'wall',
         gradient: 'linear-gradient(135deg, #8d6e63 0%, #5d4037 100%)',
-        image: 'assets/wall.svg',
+        assets: TILE_DATA.wall.assets,
         ariaLabel: (row, col) => `Wall at row ${row + 1}, column ${col + 1}. Click to remove.`,
     },
 
@@ -43,10 +51,10 @@ const TILE_TYPES = {
         name: 'home',
         displayName: 'Home',
         description: 'Home - pet starting location',
-        clickable: false,
+        clickable: TILE_DATA.home.wallPlaceable,
         cssClass: 'home',
         gradient: 'linear-gradient(135deg, #ffeb3b 0%, #ffc107 100%)',
-        image: 'assets/home.svg',
+        assets: TILE_DATA.home.assets,
         emoji: '🏠🐾',
         ariaLabel: (row, col) => `Home tile at row ${row + 1}, column ${col + 1}. Pet starting location.`,
     },
@@ -54,12 +62,12 @@ const TILE_TYPES = {
     star: {
         name: 'star',
         displayName: 'Star',
-        description: 'Star tile - worth 3 points, click to build a wall',
-        clickable: true,
+        description: `Star tile - worth ${TILE_DATA.star.score} points, click to build a wall`,
+        clickable: TILE_DATA.star.wallPlaceable,
         cssClass: 'grass',
         gradient: 'linear-gradient(135deg, #7ed957 0%, #4caf50 100%)',
-        image: 'assets/grass.svg',
-        ariaLabel: (row, col) => `Star tile at row ${row + 1}, column ${col + 1}. Worth 3 points. Click to build a wall.`,
+        assets: TILE_DATA.star.assets,
+        ariaLabel: (row, col) => `Star tile at row ${row + 1}, column ${col + 1}. Worth ${TILE_DATA.star.score} points. Click to build a wall.`,
     },
 };
 
