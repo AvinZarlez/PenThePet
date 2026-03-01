@@ -1350,23 +1350,51 @@ class Game {
     }
 
     /**
-     * Show the pause overlay that hides the game board.
+     * Show the pause overlay and hide game content below the map-info banner.
      * @private
      */
     _showPauseOverlay() {
         const overlay = document.getElementById('pauseOverlay');
-        if (overlay) overlay.style.display = 'flex';
+        if (overlay) {
+            const pauseTime = document.getElementById('pauseTime');
+            if (pauseTime) pauseTime.textContent = this._formatTime(this.elapsedSeconds);
+            overlay.style.display = 'flex';
+        }
+        for (const selector of Game.PAUSE_HIDDEN_SELECTORS) {
+            const el = document.querySelector(selector);
+            if (el) {
+                el.dataset.pauseHidden = el.style.display;
+                el.style.display = 'none';
+            }
+        }
     }
 
     /**
-     * Hide the pause overlay and show the game board.
+     * Hide the pause overlay and restore game content below the map-info banner.
+     * Only restores elements that were explicitly hidden by _showPauseOverlay.
      * @private
      */
     _hidePauseOverlay() {
         const overlay = document.getElementById('pauseOverlay');
         if (overlay) overlay.style.display = 'none';
+        for (const selector of Game.PAUSE_HIDDEN_SELECTORS) {
+            const el = document.querySelector(selector);
+            if (el && 'pauseHidden' in el.dataset) {
+                el.style.display = el.dataset.pauseHidden;
+                delete el.dataset.pauseHidden;
+            }
+        }
+        // Re-sync the solution toggle bar visibility after restoring from pause,
+        // ensuring it only shows when a solution has been submitted.
+        this.updateSolutionToggleBar();
     }
 }
+
+/**
+ * CSS selectors for game elements to hide when the pause overlay is shown.
+ * @type {string[]}
+ */
+Game.PAUSE_HIDDEN_SELECTORS = ['.controls', '.grid-container', '#notification', '#solutionToggleBar', '#roamSpaceViewer'];
 
 // Export for use in other modules
 if (typeof module !== 'undefined' && module.exports) {
