@@ -53,6 +53,10 @@ Access these from the **☰ Menu → Options**:
 
 For developers, contributors, and AI agents — see the **[docs/](docs/README.md)** folder for all project documentation.
 
+## 🤝 Contributing
+
+Found a bug or have a feature idea? [Open an issue](https://github.com/AvinZarlez/penthepet/issues) — all feedback is welcome! See [CONTRIBUTING.md](CONTRIBUTING.md) for details on how to report bugs, request features, or contribute code.
+
 ## 📝 License
 
 MIT License — see [LICENSE](LICENSE) for details.
