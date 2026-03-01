@@ -129,7 +129,7 @@ class PathfindingUtils {
         const visited = new Set([`${homeRow},${homeCol}`]);
         const queue = [[homeRow, homeCol]];
         const directions = [[-1, 0], [1, 0], [0, -1], [0, 1]];
-        let score = map[homeRow][homeCol] === 3 ? starValue : 1; // home tile score
+        let score = 1; // home tile always counts as 1
         
         while (queue.length > 0) {
             const [row, col] = queue.shift();

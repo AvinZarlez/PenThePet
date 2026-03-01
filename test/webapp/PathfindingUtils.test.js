@@ -383,8 +383,7 @@ describe('PathfindingUtils', () => {
                 [5, 1, 1, 1, 5],
                 [5, 5, 5, 5, 5]
             ];
-            // 8 grass + 1 home = 8 tiles at 1 point + 1 star at 3 points = 10
-            // Actually: 7 grass + 1 home + 1 star. 8*1 + 1*3 = 11
+            // 7 grass + 1 home + 1 star: 8*1 + 1*3 = 11
             const score = PathfindingUtils.calculatePennedScore(map, 2, 2);
             expect(score).toBe(11); // 8 non-star tiles + 1 star * 3
         });
@@ -432,10 +431,7 @@ describe('PathfindingUtils', () => {
                 [5, 1, 1, 1, 5],
                 [5, 5, 5, 5, 5]
             ];
-            // water blocks top-left and top-right stars from each other
-            // Reachable: home(1) + 5 grass(5) + 2 stars disconnected by water
-            // Actually: (1,1)=star reachable via (2,1), (1,3)=star reachable via (2,3)
-            // All reachable: home + 5 grass + 2 stars = 5 + 2*3 + 1 = 12
+            // Reachable from home: 5 grass + 2 stars + 1 home = 5*1 + 2*3 + 1 = 12
             const score = PathfindingUtils.calculatePennedScore(map, 2, 2);
             expect(score).toBe(12);
         });
