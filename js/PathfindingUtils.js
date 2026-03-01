@@ -10,6 +10,20 @@
  * - Checking if home has a path to an edge (string map format)
  */
 
+// Import blocking-tile sets from tileData if in Node.js environment
+if (typeof BLOCKING_NUMERIC_IDS === 'undefined' && typeof require !== 'undefined') {
+    const _td = require('./tileData.js');
+    if (typeof global.BLOCKING_NUMERIC_IDS === 'undefined') {
+        global.BLOCKING_NUMERIC_IDS = _td.BLOCKING_NUMERIC_IDS;
+    }
+    if (typeof global.BLOCKING_TILES === 'undefined') {
+        global.BLOCKING_TILES = _td.BLOCKING_TILES;
+    }
+    if (typeof global.isBlockingTile === 'undefined') {
+        global.isBlockingTile = _td.isBlockingTile;
+    }
+}
+
 class PathfindingUtils {
     /**
      * Check if home is penned in (cannot reach any edge).
@@ -52,7 +66,7 @@ class PathfindingUtils {
                 }
                 
                 const tileType = map[newRow][newCol];
-                if (tileType === 0 || tileType === 5) { // water or wall
+                if (BLOCKING_NUMERIC_IDS.has(tileType)) {
                     continue;
                 }
                 
@@ -99,7 +113,7 @@ class PathfindingUtils {
                 }
                 
                 const tileType = map[newRow][newCol];
-                if (tileType === 0 || tileType === 5) { // water or wall
+                if (BLOCKING_NUMERIC_IDS.has(tileType)) {
                     continue;
                 }
                 
@@ -151,7 +165,7 @@ class PathfindingUtils {
                 }
                 
                 const tileType = map[newRow][newCol];
-                if (tileType === 0 || tileType === 5) { // water or wall
+                if (BLOCKING_NUMERIC_IDS.has(tileType)) {
                     continue;
                 }
                 
@@ -222,7 +236,7 @@ class PathfindingUtils {
                     continue;
                 }
 
-                if (map[newRow][newCol] === 'water') {
+                if (isBlockingTile(map[newRow][newCol])) {
                     continue;
                 }
 

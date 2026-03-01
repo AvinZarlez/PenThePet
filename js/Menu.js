@@ -517,7 +517,7 @@ class Menu {
 
                 // Restore submitted wall positions
                 for (const [row, col] of submission.walls) {
-                    if (this.game.isValidPosition(row, col) && this.game.grid.getTile(row, col) === 'grass') {
+                    if (this.game.isValidPosition(row, col) && isWallPlaceable(this.game.grid.getTile(row, col))) {
                         this.game.grid.setTile(row, col, 'wall');
                         this.game.wallCount++;
                     }

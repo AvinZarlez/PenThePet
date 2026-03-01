@@ -23,7 +23,14 @@ if (typeof TILE_DATA === 'undefined' && typeof require !== 'undefined') {
  */
 const COMPACT_TILE_CHARS = (typeof COMPACT_CHAR_TO_TILE !== 'undefined')
     ? COMPACT_CHAR_TO_TILE
-    : { g: 'grass', w: 'water', h: 'home', s: 'star' };
+    : (() => {
+        // Build from TILE_DATA when the pre-built table isn't available
+        const map = {};
+        for (const [name, data] of Object.entries(TILE_DATA)) {
+            map[data.compactChar] = name;
+        }
+        return map;
+    })();
 
 /**
  * Parse a compact map string into a 2D array of tile type names.

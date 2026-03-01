@@ -1,93 +1,33 @@
 /**
- * Tile Type Definitions
- * 
- * Defines the visual/rendering properties of each tile type.
- * Uses TILE_DATA from tileData.js as the source of truth for game-logic
- * properties (score, wallPlaceable, chance, etc.).
+ * Tile Type Definitions — compatibility layer
  *
- * Add new tile types here AND in tileData.js to extend the game.
+ * All tile properties now live in tileData.js (the single source of truth).
+ * This file builds the legacy TILE_TYPES object that some rendering code
+ * still references, deriving every value from TILE_DATA.
+ *
+ * To add a new tile type: edit tileData.js only — nothing else needs to change.
  */
 
 // Import TILE_DATA if in Node.js environment
 if (typeof TILE_DATA === 'undefined' && typeof require !== 'undefined') {
-    global.TILE_DATA = require('./tileData.js').TILE_DATA;
-}
-
-const TILE_TYPES = {
-    grass: {
-        name: 'grass',
-        displayName: 'Grass',
-        description: 'Grass tile - click to build a wall',
-        clickable: TILE_DATA.grass.wallPlaceable,
-        cssClass: 'grass',
-        gradient: 'linear-gradient(135deg, #7ed957 0%, #4caf50 100%)',
-        assets: TILE_DATA.grass.assets,
-        ariaLabel: (row, col) => `Grass tile at row ${row + 1}, column ${col + 1}. Click to build a wall.`,
-    },
-
-    water: {
-        name: 'water',
-        displayName: 'Water',
-        description: 'Water tile - cannot be clicked',
-        clickable: TILE_DATA.water.wallPlaceable,
-        cssClass: 'water',
-        gradient: 'linear-gradient(135deg, #4fc3f7 0%, #2196f3 100%)',
-        assets: TILE_DATA.water.assets,
-        ariaLabel: (row, col) => `Water tile at row ${row + 1}, column ${col + 1}. Cannot be clicked.`,
-    },
-
-    wall: {
-        name: 'wall',
-        displayName: 'Wall',
-        description: 'Wall - placed by player',
-        clickable: true,   // walls are removable when clicked, handled separately
-        cssClass: 'wall',
-        gradient: 'linear-gradient(135deg, #8d6e63 0%, #5d4037 100%)',
-        assets: TILE_DATA.wall.assets,
-        ariaLabel: (row, col) => `Wall at row ${row + 1}, column ${col + 1}. Click to remove.`,
-    },
-
-    home: {
-        name: 'home',
-        displayName: 'Home',
-        description: 'Home - pet starting location',
-        clickable: TILE_DATA.home.wallPlaceable,
-        cssClass: 'home',
-        gradient: 'linear-gradient(135deg, #ffeb3b 0%, #ffc107 100%)',
-        assets: TILE_DATA.home.assets,
-        emoji: '🏠🐾',
-        ariaLabel: (row, col) => `Home tile at row ${row + 1}, column ${col + 1}. Pet starting location.`,
-    },
-
-    star: {
-        name: 'star',
-        displayName: 'Star',
-        description: `Star tile - worth ${TILE_DATA.star.score} points, click to build a wall`,
-        clickable: TILE_DATA.star.wallPlaceable,
-        cssClass: 'grass',
-        gradient: 'linear-gradient(135deg, #7ed957 0%, #4caf50 100%)',
-        assets: TILE_DATA.star.assets,
-        ariaLabel: (row, col) => `Star tile at row ${row + 1}, column ${col + 1}. Worth ${TILE_DATA.star.score} points. Click to build a wall.`,
-    },
-};
-
-/**
- * Get tile type by name
- * @param {string} typeName - The name of the tile type
- * @returns {Object} The tile type object
- */
-function getTileType(typeName) {
-    return TILE_TYPES[typeName] || TILE_TYPES.grass;
+    const _td = require('./tileData.js');
+    global.TILE_DATA = _td.TILE_DATA;
+    global.getTileType = _td.getTileType;
+    global.isTileClickable = _td.isTileClickable;
+    global.isBlockingTile = _td.isBlockingTile;
+    global.BLOCKING_TILES = _td.BLOCKING_TILES;
 }
 
 /**
- * Check if a tile type is clickable
- * @param {string} typeName - The name of the tile type
- * @returns {boolean} True if the tile can be clicked
+ * TILE_TYPES — built programmatically from TILE_DATA.
+ * Each entry mirrors the TILE_DATA properties and adds a `clickable` flag
+ * so existing rendering code can work unchanged.
  */
-function isTileClickable(typeName) {
-    const tileType = getTileType(typeName);
-    return tileType.clickable;
+const TILE_TYPES = {};
+for (const [name, data] of Object.entries(TILE_DATA)) {
+    TILE_TYPES[name] = {
+        ...data,
+    };
 }
 
 // Export for use in other modules

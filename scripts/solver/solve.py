@@ -66,6 +66,51 @@ def load_tile_scores():
     return {'grass': 1, 'water': 0, 'wall': 0, 'home': 1, 'star': 3}
 
 
+def load_tile_properties():
+    """
+    Load tile properties from js/tileData.js.
+    Extracts blocksMovement and wallPlaceable for each tile type.
+
+    Returns:
+        dict mapping tile name (str) → dict of properties
+    """
+    tile_data_path = os.path.join(os.path.dirname(__file__), '..', '..', 'js', 'tileData.js')
+    props = {}
+    if os.path.exists(tile_data_path):
+        import re
+        with open(tile_data_path, 'r') as fh:
+            content = fh.read()
+        # Extract blocksMovement for each tile
+        for match in re.finditer(
+            r"(\w+):\s*\{[^}]*?blocksMovement:\s*(true|false)[^}]*?wallPlaceable:\s*(true|false)",
+            content,
+        ):
+            props[match.group(1)] = {
+                'blocksMovement': match.group(2) == 'true',
+                'wallPlaceable': match.group(3) == 'true',
+            }
+        if not props:
+            # Try alternate order (wallPlaceable before blocksMovement)
+            for match in re.finditer(
+                r"(\w+):\s*\{[^}]*?wallPlaceable:\s*(true|false)[^}]*?blocksMovement:\s*(true|false)",
+                content,
+            ):
+                props[match.group(1)] = {
+                    'wallPlaceable': match.group(2) == 'true',
+                    'blocksMovement': match.group(3) == 'true',
+                }
+    # Fallback defaults
+    if not props:
+        props = {
+            'grass': {'blocksMovement': False, 'wallPlaceable': True},
+            'water': {'blocksMovement': True, 'wallPlaceable': False},
+            'wall': {'blocksMovement': True, 'wallPlaceable': False},
+            'home': {'blocksMovement': False, 'wallPlaceable': False},
+            'star': {'blocksMovement': False, 'wallPlaceable': True},
+        }
+    return props
+
+
 def solve_map(map_data, max_walls):
     """
     Solve for optimal wall placement using MILP.
@@ -78,6 +123,7 @@ def solve_map(map_data, max_walls):
         dict with goalArea, optimalWallCount, optimalSolution, feasible
     """
     tile_scores = load_tile_scores()
+    tile_props = load_tile_properties()
     rows = len(map_data)
     cols = len(map_data[0])
 
@@ -92,13 +138,15 @@ def solve_map(map_data, max_walls):
     for r in range(rows):
         for c in range(cols):
             tile = map_data[r][c]
-            if tile == 'water':
+            # Skip tiles that block movement (e.g. water)
+            props = tile_props.get(tile, {})
+            if props.get('blocksMovement', False):
                 continue
             non_water.append((r, c))
             tile_set.add((r, c))
             tile_score_map[(r, c)] = tile_scores.get(tile, 1)
-            # Wall-placeable tiles: all non-water, non-home tiles (water already excluded above)
-            if tile != 'home':
+            # Wall-placeable tiles from tile data
+            if props.get('wallPlaceable', False):
                 wall_placeable.append((r, c))
             if tile == 'home':
                 home = (r, c)

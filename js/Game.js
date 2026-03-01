@@ -102,8 +102,8 @@ class Game {
         cell.dataset.row = row;
         cell.dataset.col = col;
         
-        // Add pet emoji centered inside the home tile (doghouse image is background)
-        if (tileType === 'home') {
+        // Add emoji overlay if defined on the tile type (e.g. pet on home tile)
+        if (tileInfo.emoji) {
             cell.textContent = this.petEmoji;
         }
         
@@ -226,14 +226,13 @@ class Game {
     }
 
     /**
-     * Check if a tile type blocks pathfinding
+     * Check if a tile type blocks pathfinding.
+     * Uses the blocksMovement property from TILE_DATA.
      * @param {string} tileType - The tile type to check
      * @returns {boolean} True if the tile blocks paths
      */
     isBlockingTile(tileType) {
-        // List of tile types that block pathfinding
-        const blockingTiles = ['wall', 'water'];
-        return blockingTiles.includes(tileType);
+        return isBlockingTile(tileType);
     }
 
     /**

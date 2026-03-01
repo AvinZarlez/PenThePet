@@ -25,10 +25,15 @@ global.TILE_TO_COMPACT_CHAR = tileDataModule.TILE_TO_COMPACT_CHAR;
 global.NUMERIC_ID_TO_SCORE = tileDataModule.NUMERIC_ID_TO_SCORE;
 global.TILE_TO_NUMERIC = tileDataModule.TILE_TO_NUMERIC;
 global.NUMERIC_TO_TILE = tileDataModule.NUMERIC_TO_TILE;
+global.BLOCKING_NUMERIC_IDS = tileDataModule.BLOCKING_NUMERIC_IDS;
+global.BLOCKING_TILES = tileDataModule.BLOCKING_TILES;
 global.isWallPlaceable = tileDataModule.isWallPlaceable;
 global.getTileScore = tileDataModule.getTileScore;
 global.getNumericTileScore = tileDataModule.getNumericTileScore;
 global.getEligibleTileTypes = tileDataModule.getEligibleTileTypes;
+global.isBlockingTile = tileDataModule.isBlockingTile;
+global.getTileType = tileDataModule.getTileType;
+global.isTileClickable = tileDataModule.isTileClickable;
 
 // Load game modules in the correct order for Node.js environment
 // Note: MILPSolver is loaded for generation pipeline tests (MapGenerator.test.js).
