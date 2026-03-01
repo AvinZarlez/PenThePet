@@ -26,6 +26,9 @@
  *                   If undefined, uses default ['paw.svg'].
  *                   If [] (empty), no overlay is rendered.
  *                   If ['custom.svg'] or ['emoji'], those are rendered instead.
+ *   description   - Human-readable description for player instructions.
+ *                   Rendered in the instructions modal so designers can
+ *                   document a tile in one place and have it show to players.
  *   emoji         - Optional emoji shown inside the tile (e.g. home pet)
  *   ariaLabel     - Function (row, col) => string for screen reader label
  */
@@ -40,6 +43,7 @@ const TILE_DATA = {
         compactChar: 'g',
         numericId: 1,
         cssClass: 'grass',
+        description: 'Click on grass tiles to place walls. Each grass tile in your penned area scores 1 point.',
         assets: ['grass.svg'],
         enclosedAssets: ['penned.svg'],
         ariaLabel: (row, col) => `Grass tile at row ${row + 1}, column ${col + 1}. Click to build a wall.`,
@@ -53,6 +57,7 @@ const TILE_DATA = {
         compactChar: 'w',
         numericId: 0,
         cssClass: 'water',
+        description: 'Water tiles block movement and cannot be clicked. Walls cannot be placed on water.',
         assets: ['water.svg'],
         pawOverlay: [],
         ariaLabel: (row, col) => `Water tile at row ${row + 1}, column ${col + 1}. Cannot be clicked.`,
@@ -66,6 +71,7 @@ const TILE_DATA = {
         compactChar: 'W',
         numericId: 5,
         cssClass: 'wall',
+        description: 'Walls block pet movement. Click on a wall to remove it. You have a limited number of walls to place.',
         assets: ['wall.svg'],
         pawOverlay: [],
         ariaLabel: (row, col) => `Wall at row ${row + 1}, column ${col + 1}. Click to remove.`,
@@ -79,6 +85,7 @@ const TILE_DATA = {
         compactChar: 'h',
         numericId: 2,
         cssClass: 'home',
+        description: 'Your pet starts at the home tile. The penned area is measured from here.',
         assets: ['grass.svg', 'home.svg'],
         enclosedAssets: ['penned.svg', 'home.svg'],
         pawOverlay: [],
@@ -94,6 +101,7 @@ const TILE_DATA = {
         compactChar: 's',
         numericId: 3,
         cssClass: 'grass',
+        description: 'Star tiles act like grass but score 3 points instead of 1 when inside your penned area.',
         assets: ['grass.svg', 'star.svg'],
         enclosedAssets: ['penned.svg', 'star.svg'],
         ariaLabel: (row, col) => `Star tile at row ${row + 1}, column ${col + 1}. Worth 3 points. Click to build a wall.`,

@@ -338,14 +338,9 @@ All targets met without optimization needed.
 
 ### Adding New Tile Types
 
-**Design:** Tile types are data-driven in `tileTypes.js`
+**Design:** Tile types are data-driven in `tileData.js`. See [TILE_SYSTEM.md](TILE_SYSTEM.md) for full documentation.
 
-**To Add:**
-
-1. Define tile in `tileTypes.js` with properties
-2. Add CSS class in `css/game.css` (under "Cell Styles")
-3. Update tile distribution in `constants.js`
-4. No changes needed to core logic
+**To Add:** Define a single entry in `js/tileData.js` — all game logic, rendering, generation, scoring, and player instructions are built automatically.
 
 **Example:**
 
@@ -360,6 +355,7 @@ ice: {
     compactChar: 'i',
     numericId: 4,
     cssClass: 'ice',
+    description: 'Ice tiles are slippery and cannot have walls placed on them.',
     assets: ['ice.svg'],
     ariaLabel: (row, col) => `Ice at ${row}, ${col}`
 }

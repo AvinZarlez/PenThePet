@@ -446,6 +446,8 @@ font-size: clamp(12px, 2vw, 16px);
 
 ### Adding a New Tile Type
 
+See [TILE_SYSTEM.md](TILE_SYSTEM.md) for full documentation of the tile system, all properties, and current tile types.
+
 **Example: Add "ice" tile**
 
 1. **Define tile in `tileData.js`** (single file — all properties in one place)
@@ -461,6 +463,7 @@ font-size: clamp(12px, 2vw, 16px);
        compactChar: 'i',
        numericId: 4,
        cssClass: 'ice',
+       description: 'Ice tiles are slippery and cannot have walls placed on them.',
        assets: ['ice.svg'],
        ariaLabel: (row, col) => `Ice tile at row ${row + 1}, column ${col + 1}`
    }

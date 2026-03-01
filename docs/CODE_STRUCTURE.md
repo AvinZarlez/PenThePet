@@ -194,7 +194,7 @@ Compatibility wrapper that builds `TILE_TYPES` programmatically from `TILE_DATA`
 - All tile properties live in `tileData.js` (single source of truth)
 - `tileTypes.js` is a thin loop that copies `TILE_DATA` entries into `TILE_TYPES`
 
-**To add new tile types:** Add a new entry to `TILE_DATA` in `tileData.js` with all required properties.
+**To add new tile types:** See [TILE_SYSTEM.md](../docs/TILE_SYSTEM.md). Add a single entry to `TILE_DATA` in `tileData.js`.
 
 ### `js/MapGenerator.js`
 
@@ -339,44 +339,7 @@ Comprehensive documentation for map generation:
 
 ### Adding a New Tile Type
 
-1. **Define the tile type** in `js/tileTypes.js`:
-
-```javascript
-sand: {
-    name: 'sand',
-    displayName: 'Sand',
-    description: 'Sand tile - special properties',
-    clickable: true,
-    cssClass: 'sand',
-    gradient: 'linear-gradient(135deg, #ffd54f 0%, #ffb300 100%)',
-    image: 'assets/sand.svg',
-    ariaLabel: (row, col) => `Sand tile at row ${row + 1}, column ${col + 1}.`,
-}
-```
-
-1. **Add the CSS styling** in `css/game.css` under "Cell Styles":
-
-```css
-.cell.sand {
-    background: url('../assets/sand.svg') center/cover no-repeat;
-}
-```
-
-1. **Update tile generation** in map generation scripts if needed (tiles are generated during map creation, not at runtime):
-
-```javascript
-// In MapGenerator.js (used by generation scripts only)
-// Update TILE_DISTRIBUTION in constants.js
-```
-
-1. **Add legend entry** in `index.html` (optional):
-
-```html
-<div class="legend-item">
-    <div class="legend-box sand"></div>
-    <span>Sand (special)</span>
-</div>
-```
+See [TILE_SYSTEM.md](TILE_SYSTEM.md) for full details. In short: add a single entry to `TILE_DATA` in `js/tileData.js` — all game logic, rendering, generation, scoring, and player instructions are built automatically from this data.
 
 ### Adding a Character
 
