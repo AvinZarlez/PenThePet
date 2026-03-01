@@ -89,33 +89,43 @@ This philosophy drives several key decisions:
 
 ### CSS Architecture
 
-**Decision:** Single stylesheet with BEM-like naming
+**Decision:** Split stylesheet with BEM-like naming, organized by logical view
 
 **Why:**
 
-- Game UI is simple enough for one CSS file
-- No CSS-in-JS or component-scoped styles needed
+- Each file has a single responsibility (base, game, modals, menu)
+- Easier to find and modify styles for a specific feature
 - BEM naming prevents class collisions
 - Modern CSS (grid, flexbox, clamp) handles responsive design
 - CSS variables enable theming
 
-**Structure:**
+**File breakdown:**
+
+```text
+css/
+├── base.css     — global reset, body, container, typography, buttons, footer, responsive
+├── game.css     — game board, controls, grid, cells, sidebar, debug section
+├── modals.css   — modal overlay, animations, shared modal content styles
+└── menu.css     — menu modal, calendar/level selector, cloud sync UI
+```
+
+**Structure within each file:**
 
 ```css
-/* Global styles */
-body, html { ... }
-
 /* Component styles (BEM-like) */
-.legend-item { ... }
-.legend-box { ... }
+.map-info { ... }
+.map-info-item { ... }
 
 /* State modifiers */
 .cell.grass { ... }
 .cell.water { ... }
 
-/* Responsive */
+/* Responsive (at end of file) */
 @media (max-width: 768px) { ... }
 ```
+
+**To add a new tile CSS class:** Add it to `css/game.css`.  
+**To style a new modal:** Add it to `css/modals.css` (base) or `css/menu.css` (menu content).
 
 ### Configuration Management
 
@@ -186,7 +196,7 @@ class Grid {
 1. **Data Layer** (`Grid.js`) - Grid state and tile management
 2. **Logic Layer** (`PathfindingUtils.js`) - Pathfinding and penning checks
 3. **Controller Layer** (`Game.js`) - Coordinates data and UI, checks win condition
-4. **View Layer** (`index.html`, `styles.css`) - User interface
+4. **View Layer** (`index.html`, `css/`) - User interface
 5. **Generation Pipeline** (`scripts/`, `MapGenerator.js`, `MapValidator.js`) - Offline map generation (not loaded in browser)
 
 **Why:**
@@ -358,7 +368,7 @@ All targets met without optimization needed.
 **To Add:**
 
 1. Define tile in `tileTypes.js` with properties
-2. Add CSS class in `styles.css`
+2. Add CSS class in `css/game.css` (under "Cell Styles")
 3. Update tile distribution in `constants.js`
 4. No changes needed to core logic
 

@@ -25,7 +25,7 @@ All game art assets are stored in the `assets/` folder at the project root. Thes
 
 ### Tile Backgrounds
 
-Each tile type defined in `js/tileTypes.js` has an `image` property pointing to its SVG file. The CSS in `css/styles.css` applies these as `background-image` using `center/cover` sizing:
+Each tile type defined in `js/tileTypes.js` has an `image` property pointing to its SVG file. The CSS in `css/game.css` applies these as `background-image` using `center/cover` sizing:
 
 ```css
 .cell.grass {
@@ -55,4 +55,4 @@ To replace any asset with custom artwork:
 1. Create a new SVG (or PNG/JPEG) at the sizes listed above.
 2. Place it in the `assets/` folder with the same filename.
 3. No code changes needed — the CSS and JS reference files by path.
-4. For non-SVG formats, update the file extension in `css/styles.css` and `js/tileTypes.js`.
+4. For non-SVG formats, update the file extension in `css/game.css` and `js/tileTypes.js`.

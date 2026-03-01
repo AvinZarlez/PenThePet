@@ -1,0 +1,136 @@
+/**
+ * Base Styles
+ *
+ * Global reset, layout foundation, typography, generic button styles,
+ * footer, error messages, and responsive media queries shared across
+ * all views.
+ */
+
+/* ========== Global Reset ========== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+
+/* ========== Container ========== */
+.container {
+    background: white;
+    border-radius: 20px;
+    padding: 30px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    max-width: 600px;
+    width: 100%;
+    position: relative; /* For menu button positioning */
+}
+
+/* ========== Typography ========== */
+h1 {
+    text-align: center;
+    color: #333;
+    margin-bottom: 10px;
+    font-size: 2em;
+}
+
+.subtitle {
+    text-align: center;
+    color: #666;
+    margin-bottom: 20px;
+    font-size: 0.9em;
+}
+
+/* ========== Generic Button Styles ========== */
+button {
+    padding: 12px 24px;
+    font-size: 1em;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    font-weight: bold;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+button:active {
+    transform: translateY(0);
+}
+
+/* ========== Bottom Controls ========== */
+.bottom-controls {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+
+#newGameBtn {
+    padding: 12px 32px;
+    font-size: 1.1em;
+}
+
+/* ========== Error Message ========== */
+.error-message {
+    background: linear-gradient(135deg, #ff6b6b 0%, #ff5252 100%);
+    color: white;
+    padding: 40px;
+    border-radius: 15px;
+    text-align: center;
+    margin: 30px 0;
+    box-shadow: 0 10px 30px rgba(255, 82, 82, 0.3);
+}
+
+.error-message h2 {
+    font-size: 2em;
+    margin-bottom: 20px;
+    color: white;
+}
+
+.error-message p {
+    font-size: 1.1em;
+    line-height: 1.6;
+    margin-bottom: 10px;
+}
+
+/* ========== Footer ========== */
+footer {
+    text-align: center;
+    color: #666;
+    font-size: 0.8em;
+    margin-top: 20px;
+}
+
+/* ========== Responsive Styles ========== */
+@media (max-width: 600px) {
+    h1 {
+        font-size: 1.5em;
+    }
+
+    .container {
+        padding: 20px;
+    }
+}
+
+@media (max-width: 400px) {
+    .container {
+        padding: 15px;
+    }
+
+    h1 {
+        font-size: 1.3em;
+    }
+}

@@ -1,0 +1,334 @@
+/**
+ * Menu Styles
+ *
+ * Styles for the menu modal, level selector (calendar view),
+ * and cloud sync UI (status bar, sign-in button, auth form).
+ */
+
+/* ========== Menu Modal ========== */
+.menu-modal-content {
+    max-width: 400px;
+}
+
+.menu-options {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.menu-option-btn {
+    padding: 15px 20px;
+    font-size: 1.1em;
+    text-align: left;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border: 2px solid #667eea;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    color: #333;
+    font-weight: bold;
+}
+
+.menu-option-btn:hover {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    transform: translateX(5px);
+}
+
+/* ========== Level List ========== */
+.level-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+/* -------- Calendar Navigation -------- */
+.calendar-nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 8px;
+}
+
+.calendar-nav-btn {
+    background: none;
+    border: 2px solid #667eea;
+    border-radius: 6px;
+    color: #667eea;
+    font-size: 1.3em;
+    line-height: 1;
+    padding: 4px 10px;
+    cursor: pointer;
+    transition: background 0.2s ease, color 0.2s ease;
+}
+
+.calendar-nav-btn:hover {
+    background: #667eea;
+    color: white;
+}
+
+.calendar-nav-btn:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+}
+
+.calendar-month-label {
+    font-weight: bold;
+    font-size: 1.05em;
+    color: #333;
+}
+
+.calendar-today-btn {
+    width: 100%;
+    padding: 8px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.9em;
+    font-weight: bold;
+    cursor: pointer;
+    transition: opacity 0.2s ease;
+}
+
+.calendar-today-btn:hover {
+    opacity: 0.85;
+}
+
+/* -------- Calendar Grid -------- */
+.calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    grid-template-rows: auto repeat(6, minmax(60px, auto));
+    gap: 4px;
+}
+
+.calendar-day-header {
+    text-align: center;
+    font-size: 0.7em;
+    font-weight: bold;
+    color: #999;
+    padding: 4px 0;
+}
+
+.calendar-day {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 4px 2px;
+    border-radius: 6px;
+    min-height: 60px;
+    font-size: 0.72em;
+    color: #ccc;
+    text-align: center;
+}
+
+.calendar-day-empty {
+    background: transparent;
+    min-height: 60px;
+}
+
+.calendar-day-level {
+    background: #f8f9fa;
+    border: 2px solid #e9ecef;
+    cursor: pointer;
+    color: #333;
+    transition: background 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+}
+
+.calendar-day-level:hover {
+    background: #e9ecef;
+    border-color: #667eea;
+    transform: scale(1.06);
+}
+
+.calendar-day-level.active {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-color: #667eea;
+}
+
+.calendar-day-num {
+    font-weight: bold;
+    font-size: 1em;
+    line-height: 1.2;
+}
+
+.calendar-level-num {
+    font-size: 0.8em;
+    opacity: 0.7;
+    white-space: nowrap;
+}
+
+.calendar-level-name {
+    font-size: 0.8em;
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+}
+
+.calendar-status {
+    font-size: 1em;
+    line-height: 1.2;
+    margin-top: 2px;
+}
+
+/* ========== Cloud Sync Bar ========== */
+.cloud-sync-bar {
+    text-align: center;
+    margin-bottom: 8px;
+    min-height: 32px;
+}
+
+.cloud-sync-login-btn {
+    background: none;
+    border: 1px solid #667eea;
+    color: #667eea;
+    padding: 4px 12px;
+    border-radius: 16px;
+    cursor: pointer;
+    font-size: 0.85em;
+    transition: background 0.2s, color 0.2s;
+}
+
+.cloud-sync-login-btn:hover {
+    background: #667eea;
+    color: #fff;
+}
+
+.cloud-sync-user-info {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    font-size: 0.85em;
+}
+
+.cloud-sync-email {
+    color: #555;
+    max-width: 180px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.cloud-sync-signout-btn {
+    background: none;
+    border: 1px solid #ccc;
+    color: #666;
+    padding: 2px 10px;
+    border-radius: 12px;
+    cursor: pointer;
+    font-size: 0.8em;
+}
+
+.cloud-sync-signout-btn:hover {
+    border-color: #999;
+    color: #333;
+}
+
+.cloud-sync-status {
+    font-size: 0.8em;
+    padding: 2px 8px;
+    border-radius: 10px;
+}
+
+.cloud-sync-status.synced {
+    color: #2e7d32;
+    background: #e8f5e9;
+}
+
+.cloud-sync-status.syncing {
+    color: #f57c00;
+    background: #fff3e0;
+}
+
+.cloud-sync-status.error {
+    color: #c62828;
+    background: #ffebee;
+}
+
+/* ========== Cloud Sync Auth Modal ========== */
+.cloud-sync-modal-content {
+    max-width: 400px;
+}
+
+.auth-form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.auth-form label {
+    font-weight: 600;
+    font-size: 0.9em;
+    color: #333;
+}
+
+.auth-input {
+    padding: 10px 12px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 1em;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.auth-input:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.2);
+}
+
+.auth-error {
+    color: #c62828;
+    background: #ffebee;
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-size: 0.9em;
+}
+
+.auth-buttons {
+    display: flex;
+    gap: 10px;
+    margin-top: 5px;
+}
+
+.auth-btn {
+    flex: 1;
+    padding: 10px;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.95em;
+    cursor: pointer;
+    transition: opacity 0.2s;
+}
+
+.auth-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.auth-btn-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: #fff;
+}
+
+.auth-btn-primary:hover:not(:disabled) {
+    opacity: 0.9;
+}
+
+.auth-btn-secondary {
+    background: #f0f0f0;
+    color: #333;
+}
+
+.auth-btn-secondary:hover:not(:disabled) {
+    background: #e0e0e0;
+}

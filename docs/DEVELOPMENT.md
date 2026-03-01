@@ -50,7 +50,10 @@ open http://localhost:8080
 PenThePet/
 ├── index.html           # Entry point - open this in browser
 ├── css/
-│   └── styles.css       # All styling
+│   ├── base.css         # Global reset, layout, typography, buttons, responsive
+│   ├── game.css         # Game board, controls, grid, cells, sidebar, debug
+│   ├── modals.css       # Modal overlay, animations, shared modal content
+│   └── menu.css         # Menu, level selector, cloud sync UI
 ├── js/
 │   ├── constants.js     # Configuration constants
 │   ├── config.js        # Game config (uses constants)
@@ -463,7 +466,7 @@ font-size: clamp(12px, 2vw, 16px);
 2. **Add CSS styling**
 
    ```css
-   /* css/styles.css */
+   /* css/game.css */
    .cell.ice {
        background: linear-gradient(135deg, #e0f7ff 0%, #b3e5fc 100%);
    }
