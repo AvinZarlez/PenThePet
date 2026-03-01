@@ -452,9 +452,10 @@ describe('Menu', () => {
             menu.populateLevelList();
 
             const levelList = document.getElementById('levelList');
-            const levelTexts = Array.from(levelList.children).map(el => el.textContent);
-            
-            // Past levels should be present
+            const levelCells = levelList.querySelectorAll('.calendar-day-level');
+            const levelTexts = Array.from(levelCells).map(el => el.textContent);
+
+            // Past levels should be present in the calendar grid
             expect(levelTexts.some(t => t.includes('Canyon'))).toBe(true);
             expect(levelTexts.some(t => t.includes('River'))).toBe(true);
             // Future level should be hidden
@@ -467,12 +468,15 @@ describe('Menu', () => {
             menu.populateLevelList();
 
             const levelList = document.getElementById('levelList');
-            const levelTexts = Array.from(levelList.children).map(el => el.textContent);
-            
-            // All levels should be present, including future
-            expect(levelTexts.some(t => t.includes('Canyon'))).toBe(true);
-            expect(levelTexts.some(t => t.includes('River'))).toBe(true);
+
+            // Calendar defaults to the most recent month (Dec 2099 with Future level)
+            const levelCells = levelList.querySelectorAll('.calendar-day-level');
+            const levelTexts = Array.from(levelCells).map(el => el.textContent);
             expect(levelTexts.some(t => t.includes('Future'))).toBe(true);
+
+            // Navigation to earlier months should be enabled (Canyon and River are in Feb 2026)
+            const prevBtn = levelList.querySelector('.calendar-nav-btn');
+            expect(prevBtn.disabled).toBe(false);
         });
 
         test('should toggle showAllLevels via debug checkbox', () => {
@@ -494,13 +498,115 @@ describe('Menu', () => {
             menu.populateLevelList();
 
             const levelList = document.getElementById('levelList');
-            
-            // Every rendered level-item-date should be <= today
-            const dateElements = levelList.querySelectorAll('.level-item-date');
-            expect(dateElements.length).toBeGreaterThan(0);
-            
-            // All levels in the list are past/today (no future)
-            expect(levelList.children.length).toBe(2); // Canyon + River only
+
+            // Level cells should only contain past/today levels
+            const levelCells = levelList.querySelectorAll('.calendar-day-level');
+            expect(levelCells.length).toBeGreaterThan(0);
+            // No "Future" level should be visible in the current calendar view
+            expect(levelList.textContent).not.toContain('Future');
+        });
+    });
+
+    describe('Calendar View', () => {
+        test('should render calendar navigation with prev/next buttons', async () => {
+            await menu.loadMapsDatabase();
+            menu.populateLevelList();
+
+            const levelList = document.getElementById('levelList');
+            const nav = levelList.querySelector('.calendar-nav');
+            expect(nav).not.toBeNull();
+
+            const navBtns = nav.querySelectorAll('.calendar-nav-btn');
+            expect(navBtns.length).toBe(2);
+
+            const monthLabel = nav.querySelector('.calendar-month-label');
+            expect(monthLabel).not.toBeNull();
+            expect(monthLabel.textContent.length).toBeGreaterThan(0);
+        });
+
+        test('should render a 7-column calendar grid with day headers', async () => {
+            await menu.loadMapsDatabase();
+            menu.populateLevelList();
+
+            const levelList = document.getElementById('levelList');
+            const grid = levelList.querySelector('.calendar-grid');
+            expect(grid).not.toBeNull();
+
+            const headers = grid.querySelectorAll('.calendar-day-header');
+            expect(headers.length).toBe(7);
+        });
+
+        test('should highlight the active level', async () => {
+            menu._saveCurrentLevelToCookie('2026-02-06');
+            await menu.loadMapsDatabase();
+            menu.populateLevelList();
+
+            const levelList = document.getElementById('levelList');
+            const activeCell = levelList.querySelector('.calendar-day-level.active');
+            expect(activeCell).not.toBeNull();
+            expect(activeCell.textContent).toContain('Canyon');
+        });
+
+        test('should display trophy emoji when submitted score meets goal', async () => {
+            game.loadSubmission = jest.fn((date) => {
+                if (date === '2026-02-06') return { score: 11, walls: [] };
+                return null;
+            });
+
+            await menu.loadMapsDatabase();
+            menu.populateLevelList();
+
+            const levelList = document.getElementById('levelList');
+            const levelCells = levelList.querySelectorAll('.calendar-day-level');
+            const canyonCell = Array.from(levelCells).find(el => el.textContent.includes('Canyon'));
+            expect(canyonCell).not.toBeNull();
+            expect(canyonCell.querySelector('.calendar-status').textContent).toBe('🏆');
+        });
+
+        test('should display checkmark when submitted score is below goal', async () => {
+            game.loadSubmission = jest.fn((date) => {
+                if (date === '2026-02-06') return { score: 5, walls: [] };
+                return null;
+            });
+
+            await menu.loadMapsDatabase();
+            menu.populateLevelList();
+
+            const levelList = document.getElementById('levelList');
+            const levelCells = levelList.querySelectorAll('.calendar-day-level');
+            const canyonCell = Array.from(levelCells).find(el => el.textContent.includes('Canyon'));
+            expect(canyonCell).not.toBeNull();
+            expect(canyonCell.querySelector('.calendar-status').textContent).toBe('✓');
+        });
+
+        test('should not display status indicator when no submission', async () => {
+            game.loadSubmission = jest.fn(() => null);
+
+            await menu.loadMapsDatabase();
+            menu.populateLevelList();
+
+            const levelList = document.getElementById('levelList');
+            const levelCells = levelList.querySelectorAll('.calendar-day-level');
+            const canyonCell = Array.from(levelCells).find(el => el.textContent.includes('Canyon'));
+            expect(canyonCell).not.toBeNull();
+            expect(canyonCell.querySelector('.calendar-status')).toBeNull();
+        });
+
+        test('should navigate to previous month on prev button click', async () => {
+            await menu.loadMapsDatabase();
+            menu.showAllLevels = true;
+            menu.populateLevelList();
+
+            const levelList = document.getElementById('levelList');
+
+            // Start at Dec 2099 (most recent), navigate back to Feb 2026
+            const [prevBtn] = levelList.querySelectorAll('.calendar-nav-btn');
+            prevBtn.click();
+
+            const levelCells = levelList.querySelectorAll('.calendar-day-level');
+            const levelTexts = Array.from(levelCells).map(el => el.textContent);
+            expect(levelTexts.some(t => t.includes('Canyon'))).toBe(true);
+            expect(levelTexts.some(t => t.includes('River'))).toBe(true);
         });
     });
 
