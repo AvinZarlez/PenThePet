@@ -20,9 +20,9 @@ async function loadTodayMap() {
         const today = DateUtils.getTodayDate();
         const currentYear = parseInt(today.substring(0, 4));
 
-        // Determine which years we may need
+        // Always load this year's map file; also load the saved level's year if different
         const savedLevel = CookieUtils.getCookie('currentLevel');
-        const yearsToLoad = new Set([currentYear, currentYear - 1]);
+        const yearsToLoad = new Set([currentYear]);
         if (savedLevel) {
             yearsToLoad.add(parseInt(savedLevel.substring(0, 4)));
         }
