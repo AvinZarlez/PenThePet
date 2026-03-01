@@ -99,21 +99,63 @@ fork running on a different domain):
 2. Select the project you just created.
 3. Click the **Browser key** that Firebase created automatically.
 4. Under **Application restrictions**, select **HTTP referrers (web sites)**.
-5. Add the allowed domains. For a GitHub Pages site:
+5. Add every domain the app is served from. Examples:
 
-   ```text
-   https://YOUR_USERNAME.github.io/penthepet/*
-   ```
+   - **GitHub Pages (default domain):**
 
-   Replace `YOUR_USERNAME` with your actual GitHub username.
-   You can also add `http://localhost/*` for local development.
+     ```text
+     https://YOUR_USERNAME.github.io/penthepet/*
+     ```
+
+   - **Custom domain** (e.g. `www.your-domain.com`):
+
+     ```text
+     https://www.your-domain.com/*
+     ```
+
+   - **Local development** — include the port your dev server uses:
+
+     ```text
+     http://localhost:8080/*
+     ```
+
+   Add one referrer per line. Replace the examples with your actual domains.
 
 6. Click **Save**.
 
 This means even if someone forks the repo and deploys it, their site will
 be on a different domain and Firebase will reject their requests.
 
-### Step 7 — Add Your Config to the Repository
+> **Important:** After adding or changing referrers, wait up to five minutes
+> for the changes to propagate before testing.
+
+> ⚠️ **Two separate settings — both are required.**
+> Step 6 (Google Cloud Console) and Step 7 (Firebase console) are completely
+> separate services. **Adding a domain in Firebase Authentication does NOT
+> update Google Cloud Console, and vice versa.** If you only complete one of
+> these steps you will still see the "requests-from-referer-…-are-blocked"
+> error. Every domain the app is served from must be registered in **both**
+> places.
+
+### Step 7 — Authorise Your Domain in Firebase Authentication
+
+Firebase Authentication maintains its own list of allowed domains, separate
+from the API key restrictions above. Any domain the app is served from must
+appear in this list or sign-in will be blocked.
+
+1. In the Firebase console left sidebar, click **Build → Authentication**.
+2. Click the **Settings** tab.
+3. Under **Authorised domains**, click **Add domain**.
+4. Add every domain the app is served from, for example:
+   - `YOUR_USERNAME.github.io`
+   - `YOUR_CUSTOM_DOMAIN` *(e.g. `www.your-domain.com`, if applicable)*
+   - `localhost` *(for local development)*
+5. Click **Add** after each domain.
+
+> **Note:** `firebaseapp.com` and `localhost` are pre-authorised by default.
+> You only need to add domains that are not already in the list.
+
+### Step 8 — Add Your Config to the Repository
 
 Open `js/firebase-config.js` in your fork and fill in the values from Step 2:
 
@@ -131,7 +173,7 @@ const FIREBASE_CONFIG = {
 Commit and push. The app detects that `apiKey` is non-empty and
 automatically enables the cloud sync UI.
 
-### Step 8 — Test the Setup
+### Step 9 — Test the Setup
 
 1. Open the app (your GitHub Pages URL).
 2. A **"☁️ Sign In to Sync"** button should appear below the menu button.
@@ -193,7 +235,7 @@ reads and writes — far below the free limits.
 
 ### "☁️ Sign In to Sync" button does not appear
 
-The `apiKey` in `js/firebase-config.js` is empty. Complete Step 7.
+The `apiKey` in `js/firebase-config.js` is empty. Complete Step 8.
 
 ### "Email/password sign-in is not enabled"
 
@@ -208,10 +250,34 @@ Your security rules are still set to deny all access. Return to Step 5.
 You skipped Step 4. Go to **Build → Firestore Database** and create a
 database.
 
-### Firebase works locally but not on GitHub Pages
+### "This domain is not authorised to use Firebase" or "requests-from-referer-…-are-blocked"
 
-Check the API key restrictions (Step 6) — make sure your GitHub Pages
-domain is in the allowed referrers list.
+Two separate settings must both include the domain you are signing in from:
+
+1. **Google Cloud Console API key referrers** (Step 6) — add the URL pattern
+   with a trailing slash and wildcard, e.g. `https://www.your-domain.com/*`
+   and `http://localhost:8080/*`.
+2. **Firebase Authentication → Settings → Authorised Domains** (Step 7) —
+   add the bare domain, e.g. `www.your-domain.com` and `localhost`.
+
+> **Why the `/*` pattern matters:** Modern browsers send only the bare
+> origin (`https://www.your-domain.com`) as the `Referer` header for
+> cross-origin requests by default. Google Cloud Console's `/*` wildcard
+> requires a `/` after the domain, so `https://www.your-domain.com/*` does
+> **not** match the bare origin `https://www.your-domain.com`. The
+> `<meta name="referrer" content="no-referrer-when-downgrade">` tag in
+> `index.html` overrides this and ensures the full URL (including the
+> trailing `/`) is sent, so the `/*` patterns work correctly. If you fork
+> this repository, do not remove that meta tag.
+
+After saving both settings, wait up to five minutes for changes to
+propagate, then try again.
+
+### Firebase works locally but not on GitHub Pages (or custom domain)
+
+Check both the API key referrers (Step 6) and the Firebase Authentication
+authorised domains (Step 7) — both must list every domain the app is served
+from, including your custom domain if you use one.
 
 ## Additional Resources
 
