@@ -1822,5 +1822,26 @@
       8,
       8
     ]
+  },
+  "2027-02-28": {
+    "date": "2027-02-28",
+    "mapName": "Era-2",
+    "size": 7,
+    "goal": 5,
+    "maxWalls": 5,
+    "map": "wwwbswgggggggggwgggwgwgghggwgwgggggwwgbgbwwgggggs",
+    "optimalSolution": [
+      1,
+      2,
+      2,
+      3,
+      3,
+      4,
+      4,
+      3,
+      5,
+      2
+    ],
+    "dayNumber": 367
   }
 }

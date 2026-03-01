@@ -53,6 +53,7 @@ Then add a CSS rule for cursor/hover behavior and the SVG asset.
 | Grass | 1 | ✅ | ❌ | 65% |
 | Water | 0 | ❌ | ✅ | 30% |
 | Star | 3 | ✅ | ❌ | 5% |
+| Bee | -3 | ✅ | ❌ | 3% |
 | Home | 1 | ❌ | ❌ | Placed at center |
 | Wall | 0 | ❌ | ✅ | Player-placed only |
 
@@ -60,7 +61,7 @@ Then add a CSS rule for cursor/hover behavior and the SVG asset.
 
 ### Data Flow
 
-```
+```text
 tileData.js (TILE_DATA)
     ├── Game.js         — scoring (getTileScore), click handling (isWallPlaceable),
     │                     rendering (_createCellElement reads assets/enclosedAssets/pawOverlay)

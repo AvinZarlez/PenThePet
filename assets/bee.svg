@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 50 50">
+  <!-- Bee body -->
+  <ellipse cx="25" cy="28" rx="10" ry="8" fill="#FFD700" stroke="#333" stroke-width="1"/>
+  <!-- Black stripes -->
+  <rect x="18" y="24" width="14" height="3" rx="1" fill="#333"/>
+  <rect x="17" y="30" width="16" height="3" rx="1" fill="#333"/>
+  <!-- Head -->
+  <circle cx="25" cy="18" r="5" fill="#333"/>
+  <!-- Eyes -->
+  <circle cx="23" cy="17" r="1.2" fill="#FFF"/>
+  <circle cx="27" cy="17" r="1.2" fill="#FFF"/>
+  <!-- Wings -->
+  <ellipse cx="16" cy="22" rx="6" ry="4" fill="#FFFFFFAA" stroke="#CCC" stroke-width="0.5" transform="rotate(-20,16,22)"/>
+  <ellipse cx="34" cy="22" rx="6" ry="4" fill="#FFFFFFAA" stroke="#CCC" stroke-width="0.5" transform="rotate(20,34,22)"/>
+  <!-- Stinger -->
+  <polygon points="25,36 23,40 27,40" fill="#333"/>
+  <!-- Antennae -->
+  <line x1="23" y1="14" x2="19" y2="8" stroke="#333" stroke-width="1" stroke-linecap="round"/>
+  <line x1="27" y1="14" x2="31" y2="8" stroke="#333" stroke-width="1" stroke-linecap="round"/>
+  <circle cx="19" cy="8" r="1.5" fill="#333"/>
+  <circle cx="31" cy="8" r="1.5" fill="#333"/>
+</svg>

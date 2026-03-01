@@ -54,16 +54,16 @@ def load_tile_scores():
         with open(tile_data_path, 'r') as fh:
             content = fh.read()
         scores = {}
-        # Match patterns like:  grass: {\n  ...  score: 1,
+        # Match patterns like:  grass: {\n  ...  score: 1,  or  bee: {\n  ...  score: -3,
         for match in re.finditer(
-            r"(\w+):\s*\{[^}]*?score:\s*(\d+)", content
+            r"(\w+):\s*\{[^}]*?score:\s*(-?\d+)", content
         ):
             scores[match.group(1)] = int(match.group(2))
         if scores:
             return scores
 
     # Ultimate fallback
-    return {'grass': 1, 'water': 0, 'wall': 0, 'home': 1, 'star': 3}
+    return {'grass': 1, 'water': 0, 'wall': 0, 'home': 1, 'star': 3, 'bee': -3}
 
 
 def load_tile_properties():
@@ -102,6 +102,7 @@ def load_tile_properties():
             'wall': {'blocksMovement': True, 'wallPlaceable': False},
             'home': {'blocksMovement': False, 'wallPlaceable': False},
             'star': {'blocksMovement': False, 'wallPlaceable': True},
+            'bee': {'blocksMovement': False, 'wallPlaceable': True},
         }
     return props
 

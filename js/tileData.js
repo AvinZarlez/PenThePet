@@ -106,6 +106,20 @@ const TILE_DATA = {
         enclosedAssets: ['penned.svg', 'star.svg'],
         ariaLabel: (row, col) => `Star tile at row ${row + 1}, column ${col + 1}. Worth 3 points. Click to build a wall.`,
     },
+    bee: {
+        score: -3,
+        wallPlaceable: true,
+        clickable: true,
+        blocksMovement: false,
+        chance: 0.03,
+        compactChar: 'b',
+        numericId: 4,
+        cssClass: 'grass',
+        description: 'Bee tiles act like grass but subtract 3 points when inside your penned area. Try to keep bees outside!',
+        assets: ['grass.svg', 'bee.svg'],
+        enclosedAssets: ['penned.svg', 'bee.svg'],
+        ariaLabel: (row, col) => `Bee tile at row ${row + 1}, column ${col + 1}. Costs 3 points. Click to build a wall.`,
+    },
 };
 
 // ─── Derived lookup tables (built once, used everywhere) ──────────────
