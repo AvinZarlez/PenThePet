@@ -130,9 +130,9 @@ jobs:
         run: |
           echo "## Test Results" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          if [ -f coverage/lcov-report/index.html ]; then
-            COVERAGE=$(grep -oP 'coverage-summary.*?(\d+\.\d+)%' coverage/lcov-report/index.html | grep -oP '\d+\.\d+' | head -1)
-            echo "### Code Coverage: $COVERAGE%" >> $GITHUB_STEP_SUMMARY
+          if [ -f coverage/coverage-summary.json ]; then
+            COVERAGE=$(node -e "const summary=JSON.parse(require('fs').readFileSync('./coverage/coverage-summary.json','utf8')); console.log(summary.total.lines.pct)")
+            echo "### Code Coverage: ${COVERAGE}%" >> $GITHUB_STEP_SUMMARY
           fi
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "✅ All checks passed!" >> $GITHUB_STEP_SUMMARY
