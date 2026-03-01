@@ -49,7 +49,6 @@ describe('MapGenerator', () => {
          * (maxWalls == size*size). The generate() method makes both calls.
          */
         function mockSolverCalls(size, limitedResult, unlimitedGoalArea) {
-            const sizeMaxWalls = CONSTANTS.maxWallsForSize(size);
             const unlimitedWalls = size * size;
             return jest.spyOn(MILPSolver, 'solveMap').mockImplementation((_map, maxWalls) => {
                 if (maxWalls >= unlimitedWalls) {
@@ -232,8 +231,7 @@ describe('MapGenerator', () => {
         test('Rule 3: should reject map when unlimited walls do not improve score', () => {
             // The unlimited solve returns the SAME score as the limited solve
             const size = 7;
-            jest.spyOn(MILPSolver, 'solveMap').mockImplementation((_map, maxWalls) => {
-                // Both limited and unlimited return the same goalArea
+            jest.spyOn(MILPSolver, 'solveMap').mockImplementation((_map, _maxWalls) => {
                 return {
                     walls: Array(size).fill(null).map(() => Array(size).fill(0)),
                     goalArea: 8,
