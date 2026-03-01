@@ -88,7 +88,7 @@ function mockFetch() {
                     size: 7,
                     goal: 11,
                     maxWalls: 3,
-                    map: []
+                    map: 'g'.repeat(49)
                 },
                 '2026-02-05': {
                     dayNumber: 0,  // Day 0 is before the official launch
@@ -97,7 +97,7 @@ function mockFetch() {
                     size: 7,
                     goal: 8,
                     maxWalls: 4,
-                    map: []
+                    map: 'g'.repeat(49)
                 },
                 '2099-12-31': {
                     dayNumber: 999,
@@ -106,7 +106,7 @@ function mockFetch() {
                     size: 7,
                     goal: 15,
                     maxWalls: 5,
-                    map: []
+                    map: 'g'.repeat(49)
                 }
             })
         })

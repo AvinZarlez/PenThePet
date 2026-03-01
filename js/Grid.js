@@ -4,7 +4,59 @@
  * Manages the game grid data structure and tile state.
  * Maps are loaded from maps.json (generated offline by the Python solver pipeline).
  * This class handles state management: loading maps, tracking tiles, saving/restoring state.
+ *
+ * Compact map format helpers (parseCompactMap, parseCompactSolution) are also defined here
+ * for use by both the browser (main.js, Menu.js) and Node.js scripts.
  */
+
+/**
+ * Character-to-tile mapping used in the compact map string format.
+ * 'g' = grass, 'w' = water, 'h' = home
+ * @type {Object}
+ */
+const COMPACT_TILE_CHARS = { g: 'grass', w: 'water', h: 'home' };
+
+/**
+ * Parse a compact map string into a 2D array of tile type names.
+ * The compact format encodes each tile as a single character:
+ *   'g' = grass, 'w' = water, 'h' = home
+ * Tiles are stored row-major: the first `size` characters are row 0, next `size` are row 1, etc.
+ *
+ * @param {string} mapStr - Compact map string of length size*size
+ * @param {number} size - Grid side length
+ * @returns {Array} 2D array of tile type strings
+ */
+function parseCompactMap(mapStr, size) {
+    if (typeof mapStr !== 'string') {
+        throw new Error('parseCompactMap: mapStr must be a string');
+    }
+    const tiles = [];
+    for (let i = 0; i < size; i++) {
+        const row = [];
+        for (let j = 0; j < size; j++) {
+            const ch = mapStr[i * size + j];
+            row.push(COMPACT_TILE_CHARS[ch] || 'grass');
+        }
+        tiles.push(row);
+    }
+    return tiles;
+}
+
+/**
+ * Parse a compact (flat) optimal solution array into coordinate pairs.
+ * The compact format stores coordinates as a flat array [r0, c0, r1, c1, ...].
+ *
+ * @param {Array<number>} flatArr - Flat array of alternating row/col values
+ * @returns {Array<Array<number>>} Array of [row, col] coordinate pairs
+ */
+function parseCompactSolution(flatArr) {
+    if (!Array.isArray(flatArr)) return [];
+    const pairs = [];
+    for (let i = 0; i + 1 < flatArr.length; i += 2) {
+        pairs.push([flatArr[i], flatArr[i + 1]]);
+    }
+    return pairs;
+}
 
 class Grid {
     /**
@@ -96,4 +148,6 @@ class Grid {
 // Export for use in other modules
 if (typeof module !== 'undefined' && module.exports) {
     module.exports = Grid;
+    module.exports.parseCompactMap = parseCompactMap;
+    module.exports.parseCompactSolution = parseCompactSolution;
 }

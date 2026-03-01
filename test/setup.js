@@ -30,6 +30,12 @@ global.PathfindingUtils = require('../js/PathfindingUtils.js');
 global.MILPSolver = require('../scripts/solver/MILPSolver.js');
 global.MapGenerator = require('../js/MapGenerator.js');
 
+// Expose Grid and compact map parse helpers as globals (mirrors browser script-tag load order)
+const _Grid = require('../js/Grid.js');
+global.Grid = _Grid;
+global.parseCompactMap = _Grid.parseCompactMap;
+global.parseCompactSolution = _Grid.parseCompactSolution;
+
 // Mock getTileType for tests that need it
 global.getTileType = function(tileType) {
     const TILE_TYPES = {

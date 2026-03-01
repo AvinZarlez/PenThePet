@@ -430,3 +430,59 @@ describe('Grid', () => {
         });
     });
 });
+
+describe('parseCompactMap', () => {
+    test('converts a compact string into a 2D tile array', () => {
+        // 3x3: row0=gwg, row1=whw, row2=gwg
+        const result = Grid.parseCompactMap('gwgwhwgwg', 3);
+        expect(result).toEqual([
+            ['grass', 'water', 'grass'],
+            ['water', 'home', 'water'],
+            ['grass', 'water', 'grass'],
+        ]);
+    });
+
+    test('recognizes all three tile characters', () => {
+        const result = Grid.parseCompactMap('ghw', 3);
+        expect(result[0]).toEqual(['grass', 'home', 'water']);
+    });
+
+    test('defaults unknown characters to grass', () => {
+        const result = Grid.parseCompactMap('x', 1);
+        expect(result[0][0]).toBe('grass');
+    });
+
+    test('throws when mapStr is not a string', () => {
+        expect(() => Grid.parseCompactMap([], 3)).toThrow();
+    });
+
+    test('returns correct dimensions for a 7x7 map', () => {
+        const mapStr = 'g'.repeat(49);
+        const result = Grid.parseCompactMap(mapStr, 7);
+        expect(result.length).toBe(7);
+        expect(result[0].length).toBe(7);
+    });
+});
+
+describe('parseCompactSolution', () => {
+    test('converts a flat array into coordinate pairs', () => {
+        expect(Grid.parseCompactSolution([1, 0, 2, 3, 5, 4])).toEqual([
+            [1, 0],
+            [2, 3],
+            [5, 4],
+        ]);
+    });
+
+    test('returns empty array for empty input', () => {
+        expect(Grid.parseCompactSolution([])).toEqual([]);
+    });
+
+    test('returns empty array for non-array input', () => {
+        expect(Grid.parseCompactSolution(null)).toEqual([]);
+    });
+
+    test('ignores a trailing unpaired element', () => {
+        // Odd-length array: last element has no pair
+        expect(Grid.parseCompactSolution([1, 0, 2])).toEqual([[1, 0]]);
+    });
+});
