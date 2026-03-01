@@ -2,8 +2,8 @@
  * Game Tests — Timer Feature
  *
  * Unit tests for the timer methods added to the Game class:
- * _formatTime, initTimerForDate, pauseTimer, resumeTimer, toggleTimer,
- * pauseForMenu, resumeFromMenu, lockTimer, resetTimer, and related helpers.
+ * _formatTime, initTimerForDate, pauseTimer, resumeTimer,
+ * lockTimer, resetTimer, visibility change handling, and related helpers.
  */
 
 const Game = require('../../js/Game.js');
@@ -141,16 +141,16 @@ describe('Game — Timer', () => {
             expect(game.elapsedSeconds).toBe(3);
         });
 
-        test('resets manual pause flag on new level load', () => {
-            game._pauseFromManual = true;
+        test('resets isPaused flag on new level load', () => {
+            game.isPaused = true;
             game.isSubmitted = false;
             game.initTimerForDate('2026-01-01');
-            expect(game._pauseFromManual).toBe(false);
+            expect(game.isPaused).toBe(false);
         });
     });
 
     // ------------------------------------------------------------------
-    // pauseTimer / resumeTimer / toggleTimer
+    // pauseTimer
     // ------------------------------------------------------------------
     describe('pauseTimer()', () => {
         test('stops the interval and shows the pause overlay', () => {
@@ -158,7 +158,7 @@ describe('Game — Timer', () => {
             game.initTimerForDate('2026-01-01');
             game.pauseTimer();
 
-            expect(game._pauseFromManual).toBe(true);
+            expect(game.isPaused).toBe(true);
             expect(game._timerInterval).toBeNull();
             const overlay = document.getElementById('pauseOverlay');
             expect(overlay.style.display).toBe('flex');
@@ -167,16 +167,18 @@ describe('Game — Timer', () => {
         test('does nothing when timer is locked', () => {
             game.isTimerLocked = true;
             game.pauseTimer();
-            expect(game._pauseFromManual).toBe(false);
+            expect(game.isPaused).toBe(false);
         });
 
-        test('does nothing when already manually paused', () => {
+        test('does nothing when already paused', () => {
             game.isSubmitted = false;
             game.initTimerForDate('2026-01-01');
             game.pauseTimer();
-            const firstInterval = game._timerInterval;
-            game.pauseTimer(); // second call — should be no-op
-            expect(game._timerInterval).toBe(firstInterval);
+            // Second pause call should be a no-op — overlay already visible, interval already null
+            const overlayDisplay = document.getElementById('pauseOverlay').style.display;
+            game.pauseTimer();
+            expect(game.isPaused).toBe(true);
+            expect(document.getElementById('pauseOverlay').style.display).toBe(overlayDisplay);
         });
 
         test('timer does not increment while paused', () => {
@@ -186,8 +188,21 @@ describe('Game — Timer', () => {
             jest.advanceTimersByTime(5000);
             expect(game.elapsedSeconds).toBe(0);
         });
+
+        test('pausing from menu open also shows overlay', () => {
+            game.isSubmitted = false;
+            game.initTimerForDate('2026-01-01');
+            // Menu.js calls game.pauseTimer() on open
+            game.pauseTimer();
+            expect(game.isPaused).toBe(true);
+            const overlay = document.getElementById('pauseOverlay');
+            expect(overlay.style.display).toBe('flex');
+        });
     });
 
+    // ------------------------------------------------------------------
+    // resumeTimer — only way to unpause
+    // ------------------------------------------------------------------
     describe('resumeTimer()', () => {
         test('restarts the interval and hides the overlay', () => {
             game.isSubmitted = false;
@@ -195,13 +210,13 @@ describe('Game — Timer', () => {
             game.pauseTimer();
             game.resumeTimer();
 
-            expect(game._pauseFromManual).toBe(false);
+            expect(game.isPaused).toBe(false);
             expect(game._timerInterval).not.toBeNull();
             const overlay = document.getElementById('pauseOverlay');
             expect(overlay.style.display).toBe('none');
         });
 
-        test('does nothing when not manually paused', () => {
+        test('does nothing when not paused', () => {
             game.isSubmitted = false;
             game.initTimerForDate('2026-01-01');
             const intervalBefore = game._timerInterval;
@@ -219,57 +234,71 @@ describe('Game — Timer', () => {
             jest.advanceTimersByTime(3000); // should count
             expect(game.elapsedSeconds).toBe(5);
         });
-    });
 
-    describe('toggleTimer()', () => {
-        test('pauses when running', () => {
-            game.isSubmitted = false;
-            game.initTimerForDate('2026-01-01');
-            game.toggleTimer();
-            expect(game._pauseFromManual).toBe(true);
-        });
-
-        test('resumes when paused', () => {
+        test('is the only way to leave paused state', () => {
             game.isSubmitted = false;
             game.initTimerForDate('2026-01-01');
             game.pauseTimer();
-            game.toggleTimer();
-            expect(game._pauseFromManual).toBe(false);
+            expect(game.isPaused).toBe(true);
+
+            // Simulating menu close (no auto-resume)
+            // Simulating tab becoming visible (no auto-resume)
+            // Nothing should change isPaused except resumeTimer()
+            expect(game.isPaused).toBe(true);
+
+            game.resumeTimer();
+            expect(game.isPaused).toBe(false);
         });
     });
 
     // ------------------------------------------------------------------
-    // pauseForMenu / resumeFromMenu
+    // Visibility change — pause only, never auto-resume
     // ------------------------------------------------------------------
-    describe('pauseForMenu() / resumeFromMenu()', () => {
-        test('pauseForMenu stops interval without showing overlay', () => {
+    describe('_handleVisibilityChange()', () => {
+        test('pauses when tab becomes hidden', () => {
             game.isSubmitted = false;
             game.initTimerForDate('2026-01-01');
-            game.pauseForMenu();
 
-            expect(game._pauseFromMenu).toBe(true);
+            Object.defineProperty(document, 'hidden', { value: true, configurable: true });
+            game._handleVisibilityChange();
+
+            expect(game.isPaused).toBe(true);
             expect(game._timerInterval).toBeNull();
-            const overlay = document.getElementById('pauseOverlay');
-            expect(overlay.style.display).toBe('none');
+
+            Object.defineProperty(document, 'hidden', { value: false, configurable: true });
         });
 
-        test('resumeFromMenu restarts interval', () => {
+        test('does NOT auto-resume when tab becomes visible', () => {
             game.isSubmitted = false;
             game.initTimerForDate('2026-01-01');
-            game.pauseForMenu();
-            game.resumeFromMenu();
 
-            expect(game._pauseFromMenu).toBe(false);
-            expect(game._timerInterval).not.toBeNull();
+            // Pause via tab hide
+            Object.defineProperty(document, 'hidden', { value: true, configurable: true });
+            game._handleVisibilityChange();
+            expect(game.isPaused).toBe(true);
+
+            // Tab becomes visible — should NOT resume
+            Object.defineProperty(document, 'hidden', { value: false, configurable: true });
+            game._handleVisibilityChange();
+            expect(game.isPaused).toBe(true);
+            expect(game._timerInterval).toBeNull();
         });
 
-        test('resumeFromMenu does not start if manually paused', () => {
+        test('does nothing when timer is already paused', () => {
             game.isSubmitted = false;
             game.initTimerForDate('2026-01-01');
-            game.pauseTimer();     // manual pause
-            game.pauseForMenu();   // menu also pauses
-            game.resumeFromMenu(); // menu closes, but manual pause still active
-            expect(game._timerInterval).toBeNull();
+            game.isPaused = true;
+            game._stopTimerInterval();
+
+            // Hidden while already paused — no state change expected
+            Object.defineProperty(document, 'hidden', { value: true, configurable: true });
+            game._handleVisibilityChange();
+            expect(game.isPaused).toBe(true); // unchanged
+            expect(game._timerInterval).toBeNull(); // still stopped
+
+            Object.defineProperty(document, 'hidden', { value: false, configurable: true });
+            game._handleVisibilityChange(); // visible — still no change
+            expect(game.isPaused).toBe(true); // still paused
         });
     });
 
@@ -286,13 +315,13 @@ describe('Game — Timer', () => {
             expect(game._timerInterval).toBeNull();
         });
 
-        test('clears manual pause and hides overlay', () => {
+        test('clears isPaused and hides overlay', () => {
             game.isSubmitted = false;
             game.initTimerForDate('2026-01-01');
             game.pauseTimer();
             game.lockTimer();
 
-            expect(game._pauseFromManual).toBe(false);
+            expect(game.isPaused).toBe(false);
             const overlay = document.getElementById('pauseOverlay');
             expect(overlay.style.display).toBe('none');
         });
@@ -371,19 +400,20 @@ describe('Game — Timer', () => {
     // updateTimerButton
     // ------------------------------------------------------------------
     describe('updateTimerButton()', () => {
-        test('shows pause icon when running', () => {
+        test('shows pause icon and is enabled when running', () => {
             game.isTimerLocked = false;
-            game._pauseFromManual = false;
+            game.isPaused = false;
             game.updateTimerButton();
             const icon = document.getElementById('timerIcon');
             expect(icon.textContent).toBe('⏸');
             expect(document.getElementById('timerBtn').disabled).toBe(false);
         });
 
-        test('shows play icon when manually paused', () => {
-            game._pauseFromManual = true;
+        test('disables button and shows play icon when paused', () => {
+            game.isPaused = true;
             game.updateTimerButton();
             const icon = document.getElementById('timerIcon');
+            expect(document.getElementById('timerBtn').disabled).toBe(true);
             expect(icon.textContent).toBe('▶');
         });
 

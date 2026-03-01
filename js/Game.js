@@ -43,9 +43,7 @@ class Game {
         this.elapsedSeconds = 0;
         this._timerInterval = null;
         this.isTimerLocked = false;
-        this._pauseFromManual = false;
-        this._pauseFromMenu = false;
-        this._pauseFromTab = false;
+        this.isPaused = false;
         
         this.attachEventListeners();
         // main.js loads the map from maps/YYYY.json and calls render() directly
@@ -593,7 +591,7 @@ class Game {
         // Timer button
         const timerBtn = document.getElementById('timerBtn');
         if (timerBtn) {
-            timerBtn.addEventListener('click', () => this.toggleTimer());
+            timerBtn.addEventListener('click', () => this.pauseTimer());
         }
 
         // Resume button in pause overlay
@@ -1148,7 +1146,7 @@ class Game {
     initTimerForDate(dateString) {
         this._stopTimerInterval();
         this.isTimerLocked = false;
-        this._pauseFromManual = false;
+        this.isPaused = false;
         this._hidePauseOverlay();
 
         if (this.isSubmitted) {
@@ -1176,13 +1174,13 @@ class Game {
     }
 
     /**
-     * Start the timer interval if all conditions allow (not locked, not paused).
+     * Start the timer interval if conditions allow (not locked, not paused).
      * @private
      */
     _startTimerInterval() {
         if (this._timerInterval) return;
         if (this.isTimerLocked) return;
-        if (this._pauseFromManual || this._pauseFromMenu || this._pauseFromTab) return;
+        if (this.isPaused) return;
 
         this._timerInterval = setInterval(() => {
             this.elapsedSeconds++;
@@ -1220,12 +1218,13 @@ class Game {
     }
 
     /**
-     * Manually pause the timer and show the pause overlay.
-     * Has no effect if the timer is already locked or already manually paused.
+     * Pause the timer and show the pause overlay.
+     * Has no effect if the timer is already locked or already paused.
+     * Called by the timer button, menu open, and tab-hide events.
      */
     pauseTimer() {
-        if (this.isTimerLocked || this._pauseFromManual) return;
-        this._pauseFromManual = true;
+        if (this.isTimerLocked || this.isPaused) return;
+        this.isPaused = true;
         this._stopTimerInterval();
         this._saveTimerState();
         this._showPauseOverlay();
@@ -1233,62 +1232,32 @@ class Game {
     }
 
     /**
-     * Resume from a manual pause and hide the pause overlay.
-     * Has no effect if the timer is locked or was not manually paused.
+     * Resume the timer and hide the pause overlay.
+     * The only way to leave the paused state — called exclusively by the Resume button.
+     * Has no effect if the timer is locked or not paused.
      */
     resumeTimer() {
-        if (this.isTimerLocked || !this._pauseFromManual) return;
-        this._pauseFromManual = false;
+        if (this.isTimerLocked || !this.isPaused) return;
+        this.isPaused = false;
         this._hidePauseOverlay();
         this._startTimerInterval();
         this.updateTimerButton();
     }
 
     /**
-     * Toggle between paused and running (manual pause/resume).
-     */
-    toggleTimer() {
-        if (this._pauseFromManual) {
-            this.resumeTimer();
-        } else {
-            this.pauseTimer();
-        }
-    }
-
-    /**
-     * Auto-pause the timer when the game menu opens.
-     * Does not show the pause overlay (the menu UI is visible instead).
-     */
-    pauseForMenu() {
-        if (this.isTimerLocked) return;
-        this._pauseFromMenu = true;
-        this._stopTimerInterval();
-    }
-
-    /**
-     * Resume the timer after the menu closes.
-     * Only resumes if the game is not also manually paused or tab-hidden.
-     */
-    resumeFromMenu() {
-        if (this.isTimerLocked) return;
-        this._pauseFromMenu = false;
-        this._startTimerInterval();
-    }
-
-    /**
      * Handle document visibility changes (tab switching / minimising).
+     * Pauses the timer when the tab is hidden; never auto-resumes.
      * @private
      */
     _handleVisibilityChange() {
-        if (this.isTimerLocked) return;
-        if (document.hidden) {
-            this._pauseFromTab = true;
+        if (document.hidden && !this.isTimerLocked && !this.isPaused) {
+            this.isPaused = true;
             this._stopTimerInterval();
             this._saveTimerState();
-        } else {
-            this._pauseFromTab = false;
-            this._startTimerInterval();
+            this._showPauseOverlay();
+            this.updateTimerButton();
         }
+        // Becoming visible: stay paused — user must click Resume
     }
 
     /**
@@ -1298,7 +1267,7 @@ class Game {
     lockTimer() {
         this._stopTimerInterval();
         this.isTimerLocked = true;
-        this._pauseFromManual = false;
+        this.isPaused = false;
         this._hidePauseOverlay();
         // Remove the running timer cookie; final time is stored in the submission cookie
         if (this.currentDate) {
@@ -1315,7 +1284,7 @@ class Game {
         this._stopTimerInterval();
         this.elapsedSeconds = 0;
         this.isTimerLocked = false;
-        this._pauseFromManual = false;
+        this.isPaused = false;
         this._hidePauseOverlay();
         if (this.currentDate) {
             CookieUtils.deleteCookie(`timer_${this.currentDate}`);
@@ -1337,6 +1306,9 @@ class Game {
 
     /**
      * Update the timer button appearance based on current state.
+     * When locked: disabled, shows stopwatch icon.
+     * When paused: disabled (Resume button is the only way out), shows play icon.
+     * When running: enabled, shows pause icon.
      */
     updateTimerButton() {
         const timerBtn = document.getElementById('timerBtn');
@@ -1348,10 +1320,10 @@ class Game {
             timerBtn.classList.remove('paused');
             timerBtn.title = 'Timer locked after submission';
             if (timerIcon) timerIcon.textContent = '⏱';
-        } else if (this._pauseFromManual) {
-            timerBtn.disabled = false;
+        } else if (this.isPaused) {
+            timerBtn.disabled = true;
             timerBtn.classList.add('paused');
-            timerBtn.title = 'Resume timer';
+            timerBtn.title = 'Click Resume to continue';
             if (timerIcon) timerIcon.textContent = '▶';
         } else {
             timerBtn.disabled = false;

@@ -182,8 +182,8 @@ class Menu {
      * Open the main menu modal
      */
     openMenu() {
-        if (this.game && typeof this.game.pauseForMenu === 'function') {
-            this.game.pauseForMenu();
+        if (this.game && typeof this.game.pauseTimer === 'function') {
+            this.game.pauseTimer();
         }
         const menuModal = document.getElementById('menuModal');
         if (menuModal) {
@@ -196,8 +196,8 @@ class Menu {
      */
     async openLevelSelector() {
         this.closeAllModals();
-        if (this.game && typeof this.game.pauseForMenu === 'function') {
-            this.game.pauseForMenu();
+        if (this.game && typeof this.game.pauseTimer === 'function') {
+            this.game.pauseTimer();
         }
         
         // Load maps database if not already loaded
@@ -555,8 +555,8 @@ class Menu {
      */
     openInstructions() {
         this.closeAllModals();
-        if (this.game && typeof this.game.pauseForMenu === 'function') {
-            this.game.pauseForMenu();
+        if (this.game && typeof this.game.pauseTimer === 'function') {
+            this.game.pauseTimer();
         }
         this._populateTileDescriptions();
         const instructionsModal = document.getElementById('instructionsModal');
@@ -610,8 +610,8 @@ class Menu {
      */
     openAbout() {
         this.closeAllModals();
-        if (this.game && typeof this.game.pauseForMenu === 'function') {
-            this.game.pauseForMenu();
+        if (this.game && typeof this.game.pauseTimer === 'function') {
+            this.game.pauseTimer();
         }
         const aboutModal = document.getElementById('aboutModal');
         if (aboutModal) {
@@ -624,8 +624,8 @@ class Menu {
      */
     openOptions() {
         this.closeAllModals();
-        if (this.game && typeof this.game.pauseForMenu === 'function') {
-            this.game.pauseForMenu();
+        if (this.game && typeof this.game.pauseTimer === 'function') {
+            this.game.pauseTimer();
         }
 
         // Populate pet type options
@@ -677,11 +677,6 @@ class Menu {
         if (modal) {
             modal.classList.remove('show');
         }
-        // Resume the timer if no modals remain open
-        const anyOpen = !!document.querySelector('.modal.show');
-        if (!anyOpen && this.game && typeof this.game.resumeFromMenu === 'function') {
-            this.game.resumeFromMenu();
-        }
     }
 
     /**
@@ -690,9 +685,6 @@ class Menu {
     closeAllModals() {
         const modals = document.querySelectorAll('.modal');
         modals.forEach(modal => modal.classList.remove('show'));
-        if (this.game && typeof this.game.resumeFromMenu === 'function') {
-            this.game.resumeFromMenu();
-        }
     }
 
     /**
