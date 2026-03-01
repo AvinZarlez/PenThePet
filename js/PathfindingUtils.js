@@ -247,6 +247,75 @@ class PathfindingUtils {
 
         return false;
     }
+
+    /**
+     * Check that every non-blocking tile on the map is reachable from home.
+     * Uses BFS from home, then verifies every walkable tile was visited.
+     * 
+     * @param {Array} map - 2D array of tile type strings ('grass', 'water', 'home', 'star', 'bee')
+     * @returns {boolean} True if all walkable tiles are reachable from home
+     */
+    static allWalkableTilesReachable(map) {
+        const size = map.length;
+
+        // Find home position
+        let homeRow = -1, homeCol = -1;
+        for (let i = 0; i < size; i++) {
+            for (let j = 0; j < map[i].length; j++) {
+                if (map[i][j] === 'home') {
+                    homeRow = i;
+                    homeCol = j;
+                    break;
+                }
+            }
+            if (homeRow >= 0) break;
+        }
+
+        if (homeRow < 0) {
+            return false; // No home found
+        }
+
+        // BFS from home to find all reachable tiles
+        const visited = new Set([`${homeRow},${homeCol}`]);
+        const queue = [[homeRow, homeCol]];
+        const directions = [[-1, 0], [1, 0], [0, -1], [0, 1]];
+
+        while (queue.length > 0) {
+            const [row, col] = queue.shift();
+
+            for (const [dr, dc] of directions) {
+                const newRow = row + dr;
+                const newCol = col + dc;
+                const key = `${newRow},${newCol}`;
+
+                if (newRow < 0 || newRow >= size || newCol < 0 || newCol >= map[0].length) {
+                    continue;
+                }
+
+                if (visited.has(key)) {
+                    continue;
+                }
+
+                if (isBlockingTile(map[newRow][newCol])) {
+                    continue;
+                }
+
+                visited.add(key);
+                queue.push([newRow, newCol]);
+            }
+        }
+
+        // Verify every non-blocking tile was visited
+        for (let i = 0; i < size; i++) {
+            for (let j = 0; j < map[i].length; j++) {
+                if (!isBlockingTile(map[i][j]) && !visited.has(`${i},${j}`)) {
+                    return false;
+                }
+            }
+        }
+
+        return true;
+    }
 }
 
 // Export for use in Node.js and browser
