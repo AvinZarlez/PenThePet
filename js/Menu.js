@@ -159,6 +159,11 @@ class Menu {
         this.game.updateAreaSizeDisplay();
         this.game.updateResetButton();
         this.game.updateSolutionToggleBar();
+
+        // Reset the timer to zero for this puzzle
+        if (typeof this.game.resetTimer === 'function') {
+            this.game.resetTimer();
+        }
     }
 
     /**
@@ -177,6 +182,9 @@ class Menu {
      * Open the main menu modal
      */
     openMenu() {
+        if (this.game && typeof this.game.pauseForMenu === 'function') {
+            this.game.pauseForMenu();
+        }
         const menuModal = document.getElementById('menuModal');
         if (menuModal) {
             menuModal.classList.add('show');
@@ -188,6 +196,9 @@ class Menu {
      */
     async openLevelSelector() {
         this.closeAllModals();
+        if (this.game && typeof this.game.pauseForMenu === 'function') {
+            this.game.pauseForMenu();
+        }
         
         // Load maps database if not already loaded
         if (!this.mapsDatabase) {
@@ -532,6 +543,11 @@ class Menu {
         this.game.updateResetButton();
         this.game.updateSolutionToggleBar();
         this.game.updateLegend();
+
+        // Initialise the timer for the new level
+        if (typeof this.game.initTimerForDate === 'function' && mapData.date) {
+            this.game.initTimerForDate(mapData.date);
+        }
     }
 
     /**
@@ -539,6 +555,9 @@ class Menu {
      */
     openInstructions() {
         this.closeAllModals();
+        if (this.game && typeof this.game.pauseForMenu === 'function') {
+            this.game.pauseForMenu();
+        }
         this._populateTileDescriptions();
         const instructionsModal = document.getElementById('instructionsModal');
         if (instructionsModal) {
@@ -591,6 +610,9 @@ class Menu {
      */
     openAbout() {
         this.closeAllModals();
+        if (this.game && typeof this.game.pauseForMenu === 'function') {
+            this.game.pauseForMenu();
+        }
         const aboutModal = document.getElementById('aboutModal');
         if (aboutModal) {
             aboutModal.classList.add('show');
@@ -602,6 +624,9 @@ class Menu {
      */
     openOptions() {
         this.closeAllModals();
+        if (this.game && typeof this.game.pauseForMenu === 'function') {
+            this.game.pauseForMenu();
+        }
 
         // Populate pet type options
         this.populateModalPetOptions();
@@ -652,6 +677,11 @@ class Menu {
         if (modal) {
             modal.classList.remove('show');
         }
+        // Resume the timer if no modals remain open
+        const anyOpen = !!document.querySelector('.modal.show');
+        if (!anyOpen && this.game && typeof this.game.resumeFromMenu === 'function') {
+            this.game.resumeFromMenu();
+        }
     }
 
     /**
@@ -660,6 +690,9 @@ class Menu {
     closeAllModals() {
         const modals = document.querySelectorAll('.modal');
         modals.forEach(modal => modal.classList.remove('show'));
+        if (this.game && typeof this.game.resumeFromMenu === 'function') {
+            this.game.resumeFromMenu();
+        }
     }
 
     /**

@@ -177,6 +177,7 @@ async function initGame() {
     game.updateResetButton();
     game.updateLegend();  // Update legend to show loaded pet emoji
     game.updateSolutionToggleBar();  // Show toggle bar if already submitted
+    game.initTimerForDate(mapData.date);  // Start/restore the puzzle timer
     
     // Initialize menu system
     // eslint-disable-next-line no-undef

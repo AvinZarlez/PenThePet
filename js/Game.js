@@ -39,6 +39,14 @@ class Game {
         this.optimalSolution = null;
         this.viewingOptimal = false;  // Track if user is viewing optimal solution
         
+        // Timer state
+        this.elapsedSeconds = 0;
+        this._timerInterval = null;
+        this.isTimerLocked = false;
+        this._pauseFromManual = false;
+        this._pauseFromMenu = false;
+        this._pauseFromTab = false;
+        
         this.attachEventListeners();
         // main.js loads the map from maps/YYYY.json and calls render() directly
     }
@@ -582,6 +590,22 @@ class Game {
             solutionToggleBtn.addEventListener('click', () => this.toggleSolution());
         }
 
+        // Timer button
+        const timerBtn = document.getElementById('timerBtn');
+        if (timerBtn) {
+            timerBtn.addEventListener('click', () => this.toggleTimer());
+        }
+
+        // Resume button in pause overlay
+        const resumeBtn = document.getElementById('resumeBtn');
+        if (resumeBtn) {
+            resumeBtn.addEventListener('click', () => this.resumeTimer());
+        }
+
+        // Pause when tab is hidden, resume when it becomes visible again
+        this._boundHandleVisibilityChange = this._handleVisibilityChange.bind(this);
+        document.addEventListener('visibilitychange', this._boundHandleVisibilityChange);
+
         // Add arrow key navigation (using bound function for potential cleanup)
         document.addEventListener('keydown', this.boundHandleArrowKeys);
         
@@ -661,6 +685,9 @@ class Game {
             return;
         }
         
+        // Lock the timer before saving (so the locked time is included in submission)
+        this.lockTimer();
+        
         // Get current wall positions
         const wallPositions = [];
         for (let i = 0; i < this.grid.size; i++) {
@@ -711,10 +738,11 @@ class Game {
         // Update the helper text to show optimal score
         const helperElement = document.querySelector('.metric-helper');
         if (helperElement) {
+            const timeStr = this._formatTime(this.elapsedSeconds);
             if (isPerfect) {
-                helperElement.innerHTML = `<strong>PERFECT!</strong><br>You achieved the optimal score of ${goalScoreNum}!`;
+                helperElement.innerHTML = `<strong>PERFECT!</strong><br>You achieved the optimal score of ${goalScoreNum}!<br>Time: ${timeStr}`;
             } else {
-                helperElement.innerHTML = `Your score<br>Optimal: ${goalScoreNum} tiles`;
+                helperElement.innerHTML = `Your score<br>Optimal: ${goalScoreNum} tiles<br>Time: ${timeStr}`;
             }
         }
         
@@ -1054,7 +1082,8 @@ class Game {
         const submissionData = {
             score: score,
             walls: wallPositions,
-            timestamp: new Date().toISOString()
+            timestamp: new Date().toISOString(),
+            time: this.elapsedSeconds
         };
         this._setCookie(cookieName, JSON.stringify(submissionData), 365);
 
@@ -1104,6 +1133,266 @@ class Game {
         if (typeof CloudSync !== 'undefined' && CloudSync.isConfigured() && CloudSync.isLoggedIn()) {
             CloudSync.deleteSubmission(dateString);
         }
+    }
+
+    // =====================================================================
+    // Timer Methods
+    // =====================================================================
+
+    /**
+     * Initialise and start the timer for a specific puzzle date.
+     * Loads any previously saved elapsed time from cookie or submission.
+     * Call this after setting isSubmitted and currentDate for the level.
+     * @param {string} dateString - Puzzle date (YYYY-MM-DD)
+     */
+    initTimerForDate(dateString) {
+        this._stopTimerInterval();
+        this.isTimerLocked = false;
+        this._pauseFromManual = false;
+        this._hidePauseOverlay();
+
+        if (this.isSubmitted) {
+            // Load locked time from submission data
+            const submission = this.loadSubmission(dateString);
+            this.elapsedSeconds = (submission && submission.time !== undefined) ? submission.time : 0;
+            this.isTimerLocked = true;
+        } else {
+            // Load running elapsed time from timer cookie
+            const saved = CookieUtils.getCookie(`timer_${dateString}`);
+            if (saved) {
+                try {
+                    this.elapsedSeconds = JSON.parse(saved).elapsed || 0;
+                } catch {
+                    this.elapsedSeconds = 0;
+                }
+            } else {
+                this.elapsedSeconds = 0;
+            }
+            this._startTimerInterval();
+        }
+
+        this.updateTimerDisplay();
+        this.updateTimerButton();
+    }
+
+    /**
+     * Start the timer interval if all conditions allow (not locked, not paused).
+     * @private
+     */
+    _startTimerInterval() {
+        if (this._timerInterval) return;
+        if (this.isTimerLocked) return;
+        if (this._pauseFromManual || this._pauseFromMenu || this._pauseFromTab) return;
+
+        this._timerInterval = setInterval(() => {
+            this.elapsedSeconds++;
+            this.updateTimerDisplay();
+            // Persist every 30 seconds to avoid excessive cookie writes
+            if (this.elapsedSeconds % 30 === 0) {
+                this._saveTimerState();
+            }
+        }, 1000);
+    }
+
+    /**
+     * Stop the timer interval without changing pause/lock state.
+     * @private
+     */
+    _stopTimerInterval() {
+        if (this._timerInterval) {
+            clearInterval(this._timerInterval);
+            this._timerInterval = null;
+        }
+    }
+
+    /**
+     * Save the current elapsed time to a cookie.
+     * Does nothing if the timer is locked (time is stored in submission).
+     * @private
+     */
+    _saveTimerState() {
+        if (!this.currentDate || this.isTimerLocked) return;
+        CookieUtils.setCookie(
+            `timer_${this.currentDate}`,
+            JSON.stringify({ elapsed: this.elapsedSeconds }),
+            365
+        );
+    }
+
+    /**
+     * Manually pause the timer and show the pause overlay.
+     * Has no effect if the timer is already locked or already manually paused.
+     */
+    pauseTimer() {
+        if (this.isTimerLocked || this._pauseFromManual) return;
+        this._pauseFromManual = true;
+        this._stopTimerInterval();
+        this._saveTimerState();
+        this._showPauseOverlay();
+        this.updateTimerButton();
+    }
+
+    /**
+     * Resume from a manual pause and hide the pause overlay.
+     * Has no effect if the timer is locked or was not manually paused.
+     */
+    resumeTimer() {
+        if (this.isTimerLocked || !this._pauseFromManual) return;
+        this._pauseFromManual = false;
+        this._hidePauseOverlay();
+        this._startTimerInterval();
+        this.updateTimerButton();
+    }
+
+    /**
+     * Toggle between paused and running (manual pause/resume).
+     */
+    toggleTimer() {
+        if (this._pauseFromManual) {
+            this.resumeTimer();
+        } else {
+            this.pauseTimer();
+        }
+    }
+
+    /**
+     * Auto-pause the timer when the game menu opens.
+     * Does not show the pause overlay (the menu UI is visible instead).
+     */
+    pauseForMenu() {
+        if (this.isTimerLocked) return;
+        this._pauseFromMenu = true;
+        this._stopTimerInterval();
+    }
+
+    /**
+     * Resume the timer after the menu closes.
+     * Only resumes if the game is not also manually paused or tab-hidden.
+     */
+    resumeFromMenu() {
+        if (this.isTimerLocked) return;
+        this._pauseFromMenu = false;
+        this._startTimerInterval();
+    }
+
+    /**
+     * Handle document visibility changes (tab switching / minimising).
+     * @private
+     */
+    _handleVisibilityChange() {
+        if (this.isTimerLocked) return;
+        if (document.hidden) {
+            this._pauseFromTab = true;
+            this._stopTimerInterval();
+            this._saveTimerState();
+        } else {
+            this._pauseFromTab = false;
+            this._startTimerInterval();
+        }
+    }
+
+    /**
+     * Lock the timer after submission.
+     * Saves the final elapsed time and removes the running-timer cookie.
+     */
+    lockTimer() {
+        this._stopTimerInterval();
+        this.isTimerLocked = true;
+        this._pauseFromManual = false;
+        this._hidePauseOverlay();
+        // Remove the running timer cookie; final time is stored in the submission cookie
+        if (this.currentDate) {
+            CookieUtils.deleteCookie(`timer_${this.currentDate}`);
+        }
+        this.updateTimerDisplay();
+        this.updateTimerButton();
+    }
+
+    /**
+     * Reset the timer to zero for the current puzzle (used by debug reset).
+     */
+    resetTimer() {
+        this._stopTimerInterval();
+        this.elapsedSeconds = 0;
+        this.isTimerLocked = false;
+        this._pauseFromManual = false;
+        this._hidePauseOverlay();
+        if (this.currentDate) {
+            CookieUtils.deleteCookie(`timer_${this.currentDate}`);
+        }
+        this._startTimerInterval();
+        this.updateTimerDisplay();
+        this.updateTimerButton();
+    }
+
+    /**
+     * Update the timer value shown in the DOM.
+     */
+    updateTimerDisplay() {
+        const timerValue = document.getElementById('timerValue');
+        if (timerValue) {
+            timerValue.textContent = this._formatTime(this.elapsedSeconds);
+        }
+    }
+
+    /**
+     * Update the timer button appearance based on current state.
+     */
+    updateTimerButton() {
+        const timerBtn = document.getElementById('timerBtn');
+        const timerIcon = document.getElementById('timerIcon');
+        if (!timerBtn) return;
+
+        if (this.isTimerLocked) {
+            timerBtn.disabled = true;
+            timerBtn.classList.remove('paused');
+            timerBtn.title = 'Timer locked after submission';
+            if (timerIcon) timerIcon.textContent = '⏱';
+        } else if (this._pauseFromManual) {
+            timerBtn.disabled = false;
+            timerBtn.classList.add('paused');
+            timerBtn.title = 'Resume timer';
+            if (timerIcon) timerIcon.textContent = '▶';
+        } else {
+            timerBtn.disabled = false;
+            timerBtn.classList.remove('paused');
+            timerBtn.title = 'Pause timer';
+            if (timerIcon) timerIcon.textContent = '⏸';
+        }
+    }
+
+    /**
+     * Format seconds into a MM:SS or H:MM:SS string.
+     * @param {number} totalSeconds - Total elapsed seconds
+     * @returns {string} Formatted time string
+     */
+    _formatTime(totalSeconds) {
+        const s = Math.floor(totalSeconds);
+        const h = Math.floor(s / 3600);
+        const m = Math.floor((s % 3600) / 60);
+        const sec = s % 60;
+        if (h > 0) {
+            return `${h}:${String(m).padStart(2, '0')}:${String(sec).padStart(2, '0')}`;
+        }
+        return `${String(m).padStart(2, '0')}:${String(sec).padStart(2, '0')}`;
+    }
+
+    /**
+     * Show the pause overlay that hides the game board.
+     * @private
+     */
+    _showPauseOverlay() {
+        const overlay = document.getElementById('pauseOverlay');
+        if (overlay) overlay.style.display = 'flex';
+    }
+
+    /**
+     * Hide the pause overlay and show the game board.
+     * @private
+     */
+    _hidePauseOverlay() {
+        const overlay = document.getElementById('pauseOverlay');
+        if (overlay) overlay.style.display = 'none';
     }
 }
 
