@@ -81,6 +81,9 @@ class MapGenerator {
                         
                         if (validation.valid) {
                             // Rule 3: Wall budget must be a meaningful constraint
+                            // This second solver call only runs for maps that already
+                            // pass all other validation checks, so the performance
+                            // cost is limited to viable candidates only.
                             // Solve with unlimited walls and verify the unconstrained
                             // score is strictly higher. If unlimited walls can't improve
                             // the score, the wall limit is decorative and the level is

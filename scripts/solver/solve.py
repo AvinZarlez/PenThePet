@@ -193,8 +193,9 @@ def solve_map(map_data, max_walls):
     # Objective: maximize enclosed area using per-tile score values from tileData.
     # The tiny wall penalty (0.0001 per wall) acts as a tiebreaker so the solver
     # naturally uses the *minimum* number of walls needed for the maximum score.
-    # With at most ~440 wall-placeable tiles the total penalty stays well under
-    # 0.05, so integer rounding of goalArea is never affected.
+    # For a 21×21 grid (MAX_GRID_SIZE) the maximum wall-placeable tiles is about
+    # 440, giving a worst-case penalty of ~0.044 — well under 0.5, so integer
+    # rounding of goalArea is never affected.
     prob += lpSum(
         tile_score_map.get(tile, 1) * s[tile]
         for tile in non_water
