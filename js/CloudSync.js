@@ -265,14 +265,14 @@ const CloudSync = (function () {
 
     /**
      * Update the Firebase Auth email for the current user.
+     * Uses verifyBeforeUpdateEmail so the change only takes effect after
+     * the user clicks the verification link in their inbox.
      * @param {string} newEmail
      */
     async function saveEmail(newEmail) {
         if (!auth || !currentUser) throw new Error('Not signed in');
         try {
-            await currentUser.updateEmail(newEmail);
-            updateAuthUI(currentUser);
-            updateOptionsAccountSection();
+            await currentUser.verifyBeforeUpdateEmail(newEmail);
         } catch (e) {
             throw new Error(getAuthErrorMessage(e.code), { cause: e });
         }
@@ -494,6 +494,7 @@ const CloudSync = (function () {
             if (emailInput && currentUser) emailInput.value = currentUser.email || '';
             modal.style.display = 'flex';
             clearProfileError();
+            clearProfileSuccess();
             if (usernameInput) usernameInput.focus();
         }
     }
@@ -502,6 +503,7 @@ const CloudSync = (function () {
         const modal = document.getElementById('editProfileModal');
         if (modal) modal.style.display = 'none';
         clearProfileError();
+        clearProfileSuccess();
     }
 
     function clearAuthError() {
@@ -530,6 +532,22 @@ const CloudSync = (function () {
 
     function showProfileError(msg) {
         const el = document.getElementById('profileError');
+        if (el) {
+            el.textContent = msg;
+            el.style.display = 'block';
+        }
+    }
+
+    function clearProfileSuccess() {
+        const el = document.getElementById('profileSuccess');
+        if (el) {
+            el.style.display = 'none';
+            el.textContent = '';
+        }
+    }
+
+    function showProfileSuccess(msg) {
+        const el = document.getElementById('profileSuccess');
         if (el) {
             el.textContent = msg;
             el.style.display = 'block';
@@ -594,6 +612,7 @@ const CloudSync = (function () {
     /** Called by the Save Changes button in the edit profile modal. */
     async function handleSaveProfile() {
         clearProfileError();
+        clearProfileSuccess();
         const usernameInput = document.getElementById('profileUsername');
         const emailInput = document.getElementById('profileEmail');
         const newUsername = usernameInput ? usernameInput.value.trim() : '';
@@ -602,14 +621,21 @@ const CloudSync = (function () {
         const btn = document.getElementById('profileSaveBtn');
         if (btn) btn.disabled = true;
 
+        let emailVerificationPending = false;
         try {
             if ((newUsername || '') !== (username || '')) {
                 await saveUsername(newUsername);
             }
             if (newEmail && currentUser && newEmail !== currentUser.email) {
                 await saveEmail(newEmail);
+                emailVerificationPending = true;
             }
-            closeEditProfileModal();
+            if (emailVerificationPending) {
+                showProfileSuccess(`A verification email has been sent to ${newEmail}. Your email will update after you click the link.`);
+                if (emailInput && currentUser) emailInput.value = currentUser.email || '';
+            } else {
+                closeEditProfileModal();
+            }
         } catch (e) {
             showProfileError(e.message);
         } finally {

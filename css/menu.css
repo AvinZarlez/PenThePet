@@ -294,6 +294,14 @@
     font-size: 0.9em;
 }
 
+.profile-success {
+    color: #1b5e20;
+    background: #e8f5e9;
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-size: 0.9em;
+}
+
 .auth-buttons {
     display: flex;
     gap: 10px;
