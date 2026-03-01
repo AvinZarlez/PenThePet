@@ -10,16 +10,23 @@ const Game = require('../../js/Game.js');
 
 function setupDOM() {
     document.body.innerHTML = `
-        <div id="grid" class="grid"></div>
+        <div id="pauseOverlay" class="pause-overlay" style="display: none;">
+            <div class="pause-content">
+                <div class="pause-title">Pause</div>
+                <div id="pauseTime" class="pause-time">00:00</div>
+                <button id="resumeBtn" class="resume-btn">&#9654; Resume</button>
+            </div>
+        </div>
+        <div class="controls">
+            <button id="resetBtn">Reset</button>
+        </div>
         <div class="grid-container">
-            <div id="pauseOverlay" class="pause-overlay" style="display: none;"></div>
+            <div id="grid" class="grid"></div>
         </div>
         <button id="timerBtn" class="timer-btn">
             <span id="timerValue" class="timer-value">00:00</span>
             <span id="timerIcon" class="timer-icon">⏸</span>
         </button>
-        <button id="resumeBtn" class="resume-btn"></button>
-        <button id="resetBtn"></button>
         <button id="pennedStatus" class="penned-status not-penned" data-interactive="false">
             <span class="submit-label">Unsolved</span><span class="submit-check">✗</span>
         </button>
@@ -198,6 +205,23 @@ describe('Game — Timer', () => {
             const overlay = document.getElementById('pauseOverlay');
             expect(overlay.style.display).toBe('flex');
         });
+
+        test('shows current time in pause overlay', () => {
+            game.isSubmitted = false;
+            game.initTimerForDate('2026-01-01');
+            jest.advanceTimersByTime(3000);
+            game.pauseTimer();
+            const pauseTime = document.getElementById('pauseTime');
+            expect(pauseTime.textContent).toBe('00:03');
+        });
+
+        test('hides game content (controls, grid-container) when paused', () => {
+            game.isSubmitted = false;
+            game.initTimerForDate('2026-01-01');
+            game.pauseTimer();
+            expect(document.querySelector('.controls').style.display).toBe('none');
+            expect(document.querySelector('.grid-container').style.display).toBe('none');
+        });
     });
 
     // ------------------------------------------------------------------
@@ -214,6 +238,15 @@ describe('Game — Timer', () => {
             expect(game._timerInterval).not.toBeNull();
             const overlay = document.getElementById('pauseOverlay');
             expect(overlay.style.display).toBe('none');
+        });
+
+        test('restores game content (controls, grid-container) on resume', () => {
+            game.isSubmitted = false;
+            game.initTimerForDate('2026-01-01');
+            game.pauseTimer();
+            game.resumeTimer();
+            expect(document.querySelector('.controls').style.display).toBe('');
+            expect(document.querySelector('.grid-container').style.display).toBe('');
         });
 
         test('does nothing when not paused', () => {
