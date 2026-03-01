@@ -437,4 +437,100 @@ describe('PathfindingUtils', () => {
             expect(score).toBe(12);
         });
     });
+
+    describe('allWalkableTilesReachable()', () => {
+        test('should return true when all walkable tiles are reachable from home', () => {
+            const map = [
+                ['grass', 'grass', 'grass'],
+                ['grass', 'home', 'grass'],
+                ['grass', 'grass', 'grass']
+            ];
+            expect(PathfindingUtils.allWalkableTilesReachable(map)).toBe(true);
+        });
+
+        test('should return true when water separates but all walkable tiles are still connected', () => {
+            const map = [
+                ['grass', 'grass', 'grass', 'grass', 'grass'],
+                ['grass', 'grass', 'grass', 'grass', 'grass'],
+                ['grass', 'grass', 'home', 'grass', 'grass'],
+                ['grass', 'grass', 'grass', 'grass', 'grass'],
+                ['grass', 'grass', 'grass', 'grass', 'grass']
+            ];
+            expect(PathfindingUtils.allWalkableTilesReachable(map)).toBe(true);
+        });
+
+        test('should return false when a grass tile is isolated by water', () => {
+            const map = [
+                ['grass', 'water', 'grass'],
+                ['water', 'home', 'water'],
+                ['grass', 'water', 'grass']
+            ];
+            // The corner grass tiles are not reachable from home
+            expect(PathfindingUtils.allWalkableTilesReachable(map)).toBe(false);
+        });
+
+        test('should return false when a star tile is surrounded by water', () => {
+            const map = [
+                ['grass', 'grass', 'grass', 'grass', 'grass'],
+                ['grass', 'water', 'water', 'water', 'grass'],
+                ['grass', 'water', 'star', 'water', 'grass'],
+                ['grass', 'water', 'water', 'water', 'grass'],
+                ['grass', 'grass', 'home', 'grass', 'grass']
+            ];
+            expect(PathfindingUtils.allWalkableTilesReachable(map)).toBe(false);
+        });
+
+        test('should return false when a bee tile is isolated', () => {
+            const map = [
+                ['grass', 'grass', 'grass', 'grass', 'grass'],
+                ['grass', 'water', 'water', 'water', 'grass'],
+                ['grass', 'water', 'bee', 'water', 'grass'],
+                ['grass', 'water', 'water', 'water', 'grass'],
+                ['grass', 'grass', 'home', 'grass', 'grass']
+            ];
+            expect(PathfindingUtils.allWalkableTilesReachable(map)).toBe(false);
+        });
+
+        test('should return true when only blocking tiles are unreachable', () => {
+            const map = [
+                ['water', 'water', 'water'],
+                ['water', 'home', 'water'],
+                ['water', 'water', 'water']
+            ];
+            // All non-blocking tiles (just home) are reachable
+            expect(PathfindingUtils.allWalkableTilesReachable(map)).toBe(true);
+        });
+
+        test('should return false when no home tile exists', () => {
+            const map = [
+                ['grass', 'grass', 'grass'],
+                ['grass', 'grass', 'grass'],
+                ['grass', 'grass', 'grass']
+            ];
+            expect(PathfindingUtils.allWalkableTilesReachable(map)).toBe(false);
+        });
+
+        test('should return true for map with water creating channels but all walkable tiles connected', () => {
+            const map = [
+                ['grass', 'grass', 'grass', 'grass', 'grass'],
+                ['grass', 'water', 'grass', 'water', 'grass'],
+                ['grass', 'grass', 'home', 'grass', 'grass'],
+                ['grass', 'water', 'grass', 'water', 'grass'],
+                ['grass', 'grass', 'grass', 'grass', 'grass']
+            ];
+            expect(PathfindingUtils.allWalkableTilesReachable(map)).toBe(true);
+        });
+
+        test('should handle map with disconnected walkable region', () => {
+            const map = [
+                ['grass', 'grass', 'water', 'grass', 'grass'],
+                ['grass', 'grass', 'water', 'grass', 'grass'],
+                ['water', 'water', 'home', 'water', 'water'],
+                ['grass', 'grass', 'water', 'grass', 'grass'],
+                ['grass', 'grass', 'water', 'grass', 'grass']
+            ];
+            // Left and right regions are disconnected from home
+            expect(PathfindingUtils.allWalkableTilesReachable(map)).toBe(false);
+        });
+    });
 });

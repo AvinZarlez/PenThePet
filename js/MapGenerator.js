@@ -174,7 +174,7 @@ class MapGenerator {
      * @returns {boolean} True if map is valid
      */
     _validateMap(map) {
-        return PathfindingUtils.hasPathToEdge(map);
+        return PathfindingUtils.hasPathToEdge(map) && PathfindingUtils.allWalkableTilesReachable(map);
     }
 
     /**

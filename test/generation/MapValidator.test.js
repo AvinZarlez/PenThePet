@@ -134,6 +134,28 @@ describe('MapValidator', () => {
             expect(result.errors).toContain('Map does not have a valid path from home to edge');
         });
         
+        test('should fail validation when walkable tiles are unreachable from home', () => {
+            const map = [
+                ['grass', 'grass', 'grass', 'grass', 'grass', 'grass', 'grass'],
+                ['grass', 'water', 'water', 'water', 'grass', 'water', 'grass'],
+                ['grass', 'water', 'star', 'water', 'grass', 'grass', 'grass'],
+                ['grass', 'water', 'water', 'water', 'home', 'water', 'grass'],
+                ['grass', 'grass', 'grass', 'grass', 'grass', 'grass', 'grass'],
+                ['grass', 'water', 'grass', 'water', 'grass', 'water', 'grass'],
+                ['grass', 'grass', 'grass', 'grass', 'grass', 'grass', 'grass']
+            ];
+            
+            const solution = {
+                goalArea: 8,
+                optimalWallCount: 4,
+                optimalSolution: [[1, 4], [2, 4], [3, 2], [4, 1]]
+            };
+            
+            const result = MapValidator.validate(map, solution);
+            expect(result.valid).toBe(false);
+            expect(result.errors).toContain('Not all walkable tiles are reachable from home');
+        });
+        
         test('should accumulate multiple validation errors', () => {
             const map = [
                 ['water', 'water', 'water'],

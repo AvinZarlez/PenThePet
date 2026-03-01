@@ -50,6 +50,11 @@ class MapValidator {
             }
         }
         
+        // Validation 5: All walkable tiles must be reachable from home
+        if (!this._allWalkableTilesReachable(map)) {
+            errors.push('Not all walkable tiles are reachable from home');
+        }
+        
         return {
             valid: errors.length === 0,
             errors: errors
@@ -89,6 +94,17 @@ class MapValidator {
         // If we found a non-edge wall, validation passes (return false = not all on edge)
         // If we didn't find any non-edge walls, validation fails (return true = all on edge)
         return !hasNonEdgeWall;
+    }
+    
+    /**
+     * Check if all walkable tiles are reachable from home.
+     * Delegates to PathfindingUtils.allWalkableTilesReachable() for shared BFS logic.
+     * @private
+     * @param {Array} map - 2D array of tile type strings
+     * @returns {boolean} True if all walkable tiles are reachable from home
+     */
+    static _allWalkableTilesReachable(map) {
+        return PathfindingUtils.allWalkableTilesReachable(map);
     }
 }
 
