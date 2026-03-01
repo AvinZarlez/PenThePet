@@ -111,4 +111,52 @@ describe('CloudSync', () => {
             expect(error.textContent).toContain('email');
         });
     });
+
+    describe('getUsername()', () => {
+        test('should return null when not signed in', () => {
+            expect(CloudSync.getUsername()).toBeNull();
+        });
+    });
+
+    describe('saveUsername()', () => {
+        test('should throw when not signed in', async () => {
+            await expect(CloudSync.saveUsername('testuser')).rejects.toThrow('Not signed in');
+        });
+    });
+
+    describe('saveEmail()', () => {
+        test('should throw when not signed in', async () => {
+            await expect(CloudSync.saveEmail('new@example.com')).rejects.toThrow('Not signed in');
+        });
+    });
+
+    describe('edit profile modal helpers', () => {
+        beforeEach(() => {
+            document.body.innerHTML = `
+                <div id="editProfileModal" class="modal" style="display: none;">
+                    <input id="profileUsername" value="">
+                    <input id="profileEmail" value="">
+                    <div id="profileError" style="display: none;"></div>
+                    <button id="profileSaveBtn"></button>
+                </div>
+            `;
+        });
+
+        test('openEditProfileModal should show the modal', () => {
+            CloudSync.openEditProfileModal();
+            expect(document.getElementById('editProfileModal').style.display).toBe('flex');
+        });
+
+        test('closeEditProfileModal should hide the modal', () => {
+            CloudSync.openEditProfileModal();
+            CloudSync.closeEditProfileModal();
+            expect(document.getElementById('editProfileModal').style.display).toBe('none');
+        });
+
+        test('handleSaveProfile should close modal when nothing changed', async () => {
+            CloudSync.openEditProfileModal();
+            await CloudSync.handleSaveProfile();
+            expect(document.getElementById('editProfileModal').style.display).toBe('none');
+        });
+    });
 });

@@ -251,6 +251,39 @@
                     <small class="option-help">Shows debug tools at the bottom of the page</small>
                 </div>
             </div>
+            <div id="optionsAccountSection" class="modal-section options-account-section" style="display: none;">
+                <h3>☁️ Account</h3>
+                <div id="optionsAccountSignedOut">
+                    <button class="options-account-btn" onclick="CloudSync.openAuthModal()">Sign In to Sync</button>
+                </div>
+                <div id="optionsAccountSignedIn" style="display: none;">
+                    <p class="options-account-info">Signed in as: <strong id="optionsUsername"></strong></p>
+                    <div class="options-account-buttons">
+                        <button class="options-account-btn" onclick="CloudSync.openEditProfileModal()">✏️ Edit Username / Email</button>
+                        <button class="options-account-btn options-account-signout" onclick="CloudSync.handleSignOut()">Sign Out</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Profile Modal -->
+    <div id="editProfileModal" class="modal">
+        <div class="modal-content cloud-sync-modal-content">
+            <button class="modal-close" aria-label="Close edit profile" onclick="CloudSync.closeEditProfileModal()">&times;</button>
+            <h2>✏️ Edit Profile</h2>
+            <p class="modal-description">Update your username or email address</p>
+            <div class="auth-form">
+                <label for="profileUsername">Username</label>
+                <input type="text" id="profileUsername" class="auth-input" placeholder="Your display name" autocomplete="username">
+                <label for="profileEmail">Email</label>
+                <input type="email" id="profileEmail" class="auth-input" placeholder="you@example.com" autocomplete="email">
+                <div id="profileError" class="auth-error" style="display: none;"></div>
+                <div class="auth-buttons">
+                    <button id="profileSaveBtn" class="auth-btn auth-btn-primary" onclick="CloudSync.handleSaveProfile()">Save Changes</button>
+                    <button class="auth-btn auth-btn-secondary" onclick="CloudSync.closeEditProfileModal()">Cancel</button>
+                </div>
+            </div>
         </div>
     </div>
 

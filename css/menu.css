@@ -332,3 +332,48 @@
 .auth-btn-secondary:hover:not(:disabled) {
     background: #e0e0e0;
 }
+
+/* ========== Options Account Section ========== */
+.options-account-section {
+    border-top: 1px solid #e9ecef;
+    padding-top: 15px;
+}
+
+.options-account-info {
+    color: #555;
+    margin-bottom: 10px;
+    font-size: 0.95em;
+}
+
+.options-account-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.options-account-btn {
+    padding: 8px 16px;
+    border: 1px solid #667eea;
+    border-radius: 8px;
+    background: none;
+    color: #667eea;
+    cursor: pointer;
+    font-size: 0.9em;
+    transition: background 0.2s, color 0.2s;
+    text-align: center;
+}
+
+.options-account-btn:hover {
+    background: #667eea;
+    color: white;
+}
+
+.options-account-signout {
+    border-color: #ccc;
+    color: #666;
+}
+
+.options-account-signout:hover {
+    background: #ccc;
+    color: #333;
+}

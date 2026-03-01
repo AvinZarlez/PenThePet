@@ -19,6 +19,7 @@ const CloudSync = (function () {
     let currentUser = null;
     let unsubscribeListener = null;
     let isSyncing = false;
+    let username = null;
 
     const COLLECTION_NAME = 'submissions';
     const SETTINGS_DOC = 'settings';
@@ -64,6 +65,7 @@ const CloudSync = (function () {
             db = firebase.firestore();
             auth.onAuthStateChanged(handleAuthStateChange);
             showCloudSyncUI();
+            showOptionsAccountSection();
         } catch (e) {
             console.error('CloudSync: Firebase initialisation failed:', e);
         }
@@ -81,6 +83,13 @@ const CloudSync = (function () {
         }
     }
 
+    /** Show the account section in the Options modal once Firebase is ready. */
+    function showOptionsAccountSection() {
+        const section = document.getElementById('optionsAccountSection');
+        if (section) section.style.display = 'block';
+        updateOptionsAccountSection();
+    }
+
     /** Update header UI to reflect signed-in / signed-out state. */
     function updateAuthUI(user) {
         const loginBtn = document.getElementById('cloudSyncLoginBtn');
@@ -91,12 +100,29 @@ const CloudSync = (function () {
         if (user) {
             if (loginBtn) loginBtn.style.display = 'none';
             if (userInfo) userInfo.style.display = 'flex';
-            if (userEmail) userEmail.textContent = user.email;
+            if (userEmail) userEmail.textContent = username || user.email;
             updateSyncStatus('synced');
         } else {
+            username = null;
             if (loginBtn) loginBtn.style.display = 'inline-block';
             if (userInfo) userInfo.style.display = 'none';
             if (syncStatus) syncStatus.style.display = 'none';
+        }
+    }
+
+    /** Update the Options modal account section to reflect signed-in / signed-out state. */
+    function updateOptionsAccountSection() {
+        const signedOutSection = document.getElementById('optionsAccountSignedOut');
+        const signedInSection = document.getElementById('optionsAccountSignedIn');
+        const optionsUsername = document.getElementById('optionsUsername');
+
+        if (currentUser) {
+            if (signedOutSection) signedOutSection.style.display = 'none';
+            if (signedInSection) signedInSection.style.display = 'block';
+            if (optionsUsername) optionsUsername.textContent = username || currentUser.email;
+        } else {
+            if (signedOutSection) signedOutSection.style.display = 'block';
+            if (signedInSection) signedInSection.style.display = 'none';
         }
     }
 
@@ -128,6 +154,7 @@ const CloudSync = (function () {
     async function handleAuthStateChange(user) {
         currentUser = user;
         updateAuthUI(user);
+        updateOptionsAccountSection();
 
         if (user) {
             await syncFromCloud();
@@ -221,6 +248,33 @@ const CloudSync = (function () {
             await docRef.set(settings, { merge: true });
         } catch (e) {
             console.error('CloudSync: Failed to save settings:', e);
+        }
+    }
+
+    /**
+     * Save a display username to Firestore and update the UI.
+     * @param {string} newUsername
+     */
+    async function saveUsername(newUsername) {
+        if (!db || !currentUser) throw new Error('Not signed in');
+        await saveSettings({ username: newUsername });
+        username = newUsername;
+        updateAuthUI(currentUser);
+        updateOptionsAccountSection();
+    }
+
+    /**
+     * Update the Firebase Auth email for the current user.
+     * @param {string} newEmail
+     */
+    async function saveEmail(newEmail) {
+        if (!auth || !currentUser) throw new Error('Not signed in');
+        try {
+            await currentUser.updateEmail(newEmail);
+            updateAuthUI(currentUser);
+            updateOptionsAccountSection();
+        } catch (e) {
+            throw new Error(getAuthErrorMessage(e.code), { cause: e });
         }
     }
 
@@ -337,6 +391,11 @@ const CloudSync = (function () {
         if (settings.hintMode && !CookieUtils.getCookie('hintMode')) {
             CookieUtils.setCookie('hintMode', settings.hintMode, 365);
         }
+        if (settings.username !== undefined) {
+            username = settings.username;
+            updateAuthUI(currentUser);
+            updateOptionsAccountSection();
+        }
     }
 
     /**
@@ -426,6 +485,25 @@ const CloudSync = (function () {
         clearAuthError();
     }
 
+    function openEditProfileModal() {
+        const modal = document.getElementById('editProfileModal');
+        if (modal) {
+            const usernameInput = document.getElementById('profileUsername');
+            const emailInput = document.getElementById('profileEmail');
+            if (usernameInput) usernameInput.value = username || '';
+            if (emailInput && currentUser) emailInput.value = currentUser.email || '';
+            modal.style.display = 'flex';
+            clearProfileError();
+            if (usernameInput) usernameInput.focus();
+        }
+    }
+
+    function closeEditProfileModal() {
+        const modal = document.getElementById('editProfileModal');
+        if (modal) modal.style.display = 'none';
+        clearProfileError();
+    }
+
     function clearAuthError() {
         const el = document.getElementById('authError');
         if (el) {
@@ -436,6 +514,22 @@ const CloudSync = (function () {
 
     function showAuthError(msg) {
         const el = document.getElementById('authError');
+        if (el) {
+            el.textContent = msg;
+            el.style.display = 'block';
+        }
+    }
+
+    function clearProfileError() {
+        const el = document.getElementById('profileError');
+        if (el) {
+            el.style.display = 'none';
+            el.textContent = '';
+        }
+    }
+
+    function showProfileError(msg) {
+        const el = document.getElementById('profileError');
         if (el) {
             el.textContent = msg;
             el.style.display = 'block';
@@ -497,6 +591,32 @@ const CloudSync = (function () {
         }
     }
 
+    /** Called by the Save Changes button in the edit profile modal. */
+    async function handleSaveProfile() {
+        clearProfileError();
+        const usernameInput = document.getElementById('profileUsername');
+        const emailInput = document.getElementById('profileEmail');
+        const newUsername = usernameInput ? usernameInput.value.trim() : '';
+        const newEmail = emailInput ? emailInput.value.trim() : '';
+
+        const btn = document.getElementById('profileSaveBtn');
+        if (btn) btn.disabled = true;
+
+        try {
+            if ((newUsername || '') !== (username || '')) {
+                await saveUsername(newUsername);
+            }
+            if (newEmail && currentUser && newEmail !== currentUser.email) {
+                await saveEmail(newEmail);
+            }
+            closeEditProfileModal();
+        } catch (e) {
+            showProfileError(e.message);
+        } finally {
+            if (btn) btn.disabled = false;
+        }
+    }
+
     // ----------------------------------------------------------------
     // Error messages
     // ----------------------------------------------------------------
@@ -512,7 +632,8 @@ const CloudSync = (function () {
             'auth/invalid-credential': 'Invalid email or password.',
             'auth/operation-not-allowed': 'Email/password sign-in is not enabled in the Firebase console.',
             'auth/invalid-api-key': 'Invalid Firebase API key. Check firebase-config.js.',
-            'auth/configuration-not-found': 'Firebase Authentication is not configured. Enable it in the Firebase console.'
+            'auth/configuration-not-found': 'Firebase Authentication is not configured. Enable it in the Firebase console.',
+            'auth/requires-recent-login': 'Please sign out and sign in again before changing your email.'
         };
         return messages[code] || 'Authentication error (' + code + '). Check the browser console.';
     }
@@ -538,18 +659,24 @@ const CloudSync = (function () {
         init: init,
         isConfigured: isConfigured,
         isLoggedIn: function () { return currentUser !== null; },
+        getUsername: function () { return username; },
         saveSubmission: saveSubmission,
         deleteSubmission: deleteSubmission,
         deleteAllSubmissions: deleteAllSubmissions,
         saveSettings: saveSettings,
+        saveUsername: saveUsername,
+        saveEmail: saveEmail,
         signIn: signIn,
         signUp: signUp,
         signOut: signOut,
         openAuthModal: openAuthModal,
         closeAuthModal: closeAuthModal,
+        openEditProfileModal: openEditProfileModal,
+        closeEditProfileModal: closeEditProfileModal,
         handleSignIn: handleSignIn,
         handleSignUp: handleSignUp,
-        handleSignOut: handleSignOut
+        handleSignOut: handleSignOut,
+        handleSaveProfile: handleSaveProfile
     };
 })();
 
