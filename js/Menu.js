@@ -255,6 +255,21 @@ class Menu {
             this.currentCalendarMonth = sortedMonths[sortedMonths.length - 1];
         }
 
+        // "Go To Today" button
+        const todayBtn = document.createElement('button');
+        todayBtn.className = 'calendar-today-btn';
+        todayBtn.textContent = 'Go To Today';
+        todayBtn.addEventListener('click', () => {
+            const todayMonth = today.substring(0, 7);
+            if (monthGroups[todayMonth]) {
+                renderMonth(todayMonth);
+            }
+            if (this.mapsDatabase[today]) {
+                this.selectLevel(today);
+            }
+        });
+        levelList.appendChild(todayBtn);
+
         // Build navigation bar
         const nav = document.createElement('div');
         nav.className = 'calendar-nav';
