@@ -116,4 +116,14 @@ describe('loadTodayMap()', () => {
 
         consoleSpy.mockRestore();
     });
+
+    test('returns null when fetch response is not ok', async () => {
+        DateUtils.getTodayDate = () => '2026-03-01';
+        global.fetch = jest.fn(() =>
+            Promise.resolve({ ok: false })
+        );
+
+        const result = await loadTodayMap();
+        expect(result).toBeNull();
+    });
 });
