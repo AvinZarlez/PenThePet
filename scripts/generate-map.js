@@ -110,6 +110,7 @@ async function generateMap(date, size) {
         mapName: mapName,
         size: size,
         goal: result.goal,
+        maxWalls: result.maxWalls,
         map: encodeCompactMap(result.map),
         optimalSolution: encodeCompactSolution(result.optimalSolution)
     };

@@ -5,6 +5,7 @@
     "date": "2026-02-28",
     "size": 7,
     "goal": 11,
+    "maxWalls": 5,
     "map": "wwgggwwggwwwwggggggwgggwhgwggwwggwwggwggggwgggggg",
     "optimalSolution": [
       1,
@@ -25,6 +26,7 @@
     "date": "2026-03-01",
     "size": 9,
     "goal": 22,
+    "maxWalls": 6,
     "map": "ggwggggwgwwgwwggggwgggwgggggwwgggwgwwwgghwgwggggggwggwwggggwggggggggwwggwgwgggggg",
     "optimalSolution": [
       2,
@@ -47,6 +49,7 @@
     "date": "2026-03-02",
     "size": 11,
     "goal": 29,
+    "maxWalls": 8,
     "map": "ggggggggggggwgggggggggggggggggwggggwgggggwwgggwwgwggggwgggwwhggggwwgwggwwggwwgggwgggwgggwggggggggggwgggwggggwgwwggggggwgg",
     "optimalSolution": [
       2,
@@ -73,6 +76,7 @@
     "date": "2026-03-03",
     "size": 7,
     "goal": 9,
+    "maxWalls": 5,
     "map": "gggggggggwggwgwggggggwgwhggwgwggwgggwgwggggggwgww",
     "optimalSolution": [
       1,
@@ -93,6 +97,7 @@
     "date": "2026-03-04",
     "size": 9,
     "goal": 23,
+    "maxWalls": 6,
     "map": "ggwwgggwwggggwggwgggwggggggggggwwgggwggghwwwwgwggwggggwgggggggggggwgggwgwwggwwwwg",
     "optimalSolution": [
       1,
@@ -115,6 +120,7 @@
     "date": "2026-03-05",
     "size": 11,
     "goal": 38,
+    "maxWalls": 8,
     "map": "gggggggggwgwgggggwgwgwgggwwwwgwwgggwggggggwwgggggggggwggggwwhgwwgggggggggwggggggwggwgwgwwgwggggggggwgwwwwgwgggggggggggggg",
     "optimalSolution": [
       0,
@@ -141,6 +147,7 @@
     "date": "2026-03-06",
     "size": 7,
     "goal": 7,
+    "maxWalls": 5,
     "map": "gggwwgggggwgggwwggggwggghgggggggwgggggggwggggggwg",
     "optimalSolution": [
       1,
@@ -161,6 +168,7 @@
     "date": "2026-03-07",
     "size": 9,
     "goal": 17,
+    "maxWalls": 6,
     "map": "gggwwggwwwgwgwggggggggwgwggggggggwgwgggghggwgggggwgwgwgwgwwgwwwggggwggggggggwgggg",
     "optimalSolution": [
       1,
@@ -183,6 +191,7 @@
     "date": "2026-03-08",
     "size": 10,
     "goal": 25,
+    "maxWalls": 7,
     "map": "gwggggggggggggggggggggggggggwggwgggwwggwggwwgwgwwgggggghggwggggggggwgggwgggwgwgwwgwgwwggwwggwggggwwg",
     "optimalSolution": [
       1,
@@ -207,6 +216,7 @@
     "date": "2026-03-09",
     "size": 8,
     "goal": 19,
+    "maxWalls": 6,
     "map": "wwgwgggggwggwgwgggggwgwgwggggwgggwwghgwggggwgggggggggwgwggwgwggg",
     "optimalSolution": [
       0,
@@ -229,6 +239,7 @@
     "date": "2026-03-10",
     "size": 10,
     "goal": 25,
+    "maxWalls": 7,
     "map": "wwwggggggggwwggggggwwwgwggwggwwwgwggwgwggwggggwggggwgwwhwggggwgwgggggggwwgwggwwgwwwwggwgwggwggggwwwg",
     "optimalSolution": [
       1,
@@ -253,6 +264,7 @@
     "date": "2026-03-11",
     "size": 10,
     "goal": 35,
+    "maxWalls": 7,
     "map": "wggggwggggggggwwwwwggwggggwggwggggggggggwggwggwgwgwwwwghggwwgwgggggwwgwwwgggwgwggggggwwgwgggggwggwgg",
     "optimalSolution": [
       0,
@@ -277,6 +289,7 @@
     "date": "2026-03-12",
     "size": 20,
     "goal": 176,
+    "maxWalls": 15,
     "map": "gggwggwwgwgwgggwggggwgggwgwggwggwggwwwggwgwwgggggggwggggwwggwwggggggggwgwwwggwgggwgggwggwgggwwgggggggggggggggwgwgwwgwgggggwggggggggwggggggwggwggggwwggwgwgwggggwgggggwgwgggwgwwgwwggwggggggggwgwwwgggwgwgggggggggghgggggggwgwgggggwwwwwwggwgwwggwwgggggwwgggggwggggwggggggwwwwgggggwggwgwwgwwggggggggggggggwgggggwwwgwwgwgggwggwgggwgggwgggwgwwwwgwgwgggggggggggwgggggwwggggwggggwgwgggggwgwgggggggwgwgwgggggwgg",
     "optimalSolution": [
       0,
@@ -317,6 +330,7 @@
     "date": "2026-03-13",
     "size": 20,
     "goal": 154,
+    "maxWalls": 15,
     "map": "ggggwwggggggggwwggwggwggggggggggwgwgggwgwgwwgggggggwwgwwggggwwgggggggggwggwgggggwggggggggggggwgwgwwgggwwgggggwggwwgggggwgwwggggwwggwwgwgwwggggwggwgggwggwgggggggwggggwggggwggggggwggwggwwwwgwwgggwgggwwggwggwgggwghgggwwgwgwwwwwggggwwgggwgwggwwggwggwggggggggggggggwggggwwggwggwgwwgggwwgggggwwwggwwgwgwggwggwggggggwgwwgwgggggwgggwgwwgggggggggwwwwgwwgwgggggwgggggwgggggggggwgggggwgwwgggggwwgwwwwgwggwwggggg",
     "optimalSolution": [
       0,
@@ -357,6 +371,7 @@
     "date": "2026-03-14",
     "size": 11,
     "goal": 34,
+    "maxWalls": 8,
     "map": "gwggggggwggwgwwwgggwggwgggwwgwwgggggggwwggggggggwwwggggwggwghggwwgwwgwggwgwwgwggggwgwwgggggwwggwwwwgggggggwwgggwggggggwwg",
     "optimalSolution": [
       3,
@@ -383,6 +398,7 @@
     "date": "2026-03-15",
     "size": 17,
     "goal": 103,
+    "maxWalls": 12,
     "map": "wwggwgwggggwwgwgggwgggggggwwwwggwggwggggwggwgwgggggwgwgwgwggwggggggggwgggwgggwggwwggggwwwwgggggwggggggwgwggwgggggwggwwggggwgggwwgwggwwgwgwggwggghggggggwggwgggwwggwggggwgggwwgwgwgwgggwgwwggwgggggwgggggwgggggggggwgggwgwgggggwgggwgggggggwwwgggggwggggggggggwwggggggwgwwggggwgwgwggggggwgggwgggg",
     "optimalSolution": [
       0,
@@ -417,6 +433,7 @@
     "date": "2026-03-16",
     "size": 15,
     "goal": 81,
+    "maxWalls": 11,
     "map": "wgwgwggwgggwwwgggwwwgwgggggwgwwgggwwggwggggwwgggggggwgwwggggwggwgwggwgwggwwgggggggwgggwwwwwgggggggggwgwgggggggwghgwgggggggggggggggggggwggggggggwggwggggwggwgwgggwwggggwggggwgwgwwggggwgwgggggggggggggggwwwwgwgggwwwwgggggwggggwgg",
     "optimalSolution": [
       1,
@@ -449,6 +466,7 @@
     "date": "2026-03-17",
     "size": 9,
     "goal": 27,
+    "maxWalls": 6,
     "map": "ggwwgwgggggggwggwgggggwgggwwgwggggggwwgghgwgggggggggggwggwgwgwgwwwgwwgggggggggggw",
     "optimalSolution": [
       0,
@@ -471,6 +489,7 @@
     "date": "2026-03-18",
     "size": 13,
     "goal": 58,
+    "maxWalls": 9,
     "map": "gwwgggwggggwwgggwwggwwggggggwgggggwgwwgggwwwggggwgggwgggggwggggwgggwwggwggggwwgwggwghwggggggwwgwgwwgwggwwgwggggggggwgwwggggggggwggggggggwwggggggggggggggwwwggwgggwwgggggg",
     "optimalSolution": [
       0,
@@ -499,6 +518,7 @@
     "date": "2026-03-19",
     "size": 8,
     "goal": 16,
+    "maxWalls": 6,
     "map": "gwggwgggggggggwwwwggwgwggggggggwggwwhggwggggwgggggwwggwggggggggw",
     "optimalSolution": [
       0,
@@ -521,6 +541,7 @@
     "date": "2026-03-20",
     "size": 12,
     "goal": 40,
+    "maxWalls": 9,
     "map": "wwggggwwgggwgwwgwgggggwgwggggggwggggwgggwggggggggwggggwggwggwwgwgggggggwwggwgghgggggwwggwgggggggggwggwgggggggwgggggwwggggggwwggggggggggggwgwgwgg",
     "optimalSolution": [
       0,
@@ -549,6 +570,7 @@
     "date": "2026-03-21",
     "size": 12,
     "goal": 44,
+    "maxWalls": 9,
     "map": "gwwgggggwggwggggggggwggwgwgggwgggggggwgggggggggggggggggggggggwwgggwgggwggwgggghggwwgwwggwgwwgwggwgwgwgwwwgwwgggwggwgwgwwgwggggwgggwgggwgwwgggggg",
     "optimalSolution": [
       0,
@@ -577,6 +599,7 @@
     "date": "2026-03-22",
     "size": 16,
     "goal": 94,
+    "maxWalls": 12,
     "map": "gggggwgwwwgwgggggwgwggwggggggggggwggggggwgwgggggwgggwggggwgggggggggwgwwgggwgwggggwgggggggwgwggggggggggwgggwggggggggggwggwgwgwwgwgggwwwgghggggwggwggggggwwgwgggwgwwgggwggggggggwgwggggwgggwgwggggwgggwggwgggggwwgwggggwwwgwggggwgggggggggwwgggwwggggwggggggggwgwg",
     "optimalSolution": [
       3,
@@ -611,6 +634,7 @@
     "date": "2026-03-23",
     "size": 18,
     "goal": 87,
+    "maxWalls": 13,
     "map": "ggwgwwgggggggggwggwgwgwggggggggggwgggggwwggwwgggggggggwwggggggggggggggwggwgggwgwggwwgwgwgggggggggwwwggggggggggggwgggwwwgwggggwggwwggwggwwgwwwwwgwggggggwwgggwggwgwgggwggwwghgwggggggwgwggggwwgggwgggggwggggwwgggwgwgwgwgwwwwwgggwwggggggggwgggwggwggwgwgwgggggwwgggggwggggggwggwgggggggggggggggggwgggwgggggwggggggggggggwgwwwwgggwgw",
     "optimalSolution": [
       3,
@@ -647,6 +671,7 @@
     "date": "2026-03-24",
     "size": 19,
     "goal": 155,
+    "maxWalls": 14,
     "map": "gggggwwgwwgwwgggggggwggwggggwwggwggggggggwggggwgggwwgwggggwgggwwggggggggggwgwwgwggwgggggggwwgggggggwggwgwgwgggggwggggggwggwgwwwggwwgwwgwwwgggggwgggggggwgwgggwgggwwggwgwggwgggggwggghwggwgggggwgwgwgggwgwgggggggwggwgwggwgggwwggwwggggwgggggwggggggwwggwwgwwwwwggwwggggwggggggggggwggwwwggggwwwgwggggwgggwggwwgggggwgwgggwgwwwgwwwgwggwggggwwgwwggwggwggwgwwwgwwwgggwwwww",
     "optimalSolution": [
       0,
@@ -685,6 +710,7 @@
     "date": "2026-03-25",
     "size": 14,
     "goal": 83,
+    "maxWalls": 10,
     "map": "ggggggggwwggggwggwgwwwggwgggggwgwggwgggggggggggggwgggwggggwgggggwgwwwgggwgwgggggggwggwwgggwwgggggwgwggggghggggggwgggwwgggggwgwggwggwwwwgggggggwwggggwwgggwggggwwggwggwwwggwggggwwwgggggwgwggggggwwgg",
     "optimalSolution": [
       2,
@@ -715,6 +741,7 @@
     "date": "2026-03-26",
     "size": 11,
     "goal": 35,
+    "maxWalls": 8,
     "map": "gggggggggwggwwgggwgwggggggwwggwwgwwgwggggwgggggwwggwgggwggwghwgggggggwwggwggwggwggwgwggwgwggwggggwwgwwgggggggwggwgggwgggg",
     "optimalSolution": [
       0,
@@ -741,6 +768,7 @@
     "date": "2026-03-27",
     "size": 21,
     "goal": 193,
+    "maxWalls": 15,
     "map": "ggggggggggwgwggggwwggggwwgwgwgggwwggggwggggwwggggggggggggggggwgwggwwggggggggggwgggwwgwgggggggwggggggggggggwggwgwgggggggwgwggggwggwggggwwgwgggwggwgwgggggwggwgwgggggwgwwggwgggwgggwwwwgwwgggwgggwgggwgggggwwgggwwwwgwggwwwwgghgggggggggggwwgggggwgggggwwgwggwgwggggggggggwwgggwgggggwgggggwgggggggwggwggwwgwgwggggggwgggwgwggggwgggggwggwgwwggggggggwgggwgggggggggwggwwggwggwgwggggggwwggwgwggwgggggggwwggggwggggwggggggggwgwgwwwggwgggwgggggggwgggggggggg",
     "optimalSolution": [
       0,
@@ -781,6 +809,7 @@
     "date": "2026-03-28",
     "size": 9,
     "goal": 27,
+    "maxWalls": 6,
     "map": "ggwwggwgggwgwggwggwgwgggwgggwggwggggwggghgggwggggwgwwgwgggggwgwggwggwwgwwggwggwgw",
     "optimalSolution": [
       0,
@@ -803,6 +832,7 @@
     "date": "2026-03-29",
     "size": 8,
     "goal": 16,
+    "maxWalls": 6,
     "map": "gggwgggggggwgwgwgwgwgwggggwgwggwwggghgggggwgggwgggwgwwgggwggwgwg",
     "optimalSolution": [
       0,
@@ -825,6 +855,7 @@
     "date": "2026-03-30",
     "size": 11,
     "goal": 25,
+    "maxWalls": 8,
     "map": "gggggwgggggggwgggggggwggggwwwgggwwggggwwgwwggggggwggwggwggwghwwgggggwwgggggwgwgggwggwgggwwgwggggwggwggggggggggggwwgggggww",
     "optimalSolution": [
       1,
@@ -851,6 +882,7 @@
     "date": "2026-03-31",
     "size": 9,
     "goal": 18,
+    "maxWalls": 6,
     "map": "wgggggwggwggggggwgwgggwgggggggggwgggwggwhgwgggggwggggggwggggggwwwgwggggwgwwgwwggg",
     "optimalSolution": [
       3,
@@ -873,6 +905,7 @@
     "date": "2026-04-01",
     "size": 7,
     "goal": 7,
+    "maxWalls": 5,
     "map": "gggggggggggwwggggggggggghgggwggwwgwwggwgwgggggggg",
     "optimalSolution": [
       1,
@@ -893,6 +926,7 @@
     "date": "2026-04-02",
     "size": 16,
     "goal": 91,
+    "maxWalls": 12,
     "map": "wgggwggggggwgggggggwggggggggwwwggwggggggggggwwwgggwggggwgwggwwggggwwwggwwggwgggggggggwggggwggggwggggggggwgwggggwggggggggwwwggggwggwwgggghgwwwggwgggwwgggwggwggwwgwgggwgggggwggggggggwgwwggwwgggggwgwgggggggwgggwwgwgwggggwggggggwgggwgwwgwwggggggggggwggwgwggwww",
     "optimalSolution": [
       3,
@@ -927,6 +961,7 @@
     "date": "2026-04-03",
     "size": 11,
     "goal": 36,
+    "maxWalls": 8,
     "map": "gwggwwwwgwwwggwgwwwgwwwwggwggggggggggwwgggggggggggggwwggwggghggggwgggwgwgggwwwwgggggwgggggwwggggwgwgwgwgggggwggggwwggggwg",
     "optimalSolution": [
       2,
@@ -953,6 +988,7 @@
     "date": "2026-04-04",
     "size": 8,
     "goal": 14,
+    "maxWalls": 6,
     "map": "wggggwwgwwggggggwggwggwggggwgwgggggghggggggggwwggggwggwwwgggwwgw",
     "optimalSolution": [
       1,
@@ -975,6 +1011,7 @@
     "date": "2026-04-05",
     "size": 11,
     "goal": 45,
+    "maxWalls": 8,
     "map": "ggggggwggggwgwwwggwgggwwggggwwgggggwgggggggwwwggggggggwggggwhgggwwgwggwwgwgggwggggggwggwgwgwwwwwwggwggggggggggwgwgwgggggg",
     "optimalSolution": [
       0,
@@ -1001,6 +1038,7 @@
     "date": "2026-04-06",
     "size": 11,
     "goal": 40,
+    "maxWalls": 8,
     "map": "ggwggwggggwgggggggwgggggggwwgwgwgggggggggwggggwwgwgwwwwggggghgggggwgggwgwwwwwgwgwggggwgwgwggwgwgwggwggwggwgggggwwgwwwwwgg",
     "optimalSolution": [
       1,
@@ -1027,6 +1065,7 @@
     "date": "2026-04-07",
     "size": 8,
     "goal": 15,
+    "maxWalls": 6,
     "map": "ggwgwgggwwgggwwggwggwgwwgwggwwwggggghggggggwgggggggggwgwgwgggwgg",
     "optimalSolution": [
       0,
@@ -1049,6 +1088,7 @@
     "date": "2026-04-08",
     "size": 10,
     "goal": 34,
+    "maxWalls": 7,
     "map": "ggwwgwggggwgggggwwgwwgwwgwgwggggggggggwwwwggwggwwwgwggghgwggwgwgwgggggwgggwgwggggggwgwggwggggggggwgg",
     "optimalSolution": [
       0,
@@ -1073,6 +1113,7 @@
     "date": "2026-04-09",
     "size": 13,
     "goal": 44,
+    "maxWalls": 9,
     "map": "wggggggggwgwgwgggwggggwgggwgggggwgggwgwwggwggwggwgwwgwgggggwgwgwggwgwgwggwwggwwggggghggwgggwgwgwgggggggwgggggggggwwgwggggwgwggggwgwgwggggggwgwggggggggggggggwgwgwwgggwggg",
     "optimalSolution": [
       1,
@@ -1101,6 +1142,7 @@
     "date": "2026-04-10",
     "size": 7,
     "goal": 6,
+    "maxWalls": 5,
     "map": "ggggggwwwgwgwggwgwgwwggghgggggggggggwggwgwwgggggg",
     "optimalSolution": [
       0,
@@ -1121,6 +1163,7 @@
     "date": "2026-04-11",
     "size": 11,
     "goal": 35,
+    "maxWalls": 8,
     "map": "ggggggwwgwgwgwggwwggwgwgggwgggggggggggwgggggggwggggwgggggggghggwggggggggggwggwgggggggggggwwggggwggwgggwggwgggggwgggggggwg",
     "optimalSolution": [
       2,
@@ -1147,6 +1190,7 @@
     "date": "2026-04-12",
     "size": 15,
     "goal": 66,
+    "maxWalls": 11,
     "map": "wgwgggggggwggggggwgggggwgwgwgwgwwggwgggwggggggwwgggggwgggwggwggggwgggwgwggwggwggwgggwwwgggggwgwwgwgggggggggwgggghwggggwwwwgwgwggggwwggggwgggwwgwgggggggwwgggggggggggggwgggggwwggggggggggggggwggggggwgwwgwgggwgggwwwggwwgggggggwgg",
     "optimalSolution": [
       0,
@@ -1179,6 +1223,7 @@
     "date": "2026-04-13",
     "size": 16,
     "goal": 80,
+    "maxWalls": 12,
     "map": "wgggwgwggwggwgggwggwggggggggwgggggggwggggwggwgggwwwwgggggggggwwgwwgggwggggggggggggwgwwgwgwwggggggggggwggwgggwggggwwwgwgggggwggggggwgggwghgwgggwggwwggggggwgggwwggwgggwgwwgwgggwwgggggwgggggwggggwwwgwwggggggggwgggggwgwggwwwgwgwwwgwggggggggwgwggggggwwggwggwggg",
     "optimalSolution": [
       3,
@@ -1213,6 +1258,7 @@
     "date": "2026-04-14",
     "size": 16,
     "goal": 109,
+    "maxWalls": 12,
     "map": "ggwwgggggwggwwwgwgwggggggwgwwggggwgwwwgwggwwggwwwggggggwwwggwgggwgggggggwggwgggwwwwgggggwwgwwwggggggggggggwgggwggggggwgwggggggwgwggggwgghgwgggwggwgggwggggggggwgwgwggwgwwgggggggwggwwgggggggwggggwwgggwgwgwwwgggwgwggggwggwwggwgwwggwgwggwgggwgggwwwggggggwwggww",
     "optimalSolution": [
       0,
@@ -1247,6 +1293,7 @@
     "date": "2026-04-15",
     "size": 16,
     "goal": 91,
+    "maxWalls": 12,
     "map": "wggggwgggggwggwggggwgwggggwgwgggwwggggwwwggggggggwwggwgggggggwwggggwwggwgwgwggwwgggggwgggwggwwgggwggwgggwggggwggggwwggwgwgwggggggwgwggwghgggwgggggggggwgwgwgggwwgggwwgwggggwgwggggwgwgwgwwggwwwgwgwgwgggggggwwwgggggggwwwwgggwggwgggggwgwgwggggwgggggwwwgwgwgggg",
     "optimalSolution": [
       1,
@@ -1281,6 +1328,7 @@
     "date": "2026-04-16",
     "size": 8,
     "goal": 13,
+    "maxWalls": 6,
     "map": "ggggwwgggwwgwwgggggggggwgwgwwggwgggghggwgwwgwggwgwgggggwwggggggg",
     "optimalSolution": [
       1,
@@ -1303,6 +1351,7 @@
     "date": "2026-04-17",
     "size": 7,
     "goal": 9,
+    "maxWalls": 5,
     "map": "gwwggwgwwggggggwwggwgwgghggggggwggggwgggwgggggggg",
     "optimalSolution": [
       0,
@@ -1323,6 +1372,7 @@
     "date": "2026-04-18",
     "size": 8,
     "goal": 15,
+    "maxWalls": 6,
     "map": "gwgggwgggggggggwgggwgggwgwgwgggwgggghgggggggwgggwgwgwwgwggggggwg",
     "optimalSolution": [
       0,
@@ -1345,6 +1395,7 @@
     "date": "2026-04-19",
     "size": 21,
     "goal": 159,
+    "maxWalls": 15,
     "map": "gggwgwgwgwwggwwwggwggwgwgggwgwwwggwgggwgggggggggwgwwggwggggggggggggwggwggwggwggggwgggggggggwgwgggwgwgwgwgggggwwggwggggwggwggggggggwgwggwwwwwwgwgwggggwwggggggggwwgggwggggggwwgggwgggwwgggwgwwggggwgggwgwgwggwgggwggwggwggggwhgwwggggwgggggwgggggggwggggggggwgggggggggwgggwggwgggggggggggwwggggggwwggggggggwwgwgwggggwgwwgwggwwgggwwggggwggggggggwgwwwgwgwgggggwggwgwgggwwgggwgggwgggggwgggwggwggggwggwggwwgwgwwgwgwgggggwggwwwgggwgwggggwggggggggggwggwwg",
     "optimalSolution": [
       0,
@@ -1385,6 +1436,7 @@
     "date": "2026-04-20",
     "size": 7,
     "goal": 7,
+    "maxWalls": 5,
     "map": "gwgwgggggggwgwggggwggggghggggggwgggwggwwwggwggggg",
     "optimalSolution": [
       1,
@@ -1405,6 +1457,7 @@
     "date": "2026-04-21",
     "size": 7,
     "goal": 9,
+    "maxWalls": 5,
     "map": "wgwggggwwgggwgwwgwwgwwgghwgwgggggggggggwggwgggwgw",
     "optimalSolution": [
       1,
@@ -1425,6 +1478,7 @@
     "date": "2026-04-22",
     "size": 10,
     "goal": 19,
+    "maxWalls": 7,
     "map": "ggwwggggggggwgggggwggggwwgwggggggwgggwgwgggwggggggwgggghgggggwgggwggggggggggggwgwggwggwwgggwgggggggg",
     "optimalSolution": [
       1,
@@ -1449,6 +1503,7 @@
     "date": "2026-04-23",
     "size": 19,
     "goal": 156,
+    "maxWalls": 14,
     "map": "wgggggggggwgwwggggwgwgwwggwwwgggggwggwwgwgggwwgwggwwwgggwggwggwgwggwggwggggwggggwwwggggggggwgggwgwggggggggggwggwggwggggwggggggwggwgwwggggwgggggwgwgggggwwgwgwwwgggwwggwwgggwgwgggwgghgggwggggggwgggwgwgwgwggggwggwwggwggggwggggwgwwgggwgwgggwgggwwwwggggwwggwggwgwgwwgggwgwwggwgwggwggwwgggwwwggwgggwgwgwgwgggwgggwggwgwgwwgwgggggggwwwgwgggwwggggggggggggggwgggggwgggggg",
     "optimalSolution": [
       0,
@@ -1487,6 +1542,7 @@
     "date": "2026-04-24",
     "size": 8,
     "goal": 16,
+    "maxWalls": 6,
     "map": "gwgwwgwggggwgwgggwggwggwggwwwggwgggghgwgwgggggggwggggggwgwggggwg",
     "optimalSolution": [
       1,
@@ -1509,6 +1565,7 @@
     "date": "2026-04-25",
     "size": 11,
     "goal": 40,
+    "maxWalls": 8,
     "map": "gggggwggwggwwgwgwgwggwggwwgggggwgggwgggwggggwgwgwggggwwggggghggggwwgwgggggwggwgwgggwgggwgwgwgggwgggggggwwgggggggwgwwgggwg",
     "optimalSolution": [
       0,
@@ -1535,6 +1592,7 @@
     "date": "2026-04-26",
     "size": 10,
     "goal": 27,
+    "maxWalls": 7,
     "map": "ggwwwggwwgwgwgwgggwgggwgwwggggwwggwwgggggggggggwwwggggghwggwgggwggwgwwgwgwwwwgggggggwggwwgwggwggggwg",
     "optimalSolution": [
       1,
@@ -1559,6 +1617,7 @@
     "date": "2026-04-27",
     "size": 16,
     "goal": 87,
+    "maxWalls": 12,
     "map": "gwwgggwggggwwggwggggggwwgggwgwgwgggggwwwwgwggggggggwwggwgggwggwgggwggwggggwwggggggggggwggwwgggggggggwggwwwgwwwgwgggwwwggggggggggggggwwgghggggggggwgggggggggwwgwggwwggwggwgggggwwgggwgggwggggggwggwggwgggggggwgggggwgggwwgwwggwgggggwgwggggggggwggwgggwwwggwwgggg",
     "optimalSolution": [
       5,
@@ -1593,6 +1652,7 @@
     "date": "2026-04-28",
     "size": 12,
     "goal": 49,
+    "maxWalls": 9,
     "map": "gwgggggwwgggggwggwggwwwggggwwgwwgwggwwggwgwgggggggwgwwgggggggggggwwwgggwgggggwhgggggwggggggggwwggwggggggggggwggwwwwgggwggggggggwgwgwwgwgwggwgggg",
     "optimalSolution": [
       2,
@@ -1621,6 +1681,7 @@
     "date": "2026-04-29",
     "size": 13,
     "goal": 41,
+    "maxWalls": 9,
     "map": "wgwwgggggggggwgggwggggwwggggggwgggwwwggggwggwggwgwgwggggggwwwggggggwgggwggggwwwggwgghgwgggwggggwggggwggwgggggggwgwgggggwgwgwggggggwgggwgwgggggggwwgggwggggggggggwggggwggg",
     "optimalSolution": [
       0,
@@ -1649,6 +1710,7 @@
     "date": "2026-04-30",
     "size": 12,
     "goal": 58,
+    "maxWalls": 9,
     "map": "gggwggwgwwwggwgggwgwgwggwwgggwggggwgwwggwgggwggwwgggwwgwwgwggggwgggggggggggggghwgggwwggwgggwwgwggggwggwggwwggwgggwggwgggwgggggggwgwwgggwgwgggggw",
     "optimalSolution": [
       0,
@@ -1677,6 +1739,7 @@
     "date": "2026-05-01",
     "size": 19,
     "goal": 147,
+    "maxWalls": 14,
     "map": "gwggwwgwgwggggwgwgwgggggggwgwgwggggwwwgggwggwggggwwgggwgwgwgwgwwgwgggwggwgwwgwgggwwggwgwggggggggggwwwgggggwgwgwggggwgwwwggggwggggggggggwgwggggggwgggwggggwwggggggwgggwwgwwgwgwgggggwhwwwgwwgwgggggggwggggwggwgggggggggggwgwgwwgwgggggwwwwgwwgwgggggwgggwgwggwgggwgwgggggwgwggwggwgggggwggwwgwggwgggwgggwwgggwggggwwgggggwggggggwggwggwgwggggggggwgggwwgggwgwgwwgwgwwggwwg",
     "optimalSolution": [
       0,
@@ -1715,6 +1778,7 @@
     "date": "2026-05-02",
     "size": 12,
     "goal": 50,
+    "maxWalls": 9,
     "map": "wwgggwgggggggggwgggwgwggggggwwgggwgggwggwgggggwwwwggggwwggwggggggwggwgwwggwwgghggwggwgwgggwggggggggwgwgggwgwwgggggwwgwgwggggwggggggwwwgwggwwggwg",
     "optimalSolution": [
       0,
@@ -1743,6 +1807,7 @@
     "date": "2026-05-03",
     "size": 15,
     "goal": 68,
+    "maxWalls": 11,
     "map": "gwggwwggwwgwgwggggggggggggwgggggggggwgwgwwwgggggggwwgggggwgwgggggwggwggggwggwgggggggwwwwwwwwwgggwgwggwwgwggggggwhggggwwwggggwgwwgggwggggwgggwgggwggggwgwwgggwgwgggwggggggggwwggggggggwgwgwgwggwgggggggwgggggggggwwwwwwggwgwggwwgg",
     "optimalSolution": [
       0,
@@ -1775,6 +1840,7 @@
     "date": "2026-05-04",
     "size": 12,
     "goal": 51,
+    "maxWalls": 9,
     "map": "gggwggwgwwgwgwwgggwggwgggggwwggwwggwgggggwgggwggggwwwggggggggggwgggggggwggwwgghgggggwgggwwgwgwgggwgggggwggwggwgggggwgggwgwwggwggwgwgggggggggwwgw",
     "optimalSolution": [
       0,
@@ -1803,6 +1869,7 @@
     "date": "2026-05-05",
     "size": 7,
     "goal": 9,
+    "maxWalls": 5,
     "map": "wwggggggwggggggggwwggggwhgggggwgwgwgwggggwggggwgw",
     "optimalSolution": [
       2,
@@ -1823,6 +1890,7 @@
     "date": "2026-05-06",
     "size": 10,
     "goal": 26,
+    "maxWalls": 7,
     "map": "ggwwgggggwwgggwggwgggwwwgggggwggwwgwggwwgggwggggggggggghgwgggwwwgggwgwwgwgggwgggwggwggggwggggggwgwwg",
     "optimalSolution": [
       0,
@@ -1847,6 +1915,7 @@
     "date": "2026-05-07",
     "size": 10,
     "goal": 17,
+    "maxWalls": 7,
     "map": "ggggwgwgwggggggggggwwgggggggwwggwwggggggggggggwgwgwgggwhgggwwgwwgggggggggwggggggggwgggwgwgggwggggggg",
     "optimalSolution": [
       3,
@@ -1871,6 +1940,7 @@
     "date": "2026-05-08",
     "size": 20,
     "goal": 146,
+    "maxWalls": 15,
     "map": "gwgwgggwwwggggwggwgggwggwggwggggggggwggwgwggggwggwwgwggwggggwgggwgggggwgggggggwgggggggggggggwwwgwggwgggwwwggggwwwggggggwgggwggwgwwgggggwggwgggggggggwgggwgwgggggggggwgggggggggggwgwwgggwggwggggwgwgwgwgwgggggggggghwgggggwwwggggwgwggwgwwggggggggwggggggwwgggwgggwwgwggwwggwggggwgwwgggggwwgwgwwgggwggwwwggwggwggggwggggwwggggwggwggwgggggwgggwwwwgwgwggggggwwgwggwggwwgggwwggggggggggwgwggggwgggggwgggwgggwgggg",
     "optimalSolution": [
       2,
@@ -1911,6 +1981,7 @@
     "date": "2026-05-09",
     "size": 19,
     "goal": 120,
+    "maxWalls": 14,
     "map": "gwwggwggwwggggwwwwwwwwggwgwgggggwgwgggggggggwgggggggggggwwggggggggwgwwggwwwggwwgggwwgwgwgggggggggwggwwggwggwwggwgwgwgggwwggwgggggggggggwwwggwwgggwgwggwwwggggggggwggggwwwwgggwggwwwghgwgwgwggggggggwggggwgwwwwgggggggwgggggwggggggwgggggggwggwwgggwgggggwgwggwwggwwggggggwgggggggwgggwggwgwgwggwgggggwggwgwwwwgwgwgwgggwwggwwgggggwggggggwggwgggggggwggwggwggwggwggggggww",
     "optimalSolution": [
       0,
@@ -1949,6 +2020,7 @@
     "date": "2026-05-10",
     "size": 9,
     "goal": 24,
+    "maxWalls": 6,
     "map": "gggwgwggwggwggwgwwgwggwgwgggggwgwgwgwggghgggwwwggwgwggwgwwgggggwggggwgwgwgggggggw",
     "optimalSolution": [
       0,
@@ -1971,6 +2043,7 @@
     "date": "2026-05-11",
     "size": 8,
     "goal": 13,
+    "maxWalls": 6,
     "map": "ggwgwwggwgwggggwwgggggggwgggwgwgwggghgwgwggwgggggggwggggwggggwgg",
     "optimalSolution": [
       0,
@@ -1993,6 +2066,7 @@
     "date": "2026-05-12",
     "size": 8,
     "goal": 15,
+    "maxWalls": 6,
     "map": "gwgwgggwgwgggggwgwwgggggggggwggwwwwghwgwwgggggggwgwwwwggggwwggwg",
     "optimalSolution": [
       0,
@@ -2015,6 +2089,7 @@
     "date": "2026-05-13",
     "size": 14,
     "goal": 46,
+    "maxWalls": 10,
     "map": "gggggggggggggggwggwwwggggwwggggggwwgggwwggwggwggwgwggwwgwgggggwggggwgwwwgwgwgggwgggwggggwwgggggwggggggggwhggggggwggwwwwgggwgwwggggwwwgggggggwwgggwggwwggggwgggwgggggggwgwgggwgggggwggggwggggwgggggwg",
     "optimalSolution": [
       0,
@@ -2045,6 +2120,7 @@
     "date": "2026-05-14",
     "size": 21,
     "goal": 189,
+    "maxWalls": 15,
     "map": "ggwggggggwwgwggggwgggwgggwwgwwggwggggggwwgggwgwwggwwggggwgwwwwggwgwwgwgwwwwgggwwgggggwgggwggggwgggggwgwggwggggwggggggggwwwwggwggggwgwgggggggwwgggwwgwggggggwwwwggwgwgggggwgwgwwggwgggggwgwwgggwgggggggwggggwwwgggwgggwgwwwgghggwgggwggggggwgggggggwgggggggwgggwggwggwggwgwwgggwgggggggwgwgwgggggggwgwggwggggggggggggggggggwggggggggggwwwwwwgwgwwggggwwggggggggwgggggggggwgggwgwgwwggggggwwwwggwwgwgwgggwggwwgggwggwgggggwggwgggwgggwggggwggggggwgwgggggwg",
     "optimalSolution": [
       0,
@@ -2085,6 +2161,7 @@
     "date": "2026-05-15",
     "size": 18,
     "goal": 126,
+    "maxWalls": 13,
     "map": "gggggwggwgggggggwgggwwgwwwwwwgggwwggggwggwgwgwwwggggwgggggwwgwwggwggggwwgggwggwwggwgwwwwwggggwwggggwgggggggwgggwggggggwggggggggggwgwggggwgwwwggggggwgggwwgggwgwwggwgggggwwghggwgggggggggggggggwgwwgggwwgwggwwgggwwggggggggwgggggggwwggwgwggwgggwggggwgggggggggggggwggwgwwgggggggwwggggwggwggwgggggggwwgwggwggwgggwgwgggggwgggwggwwwg",
     "optimalSolution": [
       6,
@@ -2121,6 +2198,7 @@
     "date": "2026-05-16",
     "size": 19,
     "goal": 123,
+    "maxWalls": 14,
     "map": "gwwwwggggwgwggggwwggggwwgwgwggwwwggggggwgwggggwwwgggwgwwggggwggwwgggwggggggggwgggwwggwggggggggggggwgggggwwgggwgwgggwgggwgwgwwggggwgwgwggwgggwwwwwwgwwggwggggggggggwwggwgwggwgggggwgwhgggwgwgggggwggggwgggwgwggggggggwgggggwggggwggwwwgwgggggggggwggggggggwgwgwggggwgggggwggwgggggggwgwggggwgggggggggggwgggwwgwggggwgggggggggggwgggggggggggggwgggwggggggwgwgwgwgggwgwgggww",
     "optimalSolution": [
       3,
@@ -2159,6 +2237,7 @@
     "date": "2026-05-17",
     "size": 17,
     "goal": 94,
+    "maxWalls": 12,
     "map": "gggwwggwggwgggwwgwwgggggwgggwggggwwgwwgggggwgggwgwgwggggggggggggggggggwgwgggwgwggggggggggggwwwwgggggggggggggggwgwgwwgggwwwggggwgggwggwggggwggggghgwggggggggggggwwggggggwwwgggggggwggggwgwggggwggggggggggwwwggggwgwwggggggggwgwwggwgwgggggwgwwgwwggwgwgwwggwggwwgwgggwggwggggwgwggwggggggggwggwwwg",
     "optimalSolution": [
       2,
@@ -2193,6 +2272,7 @@
     "date": "2026-05-18",
     "size": 12,
     "goal": 43,
+    "maxWalls": 9,
     "map": "ggwgwggggggggwggggwwggwwwwwgggggggwgggggwwggwgggggggggwgggggggwwggggwggwwggwgghgwggggwgwwggggwgwggggwgggwwwwggggwwgggwwwggwwwgggggwgggwwwwggwggg",
     "optimalSolution": [
       0,
@@ -2221,6 +2301,7 @@
     "date": "2026-05-19",
     "size": 15,
     "goal": 81,
+    "maxWalls": 11,
     "map": "ggwgggggggwgggwggwgggggggggggwgwgggggwgggwwggwwggwwwgggwgggwwgggwgggggggggwwgggwwggggwggwgwgggwggggwgwwgwgwwgggwhwggggwggggggggggggwggggggwggggwgggwgggggwgwgggggggwggggggggwwgwggwgggggwggwgggwggggwggwgggggwgwgggwggggggggwwggw",
     "optimalSolution": [
       1,
@@ -2253,6 +2334,7 @@
     "date": "2026-05-20",
     "size": 17,
     "goal": 113,
+    "maxWalls": 12,
     "map": "ggggwgwgwwwgwggggwwggwgggwwwgggwgwgwwggwggwgwgwgggwgwgwggwgggggggggggggwgwgggggwgggggwggwgwwggggggggwggggwwgggggwgggggggwwggwggggwgggggggggggwgghgggggggggwgggggggggwwgggggwgggggggggggggggggggggwwgggwgwggwgwggggwgggwgwggggwggggwggwgggwggggwwwggggwggggwgggwgggwgggggwggwwgggwgggwwgwwgwgwwgww",
     "optimalSolution": [
       1,
@@ -2287,6 +2369,7 @@
     "date": "2026-05-21",
     "size": 20,
     "goal": 186,
+    "maxWalls": 15,
     "map": "ggggggwgggwgwgwgwgwgggggggggggwgwwggggggggwggggwgwggwgwgwgggggggwggggwgwggggwgggggggggggwwggggwgggggggggwgggggwgggggggwgggwwwggwwwgggwgggggwwwggggwggwgwgwggggggwggwgwggggwwggwgwgwggggwgwgwgwggggwggwgwgggwgggwgghggggwgwwggwggwgggggggggggwwgwwwggggggggwgwgggggwwwgwwggwgwgggggwgggggggggwggggwgggwggggwggwgggggggwwggggwgwgggggwgggggggggggwgwgwwgggwgwwwwgwgwwggwwgwggggwggwggwgggggwgwwggwggggggwwwwwwgwwg",
     "optimalSolution": [
       0,
@@ -2327,6 +2410,7 @@
     "date": "2026-05-22",
     "size": 14,
     "goal": 56,
+    "maxWalls": 10,
     "map": "gggwwwgggwgggwwggggggggwwgggggggwggwwggwwwggggggwwwgwgwggwgggggggwggggggggwwggwggggwgwggggwgwgwgggggggwwghgwwgwgggggggwggggggwgwggggggwggggwggwggwwggwgwgggwggggwggggggggggggwwggggwwggwgwwggggggwgg",
     "optimalSolution": [
       1,
@@ -2357,6 +2441,7 @@
     "date": "2026-05-23",
     "size": 13,
     "goal": 64,
+    "maxWalls": 9,
     "map": "gwggggwgggwggggggggggggggwgggggggggwggwggwgggggggggwwwwwgggggwwwggwwgggggwwgwgggwgwwhgwgggwwgwggggggggwwggwggggggwgggggwgggwgggwgggwggggwggwgggggwwgggwggwwwgggwggwgwwggw",
     "optimalSolution": [
       0,
@@ -2385,6 +2470,7 @@
     "date": "2026-05-24",
     "size": 10,
     "goal": 36,
+    "maxWalls": 7,
     "map": "wgggwgwwgggggwgggggggwggggggwgwwggggggwggwgggggwgwggwgwhgggwgggggggwgggggggggggwgwgggwgwgggwggwwwggg",
     "optimalSolution": [
       0,
@@ -2409,6 +2495,7 @@
     "date": "2026-05-25",
     "size": 16,
     "goal": 91,
+    "maxWalls": 12,
     "map": "ggggwggggwgwgggggggggwgggggwgggggwwwwwggggwggwwgwggggggggwwgggwwgwgggwgwggwggwggwwgwggggggggggggwwwwgggwwggggwggggggwwggggggwwwggggggggwhwggwgwggggwgggwgwggwggwggggggwgwggwwggggggwggwgggggggwgwgwgggwwwgwwggwgwgwgwgwggggwggggggggwgggggwgwwwgggwgggggwgggggwg",
     "optimalSolution": [
       0,
@@ -2443,6 +2530,7 @@
     "date": "2026-05-26",
     "size": 19,
     "goal": 150,
+    "maxWalls": 14,
     "map": "gwgwgwgggwgggwgwwgggwgwgggggggwwgggggwwgwggggggwgwggwggwgwwgggwgwwwwgwwgggwggggwwwgggggwggwggggggggggwgggggwggwgggwgggggggggggwggggwwwwggwwwwwgwgwgwgwgggwggggwwgwwggwggggggwwwggwgghwggggwwggwggwggwwgggwwgggggwwgggggggggggwwgwwggggwwgwgggggwwgggggwgwwwggwgwggwgggwggggwggwwggggggggwgggggggwgggggwwwgggwgwgwgggwggggwggwgwwwwgwgggggwwwggggwgggggwgggggwgwggggggggwg",
     "optimalSolution": [
       0,
@@ -2481,6 +2569,7 @@
     "date": "2026-05-27",
     "size": 10,
     "goal": 24,
+    "maxWalls": 7,
     "map": "wggwgggwgggwwwgggwggwgwwgggwwggwggwggggwgwwggwgwgggggwwhwwgggwwggggggwwwwgggwggggwwwwggwggggwgwggggg",
     "optimalSolution": [
       0,
@@ -2505,6 +2594,7 @@
     "date": "2026-05-28",
     "size": 12,
     "goal": 45,
+    "maxWalls": 9,
     "map": "gggggwggwgggggggggwggggwggggggggwwggggwwgggggggggwggggggwgwwgggggwggwgwgwgwggghgwwwwggggwgggwgggggggwwggwgwgggwgggwggggggggwgwggggggwwgggwgwgggg",
     "optimalSolution": [
       1,
@@ -2533,6 +2623,7 @@
     "date": "2026-05-29",
     "size": 16,
     "goal": 102,
+    "maxWalls": 12,
     "map": "ggwwgggwgwgggwgggggwwgwgwggwggggwgggggwwgggggwgwggggggwggggggggggggwwggggggwgggggwggggwgggggwgwgggwggggwgggggwggwwggwwwggggggwgggwgwgggwhgggggwggggggwgwgggwggwgwgwgggwggggwwgggwwwgwwwggggggggwwggggggggggggggwggwgggwggwggwgwggwgggwgggggwgwgwgggggwwggggggggg",
     "optimalSolution": [
       0,
@@ -2567,6 +2658,7 @@
     "date": "2026-05-30",
     "size": 19,
     "goal": 128,
+    "maxWalls": 14,
     "map": "ggwwggggggwgggggwggggggwwgggwggwgggggggggwwggwggggggggggggwwgwwgwggwwwwwgggwgggggggwggggwggwwgwggwggwggggwgggwgwgwgggggwggwgwgggggwwgwggwggggggggwggwggggggwgwgggwwwwwggwggwgwgggwgghwwgggwggwgggwwggggwgwggwgggggwggwgwgwggwwgwwggggwgwgwgwgwggggwggggwgggwwggwwwggggwwwggggwggwwwgwggggwwgggggggwwggggggggggggggggggggwgwgwggwwgwggwggggggwwwgggggwwwgwgwggggggwwwggwgw",
     "optimalSolution": [
       0,
@@ -2605,6 +2697,7 @@
     "date": "2026-05-31",
     "size": 17,
     "goal": 107,
+    "maxWalls": 12,
     "map": "ggggwgggggggggggwggwwwwwgwggwggggggwgwgwgwgwggggggwgggggggwgwgwwggwgggggwwgggggggwggggggggwggggggwwggwgggwwgggggggwgwgwgwggggwwwggggwggggggwgggghwgggggwgggwgggwgwgwwgwgggggggggggggwwgwwggwggggwgwggggggwgggggwggwgggggwwwggwgwgwwgggggwggggggwgggwgggwggggwggwggwgwwgggwgggwgggwggggggwggggggwg",
     "optimalSolution": [
       2,
@@ -2639,6 +2732,7 @@
     "date": "2026-06-01",
     "size": 10,
     "goal": 23,
+    "maxWalls": 7,
     "map": "ggggwgggggggwgggwgwggggwgwwgggwwwggwgggwgwwggwgggwwgggwhwgwwggwgwggggggwgggggggwgggggggggggwwwggwwgg",
     "optimalSolution": [
       0,
@@ -2663,6 +2757,7 @@
     "date": "2026-06-02",
     "size": 8,
     "goal": 9,
+    "maxWalls": 6,
     "map": "gggwwwgggwwwgggggggwgggggwwwwwgggggghgwgggggwgggggggggggwgggggwg",
     "optimalSolution": [
       4,
@@ -2685,6 +2780,7 @@
     "date": "2026-06-03",
     "size": 20,
     "goal": 155,
+    "maxWalls": 15,
     "map": "ggggwgggwwggwggggggggwggggwggggggggwwwwgwwggwgggggggggggwwwgggwggggggwwwgwgggggwgggwgwggwgwwgggwggwwwgggggggwgggggggggggggwwgwgggwggggggggggwggwwggwwggwgggggggggggggggwwwwgwwwggggwggggwgggggwgwwgggggwgwgggwwggghwgggwgwgwwgwggggggwggggwggggwggggwggwgggggggggggggggwggggggwgwwggggwgwwwgwggggggggwgwgwggwggwgggwggwgggwgwgggggggggwggggwwwwgwwgggwggwggwgggwgggwgwgwgwggwgwgwgwggwwwgggggwggggwgwgwggwgggwgg",
     "optimalSolution": [
       2,
@@ -2725,6 +2821,7 @@
     "date": "2026-06-04",
     "size": 13,
     "goal": 57,
+    "maxWalls": 9,
     "map": "gggwwgwggwwgggwwgggwgwwwwgwgwgggwgwgggggggggggggggwgwwwwgggwggwwggwgggggggggggggggwghwgwgggggwggggggwwwgggwwwwgwggggggggggwggwggggggwgwwwgwgwgwggggggwwggggggwgwggggggggg",
     "optimalSolution": [
       0,
@@ -2753,6 +2850,7 @@
     "date": "2026-06-05",
     "size": 20,
     "goal": 164,
+    "maxWalls": 15,
     "map": "gwggwgggggwgwgggggwwgggwgggwwgggggwwgwgwgwwggggwgggwwwgwggggggggwggwgwggggwwgwwgggwgggwwggwwggwwggwgwggwggwgwwwggggggwwgwggwgwwggwggggwwwgwgwgggggwwggwgwggggwgggwwggggwwgggwggggggwggwggwgggggwwggggwggwggwggggwghggwgwwgwwgggwwgggggggggwwggwggwggwgggwgwggggwggggwgggggggwwggwggwgggwgggwggggggwgggwwgwggwgwwwwggwggggwggwggggggggwgggggwggwgggggggggwgggggggggwgwgggggwggwwgggggwggwgwggggwwwgggggwgwggggwgg",
     "optimalSolution": [
       0,
@@ -2793,6 +2891,7 @@
     "date": "2026-06-06",
     "size": 8,
     "goal": 24,
+    "maxWalls": 6,
     "map": "gwggwwwggwggwgggwgwgggggwggwgwgwwggghgwwgwggggggggwgggggggggwwgg",
     "optimalSolution": [
       1,
@@ -2815,6 +2914,7 @@
     "date": "2026-06-07",
     "size": 19,
     "goal": 136,
+    "maxWalls": 14,
     "map": "gwgggggwgggggwwgwggggggggggwgwggggggwgwgwggggwgwwggggggwwggwggggwggggggwgggwwwwgwgwgggwgggwwwggggggwgwggwwwgggggggwwgggggggwwwwwggwgwggggggwggwggwggggwgwwgwggwgggwwwggggggggggwwggghwggwggwgggggwggwggggwwggggggggwgggwgwggwgggwggggggggggwgwggggggggwggggwggwggwgwgggwwgggwgwgwggwggwgwgwwwgwwgwggggggwwggwwgggwggwwwgwgggwgwwgggwggggwgggwgwgwgwgwggwgggggwwggwggggggg",
     "optimalSolution": [
       0,
@@ -2853,6 +2953,7 @@
     "date": "2026-06-08",
     "size": 13,
     "goal": 64,
+    "maxWalls": 9,
     "map": "gggwgwggggwggggggggwgwgwggwgggwwgwwwggggggggggwggggggwgwggwwggggwgggwggwgggggggggggwhgwgwwggwggwggggggggwgwggggwgwggwwwggggggggggwgwgggggggwwwgwgwggggwwgggggggwgggwggggg",
     "optimalSolution": [
       2,
@@ -2881,6 +2982,7 @@
     "date": "2026-06-09",
     "size": 18,
     "goal": 122,
+    "maxWalls": 13,
     "map": "wggggggggggggwgggwggggggwggggwgwggwggggwggggggggwgwwwggwgwggwwwwwggwwggggwgggwwggggggggwggwgwgwgwggwwwwggwgggwggggggggggwwwgwggwgggggggwggggwggwgggwggwgggwggwwgggggggwgggghwwggwwwwggwwwwwgggwwgwgwwggggwggggggwgggwwgggggwwggwgwgggggggwggwwgwgggggwwwggwgwwgggwgggwgwgggwwgwwggwwwggggwwgwggwgwgwgggggggggwggwggwwgggggwgwwggggwg",
     "optimalSolution": [
       0,
@@ -2917,6 +3019,7 @@
     "date": "2026-06-10",
     "size": 9,
     "goal": 20,
+    "maxWalls": 6,
     "map": "ggwwwwgwwgwwgwwgwggggwgggwggggggwggggggghgwgwwwggwgwggwwgggggwgwgwggggwgggwgggwgg",
     "optimalSolution": [
       2,
@@ -2939,6 +3042,7 @@
     "date": "2026-06-11",
     "size": 9,
     "goal": 8,
+    "maxWalls": 6,
     "map": "gwggwgggggwgggwwgwgwggwggggggggggggggggghgggwggggwgggggwgwwggwggwgwwgggggggwggggw",
     "optimalSolution": [
       0,
@@ -2961,6 +3065,7 @@
     "date": "2026-06-12",
     "size": 11,
     "goal": 28,
+    "maxWalls": 8,
     "map": "wggggwggggwgwgggwgwwwggwgggggwggwwwwgggggggggggggggggggwwggwhggwgggggggggwwgggggggggggwwwwwgggwggwggggggggwwwggggggwggggw",
     "optimalSolution": [
       0,
@@ -2987,6 +3092,7 @@
     "date": "2026-06-13",
     "size": 10,
     "goal": 28,
+    "maxWalls": 7,
     "map": "gggwgggwgggwwgggggggwwgggwwggggwwgwgwwgwggwwgggwgggwggghgggwwgggwwgggggggggwwwgggwgggwgwgggggwwggggw",
     "optimalSolution": [
       1,
@@ -3011,6 +3117,7 @@
     "date": "2026-06-14",
     "size": 19,
     "goal": 143,
+    "maxWalls": 14,
     "map": "gggwgggggwggwwggggwwgwgggwgwggggggggggwgggwwgggwggggggwwgwwgwgggggggwwggggwwgggwggggwgggwwwwgwgwgggggggggggggggggggwggwgwggggggwgwgggggwgggwgwgwgggggwggggggwgwggwgggwwggggggggwwgwghwggwwgwggggggwggwwwwggggwggggggwggwgggggggggggwwgwgwggggwgggggwwwwwggggwgggggggwgwgggwggwgggggwggggwwggggggggggggggwgwwgwwgwggwwwwwgwggggggggwwgggwgggwgggwgggwwwwgggwwgggggggwggwgg",
     "optimalSolution": [
       0,
@@ -3049,6 +3156,7 @@
     "date": "2026-06-15",
     "size": 16,
     "goal": 105,
+    "maxWalls": 12,
     "map": "gwwgwwggggwwggwggggggggggwwwgwwgwwggggggwwgwwggggwgwgggwgggggggggwggwggwggwgwwwwgwwgggwwwggggggwggggwwggggggwgwgwwggwgggggwgwggwggggwgwghwgwgggwwwggggwgggggggwgggwgwwwwgggggggggggggwwggggwgwggwgwwgwggwgggwwgwwwggggwggwgggggggwgggwggwwwggwwggwgwgwgwwwwgggwg",
     "optimalSolution": [
       0,
@@ -3083,6 +3191,7 @@
     "date": "2026-06-16",
     "size": 10,
     "goal": 23,
+    "maxWalls": 7,
     "map": "ggggggwggwgggwgggggwggwgggggggggwggggggwggwggwwgwgggggghgwgwgwgwgggwggggggggggwgggwwwgwggwwggwgggggg",
     "optimalSolution": [
       1,
@@ -3107,6 +3216,7 @@
     "date": "2026-06-17",
     "size": 8,
     "goal": 12,
+    "maxWalls": 6,
     "map": "gggggwwgwwgwwggggwwwggwgggwgwggggggghgggggggggggwgwggwwwgggwgggg",
     "optimalSolution": [
       3,
@@ -3129,6 +3239,7 @@
     "date": "2026-06-18",
     "size": 17,
     "goal": 121,
+    "maxWalls": 12,
     "map": "ggggwwwgggwwggwggwwwggwgwwgggwgwwgggwwwgwgwggggwgggwwgwgggwwggwgwggwggwwwwwgggggggwwwgwgwggggggggwgwgggwwwwgggggggwwgggwgggwgwggwgggggwgwgwggwgghwggwgwgggggggggggwgggggggggwggwggwggggwggwgggggwwgwggggggwgggggggwgggggggggggggwwgggwwgggggwwgwgwgggwwwggwgwgwwgwggwwwgggwwgwggggggggwgggggggggg",
     "optimalSolution": [
       0,
@@ -3163,6 +3274,7 @@
     "date": "2026-06-19",
     "size": 14,
     "goal": 72,
+    "maxWalls": 10,
     "map": "gwgggwwgggggggggwgggggggwwgwgwgggwgggwggggwwgwwgggggggwggwggwgggggwwgggwgggwgwgggwggggwggggwgggwgggwggggghwgwggggggggwggwwggwggwwggggggwgggggwgggggwwgwgggwgwwgwgwgggggwggggwggggggggggwggwgggggggwg",
     "optimalSolution": [
       0,
@@ -3191,6 +3303,7 @@
     "date": "2026-06-20",
     "size": 13,
     "goal": 64,
+    "maxWalls": 9,
     "map": "gwwgwgwgwggwwgwgggggwggwwgggwggggwgggwggggwggwgggggwgwgwggwggwggwwwggwwwgggggwwwgwgghwggwwgwgggggwwgwwwggggwwggggggggwwggwwggggggwgggwggwggwggggggggwgwwggwgwwgwwwgggggwg",
     "optimalSolution": [
       0,
@@ -3219,6 +3332,7 @@
     "date": "2026-06-21",
     "size": 21,
     "goal": 197,
+    "maxWalls": 15,
     "map": "ggwwggggggwwwwggwgggwgggwggggggwwgwgggwggwwwgggggggwggggwwggggggwgwggggggwgwgggwggwgwgggggwggwggggggwgggggggggwgggwggggggggwwgwggwggggwggggggggggwggggggggggwgggwgggwwggwwwggwgwggwgwwgwgwgwwgggggggwggggwggggwggwgwggggwggwhgggggwggwwwggwgwgwggwwwgggwwgwgggggwwggggwgggwggwgwgwggggwwwwgwgwgggggggwwgwwggwggggwgwwggggggggggwggggggwwggwggwggwggggggwgggggggwgwgggggggwgggggggggwgwggggwgwwggwwgggwgggwgggwgwwggggggggggwwgwwgggwggwgggggwgggwgwwwgggw",
     "optimalSolution": [
       2,
@@ -3259,6 +3373,7 @@
     "date": "2026-06-22",
     "size": 18,
     "goal": 120,
+    "maxWalls": 13,
     "map": "ggwgggggwwwwgggggggwggwgggggggggggggwwgwwggggggggwwggwgggwgwggggwggwwgggwgwwgggggggwgwgwggwggggggwggggwwggwgwggggwwgggwwwwwggggwwgwggggggggwwggwwggwwwwgwgggwwwggwwgwwgggwwhggwgggggggwgggggggggwgggggwgwwwggggggggggggggggggggggggwgggggggggggggwwgwggwggggggggggggggwwgggwggwggwggwgwggggwggggwgwgggggggwwggwggggwggwwgwggggwgggwg",
     "optimalSolution": [
       1,
@@ -3295,6 +3410,7 @@
     "date": "2026-06-23",
     "size": 7,
     "goal": 9,
+    "maxWalls": 5,
     "map": "ggggggggggggwwggwggggggghwgggggggwwgwggwgggwwgggg",
     "optimalSolution": [
       2,
@@ -3315,6 +3431,7 @@
     "date": "2026-06-24",
     "size": 18,
     "goal": 118,
+    "maxWalls": 13,
     "map": "gwgwgggggggwwgggggwgggwggwwggwggggwgggggwwgwgggggwwwggggwggggggwwggggggwwggwgwwwggwggggggggwggggwwgwgwgggwgggwgwggggwggggwgggggwgwgwgwgwwgggwgwggggggwwwgggwgggwgwgggggggwwhwwgggggwggggwggggggggwggwggggwgwgwgggggggggwgggwggwwwwgggggggggwwggggwgwgwwgwgwgwggwggwgwggwwggggwwggggwgggggggwgggwwwgwgggwwgggwggwwggwggwgwgggggggwgwg",
     "optimalSolution": [
       3,
@@ -3351,6 +3468,7 @@
     "date": "2026-06-25",
     "size": 15,
     "goal": 65,
+    "maxWalls": 11,
     "map": "wgggggwgwggggwwggwgwwwwgggwgwgwwggwgggggwgggggggggwgwgwgggggwwwwgggwggwgggwggggggwwggggwggwgggwggwwggggggwwgggwwhwggwwwggggwgwggwgwgggwgggggwwgggwgwggwggwwgggggwggwgwwggggwggggggggwggggggwgggggggwggggwwgwwgggggggwgggggggggggg",
     "optimalSolution": [
       0,
@@ -3383,6 +3501,7 @@
     "date": "2026-06-26",
     "size": 15,
     "goal": 94,
+    "maxWalls": 11,
     "map": "gggwggggggggwgggwggggggwgggggggggggggggwgwwwgggwwggwgggggwgwgwggggggggggggwggwgggggggggwggggwwgggggggwggwggwgwwghgggggggwggggggggggggwggggggwwgggggggwwwggwwwwgggwwgwgwgggwwgwggggwggggwggwggggggwgggggwwggggwgggwgggggwgwggwwgww",
     "optimalSolution": [
       1,
@@ -3415,6 +3534,7 @@
     "date": "2026-06-27",
     "size": 12,
     "goal": 47,
+    "maxWalls": 9,
     "map": "gggggggwwgggggwggwggggggggggggggggwgggwwggggwggwgwggggggwggwgggwwggggwwwggwggghwgggggggwgggwgwgggggggwwggwgwwgwwwggwgwwgggggwggwggggwggggggwgwgw",
     "optimalSolution": [
       0,
@@ -3443,6 +3563,7 @@
     "date": "2026-06-28",
     "size": 12,
     "goal": 52,
+    "maxWalls": 9,
     "map": "ggwggwgggwggwwggggwgwwwgggggwgggggwggggwggwggggwggwgwwgggwgggggwgwggggggwwgwgghwggwgwgggggwgggggggggggwggwwggwgwgwwgggwwggggwggwwwgggwggwwwgggwg",
     "optimalSolution": [
       0,
@@ -3471,6 +3592,7 @@
     "date": "2026-06-29",
     "size": 20,
     "goal": 168,
+    "maxWalls": 15,
     "map": "ggwggggggwwggggwgggggwgggwgggwgwgwgggggwggggwwgggwgggwggggggwggggwgwggwwgwgggwgwwgggggggwgggggggwgwgggggggwwwggwggwgggwggwgggggwwgggwwwwggggggwwwgggwwggggwgwggwgwggggggggggwggggwwgwgggggwgggwggwggggwgggggggwwwghgwwggwgggwwwgwgggggggggggwgggwgggwwgggwgwgggggggggggggggggwggwwggggwwgwwwggggwgggggggwgwgwggwwgwgggggwwgggwwwggwggwgwgggwggggwgwgwggggwgggwgwwgwgwgwgwgwgggggwggwwwggggggwggwggwggggwggwgggwg",
     "optimalSolution": [
       0,
@@ -3511,6 +3633,7 @@
     "date": "2026-06-30",
     "size": 20,
     "goal": 158,
+    "maxWalls": 15,
     "map": "gwggggggwgwgggggwgwgwggggwgggggwggggggwwwgwgggggwggwgwggwgwggggwgggggggggwgwwggwwgwggwgwwgwggggggwggggwwgggwwggwgggwgwgwwggggwwwggwgggggwggggggggwwgggggggggggggwggggwgggwgggwgggwwgggwggggggwgwggggwgggggggggggwghgggwgwgggwwgggwwgwgwgggggggwwgwggggwggwggwggggggwgwggwggggggggwggggggwwggwwgggggwwwggggwgwgggggggggwwgggwwgwggggwwwgggwggwgwwgggwwwgggggwwgggwwgwgwgwgwgwggggggwggwwgwwggggggggwggwgwgggwwggg",
     "optimalSolution": [
       1,
@@ -3551,6 +3674,7 @@
     "date": "2026-07-01",
     "size": 19,
     "goal": 129,
+    "maxWalls": 14,
     "map": "wwgwgwwgggggwgwggwgggwwggggwgggggggwwggggggwggggwwgwgwwggggwwwgwwgwwggggggwwgggwwgwggggggwggggggwgggwgggwwggwgwwggwgggwgwwwwggwwwwgwwwwggggwwwggggggwggggggwwgggwwggggwgggwwggggggwghgggggwgggwgggwggwwgwggwggwgwgggwggwgggggggwggggwgggggggggggwwgwggggggwwggwggwgggwwgwwwwgggwwgwwggwggggggwgggggwggggwggwggwgggwwwgggggggwwggggwgggwwggwgggggggwwwgwgwgggggggggwggwwgw",
     "optimalSolution": [
       1,
@@ -3589,6 +3713,7 @@
     "date": "2026-07-02",
     "size": 20,
     "goal": 159,
+    "maxWalls": 15,
     "map": "wgwggggggwwgwwwwgwggggwgggwgggggwgggwgggggggggwwggggwggggwwggwwwggwwwgggwggggwwgggwwgggwwwggwggwggggwggggwggwggwgggggwwggggggwggwwwgggggwggwggggggwgwggggwgwgggwgggggggwwggwgggwgwggwggwgwggwwgwggwgwwgggwgggwgwgghggwwwwggggggwggwwggwgwwggggwwwwgwgwgggggggggggwgggggwggggggggggggggggwgwggwgwwgwwgggggwgwgwgwggggwgwgwggwwgggwwwwgwwwggwggwggwgwgwwwwgggggggwggggwgwggggggwgggwgggggwgwwgwgwggggwwgwggggggggg",
     "optimalSolution": [
       1,
@@ -3629,6 +3754,7 @@
     "date": "2026-07-03",
     "size": 21,
     "goal": 139,
+    "maxWalls": 15,
     "map": "wwgwgggwggggggggwgwggggggggggggggwwgggwgwggwgwggwgggwggwgggwgggggwgggwwwggwwggggwgggggggwgggwgggwgwggggwgwgwggwgwgggggggwgggwwgwgggwgggggwggggwgggggggggwwgggwgggwgggwwggwgwggggwgggwgggwggggggwggggwgggggggwggwggwggwwwwgwghwgwwgggggwggggggggwgwgggwgwgwggwggggwwggwgwggggwggggwwgwwggggggwgggwggwggwgwggwgwwggwgwwwgwggggggwgggwggggwgwwgwgggwgwggggggwggwwwggwwwgggggggwgwggggggwgwgggwggwggggwgwgggwwwggggwggwwwgggwggwgggggggggggwgwwgggwwgggggggwg",
     "optimalSolution": [
       0,
@@ -3669,6 +3795,7 @@
     "date": "2026-07-04",
     "size": 14,
     "goal": 69,
+    "maxWalls": 10,
     "map": "ggwwwggwwgggggwggwgwgggwggggggggggggggwgggwgggggggggggggggggwggwwwwgwwwggwgggwgggggwggggwgwgggwwwwgwgwwwghgwgwgggggggwggwgggwgggwwggggwgwggwgggwwggwggwwgggggwggwggwgwgggwwgggwggwgwgwgggwggggggwgwg",
     "optimalSolution": [
       0,
@@ -3699,6 +3826,7 @@
     "date": "2026-07-05",
     "size": 8,
     "goal": 17,
+    "maxWalls": 6,
     "map": "wwgggggwggwgwwggggggwgggggggwggggwgghgggwwggwgwwwggwggggwwwwwwgg",
     "optimalSolution": [
       0,
@@ -3721,6 +3849,7 @@
     "date": "2026-07-06",
     "size": 8,
     "goal": 11,
+    "maxWalls": 6,
     "map": "gwgggggwwggggggggggwggwgwgwggggggwgwhgggggggwgwggggwgggwwwgwgggg",
     "optimalSolution": [
       0,
@@ -3743,6 +3872,7 @@
     "date": "2026-07-07",
     "size": 19,
     "goal": 146,
+    "maxWalls": 14,
     "map": "wgwwgggggggwwggggwwwgwgwgwgwwgwgggwgwgwggggggggwgggwwgwggwgggwwgwggggwgggwggwwggggggggggwggggggggggggggwwwgggwgggwgggwwggwgwggggwggwgwgggwggggwgwgggggwggggggwwgwgwgwggwgwwggggwgggghggggwggggwggggwggwgggwgggwwwgwwgggggwggwgggwgwwggwgggwgggwwgwggwgwgwgggwgwggwgwwgggwggwgggwgggwgwggggwgggggwgwgggwggwwggggwwgggggggwggggggggggggwwgwggggggwwgggwwwggwgggwwwgwggggggg",
     "optimalSolution": [
       0,
@@ -3781,6 +3911,7 @@
     "date": "2026-07-08",
     "size": 18,
     "goal": 145,
+    "maxWalls": 13,
     "map": "gggggggwwggwwgggggggwgggwgggwwgggggwggggggwggwggwggggwgwgwwgwgggwwgwgwgggggwggwwgggggwwwggggwgwgwwggwgggwwwggggggggggggggggwggggwgwgggggggggggwwggggggwwggwggwwggwggwgggggwhgggggwwggwggggwgwgwggggggwggwggggwwwgggggggwggwgggwggwggwgwggwgwggggggwwgwggwgwgggggwggggggggggwggwgwwggwwwggwwggwggwgggwwgwwgggwggwwgwgwwggwwgggggggggw",
     "optimalSolution": [
       0,
@@ -3817,6 +3948,7 @@
     "date": "2026-07-09",
     "size": 10,
     "goal": 25,
+    "maxWalls": 7,
     "map": "gggwggggggggwgwwwgwgggggwgwgggggwgwggwgggggwggwwggggggghwggggggggggwgwggggwggwwgwwgwgwggwggwgggggggw",
     "optimalSolution": [
       4,
@@ -3841,6 +3973,7 @@
     "date": "2026-07-10",
     "size": 21,
     "goal": 129,
+    "maxWalls": 15,
     "map": "gwgwwgwgggggwwgwwgwgwwgwwggwggwgggwwgggggwgggggggggggggggggggwgwgwgwgwwwggggwggggwggggggggggwgwwgggwggggggwwggwwwwgwgggwggwgggggggwgggggwgggwggwgggggwgggggggwgggwgwgwwgwggggwgwggggwgwggggggwggggggggwgggwwggggggggggggggwwhgwwgggwggwgwgwgwgggggggggggggggggggggggwgwggggggggwggwwwgwgwggwggggggggggwgggggwggwggwwggggwgwgggggggggggggwwwwggwwgggwwgggggggggwwwwwgwggggggggggggggggwwgggggwggggggwggggggwgggwgggggggwwgggggggwwwwwgggwgwggwwggggwwggwww",
     "optimalSolution": [
       3,
@@ -3881,6 +4014,7 @@
     "date": "2026-07-11",
     "size": 17,
     "goal": 86,
+    "maxWalls": 12,
     "map": "ggwwgwgggggggggwggggggggwwggggggggggwggwwwwgggwggwggwwggggwwgggwggggwggggwwgwgggwgggggwwwggggggggggggwggwgggwwgggggggggwgwggggwgwggwwgwwgggwggwghwggggwgggggggwgggggwggggggwgggggggwgggwggwwgggwgwggwggwggwggwggggggwggggwggggggggwwwggggwggggggwggwgggggggwgggwggggwggggwggggggwgwwgwgwgwggggggg",
     "optimalSolution": [
       4,
@@ -3915,6 +4049,7 @@
     "date": "2026-07-12",
     "size": 16,
     "goal": 94,
+    "maxWalls": 12,
     "map": "gggwwggwgwwgwggwwgggwggwgwgggwwgwgggwwggwggwgwgggggggwwgwwwggwgwgggwgggggwwgwgwwgwggwggggggwwgwwgggggggwgggwgggwwgggggggggggggwwggggwgwghwwggggwggwgggwwgggwgggggwggggggggggwggggwwgggwwggggggwwwwggwgwgggwgggggwgggggggggggggggwwgwgwgwggggwwgwwgwggggggwwggggg",
     "optimalSolution": [
       1,
@@ -3949,6 +4084,7 @@
     "date": "2026-07-13",
     "size": 7,
     "goal": 11,
+    "maxWalls": 5,
     "map": "ggwggwgggwwwgwwggggggwgwhwwgwwwgwwggwggggwggggggg",
     "optimalSolution": [
       1,
@@ -3969,6 +4105,7 @@
     "date": "2026-07-14",
     "size": 16,
     "goal": 105,
+    "maxWalls": 12,
     "map": "wwgwwwgwgwggggwwggggwggggwwgggggwwgggggwwwgggwwwgggwwggggwgwggwgwgggggggggggggggwgwggwggggggwggggwwwgggggwggwggwgggggggggggwgwgggwwggwgghgggwggwggwggggggwgwggwgggggggggggwgggggwgwwggwgggggwgwwggggggggwgwgggggwggwgggwgwggwggwggwgggwgwggwgggwwwggwwgwwggggwgw",
     "optimalSolution": [
       0,
@@ -4003,6 +4140,7 @@
     "date": "2026-07-15",
     "size": 20,
     "goal": 189,
+    "maxWalls": 15,
     "map": "wgwwwwwggwgggwgwwgggwggggwggwgwwgwwgggwwggwwwwgwwgwggggggwwggggwwggwgwgggggggwgwgwggwwgggggwwgwggwwwgwggwgggwgggwwwggwgwggggggwgggwgwgwgwggwgwgggggwwgggwgwgggggwggwggwwggwgggwgwwggwwgggwwggggggwggwggwwwgwwggggwhgggggwggwggggwgwwggggwgggwgwgggwwgggggwwggwgggwggggwggggggwgwwgggggwgwwwwwggwwgggggwgggwwwggwwgggwgwgwggwgwgggggwwggggggwwwwggwggggwggggggggggggwwgggggwgggggwwwgggggggwggwwggwggwwwgwwgwggww",
     "optimalSolution": [
       0,
@@ -4043,6 +4181,7 @@
     "date": "2026-07-16",
     "size": 19,
     "goal": 136,
+    "maxWalls": 14,
     "map": "gggggwggwwwgggwgggwggwgwgwggggwgggwwgwwgwgggwggggwggwgggwgggwgwgwwgggwwwggwggggggwggwgwgggggwgwwwggggggggggwgggggwwggwgwggggwwggwggggwwwggggggggwwwwgggwgggggwggwwgggwwgwggggggwgwwwhgwggwwgggwggggggggwggggggggggwgggggwggwwgwggwgwwgwgwgggggggggggwggwgwggwgwwwgwwwggggggwgggggggggwggggwggwgggggwwgwggggwwgwggwggggwwgggwggggggggwwgggwggwgwggggggggwggggwgggggggggggg",
     "optimalSolution": [
       0,
@@ -4081,6 +4220,7 @@
     "date": "2026-07-17",
     "size": 14,
     "goal": 63,
+    "maxWalls": 10,
     "map": "ggwgggggwggggwgwgggwgwgggggwgwggwgggggggggwgwwgwgwwggggwgggggwgggwggggwwgwwggggggggwgwwgwggwgwggggggwgggghggwgggwwggggwggggwggggggggggwgggwgggwggwgwgwwggggwwggggggwwgggggwggwgggggwggggwgwggwwgwggg",
     "optimalSolution": [
       0,
@@ -4111,6 +4251,7 @@
     "date": "2026-07-18",
     "size": 17,
     "goal": 94,
+    "maxWalls": 12,
     "map": "gwgggggwggwgwwwgwwggwwggggwgwggggggggggggggwgwggggggggggggggwwggwggggwgggwgwwggwgwgwwggwggwggwwwggggggwwggggggggggwggggggggwggggggwgggggggwgwggghwwgwwggwgwgwgwwwgggwggggggggggggggwwwgggggwwgwggwggwggggwwggggggggwgwgggggggwgggggggggwggwwgwgwgwgggggwggwgggggwgggggwwwggwgggwwgwwgggwgggwgwgwg",
     "optimalSolution": [
       0,
@@ -4145,6 +4286,7 @@
     "date": "2026-07-19",
     "size": 9,
     "goal": 14,
+    "maxWalls": 6,
     "map": "ggggggggggwgwggggggwggwggggwgggggggwgggwhggggggggggggggggwgwggwggggwgggggwwgwgwgw",
     "optimalSolution": [
       0,
@@ -4167,6 +4309,7 @@
     "date": "2026-07-20",
     "size": 21,
     "goal": 177,
+    "maxWalls": 15,
     "map": "wgggwwggggwgwwwwgwgggwwgwggwgggwgggwggwgwggwgggggwgwwgwgwggwggggwwgggwwgwwgwggwggwggggggggwgwggggwggwggggwggggggggggwgggwgwggggwgwggggwwggggwgwggwwggwwwwggwggwggggggggggwggggggwgwgggwggggggggggggggggwgwwggwggwgwggggwgggghgggggwgwggwwggwwggggwgwwwwwgwgggggggwwggwgggggwwggggggwgwwgggwgggwggwwgwggggggwggggggwggwggggwgggwggggwgwwggggggwgwgggggggggwwwggwwgwgwwwgwgwgggggggggggggggwgwgggggggwwgggggggwgggggwggggwwgwggggggggggwwgwgwgwgwgwwggwgwgg",
     "optimalSolution": [
       0,
@@ -4207,6 +4350,7 @@
     "date": "2026-07-21",
     "size": 15,
     "goal": 61,
+    "maxWalls": 11,
     "map": "gwggwwgggggwgwggggggwwggggwggggggwggggggggwgwwgwggggwggwgwgwgggwgwgwgggggwggwggwwwwwggwgggwgggggwggwgwgggggggwgghgwgggggggggggwgggggwggggggwggwggwggggggwgggwwwggwggwggwgggwgggggggggwgwwgwwggwwwwwggggwggggwggggwwwgwgggggwgggwg",
     "optimalSolution": [
       4,
@@ -4239,6 +4383,7 @@
     "date": "2026-07-22",
     "size": 11,
     "goal": 35,
+    "maxWalls": 8,
     "map": "wggggwggggwgggggwggggggggwwggggwwwgggwwggggggggggggggwggggwghgwggwggwgwggggggggwwgwgggggggwgggwgggwgggwwgwggggwgwwgwgwwwg",
     "optimalSolution": [
       0,
@@ -4265,6 +4410,7 @@
     "date": "2026-07-23",
     "size": 21,
     "goal": 202,
+    "maxWalls": 15,
     "map": "wwggggwggwgggwgwwgggggwgggwgggwggwgwwggwggwggggwgggwgggggggggggggwggggwggggwgwggggggggwggwwwggggggggggggwggggwgggggggwwggggggwwgwgwggwggwwgggwwgggwwggwgggwggggwwggwggggwgggggggggggwwggwggwggwgggwggwgggwgwwggwggggwwgggwgwhgwggggwggggggwggggggwwggggwgwwgwggwggwggwgggwggwwgwwwwwggwggggggwgwwggwgwgggggggggwwgggggwggwgggwggwggggwggwwggwwggggwgwgggwggwgggwggwgggggwgwggggggggwgwgwgggwwwgggwgwgwggggggwggwgwgwwgggwwgggwwgggggwgggggwgggggwgwggwwgw",
     "optimalSolution": [
       0,
@@ -4305,6 +4451,7 @@
     "date": "2026-07-24",
     "size": 9,
     "goal": 19,
+    "maxWalls": 6,
     "map": "wgggggggwgwgwgggggggggwgwgggwwggwgwwwwgghgwgwggwgwggggwwggwgwwwgwggggwwgggggggwgg",
     "optimalSolution": [
       0,
@@ -4327,6 +4474,7 @@
     "date": "2026-07-25",
     "size": 14,
     "goal": 57,
+    "maxWalls": 10,
     "map": "ggwggwwggwwggwggwgggwgwggwgggggggwgwgggwggggggggggggggggwggggggggggwwgggwwgwggwggwggggggggggwggggggwggwwghwgwgggggggwgwwggggwwwgggggwggggggggggggggwwggggwgggwggwgggwgwggwwgwgggwggggggwgwgggggggwgw",
     "optimalSolution": [
       3,
@@ -4357,6 +4505,7 @@
     "date": "2026-07-26",
     "size": 17,
     "goal": 97,
+    "maxWalls": 12,
     "map": "gggggggwwggggwgggwggwgggggwggwggggggggwggggggggwggwgwgwwggwwgggwgwwwgwwgwwggwwgggwwwggwgggwwggwwgwgwggggggggwgwwwggwwwggggwwggggggwgwggwwwgwgggghwggwgggwwgggggwwggggwwggwwgwgwwggwwwgwwwggwgwwggggwwwggwgwgwgwggwwgwwgggwwggwggggggwgggggggwggwgwggggggggggggggggwggwgwgggwwwgwwgwgggggwgggggwgg",
     "optimalSolution": [
       0,
@@ -4391,6 +4540,7 @@
     "date": "2026-07-27",
     "size": 7,
     "goal": 6,
+    "maxWalls": 5,
     "map": "gggwggwggwgggwggwgwwgwwghgggggggggwwggggggwggggwg",
     "optimalSolution": [
       1,
@@ -4411,6 +4561,7 @@
     "date": "2026-07-28",
     "size": 16,
     "goal": 92,
+    "maxWalls": 12,
     "map": "gwwgggwgggggggwgggwgwggggwgwwgwgggggwgggwgwgggggggwgwgggwwgggggggwggggggwwgggwggggggggggggggwwgwggggggggggggggwgggwwgwggggwggggwgwwwggwghwgggggggwwggggwwwggggggwggwgwwwgwgwgwgggwgwggwgwwwgwggggggggwwwggggwwggwggwwwgwggggggwwgwggggggwgggwwwgggwwgggwwgwwgwgw",
     "optimalSolution": [
       0,
@@ -4445,6 +4596,7 @@
     "date": "2026-07-29",
     "size": 13,
     "goal": 36,
+    "maxWalls": 9,
     "map": "wwggwwgwggwgwgwggwwggggwgwgwgggggwgwgggwwggggggggwgwwgggggggggwwgggggwwggwgwggggggwghwwggggwwggggggwwggggggggwwggwgggggwgggggwwwwgggwggggggggggggwggwwgggggwgggggggggwwgw",
     "optimalSolution": [
       0,
@@ -4473,6 +4625,7 @@
     "date": "2026-07-30",
     "size": 7,
     "goal": 8,
+    "maxWalls": 5,
     "map": "gggwgwwwwggggggwwwggggwwhgwgwgggggggwgggggggggggg",
     "optimalSolution": [
       2,
@@ -4493,6 +4646,7 @@
     "date": "2026-07-31",
     "size": 20,
     "goal": 136,
+    "maxWalls": 15,
     "map": "gggwgggwggwwgwwggggwwgwggwgwggwggggggggggwwgggwwgggggwgwggwggggwgggggwwggwggggwwgwwggwwggwggwggggggggwwwggggggwggggggwwggwgwgggwwwwwgwggggwwwgggggwgggggggwggggwggggggggwgwgwgwggggwwwwwwwwwgwwgwgggwggggggggwggwwhggggwwggggggwgggwgwgggggggwgggwwggwggwgggggggggwwwggwwwwggggggwggggggwggggggggwgwggggwwwgggwwggggwgggwgggggggwgwgggwggwgwgggwggggwgggggwwgwggggggggwwggwwgwgwggggggwgggggwwgggggggwgggwgggggw",
     "optimalSolution": [
       0,
@@ -4533,6 +4687,7 @@
     "date": "2026-08-01",
     "size": 21,
     "goal": 200,
+    "maxWalls": 15,
     "map": "gggggggggwwwwgggggwggggggggggwwggwgwggwgwwwwwggggwwgggwggwwggggggwgwwggggggwggwwgggggwggggggggggwgwgwgwggggggggggggggggggwggwgggwggggwggwggwgggggwgggwwwggwggggwggggwggwgwgwggwgwgggggggggggggwggggwggggwggwwggggggwgggggwwwhggggwgggwgwggggwggggggwgggwgggggwgggwgwgggwggggwgggwgwgwwgggggggwggwggwgggggggwggwggggggggggwgwggwggwgggwgggggwggggwggwwggggggwgwgggwggwwwgggwgwgwggwggwggggwgwwggwwggwggggggggggggggggwgggggggwggwggwgggwwggwwgggwgwwggwggg",
     "optimalSolution": [
       0,
@@ -4573,6 +4728,7 @@
     "date": "2026-08-02",
     "size": 11,
     "goal": 39,
+    "maxWalls": 8,
     "map": "ggggwggggggggggwgwwggggggggggwggggwwgggwggggwgggwwwgggggwggwhgggggggggwggwgggwwgwggggwwgwwgggggwwggggwgwgwggggggwggwggggg",
     "optimalSolution": [
       0,
@@ -4599,6 +4755,7 @@
     "date": "2026-08-03",
     "size": 15,
     "goal": 68,
+    "maxWalls": 11,
     "map": "ggwgwwwwggwggwggwggwggggwwggggwggwgggggggggwgggggggwgggggggwggggwwwgwgggggggggggggwgggwgwwwggwwggggwggggwwwggggwhggwgwgggggwggwggwggggggggwgggwgggwgggwgwgwwgggwgggggggggwgwgwggwgggggwwggwgwgwgggwggggwgggwggwggggwwgggwggwgwggg",
     "optimalSolution": [
       0,
@@ -4631,6 +4788,7 @@
     "date": "2026-08-04",
     "size": 9,
     "goal": 29,
+    "maxWalls": 6,
     "map": "gwwwgggggwgggggwggwgwggggwggggwggwgggggghggwwggggwggwgggwgggwgwwgwggwggggwggwgggg",
     "optimalSolution": [
       0,
@@ -4653,6 +4811,7 @@
     "date": "2026-08-05",
     "size": 7,
     "goal": 7,
+    "maxWalls": 5,
     "map": "ggwggwgwgggggwggggwwgwgghggwggwgggggwggwgwwgggggg",
     "optimalSolution": [
       2,
@@ -4673,6 +4832,7 @@
     "date": "2026-08-06",
     "size": 12,
     "goal": 48,
+    "maxWalls": 9,
     "map": "ggwggwggwgwggggggggggwwggwgwgggwwggggwgggggggggwgwggwwgwwwgwggggwwgwggwggggwgghgggwggggwwggwwgwwggggggwggwwgggggwgggwgwggggggwwggwgwgggggggwgggw",
     "optimalSolution": [
       0,
@@ -4701,6 +4861,7 @@
     "date": "2026-08-07",
     "size": 13,
     "goal": 58,
+    "maxWalls": 9,
     "map": "wgwgggggggggggggwwgggggggggwgggwwggggggwgggggggwwgwggwgggwwwwwggwwgggggwgggggggwwwgghgwwwgwgggwgggwwggwwwgwggggwwgggggwgggggwgwwgwwwgggggggwwggwgwwwgwgggggwwggwgggggggwg",
     "optimalSolution": [
       0,
@@ -4729,6 +4890,7 @@
     "date": "2026-08-08",
     "size": 16,
     "goal": 78,
+    "maxWalls": 12,
     "map": "gwwgwwwwgwwwggwggggggwwgggggggwgwwggggwggwgggggwwwwgggggwwgwgggwwggwwggggwwwgwggggwgwwgwggwwggggggwgggwwgwgwgwgwgwggwwgwgggwggwggggwgwgghwgggggggwwggggwwgwggggwwwggwggwwggwwggggggwggwwwgggwgwwgggggggwgwwgwgwgwwggggwgwwggggggwgggwgggwgggggwggwgggwgggwgggggw",
     "optimalSolution": [
       0,
@@ -4763,6 +4925,7 @@
     "date": "2026-08-09",
     "size": 10,
     "goal": 15,
+    "maxWalls": 7,
     "map": "gwggwgggggwwgggggwgwggggggwgggwgwggwgwwggggggwgggggwggwhggggwgggwgwwggwgggggggwgggwgggwggggggggggggg",
     "optimalSolution": [
       4,
@@ -4787,6 +4950,7 @@
     "date": "2026-08-10",
     "size": 21,
     "goal": 193,
+    "maxWalls": 15,
     "map": "gggggwgggggggwgggwwgggggggwggggggggwgwwwwgggwggwwwwgggwwwggwwgwggwgggggggggwgwggggggwgggwgwgggwggggggggwggwgwggggwgwggwggggwggwgwgwwwgggggggwggggggggggwgggwgwgwwwwggggggwggwgggggggggggggggwggggwgggggwggggwgwwggwgwwgggwgghgggwggwggggggggggwgwggggwggwgwggggwwgwgwgwwggwggwggwwwgggggwgwggggggwwggwgwggwwgggwgggggggwgwwwwggggggwgwgggwwgwwwggggwggwggggwwggwgggwggggwgwwwggggwwgggggwgggggwggwgwggggwwggwgwggwggggwggwgwggwgwgggwggwggggggwwgggwwwggg",
     "optimalSolution": [
       0,
@@ -4827,6 +4991,7 @@
     "date": "2026-08-11",
     "size": 18,
     "goal": 122,
+    "maxWalls": 13,
     "map": "ggggwwgggggwwggwgggwgggggggwgggggwgggggggwgwgwwgwgggwgwggggwgwgwgggwwggggwgggwwwgwggwgwgggggwgwggggggwggggggwggggggggwggwgwgggwgwggwwggggggggwgwggwggggwwwggggggwgwwwgggggghgwgggwwwwggggggwggggwggwwgggwwgwgwggggwgwgggwggggggggwgwwwwgwgggwwgggwgggggggwgggwgggwggwgwggwggggwggwgggwgggggggggggggggggwggggggggggwgggwggggwwwwgwwgg",
     "optimalSolution": [
       1,
@@ -4863,6 +5028,7 @@
     "date": "2026-08-12",
     "size": 20,
     "goal": 168,
+    "maxWalls": 15,
     "map": "gwgggggggwwgggwgwgggggwwwggggwwgwgggggwgwgggggwwggwggggggggggggggggwggwggggwgggggwwggwgwwggggggwwwgggggggwgwggwgggggggwgwwgwggggggwggggwwggwgwwgggwggggggggwgggwgggwggggwgwggwwggwgwggggwggwwwwggwgwgwwwgggwwggggghggggwggggwggwwwggwgwwwgwwwggggggggggwwgggggwwggwgwwwwwggggwgwggggwgwgggggggggggwggwggwgwwgwggggggggggwggggggggwwgggwwgwggggwggwggwgggwwgggggggggwgwggggwwwggggwwgwgwggwggwwwggggggwgggwgwgggg",
     "optimalSolution": [
       0,
@@ -4903,6 +5069,7 @@
     "date": "2026-08-13",
     "size": 13,
     "goal": 61,
+    "maxWalls": 9,
     "map": "gwggwwwwggwggwwggwgggwggwggggggwgggggwwgggggggggggggggwggggggwggwwwgwgggggwgggwgwwgghgwwwwgwwggggggwggwgwggggwgwwggwgwggwgwgwwggggggggggwwwggggwgwggggggggwgwggggwgggwggg",
     "optimalSolution": [
       0,
@@ -4931,6 +5098,7 @@
     "date": "2026-08-14",
     "size": 15,
     "goal": 76,
+    "maxWalls": 11,
     "map": "ggggggwwgwggwwggggggggggggwggwgwggwwggwggggggggggwgwgggwgwggggggwggwggwwwggwggggwggggggggggggwggggwggggwgggggggghwggwggwwgwggggggwggwwwgggggggggggwwgggggwggggwggggwgggwwgggwgwgwgggwgggwwgwgggggwggggggggwgwgggggggwgggggwwggggw",
     "optimalSolution": [
       0,
@@ -4963,6 +5131,7 @@
     "date": "2026-08-15",
     "size": 20,
     "goal": 179,
+    "maxWalls": 15,
     "map": "gwgwgggwgggggggwgwwggwwgggggwwggwwgggwggwwwwggwwwgggwggwwwggggggggggggggggwggwwgggwggwwggggwggwgwggwgwggggggggggggwggggggwwwwggggwggggggwgggwgwgggwwggwgwgggggwgggwgwggwgwggwgwwgwwgwwgggggggwggwwgggwwggggwgwgwgghwgggwggggwwgwgggwgggwwwgwgggwggggggwgwwgggwggwgggwggwgggggggggggggggwgggwggggwggggggggwwggggwggggwgwwgwwgggwgwgggwgwwgwggggggwwwwggwgwwggggwgggwggwgwgggggwgggwwgggwgggggggwgwggwggwwgggggggg",
     "optimalSolution": [
       0,
@@ -5003,6 +5172,7 @@
     "date": "2026-08-16",
     "size": 17,
     "goal": 111,
+    "maxWalls": 12,
     "map": "gwwwgwwgwggwggwggggwgwggwggggggwwggggwgggggggggwwgwggggggggwggwggwgwgwggggwgwwgggggwwwggwgwwwgwgwwwgwwwggwggwggwwgggwgggggggggggwgwggwggwggggwgghwwgggggwwggggggwwgggwgggggggwgggwggggwgwggwggggggwggggwgwgggwwgwgggggggwgggwgggwggggwgggggggggwggggggwggggwwwgwgwwggggggwwggggwggggwgwgggwwwgggg",
     "optimalSolution": [
       2,
@@ -5037,6 +5207,7 @@
     "date": "2026-08-17",
     "size": 8,
     "goal": 13,
+    "maxWalls": 6,
     "map": "ggwwgggwgwggwggggggggggggggwggggggwghggggwggwggwgggggwgwgwgggggg",
     "optimalSolution": [
       2,
@@ -5059,6 +5230,7 @@
     "date": "2026-08-18",
     "size": 8,
     "goal": 8,
+    "maxWalls": 6,
     "map": "wgggggwgwgwggggwwggggwggwwgggggggggghwwgggggggggwgwgwgggggggwgww",
     "optimalSolution": [
       0,
@@ -5081,6 +5253,7 @@
     "date": "2026-08-19",
     "size": 18,
     "goal": 125,
+    "maxWalls": 13,
     "map": "ggggwwggggwggggwwggwgggggggggggwgwggggwgwwwwwgggggggggggggwwggggggggwwgwgwgwwggwwwwgwgggggwggwwgwwgwgggggwwggggggggwwwggggggwwggggggggwgwggwgggwggwggwwggggggwwggwggwgwgwgwhwgggggwggwwgggwgwgggggwwgggggwgwwwggggwgwggwgggwgwgggwgggggwgggggwgggggwgwwwgggwgwwggwwgggwggwwgggggwgwggwggwggggwggggggwggggwggggggwgwggwgwggwgwgggwggg",
     "optimalSolution": [
       0,
@@ -5117,6 +5290,7 @@
     "date": "2026-08-20",
     "size": 17,
     "goal": 95,
+    "maxWalls": 12,
     "map": "gwgggwgggwwwgggggggwggggwgwgwgwggggwgwggwgwggggwgwwggggwgwwgwwwgggggggggggggggggwgwggggwwggwggggwgwggwggwggwwgwgggggwgwwgwwwggggggwggwggwggwggwwhgggggwgggggggggwwgwwwwggwgggggggwggwggwwggggggggggggwgwggggggggggggwwgggggggwwggwgwwwwgwgggwggggggwgggwgggwgwgggggggggggwggggggggwwwggggggwgggwg",
     "optimalSolution": [
       0,
@@ -5151,6 +5325,7 @@
     "date": "2026-08-21",
     "size": 14,
     "goal": 68,
+    "maxWalls": 10,
     "map": "ggggwgwggggggggwwggggggggwwwgwgggggwggwgwwwwwgwgwwwwggwgggwggwwwwwwggwwwgggggwgwwggwwwggggggggggwgwwwwwgghwgwgggggggggwggggwggggwgwgwggggwggggwwggwggwwggggwgwgwgwwgggggwggwgwggggggggggggggggggwggg",
     "optimalSolution": [
       0,
@@ -5181,6 +5356,7 @@
     "date": "2026-08-22",
     "size": 16,
     "goal": 96,
+    "maxWalls": 12,
     "map": "gwggwggwwggwggggwggggggwggggggggggggggwgwggggwgwggwgwggggggwwwwggwwwggwggggggggggwwggggwggwwggggggwgwgggwgwgwgggwwggwwgwgggggggwwgggwggghgggwwgwgwggwwgggwgwggwgwgggwgggggwgggwgggggggwggwggggggggwgggwwwgggwgwgwwgggwwgggggggwggwgggggggwggggggwggwggggwwgggwgg",
     "optimalSolution": [
       0,
@@ -5215,6 +5391,7 @@
     "date": "2026-08-23",
     "size": 11,
     "goal": 44,
+    "maxWalls": 8,
     "map": "wwgggggwgwgwwwwgwgwggggggwggwggggwggggggggwggggwwwwgggwggggwhgggwwggwwgggwwwwwwgggggggwgwgwgggwgwgwggwwwgggwgwgwgggggwggw",
     "optimalSolution": [
       0,
@@ -5241,6 +5418,7 @@
     "date": "2026-08-24",
     "size": 9,
     "goal": 11,
+    "maxWalls": 6,
     "map": "ggwggggwggggggggwgggggwwgggwgwggggwggggwhggwwgggggwgggggwwgggggggwgggwggggggggggg",
     "optimalSolution": [
       2,
@@ -5263,6 +5441,7 @@
     "date": "2026-08-25",
     "size": 20,
     "goal": 128,
+    "maxWalls": 15,
     "map": "gggwggwggggggggwggwgwggggwwgggggwgggwggwgwgwggwggggwggggwgwwwggggggggggggggwgggggggggwwgggggwggggwwgwggggwggwgwgwggggwgggwggwwwwggggwggwggwgwgwgggwgggwgwggggggwggwggggwwwgwggwwggggwgwwwgwwggwgwggwwwgwgggwgggggwhwgwgggwwggggwgwwwgwgwgggggggggggggwgwggggwggggwgggwggggggggwgwggwwggwggwgwwgggggwwwwgggwggwgwggggggwwggwggwggggwgwgwgwgwggwgwggggwggwggggwgwgggggwggwwggggggggggggwgggggggwgwggwgwggggggwgggg",
     "optimalSolution": [
       0,
@@ -5303,6 +5482,7 @@
     "date": "2026-08-26",
     "size": 17,
     "goal": 97,
+    "maxWalls": 12,
     "map": "ggggwggggwgggwwwwggwgggggggggggwggggwggwgggwwggwwwggwwgggwgggwwggwwgwggggwgwggggggwwgggggggggwgwgggggggwwwgggggwwggwgggwwwggggggwwgggggwwwgwgwwwhgggwgwgwggggggggggggggggwggggwwwggggwgggwgggwgwgwwgggggwgggwgwgggggggggwwggwwgggggwgwwgwwgwgggggwwgggwggggwggggwggwggwgggggwggggwggggggwgggggggg",
     "optimalSolution": [
       2,
@@ -5337,6 +5517,7 @@
     "date": "2026-08-27",
     "size": 12,
     "goal": 56,
+    "maxWalls": 9,
     "map": "wgggggwggggggwwwgwgggggwggggggwwwwggggggggwwggggwgwggggggggwgwggggggwwggwggwgghgwwgggggggggggggggwggggwgwggggwgggggwggwwgwggwggwggggwgwwwggggggg",
     "optimalSolution": [
       0,
@@ -5365,6 +5546,7 @@
     "date": "2026-08-28",
     "size": 10,
     "goal": 26,
+    "maxWalls": 7,
     "map": "gggggwggggggggwwwgggggggggwgggggwwgggggwgggwgggggwggggghgwggggwggggggwggggwwgggggwggggwwgwwgwgggwggg",
     "optimalSolution": [
       1,
@@ -5389,6 +5571,7 @@
     "date": "2026-08-29",
     "size": 18,
     "goal": 127,
+    "maxWalls": 13,
     "map": "wgggwggwggwwgwggggwggwwggggggggwggggggwggwwwwgggwggggwggwwwggwggggggggwwgwwggggggggwgwwgwgggwggggggwwwggwggggggwgwwgggggggwggggwwwgggwgwggggwwwgwgwgggwwgwwgggggggwgwgggggwhwggggwwggwggggggwgggggwwwwwwggwgggwgwgwggwwwgggwgwggwgwggwwgggggwgwggwwgwgggggwggwwwgwggwggwwgwgggggwggwgggwggggwgwgggggwgggggwwggwwgggwwggwgggwwggggwww",
     "optimalSolution": [
       0,
@@ -5425,6 +5608,7 @@
     "date": "2026-08-30",
     "size": 15,
     "goal": 73,
+    "maxWalls": 11,
     "map": "wgwgggwgwggggwggggggwgggwggggggggggggwwggggggggwwggggggwgggggwwgggwggggwggwggwgggggggwgggggwwggggwwgwwgggggggwgwhggggggggggggwwggwwwgggggwgwgggwgwwggwggggggggggwggggggwggggggwgwgggwgwgwgwggwgwgggggwgggggggggwwggggggwgwgggggwg",
     "optimalSolution": [
       0,
@@ -5457,6 +5641,7 @@
     "date": "2026-08-31",
     "size": 15,
     "goal": 76,
+    "maxWalls": 11,
     "map": "ggggwgwggggwwgwgwgggggwggwgwwggwwgggwggwgwwwwwwgwwggwgggwggwwwwwwggggggwggggggwwgwwgggwgwwggggggwwwwwwwwwgwwwwgwhggggwwgggwggggggwggwgwggggwgwggggwgwggggwggwgggwggwgggwgggggwgwgwggwggwggwggwggwgwgggggwgwggwgwgwwwgwwgwgggwwggg",
     "optimalSolution": [
       0,
@@ -5489,6 +5674,7 @@
     "date": "2026-09-01",
     "size": 19,
     "goal": 139,
+    "maxWalls": 14,
     "map": "ggggggwgggggggggwgggwggwwwwwgwwwggggwwwggggwgggwwgwgggggwgwwgwggwgwggggwgwggwggggggwgggwwgwgwwggggwwggwgwggggwgggggggggwwggggggggwggggwgggggggwwgwggggwwwgggggggggggwwgggggwgwgggggghggwgggwgwggwgwwwgwwgggggwggwggggggggwgggggwggggggggwwggwgggggggwggwwwwwgggggwggwgggwgwggggwwwgwgwgggggggggggggggwwwgwggggwgwwggwwgwwgggwgggggggggggwgwggggwggggwwggggwwwgwgggwggggwg",
     "optimalSolution": [
       2,
@@ -5527,6 +5713,7 @@
     "date": "2026-09-02",
     "size": 10,
     "goal": 29,
+    "maxWalls": 7,
     "map": "wgwwwggwwgggwggwwwggwggggwggwgggggggwwggggwgwggggggwgwghggggwgggggwwgwgggggggggwggggwwgggggggwggwgwg",
     "optimalSolution": [
       1,
@@ -5551,6 +5738,7 @@
     "date": "2026-09-03",
     "size": 21,
     "goal": 169,
+    "maxWalls": 15,
     "map": "ggwgggggwggggggwggwggggggwgwgwggwwwwgwggggwggwgggwwwgwggwwgggwwggggwwgggwwwggwgggggggwwgwggggggwgggggwggggggggggwwggggwgwggwwgwwgggwggwgggggwggggwwwgggggggwwgwwgwggggggwwgwgggwwwgwgggwggwggggwwggggwgwggggwgwgggwgwggwggwwhggwgggggwgggwgwggwggggggggwwggggggggwwgggggwggggggggggggwggwwgwwgggggwgggwggwggwwggggwgggggggggggggwgggggggwwgggwgggwggggggggwwgggwwggwggwgwgwggwggwwggggggggggggggggwwwgggggggggggggwwgggggwgggggwwwwgwgggggwgggwgwggwgggwg",
     "optimalSolution": [
       0,
@@ -5591,6 +5779,7 @@
     "date": "2026-09-04",
     "size": 14,
     "goal": 43,
+    "maxWalls": 10,
     "map": "ggwwwgggggwwggggwgggggggggggwgwgwwggggggwwwggwgggggwwggwggggggwggggggwgggggggwggggggwggggwggggwgggggggggwhwgwgggwggwggwwgwggwgggwwgggggggwgggwgggggggwggwwgggwggwgggggggwwgwggggggggwwgggwwwgggwgggg",
     "optimalSolution": [
       0,
@@ -5621,6 +5810,7 @@
     "date": "2026-09-05",
     "size": 10,
     "goal": 25,
+    "maxWalls": 7,
     "map": "gggggwggggwgwggggwggwggggggggggwggwggwwgwggggggggwggwwghgwgwggwgwgggwgwgggggwggggwgggwwwwwgwwggwgggg",
     "optimalSolution": [
       0,
@@ -5645,6 +5835,7 @@
     "date": "2026-09-06",
     "size": 10,
     "goal": 38,
+    "maxWalls": 7,
     "map": "wwgwwgwgggwggwwggggggggggwwggwggwwgggwgwwgwggggggwggwwghggwgwwgwggggwggwggggggwwwgwwwgwggwwgwwggggww",
     "optimalSolution": [
       0,
@@ -5669,6 +5860,7 @@
     "date": "2026-09-07",
     "size": 17,
     "goal": 95,
+    "maxWalls": 12,
     "map": "wwggwggwgwgwwggwgwggggggggwggggggwgggwwwggwwggggggwwggggggwgggwgggggwggggwgwggwwwgwgggggwgggwggwgwgwwggggggwwgggwgwgggwwgwggggggwggggggggwgwgggghgwggggggwwwgwwgggggggwwggggggwwwggwgggwggwggggggwwwgggwwgwwgggggwgggwgggggggggwgggwgggggwgwggggwwgggggwggggggwgwwwggwwwwgwwwwggggwggwwggggwwgwgg",
     "optimalSolution": [
       0,
@@ -5703,6 +5895,7 @@
     "date": "2026-09-08",
     "size": 12,
     "goal": 52,
+    "maxWalls": 9,
     "map": "gwwwggwwwgggggwggggggwgggwwggwgwwgggwggwwgggggwgggwgwgggwwwwgwgwgwggwwgggwgwgwhgggwgggggggggwggwgwwwgwggwggwggwggggwgggggwgggwgggwggggggwwgggwwg",
     "optimalSolution": [
       0,
@@ -5731,6 +5924,7 @@
     "date": "2026-09-09",
     "size": 15,
     "goal": 61,
+    "maxWalls": 11,
     "map": "gwgwgggggggggwggggggggggwgggwwgggwggwwgwggwgggwwgwgggwwgwwggggwgggwgggggggwgwggggggwwggwggwggwwwggwgwgwggggwwgwwhgggggggggwgggwwgwggwggggwwggggwggggwwggwggwwwwgggggwwwgwwgggwgwwgwgwgwgwggggwgggggwggwgwgwwggggwgwgwgggggwgwgggw",
     "optimalSolution": [
       0,
@@ -5763,6 +5957,7 @@
     "date": "2026-09-10",
     "size": 20,
     "goal": 174,
+    "maxWalls": 15,
     "map": "wwwggggggggwwggggwwgwgwwwwwggggwggwgwwwwggwgwwgggwwgggggggwggwwwgggggggggggwggwggggggggwwwggwgwgggwwgggwgwgwwwgggggwgwggggggwwgggggwwgwggggggwwgwgggwwgggwgwwwgwgggggggggwggggggggwwwgggwwwgwggwwggwwggggggwwggwwwhgwggggggwwgwggwwggggggggwgggwggggwgwggggggggggwwggggggggggggwgggwwwgggggggggwgggggwgggwggggwggwwggggwwgggggwgwwgwgwggwgggggwgwgwgwgggwggwwggwgggwwgwggggwwggggggwgggwgwgggggwggwwgwwggggggggg",
     "optimalSolution": [
       0,
@@ -5803,6 +5998,7 @@
     "date": "2026-09-11",
     "size": 13,
     "goal": 46,
+    "maxWalls": 9,
     "map": "wgggggwgggwgwgggggggwwgggwwwgggggggggwwgggwwggggggwgggggwwwgggwgggwggggggggwgwwwgggghggggggggwggwgggwwgwgggwgwgwgggggwgggggggggggggggggwwgwwwwwggwwwwwggggwggwwgwwgwgwwwg",
     "optimalSolution": [
       0,
@@ -5831,6 +6027,7 @@
     "date": "2026-09-12",
     "size": 19,
     "goal": 141,
+    "maxWalls": 14,
     "map": "gwwggggwggggggwggwgwggggggwwwgwgggwwgwggggwggggwwwwwwggggggggwggwggwwggwggwwwwwgwggggwgwgggggggwggwggwgwwwgwggggggwggwggggggggwggwgggwggwggggggwgwggwwgwgggwgwggwgwggggggggwgwgggggghggggwggggggggwggwgggggwgwwggwgggggggggggggwgggwggwggggggwgwggggwgggwwwgggwgwggwggggggwwgggggggggwggggggggggwwwwwgwwwwwgwgggwgwwggwwgwgggggggggggggggwggwwwggwgwgggwwgggwggggggggggwg",
     "optimalSolution": [
       0,
@@ -5869,6 +6066,7 @@
     "date": "2026-09-13",
     "size": 9,
     "goal": 18,
+    "maxWalls": 6,
     "map": "ggggwgggwwwggggggggggwwggwggggwwgwwwggwghwgggggwgggggggggggggggwgwgggwwgggggwgggg",
     "optimalSolution": [
       4,
@@ -5891,6 +6089,7 @@
     "date": "2026-09-14",
     "size": 7,
     "goal": 10,
+    "maxWalls": 5,
     "map": "wgggggggwwgggggggggggwgghgggwgggggggggwgwggwwggwg",
     "optimalSolution": [
       2,
@@ -5911,6 +6110,7 @@
     "date": "2026-09-15",
     "size": 17,
     "goal": 108,
+    "maxWalls": 12,
     "map": "gggwwgwwgggggwwwggggwggwgwggggggggwggggwwgwggggwwgggggwgggggggggwgwgggggwggggggggwgggwgwwggwgwwggggwgggwgwwgggggggwggwgggggwggggggggggwwgggggggghwggggwggwggggwggggwggggwgggggwggggggggggwggggwwgggwgwwgggggggwggggwwggggwwgwgwwwwwwgggggggggggggggwwgggggggggwwgggggggwgwgggggwwwgwwggwwgggwgggw",
     "optimalSolution": [
       0,
@@ -5945,6 +6145,7 @@
     "date": "2026-09-16",
     "size": 9,
     "goal": 14,
+    "maxWalls": 6,
     "map": "wwwgwgggwgggggggggggggwgggwggggggwgwgggghwggggwgggwgwgwwggwwgggwgggggwwggwgggwggg",
     "optimalSolution": [
       2,
@@ -5967,6 +6168,7 @@
     "date": "2026-09-17",
     "size": 15,
     "goal": 71,
+    "maxWalls": 11,
     "map": "wgwggwwgggwggwggggggwgwgggwggwgggwggggwgwggggggggwgggwwgggggggggwgggwggggwgwggggggggggggwwgggggwgggggggwwgwgggwghgwgggggggggggwgwggggggggwggwggwggwggggwgggwgggwggggggggwwggggggggwggggggggwwwggggggwggwgwggggggggwwwwgwwwggggggg",
     "optimalSolution": [
       0,
@@ -5999,6 +6201,7 @@
     "date": "2026-09-18",
     "size": 10,
     "goal": 31,
+    "maxWalls": 7,
     "map": "wwwgggggwgwggwwwgggggwwgwgwgggwgwgggwgwggggggggggggwgwwhgggggwgggggwggggwwgggwggwgggwgwwwwgggwwggggw",
     "optimalSolution": [
       1,
@@ -6023,6 +6226,7 @@
     "date": "2026-09-19",
     "size": 19,
     "goal": 127,
+    "maxWalls": 14,
     "map": "wwggwgwggggggwgwgwggwgggwwgggggggggggwwwggwgwggwgwggggggwgwgggwgggggggggggwgggggggwgwggwggggggggwggwgwggggggwggwgwggwggggggggwwggggggggwwgwgwwwgggwgggggwgwggwwwggggggwgggwwwggggwgghggwwwggwgggwwgwwwggwgggwwgggggwgggggwgwggggggwwggwwgggwgggggggwggwggggggggggggwggggwggwgwgggggggggwgggggwgwgggggggggwwggggggwwwgggwgggwggggwwwgwgwwwgggggwgwggggggwgggggggggwgwggwww",
     "optimalSolution": [
       0,
@@ -6061,6 +6265,7 @@
     "date": "2026-09-20",
     "size": 7,
     "goal": 11,
+    "maxWalls": 5,
     "map": "wggggggggggwgggwggwggwgwhwwwwggggwgggwgwgggggggwg",
     "optimalSolution": [
       0,
@@ -6081,6 +6286,7 @@
     "date": "2026-09-21",
     "size": 9,
     "goal": 17,
+    "maxWalls": 6,
     "map": "gwgwgwgggggggwggggggggggggwgwwwwgggwgggwhgggggggwggggggwggwwggggwwwgggwwggwgggggw",
     "optimalSolution": [
       0,
@@ -6103,6 +6309,7 @@
     "date": "2026-09-22",
     "size": 8,
     "goal": 9,
+    "maxWalls": 6,
     "map": "ggggggggwggwggggwgwggggggggggggggggwhwgggggwgggggggwgwgwgggggwwg",
     "optimalSolution": [
       1,
@@ -6125,6 +6332,7 @@
     "date": "2026-09-23",
     "size": 19,
     "goal": 146,
+    "maxWalls": 14,
     "map": "gwggwwgggwggggggwggggggggggggwwggwwwwgggwwgwgwggwggwwgwgwwgggwggwgggwgwwggwgggwgwgggwwgwggwwggwggwgggggwggggggwgggwgggggwwggggggggwwgggwwgggwgwwgwwggggwwwgggggwgggwggwggwggwgwgwggghgggggggwgggwggwggggggggwgggwgwgwgwggggwwgwggggggwgwgwgggwgwgggggggwgggwgwggwggwgggwwwwggwgwwgwgwgggwggwwgggwwgggwwgwgwwgggggggwgwgggwwggwwwggggwwgwgwgwgggggggwggwggggggggwggwggwggg",
     "optimalSolution": [
       0,
@@ -6163,6 +6371,7 @@
     "date": "2026-09-24",
     "size": 17,
     "goal": 75,
+    "maxWalls": 12,
     "map": "ggwgggwgwggwggwgwggwgggggggggwgggwgwgggggwwgwwwgggwwggggggwwgggggwggwggwgwgggggwggggwwgwggwgwwggwwgggwggwggggwggwgggwgggwggwggwgggggwwgggwggggwghwggggggggggwggggwgggwgggggggggwggwgggggwggwggggwwgwggggwgwggwggwwwgwgggwwgwwgggwggggwwgggggggggwwggggwwgggggggggwwgggggggwggggggggwggggggwgwwggg",
     "optimalSolution": [
       0,
@@ -6197,6 +6406,7 @@
     "date": "2026-09-25",
     "size": 12,
     "goal": 45,
+    "maxWalls": 9,
     "map": "gwwggggwwgwggggwgwggwggwwgggwgwgggwgwgwwwwggwggwgggggwggggwgwggwgwgggwggggwwgghgggggggggwgwgggggggggwggwwggggggggwggwwggwwwwgggggwgwgggwggwggggg",
     "optimalSolution": [
       0,
@@ -6225,6 +6435,7 @@
     "date": "2026-09-26",
     "size": 20,
     "goal": 141,
+    "maxWalls": 15,
     "map": "ggggwggggwgggwggwggggwwwggggggggggggggwgwwgwgwgggwwgwgggggggwggwggggggggggggwgwggwgwgwgwgggggwgggwwgwgwwggggggggwggggggggggwgwgwwwwwggwgwwgggwggwgwgwggggwgggwgwwgggwgggwgwgwggggggwgggwgggwggwggggggggwgwgwggggwghggwwgwgggggggggggwggggggwwggwwwgggggggwggwggggwgwgggwgwggwwggwgggwgwggwggggggwggwwwgwwgggwgwgwgwwgggggwggggwgwgwggwgwwgggwgwgggggwgwgggwwwgggwgwgggggwggggggggggwwwgggggwgwwggwggwgggggwggwgg",
     "optimalSolution": [
       4,
@@ -6265,6 +6476,7 @@
     "date": "2026-09-27",
     "size": 7,
     "goal": 9,
+    "maxWalls": 5,
     "map": "gggggggwwwwwggggwggggggghgggwgwggwggggwggggggwggg",
     "optimalSolution": [
       1,
@@ -6285,6 +6497,7 @@
     "date": "2026-09-28",
     "size": 12,
     "goal": 41,
+    "maxWalls": 9,
     "map": "wggggwggggggwggggwgwgwwgwwgggggggggggggwggggwggggwgggggggwgggggggggwggwggwwggghgwgwggggwwwwwgwgggwgggwgwggggwggggwwwwgggwwwgggggggwgggggwggggggg",
     "optimalSolution": [
       0,
@@ -6313,6 +6526,7 @@
     "date": "2026-09-29",
     "size": 12,
     "goal": 52,
+    "maxWalls": 9,
     "map": "ggggwwgggwggwwwggwgwwgwgggggwwgggwggwwgwgggwggwgwwwgwgwwggggwggggwgwgwgwgwggwghgggggggggggggggwgggggggwggggwggggwggggggwwwwwwgggwgggggwgwggwgggg",
     "optimalSolution": [
       0,
@@ -6341,6 +6555,7 @@
     "date": "2026-09-30",
     "size": 10,
     "goal": 24,
+    "maxWalls": 7,
     "map": "gwgggggwgggwgwgggwgggwwggggggwwggwgwwggwggwgwwgwgwgwgwghwwgggggggggwgwwgggwgggggwgwgwwgggwggwgwgwgww",
     "optimalSolution": [
       3,
@@ -6365,6 +6580,7 @@
     "date": "2026-10-01",
     "size": 10,
     "goal": 33,
+    "maxWalls": 7,
     "map": "gggwggwggggggwwwgwggggwgggggggggggggwgggggwgggggwgwwwgghwggwgggwggggwwwggwggggwwggwwwgwgggggwggggggw",
     "optimalSolution": [
       2,
@@ -6389,6 +6605,7 @@
     "date": "2026-10-02",
     "size": 15,
     "goal": 87,
+    "maxWalls": 11,
     "map": "ggwgggwgggggggggwwgwwwgwwgggggggggggggggggwgwgwggwgggwwgggggggggwgwgwgwgwwgwgggggwwwgggggggwwwgggggggggwwgwgwggwhggggggwggwwggwgwwggggggggwggggggggwggggwgggggwggwgwggggwwgggggggggggggwgwgwgggwgwgwggwggggwggwgggggwggwwggwggwwg",
     "optimalSolution": [
       0,
@@ -6421,6 +6638,7 @@
     "date": "2026-10-03",
     "size": 14,
     "goal": 58,
+    "maxWalls": 10,
     "map": "wgggggwgggwwwgwgggggwgggggwgggwggggwgwgggggggwgggwggggwggggggwgwgggwgggwwgwgggggggggggwgwgggggwwggwgwgwgwhgggwgwggggwgwwgggwwwgwwgggwgggwgwwwgggwwgwgggggwgggwgggggwggwggwwwwgggwggggggwggwgggggwggw",
     "optimalSolution": [
       0,
@@ -6451,6 +6669,7 @@
     "date": "2026-10-04",
     "size": 7,
     "goal": 9,
+    "maxWalls": 5,
     "map": "wwggggggggggwgggggwggwgghwgwgggwwgwggwgggggggggwg",
     "optimalSolution": [
       0,
@@ -6471,6 +6690,7 @@
     "date": "2026-10-05",
     "size": 20,
     "goal": 142,
+    "maxWalls": 15,
     "map": "gggggggggwwwwwggggwwggggwggggggggggwgggwgwgwwggggwgggwwggggggwgggwggggwggwgwggggwggwgwgwgwggwggggwgwwgwgggwgwggwwwgwgggggggggggggggwggggwwwgggggggggggggggwgwgwggggwgwggwggggggggggggggwggggwgggggggggggggggwggggghggwggwggggwggggggggggggwwgwwgggggwwgggggggggggwgwgggggggwwgggggggwwggwwgggggggggwgggggwgwggwggggwggggwgwggggwgwgggggggggwwgwggwwggwwgwgggwgwwggggggggggwggggwggwgggggwwgggwwgggggggggggggwwgg",
     "optimalSolution": [
       3,
@@ -6511,6 +6731,7 @@
     "date": "2026-10-06",
     "size": 21,
     "goal": 175,
+    "maxWalls": 15,
     "map": "ggggggwgwgggwgggwggwwggggggwggwgggwgggggggggggwwggggwwgggwwggggwwggwggwwggggggwgggwggggwggggwwwggggwggwgggwggggggggwggwwgggggwgwwgwggwggwwggggwwwgwgwgwgwwgggggggwggwgggggwgwwgggwggwggggggwgggggwwggggwgwggggggggwggwgwgggwhwgggggwggggwggggggggggwgggggggwggggggggwwgwwgggwgggwgwgwwwgwwgwwggwgwwwggggwggggwgggggggggggwgggggggggwggwwgggwgggwgggwggwggggwggggggggwggggggwwwwwgwwwwggggwgggggggggggwggggggwggwgggggwwgggggwggwwwgwggwggwwgggggggwgggggg",
     "optimalSolution": [
       0,
@@ -6551,6 +6772,7 @@
     "date": "2026-10-07",
     "size": 17,
     "goal": 82,
+    "maxWalls": 12,
     "map": "gggwwgwwggggggggggwggwggwgwwgwggwwgwwggggwgggggwgggggggggggwggggggggggggggggggwgwgggggwggggwgwgggwgwggwgggwwwwwwwwggwggggwwggwgwgggggwggwggwgggghwggggggggggggwwggwgggggwggggggwgwgggggwggwgwwgwgwgggggwgwggggggggwwgwwgwwwgwwggggggggwwggwgwgggwggggwgwggggwggwggggwwggggggwwggggggggwgwwwgggwgw",
     "optimalSolution": [
       4,
@@ -6585,6 +6807,7 @@
     "date": "2026-10-08",
     "size": 12,
     "goal": 39,
+    "maxWalls": 9,
     "map": "wwwggwgggggggggwwwggggwggwgggggggwwwgwggggwwggwggggwggwwgwwgggwgggggwgggggwggwhggggwgggggggggwggggggwggggwgwggggggwggggggggwggwgggggwggggwgwgggw",
     "optimalSolution": [
       1,
@@ -6613,6 +6836,7 @@
     "date": "2026-10-09",
     "size": 18,
     "goal": 122,
+    "maxWalls": 13,
     "map": "gwwwgggggggggggwgwgggwggwwggwggggwwgwggggggwwgwggwgggwwwwgwgggwwgggggwwggggggwggwgwgwgwggwwggwwgggggwggwgwggwwwgggwgggggwggwggwgggggwggwwgggwgggggwggwggggggggggwggwwggwggwhgggwggggwwgwgggggggwggwgwggggwggwggwgwgggggwgggwggwwwwwwgggggwgwggwgwgwgwggwwwggggwgggggwgwwwwggggggggwgwggggggwwggggggwwggwggwggggggwgwggwggggggwggwggw",
     "optimalSolution": [
       0,
@@ -6649,6 +6873,7 @@
     "date": "2026-10-10",
     "size": 15,
     "goal": 101,
+    "maxWalls": 11,
     "map": "wwwggwgwwgwgwwwgggwwwgwwgggggwwwgggwgwgwgwggwgggggggggggggwwwgwgwgggwgggwwgwgwgwgggggwgwwgwggggwwwggwggwgggwggwghwggggwggwggwggwwgwwwgggggwggggwgwggwggwgggwgggggggwgwwwwwggggggwwgwgggwgwggggwgggggggggggwgwgggggwggwggwgggwgwgg",
     "optimalSolution": [
       0,
@@ -6681,6 +6906,7 @@
     "date": "2026-10-11",
     "size": 9,
     "goal": 15,
+    "maxWalls": 6,
     "map": "wggwggwwwgggggggwwwwggwggggggwwwwgwggggghwgggggggwggwggwwggggggggwwggggwggggwgggg",
     "optimalSolution": [
       2,
@@ -6703,6 +6929,7 @@
     "date": "2026-10-12",
     "size": 11,
     "goal": 47,
+    "maxWalls": 8,
     "map": "wwggwgggwwwwggggggggggwggwwggggwggwgwwggwgwggwgggwwwggwggwgghgggggggwggwggggwwgwggwgggwwwgwgggggwwgwgwwwwggggwggggggggwwg",
     "optimalSolution": [
       0,
@@ -6729,6 +6956,7 @@
     "date": "2026-10-13",
     "size": 15,
     "goal": 79,
+    "maxWalls": 11,
     "map": "ggggwggwgggggggggggggggwggwgwgggwwgwgggggwwwgwwgggwggggggggggwgwgggggwwwgwwgggwggggggggwwggwwgwwgggggggwgggwwggghggggggwgwggggggwgggggggwwwggggwggggggwgggwwggwgggwwgwggggwggwgwggggggggggggggggggwwgwgwwggggggggggggwgwgggggggwg",
     "optimalSolution": [
       1,
@@ -6761,6 +6989,7 @@
     "date": "2026-10-14",
     "size": 12,
     "goal": 50,
+    "maxWalls": 9,
     "map": "wggwgwwwgggwggggwgwgwgggwgwgggggggwggggwggggwggwgwgwgggwggggwwwggggggggggwgwgwhwggggwgggwggggggwwwwgwggwgggggwggwgwgwggwgggwwgggggggggggwggggwgw",
     "optimalSolution": [
       1,
@@ -6789,6 +7018,7 @@
     "date": "2026-10-15",
     "size": 18,
     "goal": 127,
+    "maxWalls": 13,
     "map": "wwgggggggwgggwgwggwgggggggggggggwggggwwgggwgggwwggggggwggwggwggggggggwgwwgwggwgwggwwwwgwwwgggggwgwgwwgwgwwggggggggggggwwgwwgwwwggwggggwgggggwggggwwwwwggggggwggggggggwwwgwghggggwggggwggwgggwgggggggwwwwggggwggggwgggggggggggggggggggggggwwwwggwggwggggwgwwwwgwgwggwggggwwwggwggwggwggwwwwwgwggggwwwgwgwwgwggwgggwggwgggwggwwgwgggww",
     "optimalSolution": [
       1,
@@ -6825,6 +7055,7 @@
     "date": "2026-10-16",
     "size": 19,
     "goal": 139,
+    "maxWalls": 14,
     "map": "gwggwgwggwgwgwggggggwwgwgggggwgwggwwwgwggwgwgggggwgggggwgggggwggwgwgggwgwwggwgwggggwgwwgwggggwgggggwgggggggwwgggggwwggwgggwwgggwggwgggggggwggwgwggwgggggggwgwwggwgwggwgwggggwwgggggwhwgggwggggwgggwgwggggwgwggwggggggwgwwgwwwgwgwwgggggggggwgwgwgggggggggwggggggggggggwggggwwggwwgwgggggggwgggwwgwggwwwggwgggwggwgwggwwgwgwgggwggggggggwwgggggwwgggwwgggggwgwggwgwwwgwgww",
     "optimalSolution": [
       0,
@@ -6863,6 +7094,7 @@
     "date": "2026-10-17",
     "size": 16,
     "goal": 84,
+    "maxWalls": 12,
     "map": "ggwggwggggggwwwggwggggggggwwwwwgwgwgggwggggwgggwggwgggwgggwgggggggggwgwgwwgwggwggwwwwwwgwgggggwgggwwgggggwwgggggggwggwgwggggwwgggggwwggghgwgwgggwggwgwgggwgggwgwwgggggwgwwgggggwgwgggwgggggggggggwggwwwggwgwggwggwwggwgwggggwgwwwwwggggggggggggwggwgggwgwgggwggw",
     "optimalSolution": [
       0,
@@ -6897,6 +7129,7 @@
     "date": "2026-10-18",
     "size": 11,
     "goal": 27,
+    "maxWalls": 8,
     "map": "ggwgwgggggggggggggggggwgwgggwggwwgggggggwggggggggwgggwgggggwhwggggggggwggggggggwwwgwggwggggwgggwgggggwggwggwwggwggwgwgwgg",
     "optimalSolution": [
       2,
@@ -6923,6 +7156,7 @@
     "date": "2026-10-19",
     "size": 8,
     "goal": 18,
+    "maxWalls": 6,
     "map": "wwwggwggwgggggggwggwggwggwggwggggwwghwggggggggwgwggwgggggggggwwg",
     "optimalSolution": [
       1,
@@ -6945,6 +7179,7 @@
     "date": "2026-10-20",
     "size": 13,
     "goal": 45,
+    "maxWalls": 9,
     "map": "ggwggwggggggwgwggggwgwgggggwggwwggggggggwwgwgwwggwgwggggwgggggggggwggwggggggggwgggwwhggggggggggwggggwwggggwggggggwgggggggwggwwgggggggggwgggwggggggggwgwwgggwggwggggwgggww",
     "optimalSolution": [
       1,
@@ -6973,6 +7208,7 @@
     "date": "2026-10-21",
     "size": 16,
     "goal": 82,
+    "maxWalls": 12,
     "map": "wgggwggggggggggwgwggwggggwgggwgwgwwwwggwgggggwgggwgggwgwwgwggggwggggwgggwgwggwggggwgggwggwwwwggwgggggwgggggwggwgggwggwwggwwggggwgwgwgggwhggwggggggwgggggwwgggwggggggwwwgwggwwwggggwgggwwggggwgggggwggggwgwggggggggggwgggwggwggggwggwgwwgwgggggggggggwggwggggggww",
     "optimalSolution": [
       1,
@@ -7007,6 +7243,7 @@
     "date": "2026-10-22",
     "size": 17,
     "goal": 101,
+    "maxWalls": 12,
     "map": "ggggwwggggwggwggggggggwggggggggwwggggwgwgwggggggggwwwgggggwwggwgwwwwgggggggwggwgwwwggwgwwgggggwggggggwwgwggggggggwwwwwggwwwgggggggggwwgwggggwggwhwgwgggggggggwgggwgwgggggggggggwgggwggggwggwgwggwggggwggwgggwwgggwwggwwggwggwwgggggwgwwggggggwgwggwwwwwwggggggwggggggwggwwggggwggwgggwgggggggwggw",
     "optimalSolution": [
       1,
@@ -7041,6 +7278,7 @@
     "date": "2026-10-23",
     "size": 20,
     "goal": 158,
+    "maxWalls": 15,
     "map": "gggwgwwggggggggwggwggggwggwwwwwggwwgggggggggggggwggggggwgwggwwwgggwgwwgwggwggwwwggggwgggggggwwgggwggggwggwggggggggwggggggggwgwggwgwwgwwggggggggggwwgggggwgggwggggwgwwgwgwggwgggggggwwgwgwwgwggwgggwggwgggggwggwgwghwggwggwwgggggggwggggggwgwggwggwgwwgwwgwwwggwgwwwgwwgggggwgwgggwgwwggggggwgwgggggwwwgggwwggwggwggwgggggwggwggggggwgggwggggwwggggwggwgwggwgwwwgwwwggwggwgwwwwgggwgwwgwwgggwggggggwgggwggwgggwgg",
     "optimalSolution": [
       0,
@@ -7081,6 +7319,7 @@
     "date": "2026-10-24",
     "size": 17,
     "goal": 83,
+    "maxWalls": 12,
     "map": "gggwwggggggggggggggggggwgwgwgwwgwwwwwwggggwgggwggggwggwgwgggggwgggggggwwgwwwwwggggwgggggggggggggwgwgwggwwggwggwwwgwgggwwggwgggggwwwwggwwwwggwgwghgggggggggwgggwgwwgwggggwgggwggwgwggwgwwwggggwwgggwgggwgwgggwgwggwwwwwwgggggggggwgggwwwwgggggwggggwwwggggggggggggggggggggwgggwggwwwgwwgggwggggggg",
     "optimalSolution": [
       0,
@@ -7115,6 +7354,7 @@
     "date": "2026-10-25",
     "size": 15,
     "goal": 74,
+    "maxWalls": 11,
     "map": "ggggggggwwwggggggwggwgwgggwwwggggggggwwgwgggwwggwggggwwwgwgggggwgggwwgggggwgggwggwggggggggggwggggggwwwgwwggwwggghwggwggggggggggwggggwgggggggwggggggwgggggwggwggwgggggwggggwggwwgwgggggggggwgggwgwwggggggwgwggwggwwwwgggwggggwggwg",
     "optimalSolution": [
       0,
@@ -7147,6 +7387,7 @@
     "date": "2026-10-26",
     "size": 15,
     "goal": 88,
+    "maxWalls": 11,
     "map": "gwgwwwggwgggwggwggggwgwwgwggggggwggwwgggggwgggggwgwggwgwgwggwwgwgggwgwggwwgwwgwgwggggwggwgggggwggwwggggggwgggwgghggggwgggggwgwgwgggggwgggwwwgggggggwgwwggwwwgggwggggggggggggggggggggwgwggwgggggggwwgggwggwwggggwwwgwgggwgwwgggggg",
     "optimalSolution": [
       0,
@@ -7179,6 +7420,7 @@
     "date": "2026-10-27",
     "size": 19,
     "goal": 145,
+    "maxWalls": 14,
     "map": "wgggwggggggggggwwgggggwwggwwgwwgwwgggggwwwwggwgggggwwggggggggwgggggwggggggwgwgggggwgggwwwgwgggwggggwgwggwwgggggggwwggggggwwgggggwgggggggggggggwggwwwggwggwwgggggwwwggggggwwggwgwggwghgwgggggwwgggggggggwgggggwwggggggwgggggggwwwgggwwgwggwgggggggggggwggwwgwggwgggwgwggggwgwgggggggwwgwgwgwggggwwgggggggwgwwgggggggwgwwggwgwwggwgggwgwgggggggggwgwgggggggwwwgwgwgggwwgwgw",
     "optimalSolution": [
       1,
@@ -7217,6 +7459,7 @@
     "date": "2026-10-28",
     "size": 10,
     "goal": 18,
+    "maxWalls": 7,
     "map": "wggggwwggggwgwgggggggwwggggwggggwgggggwwgggggwwwggggggghgggwgggggggggggggggwgggwgggwwggwggggggggggwg",
     "optimalSolution": [
       0,
@@ -7241,6 +7484,7 @@
     "date": "2026-10-29",
     "size": 7,
     "goal": 10,
+    "maxWalls": 5,
     "map": "ggwggggwgggggggwwggwwggghgwwgwgwwgggggggggwwggwgg",
     "optimalSolution": [
       0,
@@ -7261,6 +7505,7 @@
     "date": "2026-10-30",
     "size": 8,
     "goal": 8,
+    "maxWalls": 6,
     "map": "ggwwggwggggwggwgggggggwgggggggggwggghggwggggggggwgggwwwgggggwgwg",
     "optimalSolution": [
       2,
@@ -7283,6 +7528,7 @@
     "date": "2026-10-31",
     "size": 7,
     "goal": 10,
+    "maxWalls": 5,
     "map": "wggwggggggggwggwwwgwgggghgwgggggggggggwgwggggwwgg",
     "optimalSolution": [
       0,
@@ -7303,6 +7549,7 @@
     "date": "2026-11-01",
     "size": 21,
     "goal": 139,
+    "maxWalls": 15,
     "map": "ggggwggwggggggggggggggggwgwgggwggggwgggggwwwgggggggggwggggwwggwggggwwggwggggggggggggggwwwwwgwggwggggggwwgwggwggwwwgggggggwwggwggggggwggggggggwgggwgwwwggggggggwwgwwggggwgggggwwgwwggggggggggggwgggwggggwgggwggggwggggwwwgggwhgwwgwwgggggwgggggggggggggggwgwwggggwgggggwwggwwwggggggwwggwwwgwwgggggwggggggggggggwwwgggggwwgggggwwgwwggwwggwgggggwwgggwgggggwwwwggggwgggggggwggwgggwgwggggwgwgwgwggggggggggwgwggwwwggggggggwgggwwggwgggwgggggwgggggggggwwwg",
     "optimalSolution": [
       0,
@@ -7343,6 +7590,7 @@
     "date": "2026-11-02",
     "size": 21,
     "goal": 134,
+    "maxWalls": 15,
     "map": "gwgwwggggwgggggwgggggggggwgwwggwwggggggggwgwggwgwwgggggggwggwgggggwggggggwggggggggggggggwgwgwwgggwwgwggwgggggggwgwgwggggwgwgggggggggggwwgwggggggggggggggwggggwggwgwwgwwwgwwwggggwwggwgggwgggwgwwgwgggggggggwggwggggggggggwgwhggggggggwggwwggwgwgggwwgggwgggggggggwgwggwggwwggwgggggwgggwggwwgggggwgggggggwwggwgwgwgwwwgwggggggwgggggwwgggggggggggggggggggwggwgggwgwwgggwwwgggggggggwggwwwgggggwggwgwggggwwgwwggggwwwggwggwwwgwgggwwgwggwgggggggwgggggggww",
     "optimalSolution": [
       3,
@@ -7383,6 +7631,7 @@
     "date": "2026-11-03",
     "size": 12,
     "goal": 41,
+    "maxWalls": 9,
     "map": "gwggggwwgggggwgwgwgggggggggwwgggggwwgwggggggggggggggwggggggggwgwgwggggwggggwgghggggggggwwgwwwggggwgggwgwwwggwgggggggwggwggwggwgwgggggggwgggggwgw",
     "optimalSolution": [
       0,
@@ -7411,6 +7660,7 @@
     "date": "2026-11-04",
     "size": 7,
     "goal": 8,
+    "maxWalls": 5,
     "map": "gggwggggwgwgwggggggwgggwhgwgwgwgggggggggggwgggggg",
     "optimalSolution": [
       0,
@@ -7431,6 +7681,7 @@
     "date": "2026-11-05",
     "size": 10,
     "goal": 37,
+    "maxWalls": 7,
     "map": "ggggggwwgwggwggwgwwwggwggggwggggwggwggwwwggggggwggwgggwhwgwwgwgwwwggwwgwgggggggwgwggwwgwwgwggwgggggg",
     "optimalSolution": [
       0,
@@ -7455,6 +7706,7 @@
     "date": "2026-11-06",
     "size": 13,
     "goal": 36,
+    "maxWalls": 9,
     "map": "gwggggggwggwgwgggggggggggwgggggggggggggggggggggwwgggwggwggggggggggggwgwgwggwgwgwggwghgwggggggggwgggwgggwwgggwgwggggggggwwggwggwwggwggwgwgggggggwggwwggggggggggwwwggwwgggg",
     "optimalSolution": [
       3,
@@ -7483,6 +7735,7 @@
     "date": "2026-11-07",
     "size": 11,
     "goal": 39,
+    "maxWalls": 8,
     "map": "wwgwwgggwwggggwggggwgggwwgggwgwgggwgwwggwggwwgwggggwggggwggghgggwgwggwgggwgggwggwgwggwggggggwgwwgwwggggwgggggggggwgggwggg",
     "optimalSolution": [
       1,
@@ -7509,6 +7762,7 @@
     "date": "2026-11-08",
     "size": 17,
     "goal": 79,
+    "maxWalls": 12,
     "map": "gwggwgggwggwgggggggwgwgwggwgggggggwwggwgwggggwgggwgggggwwggggggwgggwggwgwwggwggwwgwwgwgwgggwggggggggwgggggwggggggwgwgwwwgggggggwgggggggggggggwgghwgwggggwwwgggggwggwggwwggggwgggggggggggwggggggwgggggwwwgggggwwwgggggggggwggwgwgwwggwgggggggggggwggggwwggggggwwggggwggwwwwggggwwgwgwggwgggggwggwg",
     "optimalSolution": [
       0,
@@ -7543,6 +7797,7 @@
     "date": "2026-11-09",
     "size": 17,
     "goal": 88,
+    "maxWalls": 12,
     "map": "wgwgggggggggwgggwgggggwggggggwwwwggggggwggggggwggggwwgwgggggggggwggwggggggggggwgggwgwwgggwwggggggggggwggwwggwggwgggggggggggwwggwwggggwgggwwgwggwhgwgwggggggggggggggwgwgggggggwggggwwgggggwgwwggwgwggggggwwggggggggwggwwwgggwgggwggwggwgggggggwggwgggwwggggwggggwgggwgggggwwgwwwggwwggwwggwgggwggw",
     "optimalSolution": [
       2,
@@ -7577,6 +7832,7 @@
     "date": "2026-11-10",
     "size": 18,
     "goal": 121,
+    "maxWalls": 13,
     "map": "ggggggggwggggwgggwwgggwwgggwgggwgwwwgggggggwgggwggggggwwggggggwggggggggwggwgggwwgggggggggggggggwgwggwggggggwgggwgggwgwwgggggwgwgwggwggwgggggggggggggggggwggwggwggwgggwggggwhgggwgggwgggwggggggwgwgwgwgwggggggwwwwgggwwgggwgwwgggwwgggggwggwwgggwggwgggggwggwwgwgwgggggwwwwgwgggggwggwgggggggggggggggwggwgggggggggggwwgggwggwwgwgwggw",
     "optimalSolution": [
       0,
@@ -7613,6 +7869,7 @@
     "date": "2026-11-11",
     "size": 21,
     "goal": 133,
+    "maxWalls": 15,
     "map": "wggggwgwggggggggggwgggwwggwggwgggwwggwgggggggwwgwggggwwwwgwwgwgwgwggggwgwgwggggggwwwggwgwggggggwwggwwggggwgggwwgwggggwgggwwgwwgggggwwgggwggwwggwwgwgggggwggwwggwgwgwgggggwgwgwwwgggggwggggwwggwgwgwgwwwggggwggwgwwgwgggwgggghggwwggggggwwwgggggggwgwwgwwggggggggwgggggggwggwgwwgggwwgggwggwwggwggwggggggwwggggwggwgwwgggggggggggwggggwwwgggwggwggggggggwwwgggggggggggggggwggggwgwgggggggwgwgwwwgggggggggggggggwgggggggwgwwgwwwwggwgwggwggggggggggwgwwgggg",
     "optimalSolution": [
       5,
@@ -7653,6 +7910,7 @@
     "date": "2026-11-12",
     "size": 10,
     "goal": 29,
+    "maxWalls": 7,
     "map": "gggggwggwgwggwgggwgwggwgggwgwwggggggggggggggwgggwgwggwghgggwwwgwwwgggwgwwgwgggggwggwggwgggggggggwwww",
     "optimalSolution": [
       0,
@@ -7677,6 +7935,7 @@
     "date": "2026-11-13",
     "size": 18,
     "goal": 124,
+    "maxWalls": 13,
     "map": "wggwgggggwgggggggggggggwggwwggwgggggwggggggwgggwwggggwgwgwwgggggwggwwwgwggggggwwwggwgwgggwwgwggggggggwggwgggggwwwggggggwwggwgggggwggggggggggwwggwwwwgggggggwgwwwgwwgwgggggghwgwwggwwggwwgwggwgwwggwgggwwggggwwwwggggggwgwgwwggwggwwggggggggwwgwggwggggwwwgggggggggggggwgggwgggggggwgggwggggwgggggwgggggwgggggwgggggggwggwgggggwggggg",
     "optimalSolution": [
       0,
@@ -7713,6 +7972,7 @@
     "date": "2026-11-14",
     "size": 8,
     "goal": 12,
+    "maxWalls": 6,
     "map": "wwgwgggggggggwwggwgwggggggwggwgggggghgggwgwwgggwgggwgwgggwgggggg",
     "optimalSolution": [
       1,
@@ -7735,6 +7995,7 @@
     "date": "2026-11-15",
     "size": 15,
     "goal": 74,
+    "maxWalls": 11,
     "map": "wwgwgggwgwwggwwggggggwwwwgggggggggggwwgwgwggggwgwggggwggggggggwggggwwgggwggwwgggwggggwgggggggwggggggwwgwgwwwgggghgggggwgwgggwgwggwwgwggggggwggggwgwwwwgwwgwgggwggwggggggwgwwwgwwgggggggggwggggwggggwgwgwwwggggwggggwwggggwgwgwgww",
     "optimalSolution": [
       0,
@@ -7767,6 +8028,7 @@
     "date": "2026-11-16",
     "size": 8,
     "goal": 12,
+    "maxWalls": 6,
     "map": "gwgggwgggggggwggggwgwggggggwwgwwgwgwhggwwwwwgggwggwgggggwggggggg",
     "optimalSolution": [
       2,
@@ -7789,6 +8051,7 @@
     "date": "2026-11-17",
     "size": 18,
     "goal": 114,
+    "maxWalls": 13,
     "map": "wgggggwgwwwwgggwwwgggwgggggggggggggggggggwwgggggggggwggwgggggwgggggggggggggwggwgwwggwwggwgwgwgwgggwggggwgwwwgwgggggggggggggggggggwgwggwggggwwgwggwgggwggwgggwwwggwggwwwgwgghgggwgwwwggwggggwggggggggggggggwgggwggwwwwwgwgggwgggwggwwwggwgwwgggggggwwwgggggwwggggggggggggwgwwggggggggwggggwggwgwgwgggggwggwggwggwgggggwgwgggggggwgggw",
     "optimalSolution": [
       0,
@@ -7825,6 +8088,7 @@
     "date": "2026-11-18",
     "size": 20,
     "goal": 147,
+    "maxWalls": 15,
     "map": "wggwgggggggggggggwggwgwwggwggggggggwgggggwwggwgggwgwgwgggggggggggwgwggggggwwwggwgwggwgggwgwwgggwggwwgwwggggggggwgwggggggwgwggwgggwwgwggggwwggwggggwwggggggggggggggggwggggwgwggwwgggwgwgwgwgwwgwwwggwgwgwwgwggggggghgggwwwgggggwgwgggwggggwggggggwwwgggggwgggwggwwgggggggggggwgwggwgwwwwgwgggwgwggwwwggwgwggwggggwwgggwggwwgggwwggggggggggwwggwgggwgggggwwgwwwgwgwgggggwwgggggggggggwgwwwgwgwwggwgwgggggggwwgggwg",
     "optimalSolution": [
       0,
@@ -7865,6 +8129,7 @@
     "date": "2026-11-19",
     "size": 12,
     "goal": 37,
+    "maxWalls": 9,
     "map": "ggwgggwwgwgwgwggwggggwggggwgggggggggwgwgwgggwggwgwgwwggwgwgggwgggggwgwwwgggwwghgwgggggggwwgggggggggwwgwwgggggggwwgwgggggwwggggggwggwgggwgggwgwgw",
     "optimalSolution": [
       0,
@@ -7893,6 +8158,7 @@
     "date": "2026-11-20",
     "size": 21,
     "goal": 170,
+    "maxWalls": 15,
     "map": "ggwgwggggwggggwgwwwgggwggggwgwwgwggwgwgwggwggwggggggwggggggggggwwgggggggggwwgwgggwgggwwgggggwwggwgwgwggwwggggggggwggwwgwwgggwwwgggggwggggwgggwggwwggwggwggwwgwggggwwggggggggggggwggggggwggwgggwgwwggggggggggwgggwgwwggwwwwwghgggwwwwgwwwggggwwwgwwgwgwgwggwgwgwgggggwgwgggwggwgwgwwwggggwwgggwgwggggggwggwgwgwgwwggwggggggwggggggggggwgwwgggwgggwgggggggwggggwgggggggggwgggggggggwggggggwwggwwgwgggwwgggwgggggwwggggggwgggwgggggggwgwwwgggwwggwggggggwgwg",
     "optimalSolution": [
       0,
@@ -7933,6 +8199,7 @@
     "date": "2026-11-21",
     "size": 21,
     "goal": 178,
+    "maxWalls": 15,
     "map": "gggggggwwgwggwwggwggwggggwwgggggwgggggwgwgwgggwwgwwwgwwggwggggwggwwgggggwgggwwwwgwggggwgggwgggggwwgggggggwgggggggggwwwwgggggggggggggggwgggwgggwgggggwwgwgwwwwgwgwwgwggwggwgwggggggwgwwgggwwgggggggwwwggwgwggwwwgwwgwgggwgwgwhggwgggggggggwwgggggggwggwggggggwggggwggggggwggggggggwwggggwgwwgggggwggggwwggwgggwgggwgggwgwggggggggwwggwwwwwwwwwwwgwwggwwggggggggggggwggwgwgwwgwwwwgwwwwwggggggwwgggggggwgwwwwggggwgggwgwwgwggggwgggggwgggggwgggwwwgggwgwggg",
     "optimalSolution": [
       0,
@@ -7973,6 +8240,7 @@
     "date": "2026-11-22",
     "size": 15,
     "goal": 70,
+    "maxWalls": 11,
     "map": "gwggggwgwwggggwggggggggggwggwggggggwggggggwggwgggggwggwggggwggggggggggwgggwgwggwgwggwwgwggwwwwgwwggggwgggwwgwgwwhgggggggggwgggwwggwgggwgggggggggwwggggwgwggwggwwwwgwwgggggggwggwgggwgwggwggwgwggwwgggwggwwgggggwgggggwgggggggggwg",
     "optimalSolution": [
       0,
@@ -8005,6 +8273,7 @@
     "date": "2026-11-23",
     "size": 20,
     "goal": 197,
+    "maxWalls": 15,
     "map": "wgwwwwgggggwwgggggwgggwggggwwgggwggggggggggwwggwggggggwggggwgwgggggwwggggggggwggwgggwgggggwgwwgggwgwgwggwgggggggggwgwggggwwgwwwgwwwggggggggwgwwgwgwgwgggwgggggwwgggwggggwwggggwgwwgggwggwwgggggwgwwwggwggwwgggwwgghwggggwgwgwgwggggwgggwgwwgwgggwgggggwgwgwggggwwggwwggwggggggggggggwwwggwwggggwwwgggwgggwwggggggggggggwgggggggwgggwggggwggggggggggggggwwggggggggwwwgggggwgggwwggwwggwggggwgggggggggwggwwwgggwgg",
     "optimalSolution": [
       0,
@@ -8045,6 +8314,7 @@
     "date": "2026-11-24",
     "size": 14,
     "goal": 73,
+    "maxWalls": 10,
     "map": "gggwgwggwwgggggwggggwggggggggwgggwgggwgwggggggwwgwggggwggggwgggwgwwggwwggggggwggwwggwggwwwwwwggggwggwgggghgggggwgggggwwggwgggwggwgwgwwgwwggwwgggwggwgwggwwwwwgwwggggggggggggggwggggwwwwgggggwwggwggg",
     "optimalSolution": [
       0,
@@ -8075,6 +8345,7 @@
     "date": "2026-11-25",
     "size": 13,
     "goal": 75,
+    "maxWalls": 9,
     "map": "wwgggggwwgggwggggwwwgggggwggggggggwwwgwgwggwgwgwgggwwgggggwggggwgwgggwwgggggwgwwgggwhgggwggwwggggwggggwgwgggggwggggwggwgwgwgggwwgwwwggggwggwgggwggggggwgggwgwgggggggwwwwg",
     "optimalSolution": [
       1,
@@ -8103,6 +8374,7 @@
     "date": "2026-11-26",
     "size": 20,
     "goal": 162,
+    "maxWalls": 15,
     "map": "wgggggwgwgwggggggggggggwggwggggggggwgwgggggwwwwgwggggwwggggwggggggwggggwwwgwggwggwggggggggwgwgwgggggggggggggwggggwgggggwwggwwwggwwggggggggwgggwgggggwwggggwgwwgggggwggwgggwgggwwgggwggggwgwwggwgwggggggggggwgggggghgwwwgwgwgggwggggwgwgwggggggggggggwgggggggggggwgwgwggwgwwwgggwgggwgggwgggwgwgwgggwwgwgwwwggwwwggggwggwwwgggggwgwwgggwwgwggwggwgggwwwgwggwwwwgggggwggwggwwgggggwwgggggggwggggggggggggwwwggggwwg",
     "optimalSolution": [
       0,
@@ -8143,6 +8415,7 @@
     "date": "2026-11-27",
     "size": 16,
     "goal": 103,
+    "maxWalls": 12,
     "map": "gwwwgwgwgggwwwggwggggwwgwgwggggggwggwgggwggwggwgggwggggwgggwgggggwgggwgggggwggwgwgwgggwgggggwwwgggwgwwwwgwwggggwgggwwwgwggwggwggwggwgwgwhggwggwgggggggggggggwgwgwgwgggwwgwwgggwgggggggwwggwgwggwgggwggwggggwgwwggggggggwgwgwwggggwwggggggwwwggwgwgggggwggwgggggg",
     "optimalSolution": [
       0,
@@ -8177,6 +8450,7 @@
     "date": "2026-11-28",
     "size": 14,
     "goal": 73,
+    "maxWalls": 10,
     "map": "gwgwgwgwggggggwggwwgwgggggwgwgggwgggggggwgwgggwwgggggwwggggggggggwgggwggggwggwgwwgggggwggwgggwggwgwgwwgwghggwgwggggwgggggwgwgwwggggggggggwwwwgwwggggwggwgggggwwwgwgwgggwgwggggggwggggggwwggwwgwgggwg",
     "optimalSolution": [
       0,
@@ -8207,6 +8481,7 @@
     "date": "2026-11-29",
     "size": 21,
     "goal": 159,
+    "maxWalls": 15,
     "map": "gggwgwwwggwgwgggwgwgggggwgwgggwwggggwggwgwgwgwggwwgggwwwgggggwgwgggggggggwgggwwggwgwggggwgggggggggwgggggggwggwggggggwwgwgggggggggwgggwgggggggggwwwwwwgwwggggwggwwwgwwggwwgggggwwwwggwwggwggggggwwgwwgwgggwwggwwggggggwggggwwhggwggwggggggwggwwgwggwgwwwgggggggwgwgggggwgggwwgwgggwggwgggwggwwgggggggwggggggggggwggwwgggwgggwgwggggggggggwgggwgwggwgggggggggwgwgggwggggwggwgggwgwwwgwggggwggggggggwgggggggggwwggwggggggggwggwggggggggggggggwgggwwgwggwwggw",
     "optimalSolution": [
       0,
@@ -8247,6 +8522,7 @@
     "date": "2026-11-30",
     "size": 14,
     "goal": 74,
+    "maxWalls": 10,
     "map": "gggwwwgwgggwggwwwggwgggggwggggggwwgggwgwgggwwgggwwwwgwggggwggggggggggggggggggggggwggggwggwgggggggwggwggwghwggwwgwgwwwwggggwgggwggggwggggggggggwwgwggggwwwgggwgggwggwwgwwwwgwggggggggggwgwgwwgwgggwgw",
     "optimalSolution": [
       1,
@@ -8277,6 +8553,7 @@
     "date": "2026-12-01",
     "size": 20,
     "goal": 170,
+    "maxWalls": 15,
     "map": "wgwwggwgggwggggggwgwwwggggggwgwgwwgggwggwwggwggwgwgwgwggwggwwgwgwgggwwwggwgggwwwgwggggwggggwwgggggggwggggwgggwwggggggggggwggwgwgggggggwwgggwggggwggggggwggggggggggggwggwgggggwgwggwgggwggggggggwgggwggwggwwgwggwgghggggggwgggwgggggwgggggggggggggwgwgwggwgggwwggggwgwggggwgggggwgwggwgwgggggwggwgggwggggwwgwgggwwwggwwwwgwgwgwgggggwggwwgwgggwgwggggggggggggggwgggggggwggggggggggggggggggwgwggwggwggggggwwwwggwg",
     "optimalSolution": [
       0,
@@ -8317,6 +8594,7 @@
     "date": "2026-12-02",
     "size": 17,
     "goal": 103,
+    "maxWalls": 12,
     "map": "gggwwgwwgggwgwgggggggggggggwgwggggwgwggggggwgwgggwwgggggwgwgggwggwgggggggwgwgggwgwwgwggwgggggggwggggwwgwgwggwgwggwggwggwgggwgwggggggwwwgwwgwwggghgggggggggggwggggwwwggwgggggggwwggwwggggggwgggggggwwgwgggwwggggwggggggggwggggwwggwwwgggggwgggwwggggggggwgggwgwggggggggwgwwgggwwgggwgwwgggwggwgggg",
     "optimalSolution": [
       1,
@@ -8351,6 +8629,7 @@
     "date": "2026-12-03",
     "size": 13,
     "goal": 70,
+    "maxWalls": 9,
     "map": "wggwggggwggggggwggggwggwgggggggwgwgwggwgwggggwgggggwwgggwgggwggwggggggwgggwgwgwgggwghggggggwggwwwggggwwwgwgwggwwgggggwgwgwggggggggwgwggggwwwwwggwgwgwgggwgwgwgwgwwgwggwgg",
     "optimalSolution": [
       0,
@@ -8379,6 +8658,7 @@
     "date": "2026-12-04",
     "size": 17,
     "goal": 97,
+    "maxWalls": 12,
     "map": "wggwggggwgwwgggggwgwwggggwggwgwggggggggwgwggggggggggggggwggggggggwwwggggggggggwwgwwgggwggwwggggwgwwwgwgwggwggwgwggwgggwggwgwgwgwgggggggwggggggwghgwgggggwwgggwgggwggwgggggwggwgwgggwgwgggggggggwggggwwggwgwwggggwgwggwggwgwgggwgwgwgggwwwwgwwwwggggwggggwggwggggwggggggwwwggwwgwwwgwgwggwggwggwgg",
     "optimalSolution": [
       0,
@@ -8413,6 +8693,7 @@
     "date": "2026-12-05",
     "size": 14,
     "goal": 67,
+    "maxWalls": 10,
     "map": "wgggwgwggwgwggwgwgggwggwggwwggggggggwggwwwgggwgggggwgwwwggwggggggggwgwggggggwgwwwggggwgwggwggwgggggwwgwgghgwgwggwwgggwwggggwwggwgwgggwgggggwwggggwgggwgggggwggwwgggwggggwgwggwgwgwgggggwgwggggggggww",
     "optimalSolution": [
       0,
@@ -8443,6 +8724,7 @@
     "date": "2026-12-06",
     "size": 19,
     "goal": 116,
+    "maxWalls": 14,
     "map": "gggwggwwggggggggwgggggwggwgwwgwwgggwgwwggwggggggggggggggwgwwgwwgwggwgggwggwgggwwwgggwwgwgggwggggggggggggggggwwgwgwwwgwgwggggggwgwggwwggggwggggwggggggwgggwwgwwggwwggggggwgwggggwggwghggwggggggggwwgwwgwggwgggggggggwwgwwgwwwgggwgwggggwwggwggggwgwggggggwgwggwwgggwgwgggggwggggggggggwggggggggwwwggggwgggwwwwgwgggwwgwwggwggggggwggwwggwggwgggggwgwwgggggwggggwggwgggwgww",
     "optimalSolution": [
       0,
@@ -8481,6 +8763,7 @@
     "date": "2026-12-07",
     "size": 16,
     "goal": 110,
+    "maxWalls": 12,
     "map": "gwggwgggwggggggggwgggggwgwgwggwggwgwgwgwggggwwgggwggwwwgwgggwggggwwgggwgwgwggwgwwwgggggwgggwgwggwwgggwwgggggggwggwgggwggwggggwggggwwgggghgggggwggwggggwgggwgggwwwgggggwwgwggggggwwwggggwwgwwggwwggwgggggwggggggggwgggggggwgwwgwgggggggwggwgggggggwggggggggwgggwg",
     "optimalSolution": [
       0,
@@ -8515,6 +8798,7 @@
     "date": "2026-12-08",
     "size": 15,
     "goal": 87,
+    "maxWalls": 11,
     "map": "wggwggwgggwgggggggwwgwggwwgwggggggwgggwwwgwgwwwwwggwggwggwgggwgwggggwggggggwgwwggggwwwgggggwgggggggggwwggwggwwgghgggwggwgwwwwgwwggwgggwggwgggggggggwwgwggggggwggggwgggwwggggwgwgggwggggwgwggwgggggwgggwgwgggggggwggwgwggwggggwgwg",
     "optimalSolution": [
       0,
@@ -8547,6 +8831,7 @@
     "date": "2026-12-09",
     "size": 9,
     "goal": 17,
+    "maxWalls": 6,
     "map": "gggwgwgggggwgggggggwgwwgggggwgwggggggwwwhgggggggwggggwgwwggwggwwwwwggggggwggggwww",
     "optimalSolution": [
       2,
@@ -8569,6 +8854,7 @@
     "date": "2026-12-10",
     "size": 17,
     "goal": 84,
+    "maxWalls": 12,
     "map": "gwgggwgggggggwgwgggwwggggwgwgggwggggggggggwggggggggwgwgwgwggwgggwwwgggggggggggggwgwgwggggwwgggwwgggggggwwggwggggggggggggwggggwgggwgwwggggggggggghggggggwggwgggwwgwggwwgwggggwgwwgwwwwggwggwgggggggwggggggggwggwgggwwggggwgggggggwwwwgggggwggggwgggwgggggggwwwgggwggwgggggwggwgggggwgggggggggggggw",
     "optimalSolution": [
       0,
@@ -8603,6 +8889,7 @@
     "date": "2026-12-11",
     "size": 16,
     "goal": 96,
+    "maxWalls": 12,
     "map": "ggwgggggggggggggwggggwggwggwgwwgggggwgggggggwwggggwgggwgggwggwwgwgwgggggwgggwggwggggwgggwgggggggwwgggwgwggwggggwgwwgggwgggwggwwggggwgggghgggwgggggwggwgwgwgwgggggwgggggwwgwwggggggwggggwwwgggwwgwgggggwwwggwggggwgggwwgggwggggggwgggggwgwggggggggwgwggwggwggwggg",
     "optimalSolution": [
       0,
@@ -8637,6 +8924,7 @@
     "date": "2026-12-12",
     "size": 16,
     "goal": 95,
+    "maxWalls": 12,
     "map": "gwgwggwwggggwwggggwgggwggwggwwgwggwgggggggggwwgwgwggggwggwwgggwgwwgwggggwgwggggwggggggggggggggwgwgggwggwgggggggggggwwggggwwwggwggggwwwgwhggwwggggggwgwgwgwgggwgwgggwgwggggwggwgggwgggggwgggwgwgwgggwwggwwgwgggwgggwggwwwggggwwggggggggwwggggwwgwwgwggwgggwggwwwg",
     "optimalSolution": [
       0,
@@ -8671,6 +8959,7 @@
     "date": "2026-12-13",
     "size": 15,
     "goal": 88,
+    "maxWalls": 11,
     "map": "gggwgggwgwggggwwggwgwggwwggwggggwggggggwgggwgwwggwggwggggggggwgwgggwggwggggggwgggggwgggwgwgwggwwwggwwggggwgwwggwhgwggwggwgwgwwggggggggwggwgwgggggwwggggwwwggggggwgwgwggwwgwgwwgggwgggwggwgggwggwggggwgwgwggwgwgggggggggwgwwggggwg",
     "optimalSolution": [
       0,
@@ -8703,6 +8992,7 @@
     "date": "2026-12-14",
     "size": 11,
     "goal": 36,
+    "maxWalls": 8,
     "map": "gwwggggwggwggwgggggggggwggwgwggwggggwgggggwggwggggwgwggggggghgwggggwggwgggwggwwggggwwwwgggwgwgwggggggggggggwwwwwggggwgggg",
     "optimalSolution": [
       0,
@@ -8729,6 +9019,7 @@
     "date": "2026-12-15",
     "size": 10,
     "goal": 23,
+    "maxWalls": 7,
     "map": "wggggggggggwgggwgwwgwgggggwwgggwggwgggggwgggggggggwgwgghgggwgggwgggggggwggwgwwwwggggggggwwgwgggwgggw",
     "optimalSolution": [
       2,
@@ -8753,6 +9044,7 @@
     "date": "2026-12-16",
     "size": 7,
     "goal": 12,
+    "maxWalls": 5,
     "map": "gwggggggwwgggwwgwggggggghgwgwgwgggggwgwwwggwwggww",
     "optimalSolution": [
       0,
@@ -8773,6 +9065,7 @@
     "date": "2026-12-17",
     "size": 16,
     "goal": 83,
+    "maxWalls": 12,
     "map": "gggwwgwwggggggggggggwwggggggggggwggggwwggwwggggggggggggwgggggwwgwwgwgggggwwgwwgggwgwggwgwgwgwggggwgwwgggggwwwwgggggwggwgwwwwgwgggwgggggghwwwgggggggwgwgggwgwwwggggggwwgwgwwwgwwgwwwwgggggggwgwwggwgwwggggggggggggggggwgwgggwwggwggggwggwgggwwggggwwwgggwwgggggww",
     "optimalSolution": [
       0,
@@ -8807,6 +9100,7 @@
     "date": "2026-12-18",
     "size": 8,
     "goal": 18,
+    "maxWalls": 6,
     "map": "gggggggwgwgggwggwgwgwwggggwgggggggwwhggwgwwggwggggwggggwwwwwwwwg",
     "optimalSolution": [
       0,
@@ -8829,6 +9123,7 @@
     "date": "2026-12-19",
     "size": 20,
     "goal": 171,
+    "maxWalls": 15,
     "map": "wgggwgwwgggggwgggggwgwggwgwgwggggwgwggwggwwwwgggwgwwwggwggggggggggggggwgwgwggwwwgwggwwgggwgggwwwwwwggwwgwgwwwgwwggggwggggggggggggggggwggwggwggwggggwwggggggggggwgggwwggwwwggwgwggwwgwwggwwggggwwwggggwwgwwwgwggggghggwggggggggwwggggggwgggggggggggwwggggggwwgggwggwggwgwggwgwgggggwwggwggwwwgggwgwggwgggwggggggwggwwgggwggggwgggwwgggwwgggggwgwwwgwgwgwgwggggwgggwwggggwggwgwgwggwggggwggwggwggwggggwggggwgggggg",
     "optimalSolution": [
       0,
@@ -8869,6 +9164,7 @@
     "date": "2026-12-20",
     "size": 11,
     "goal": 22,
+    "maxWalls": 8,
     "map": "gwggwgwwgwgggggggwgggwwgwggggwggwwggwgwgggggggggwgwwwwgwgggwhgggggwgggwgggggggggggggggwgggggwggggggggggggggggggggwggggggw",
     "optimalSolution": [
       5,
@@ -8895,6 +9191,7 @@
     "date": "2026-12-21",
     "size": 10,
     "goal": 18,
+    "maxWalls": 7,
     "map": "wggggwggggwgggggggwwwwgwgggggggggwgwgwgwwgggwgggggwgggghggwwgggggggggwggwgggwwgggggggwgggwwgggggwggw",
     "optimalSolution": [
       2,
@@ -8919,6 +9216,7 @@
     "date": "2026-12-22",
     "size": 10,
     "goal": 31,
+    "maxWalls": 7,
     "map": "wwgwwgggwggwggwggggwgwgggwgggggwgwggggwgggwgggggwggggwghwggwggggggwwgwgwgggggwggggwwwggggwwgggggggww",
     "optimalSolution": [
       0,
@@ -8943,6 +9241,7 @@
     "date": "2026-12-23",
     "size": 15,
     "goal": 74,
+    "maxWalls": 11,
     "map": "gwggwgggggggggggggggggggggggggwggwwggwwggwgggwwgwgggwgwggwwggwgggggwgwgggwgggggwggggwgggwgggggggggwgggggggggwgwghgggwgwgwwgwgggwwwggwgggwggwwwgggwgggggwggggwggggggwgwgggwggggggwwggwggwgggggggggggwgggggwggwggggwgggwgggwwgggwwg",
     "optimalSolution": [
       1,
@@ -8975,6 +9274,7 @@
     "date": "2026-12-24",
     "size": 15,
     "goal": 74,
+    "maxWalls": 11,
     "map": "wggggggwgwgggggggwwwggggggwgggwggwgggwgwggggwwggggggwgggwwggggwgwwggggggwggwwgwggggwwgwwgwggggwwwgwggggwggggggwghwgwgwwggwwggggggwgggwwggwggggggggggggwggwgwggggggggggggwwwgwggwggwgggggwgggggggggwgwwggggwggggwggggggggwwggwggwg",
     "optimalSolution": [
       1,
@@ -9007,6 +9307,7 @@
     "date": "2026-12-25",
     "size": 14,
     "goal": 71,
+    "maxWalls": 10,
     "map": "wwgggwwggwggwwwggggwgggwgwgwgwwggggwwwwggggggggwggggggggggwggggggggggwggggwggwgggwwgggwggwgggwggggggggwgwhgggwwggwggwgwggggwggwgggwggggggwgwgwgwgwwggggwwgggggwwgwwggwgwwwgwggggwggwgggggwwggggwggwg",
     "optimalSolution": [
       1,
@@ -9037,6 +9338,7 @@
     "date": "2026-12-26",
     "size": 15,
     "goal": 69,
+    "maxWalls": 11,
     "map": "ggggwwgggggwgwgggggggwgggggggwwgwgwwwwggggggggwggwggwgwggggggwgwggwggwggggggggwwgwggggggggggwgggggggwgwgggwwgggghgwwggggggwwwgggwgggwwgggwggggwgwggggwgwgggggwggwgwgggggwwggggwgggggwwggggggggggwwgggwgggwgwggggggwwgggggggwggggg",
     "optimalSolution": [
       2,
@@ -9069,6 +9371,7 @@
     "date": "2026-12-27",
     "size": 19,
     "goal": 135,
+    "maxWalls": 14,
     "map": "wggwggggwgwgwgwggwgwwgwggggggggggwggggwwwgggggggwggggggggggwgggwggggggggggwggggggggwggggwgggwgggwggggggggggggggwgwgwggggwggggwgggggwgwggwgggwggwgwwwwwgggggwggggwgwggwwgwgwggwgggwgghgwwggwgggggwgggggwggwwgwwwgggwggggggwggwgggggwgggwggwwwgwgwwwgwggwgggwggggggwgggggwwggggggwgggggwggggggggggggwwwwgggwggggwwwwggwgwgwwgwwggwgggggwggggwggwggwggggwggggggggggggwggwggw",
     "optimalSolution": [
       0,
@@ -9107,6 +9410,7 @@
     "date": "2026-12-28",
     "size": 14,
     "goal": 73,
+    "maxWalls": 10,
     "map": "gwggggwwwggggwgwwgwggggggwgggwgwgggwgwgwgggggwwgggwgggggggwggggggwggggggggggggggwgggwwggggwwgwggwgggwwggwhgwgggwgggwgggggggwwgwggwggwggggggggwgggwwwgggwggggwgwggwggwgwwwgggwggggwgggwwgggggwgwwgwgg",
     "optimalSolution": [
       0,
@@ -9137,6 +9441,7 @@
     "date": "2026-12-29",
     "size": 10,
     "goal": 35,
+    "maxWalls": 7,
     "map": "gwgggwggwggwggggwgggggwgggggggwwggwgwggwggwgggwggwgwwgghgwggggwggggggggwggwwggwwwwwgwwggwgwwgwggwggg",
     "optimalSolution": [
       0,
@@ -9161,6 +9466,7 @@
     "date": "2026-12-30",
     "size": 16,
     "goal": 88,
+    "maxWalls": 12,
     "map": "gwggggggggggggggggggwwggggwggggwwgwgggwgggwgwggwggggwgwggwggggwwwwggggwggwgwgwgggwwwgwgwwgwggggwwwggggwgwgwwggwwgggwgwgggggggggggwgwwggghgwgwgwwwgggwgwwggwggwgggwgggwgggwggwwwgggwggwgwggggwgggggggggggwgwgggwwggwgwgggggggggwggggggwgwwgggggggwgwgwgggwgggwwgg",
     "optimalSolution": [
       0,
@@ -9195,6 +9501,7 @@
     "date": "2026-12-31",
     "size": 14,
     "goal": 41,
+    "maxWalls": 10,
     "map": "gwgggwggwgwwwwwggggggwggggggwggggwgggwwgggggwggwggwgggggggggggggwgwggggwgggwgggggggggggggggggwwgggwgggggwhggggwgwggwggggwggggggwwggggggwgwwwggggggggggwggwgggwggggggggwggwggggggwggwggwgwwgwwggggggw",
     "optimalSolution": [
       6,
@@ -9225,6 +9532,7 @@
     "date": "2027-01-01",
     "size": 9,
     "goal": 20,
+    "maxWalls": 6,
     "map": "gwggwwggwwwggggggwwwgwgwgggwgggwgwgggwwghwgggwgwwgggggwggggwgwggggwgggggggwwwggww",
     "optimalSolution": [
       1,
@@ -9247,6 +9555,7 @@
     "date": "2027-01-02",
     "size": 17,
     "goal": 77,
+    "maxWalls": 12,
     "map": "wggggwggggggwgggwwggwgwgggggwgggggggwgggggwgwwwwgwgggggggwgggggggggggwgwwggwgggwgggggggwwggggggggggggggwwgggggwgggwgggggwggggwgggggwwgggggggwggghgwggggggggggwggwwwgggggggwwwwwggwgggwgggwggggggggwgggggwwwgwgwggwgggwgggwwgwggggggwwgggwggwwgggwggggggwgggggggggwwgwgwwggwgwggggwggggwgwgggggwgg",
     "optimalSolution": [
       1,
@@ -9281,6 +9590,7 @@
     "date": "2027-01-03",
     "size": 13,
     "goal": 36,
+    "maxWalls": 9,
     "map": "ggwwgwgggwwggwggwgwggggggwgggggggwgggwgwwggwgggwgggwggwgwwgggggwgggggwgwwwwggwggwwwghgwgggwwgggggggwggggggwgwgwwwgwgggggwgwggwggwwggggwwgggggwwgwgwgwgwwwgwwggggwwgwwgggg",
     "optimalSolution": [
       0,
@@ -9309,6 +9619,7 @@
     "date": "2027-01-04",
     "size": 21,
     "goal": 134,
+    "maxWalls": 15,
     "map": "gwggggwgwwggggggggwwwgggggggggggwggggggwwggggwgwgwggwwwgwggggggwgwgggwggwgwgggggwgwgwgggwgggggwgwwggwwgwgwwwgwgwwwgwgggwgggwgggggwgwwggwwwgwgggggggwwwwgggwggggwgwwwggwgggggggwgwgwgggwgwwgggggggggwggwggwwgwwggggwgwwwggwgghgwwwggggwwgwwwgggggwgwwwggwggggwwwgwwgwggwggwgggwgggwgwwwwgggggggggggggggggggwwggggwgwwwggwwgggggwwgwggwggwwwgwggggwggwgggggggwgwgggggwgggggggggwwgggwgwwgggwwgggggggggggwggwwggggwgwwggggwgggwggwgwggwwgwgwggwgggwggggggggg",
     "optimalSolution": [
       8,
@@ -9349,6 +9660,7 @@
     "date": "2027-01-05",
     "size": 21,
     "goal": 166,
+    "maxWalls": 15,
     "map": "wgggwgggggggwgwgwggwgggggggggggggwwggggwgwgggwwggggwgggwggggggwwwgggggwggggggggggggwwggggggggwwgwgwgggwwgggggwgggwwwggggggwgggggwgggggwgggwgggwgggggwggwggwgggwwggwwggggwwgwggwggwwwgggwggggggwggwwwwggggggggwgwgwgggwggggwwhggwggggggggggggwgggwgwggwwgwgggggggggwgggggwggggwwwgggggggwgwggwwgwgwwgwggggwggggggwggggggwgwwwgwgwgggggwwgggwggwwggggggwwgwgwggggwwwwwgwgwgwgwggggggggggggggggwgggwwggggggggwgggwgggggggwgggwwwgwggwggwwgwgwgggwwwgwgggwggg",
     "optimalSolution": [
       0,
@@ -9389,6 +9701,7 @@
     "date": "2027-01-06",
     "size": 16,
     "goal": 95,
+    "maxWalls": 12,
     "map": "wgwggggwggggwgwggggggggwggggwgggggwgwgggwgggwwwggwwwgggwgggwwwwwggwggwgwgwwgggwgggwgwggwwggwggggwwgggggggggwgwwgggwgggwgggggwwgggggggggghgwgwgwgggwggwwgggggggwgwgggggggwgwggwgwwgwgggggwggggwgggggggggggwggggwwwggwwggggwwggggwwggwgggggwgggwggwwgggwgggwgggggw",
     "optimalSolution": [
       0,
@@ -9423,6 +9736,7 @@
     "date": "2027-01-07",
     "size": 20,
     "goal": 134,
+    "maxWalls": 15,
     "map": "gwwggggwggggwgggggwwggwggggwwgggggggggggwggggggggwgwggwwwwgggwgwgggggggggggggwgggggggwwgggwggggggggwggggwgggwwggggwwgggggggggwwgggwgwgggggwgwgggggwggwgwwwgggwwgggggwggggggwwgwgggggwgggwgwwgggggggggwgggggggwgggghggggggggggwwgggwwggwggggwgggggwwwgwgwggggggwgwggwgggwgwgwggggggwggggggggggggwwgggwwwggggwggggwggggggggwgwwgggggggggwggwggggwgggggggwggggggggggggwggggwwggggggwwgwggwggwgggwgwggggwggwgwgwgggg",
     "optimalSolution": [
       0,
@@ -9463,6 +9777,7 @@
     "date": "2027-01-08",
     "size": 14,
     "goal": 66,
+    "maxWalls": 10,
     "map": "ggwgggggwggggggwgggggwwwggggwggggwgggggwggwggwgwgggwggggwwgggwgggggwggwggggggwgwgggggggggggggwwwwwggwggwghggwgwggggwggwwgggwwwwgwgggggggggggwgggwggwwgwggggggwwggwwgwggwgwwgggwggggggggggwwgggwgggww",
     "optimalSolution": [
       0,
@@ -9493,6 +9808,7 @@
     "date": "2027-01-09",
     "size": 21,
     "goal": 208,
+    "maxWalls": 15,
     "map": "gwggwwgwgwwgggggwggwgggggwwwgggwgggwwgggggggggggggwwgwgwgwgwggggggwggggwggggggwgwgwgggwgwwwgwgggggwggggwgggggggwgggwggggggwggggggwgggwgggwggwggggggggwwgwwgggwgggwggggwggwwgggwgwgwggggwwggwwwgwgggggwggwgwggggwwwgwwgggwwgghggggggggwggggwggggggggwwggggggwggwwgggggggwgggggwgggwwwgwggggwwggwgwwgggwwwgwgwggggwwwwgggggwwgwgggwgggwggwggwwwwgwwwggggggggwwgwgggwgwggwwgggwgwgwggggwggwgwgggggggwwggwwggggwggggwwwwggggwggggggggwgggggggggwwggwgwwggwwgg",
     "optimalSolution": [
       0,
@@ -9533,6 +9849,7 @@
     "date": "2027-01-10",
     "size": 11,
     "goal": 31,
+    "maxWalls": 8,
     "map": "gwgwgggwggggwgggggwgggwgwggwwgggggwgwwwwwwgwggwgwgwgggggwggghggwwwwwggggwgggggwgwgwgwgwggwwggggwgwggwwgggggggggwggggggggg",
     "optimalSolution": [
       4,
@@ -9559,6 +9876,7 @@
     "date": "2027-01-11",
     "size": 8,
     "goal": 16,
+    "maxWalls": 6,
     "map": "gggwwggggggwwgggggggggggwgwwggggggwghgwwggggggggggwgwgwgggwwgwgg",
     "optimalSolution": [
       1,
@@ -9581,6 +9899,7 @@
     "date": "2027-01-12",
     "size": 8,
     "goal": 10,
+    "maxWalls": 6,
     "map": "gggwgggwgwgwggwgwgwggggwggggwwwggggwhggggwggwwgwggwgggggggggwggw",
     "optimalSolution": [
       4,
@@ -9603,6 +9922,7 @@
     "date": "2027-01-13",
     "size": 21,
     "goal": 193,
+    "maxWalls": 15,
     "map": "gggwgwggggwggwgwwggggwggggggwgggggggwwggwwgggwwgggggggwgwgggwggwggwggggggwgwgwggwgwgggwgwwwgwgggggwwwgwggggggggggwggggwgggggggwwwwggwggggggggwwggwgwggwgggggggwggggggwwwwwgggwgggggggggggggggwwggggwggggwwwwgggwgwgwwggggggghwgwwgwwggwwwggggwwggwwgggwwwgwwgggwgggggwggggwgwwggwggggwggggggwggggggggwggwwggggggwgggggggwggwwwggggggwgggggwgggggggwwwggwwgwgggwgggwwgggggggwggwggggggwgwwggggwggggggggwggwgggggggggggwgwgggwgwgwggggggwwgggwggggwwgwgwwgg",
     "optimalSolution": [
       0,
@@ -9643,6 +9963,7 @@
     "date": "2027-01-14",
     "size": 10,
     "goal": 22,
+    "maxWalls": 7,
     "map": "ggwggwwwggggggggggggggwwwwwgwwgggggwgggggggggwwgggggwwghwwwgggggwgggwggggggwwgggwwggwgwggwgggwgggwgg",
     "optimalSolution": [
       3,
@@ -9667,6 +9988,7 @@
     "date": "2027-01-15",
     "size": 19,
     "goal": 113,
+    "maxWalls": 14,
     "map": "gwgggwggggggwgggggggggggwgggggwgggwgwgggwggwgwgggwgggwggggggggwgggggwwggggggggwgwwggwgggwgwggwwwggggggggggwgggggwwggwgggwgggwgggwwgwgwggggwgwggwggwggwggwgwgggggwwgwggwwwgggggwwwggghgggggggggggggwggwgggggggggggggwgwgwgggggwgwwwwwggggggggggwwgggggggwwgwwggggggwgggwggggggggggggggwwggwgwggggwwgwggwwwgwgwggggwggwwwgggggwwwwwgggwgwgggggggggwgwwggwwggggwwgwggggggggw",
     "optimalSolution": [
       0,
@@ -9705,6 +10027,7 @@
     "date": "2027-01-16",
     "size": 14,
     "goal": 62,
+    "maxWalls": 10,
     "map": "wwwgggggwwgggggwgwwggwggggggggwgggwggwgggggwggggggggggggwwwgwggggwggggwgwggwgggggggggggggggwwwgwggggwgggghgggggggwgggwwggggwggggwgwgwwggggggggggggwgwwgwggwgggwwwggggwwwgwwggggggwggggwwgggwwwgggggg",
     "optimalSolution": [
       1,
@@ -9735,6 +10058,7 @@
     "date": "2027-01-17",
     "size": 17,
     "goal": 98,
+    "maxWalls": 12,
     "map": "wwgggggggggggggggggggwggwggggggggwggwwwwwggggwgwwwggggggggwggwggggggwgwggggwgggwwgggwgggwwgggggggwgggggwwgggggwgwwwgggwggggwgggwwgggggwwwgggwwgwhwwwgggggwggggwwgggggwgwwggggggggggwgggwgwwgwgggwwwwggggwgwggggwgggwggggggwggggwgwggwggggggggwwwwwggwggggggwggggwwgggggwgggwgggwwgwgwgggggwgwgggg",
     "optimalSolution": [
       0,
@@ -9769,6 +10093,7 @@
     "date": "2027-01-18",
     "size": 8,
     "goal": 14,
+    "maxWalls": 6,
     "map": "gggggggwgwggggwgggggggwwwgggggggwggghggggwgggwggggwggwwgwgggwggg",
     "optimalSolution": [
       1,
@@ -9791,6 +10116,7 @@
     "date": "2027-01-19",
     "size": 16,
     "goal": 89,
+    "maxWalls": 12,
     "map": "wgwggggwwgggwwgggwgwwgggwgggggggwwggggggwgggggwgwgwggwgggwgwggwwgwggggggwgggggggwggggggggggggwwgggggggwwgwggggwgggwgggggggggwggggwggggwghwggggggwgggwwgwwwggggwgggggwgggwggwgwggggwwggwggggwggggwgggggggwgggggwwggwggwggwwggggwgggggggggwwggggwgwwgwwwggwgwggggg",
     "optimalSolution": [
       0,
@@ -9825,6 +10151,7 @@
     "date": "2027-01-20",
     "size": 11,
     "goal": 24,
+    "maxWalls": 8,
     "map": "wggggggwgwwwwgwgggggwwwgggggggggggwgggggggggggggggwggggggggghgwgwggggwggwwgggwgggwgggggwggwgggwggwwgggwgwwggwggggggwggggg",
     "optimalSolution": [
       0,
@@ -9851,6 +10178,7 @@
     "date": "2027-01-21",
     "size": 19,
     "goal": 127,
+    "maxWalls": 14,
     "map": "gwgwgwgggwwggwwwgggwgggwggwgwggggwggggggggwggggwgwgggwggggwggggwggggwggwggggwggggwggggggggggggwwwggggwggggggwwwgggwwgwggwgggwwggggwggggggwgggwwwwwwgwgwwgggwwgwwgwgggwgggwwggwwggggghggggwgggwwgwgwwwgwwggwwwggwwggwgggggwwgggggggggwggggggggggggggggggggwggwwwwwwgwggggggggggwwggggwwgggwggggggwgwggggwgggggwggwggwwggggwgggggwgggwgwgggggggggggggwgggggwgggwggggwwgwggg",
     "optimalSolution": [
       0,
@@ -9889,6 +10217,7 @@
     "date": "2027-01-22",
     "size": 11,
     "goal": 38,
+    "maxWalls": 8,
     "map": "ggggwggggwggwgwgwwgwggggggwwggwgggggggggggwgwggwgwgggggggggghwgggwwgwwgwggwwgwggggggggwwwggggwgggwwggwwgggggwggggwggwgwgg",
     "optimalSolution": [
       0,
@@ -9915,6 +10244,7 @@
     "date": "2027-01-23",
     "size": 19,
     "goal": 135,
+    "maxWalls": 14,
     "map": "gwwwggggwggggwggwgggwwgggggwwgwwwgwgggwwwwggggggwgggwgggggggggggggggwgggwwggwggwgggwgggggwwggwgggwggwwgwgwggwggggwgggggwggwwggggwgwgwggggggwwggggwggwggggggggggggwgggggggggwwgwgggwghggggwggwggwgwgggwgggwgwggwggwgggwggggggwgwggwwggggggggwgggggwwwwwggggwggggwgwwwggggwgggggggwggwggwgggwgwggwggggggwgwggwggggwgwwwgggggggggggggwggwwwgggggggwggggwgwwggwgwgwggggwgggwg",
     "optimalSolution": [
       2,
@@ -9953,6 +10283,7 @@
     "date": "2027-01-24",
     "size": 7,
     "goal": 13,
+    "maxWalls": 5,
     "map": "ggwwggwggggwgggggggwwggwhggggwgggwwwwggwwgwgggggg",
     "optimalSolution": [
       1,
@@ -9973,6 +10304,7 @@
     "date": "2027-01-25",
     "size": 12,
     "goal": 33,
+    "maxWalls": 9,
     "map": "wggwgggwggggwwgggggggggwwggwggwgggggwgggwwwggwgggwwwgwgwwgggggggggggggggggwwgghggggggggggwggwggggggggggwwggwwggwgwgggggwggwgggggwgggwgwgwgwggwwg",
     "optimalSolution": [
       5,
@@ -10001,6 +10333,7 @@
     "date": "2027-01-26",
     "size": 7,
     "goal": 8,
+    "maxWalls": 5,
     "map": "gwgggwwggwwwwgwggggggggwhgggwgggwgwwgwgggggggggwg",
     "optimalSolution": [
       1,
@@ -10021,6 +10354,7 @@
     "date": "2027-01-27",
     "size": 16,
     "goal": 115,
+    "maxWalls": 12,
     "map": "wwgwggwgwwggwggggwwwggggggwggggggwgwwwggggwgggwwwwggggwggggggggggwwggggggwggggggggwggwggggggwwgggwwggggwggggwggggwgggwgggwwgwgwggwgggwwghggggwgwgggggwggwgwwgwwggwggwggwwggggwggwgwggggwgwgggwwggggggggggwwwgwgwggwgwggwwwwggwwwgggwgwgwwggwwgggwgggggwwggwwgggw",
     "optimalSolution": [
       0,
@@ -10055,6 +10389,7 @@
     "date": "2027-01-28",
     "size": 7,
     "goal": 15,
+    "maxWalls": 5,
     "map": "gwgggggggggwgwwggwwgggwghwgwwgggggwgwwwggwgggggwg",
     "optimalSolution": [
       0,
@@ -10075,6 +10410,7 @@
     "date": "2027-01-29",
     "size": 18,
     "goal": 120,
+    "maxWalls": 13,
     "map": "ggggggwwwggwggwggggwgwggwgwggggwggggwggggggggggggggggwggggggwgggggwgggggwggggwggwgwwggggwwgggwggwgwgggggwwgggggggwggwgggggggwggwgwggwwwggwgggggggggwgggggwwwggwgggwgwggwgwghggggwwggwwgggwggggggwgwgggwgwggwgggggwggwgwgwgwwgggwggwgwwgggwwwgwggwggggwggggwgggwgwgggwwwwgwggggwgggggggwgggggwwwgwggwgwgggggwggwgwggggwwgwggggggwgggw",
     "optimalSolution": [
       0,
@@ -10111,6 +10447,7 @@
     "date": "2027-01-30",
     "size": 18,
     "goal": 107,
+    "maxWalls": 13,
     "map": "ggwggwgggwwwggggwwwggggwggwgggggggwwggggwwwggwwgggggggggggwwgwggwggggggggggggggwgggwwgwgggggggwgggwwwggwgwwwgwgggggwggwgggggwwgwgggggwgwgwggwggggwwgwggwgggwwggwgggwggggggghgwwgggwgwgwgwgwwggwgggwggggggggwgwwwgggggwggggwwwggggggggwgggwggggggwggggggwggwgggggwggwgwggggggggggggwgwwwwwwggggggggwgwwggggggwgwwggwgwggwgwgggggggggg",
     "optimalSolution": [
       4,
@@ -10147,6 +10484,7 @@
     "date": "2027-01-31",
     "size": 10,
     "goal": 26,
+    "maxWalls": 7,
     "map": "wwgggwwggggwgggggwwwgggggggwggwwggwggwgwgwwwwggwgwggwgghggwgwggggwggwggggggggggggggggwgwggwgggwggwwg",
     "optimalSolution": [
       1,
@@ -10171,6 +10509,7 @@
     "date": "2027-02-01",
     "size": 8,
     "goal": 17,
+    "maxWalls": 6,
     "map": "gggwwggggwgggwgggggwwgwgggggggwwwwgghggggggggwggwgggwgggggggggwg",
     "optimalSolution": [
       0,
@@ -10193,6 +10532,7 @@
     "date": "2027-02-02",
     "size": 13,
     "goal": 52,
+    "maxWalls": 9,
     "map": "ggggggwggwgwgwwggwwwwggggggggwgggggggggggggggggwggggwggggggwwggggggwgggggwgggwwwwgwwhwgwggwwgggggwwwwgwgggggwggwwwgggwgwwgwwwgwgwwgwgwgggwggwwgggwgwwgggwggggwgggwwgwgwgg",
     "optimalSolution": [
       0,
@@ -10221,6 +10561,7 @@
     "date": "2027-02-03",
     "size": 18,
     "goal": 120,
+    "maxWalls": 13,
     "map": "ggggwgwggwgggggggwggggwgwgwggwwwgwgwggggwggggggwggggwwggwwgwwgwgwggwwgwggwgwwwwwwgwgwggwggwggwggggwgggwwwwwggwgwwgwgggwggggggggwgwggwwwwwggwgggwgwwgwggggwggwgggwwggggwgggghgwggggwgggggggggwwwgggggwgwwwggggwwgwggwwgwwggwgggwgwggggggggwggwgwggwwwwgggwggggggggggggwggggwgwgggwggggwwwwgggggggwwggggwggwwgggggwgggwggwgwgwwggggggg",
     "optimalSolution": [
       0,
@@ -10257,6 +10598,7 @@
     "date": "2027-02-04",
     "size": 12,
     "goal": 38,
+    "maxWalls": 9,
     "map": "ggwgggwgggwgwgggggwggggwwgwwggwgggggwgggwwgggwwgggwggwgwggggwggggggggwgwgggwgwhwwwggggggggggggggggwwwgggggggggwgwwwwwggggggwgwwwggwggwwwggwgggwg",
     "optimalSolution": [
       1,
@@ -10285,6 +10627,7 @@
     "date": "2027-02-05",
     "size": 16,
     "goal": 89,
+    "maxWalls": 12,
     "map": "wwwgggwwggwggwggwgggggwggggwwwwggggggwgggggggwwgggggggwwgggggggwwggggggggggwgwgggggwggwwgwggggggggwwwggggwwgwgwggggwggwgwgwgwggggwgwwggwhggggggggwgwggwgggggggggwwgggwwgggggwggggggwgwgggggggwwgggwwggggggwgwggggggwgwggwwwwggggwwgggwggggwwgwggwggwwggwwggggggw",
     "optimalSolution": [
       0,
@@ -10319,6 +10662,7 @@
     "date": "2027-02-06",
     "size": 7,
     "goal": 16,
+    "maxWalls": 5,
     "map": "gwwggggwgwwwggwggggggggghggggggggwgwwggwggggwggwg",
     "optimalSolution": [
       2,
@@ -10339,6 +10683,7 @@
     "date": "2027-02-07",
     "size": 14,
     "goal": 70,
+    "maxWalls": 10,
     "map": "ggggggggwggwggwgwwgwggwggggggwggggggwgggggwggwgggwgggggwggggggwgggwgggwggwggwggwwgggwgwwwwgggwwgggwggwggghggwwgwgwggggwwgwgggwwgwgwggggwggwgggggwggggwggggwggggggggggwgwgwggwwgwggggwgwwgwgwgwgwggwg",
     "optimalSolution": [
       0,
@@ -10369,6 +10714,7 @@
     "date": "2027-02-08",
     "size": 17,
     "goal": 117,
+    "maxWalls": 12,
     "map": "wwgwggggggwgwgwwgwgwgwgwggwgggwwwwwgggggwggwgwggggggwgwgggwggggggggggggwwgwgggggggwgwgggwwgggwgggwggggwgwwgggwggggwgwwgwwwggggggggggggwggggggwgghwggggggwgggggggwgggggwwgggwwwgwgggwggwgggggwgggggggggwwgggwwgwggggggggwwgwwwgggwggwgwwggggggwgggwgggwgggggggggggwwwgggggwgggwggggggwgggwwggwgggg",
     "optimalSolution": [
       0,
@@ -10403,6 +10749,7 @@
     "date": "2027-02-09",
     "size": 8,
     "goal": 18,
+    "maxWalls": 6,
     "map": "ggggwgwgggggwwwgggggggwggggggwggggwghwggwggwggggwgwwgwgggwgwwggg",
     "optimalSolution": [
       0,
@@ -10425,6 +10772,7 @@
     "date": "2027-02-10",
     "size": 18,
     "goal": 85,
+    "maxWalls": 13,
     "map": "wgggwgggggwgggggwwgwggggggggwggwggggggggwggwggggwgggggggggggwggwgggggggggggwwgwwgggwggwgggggggwgwgggwggggggggggwggggggggggwgggggggggwgwggwwwggggggggggwgwgggggwgggwwggggwwwhgwgggwgggggggggwwgggggggwwgwgggggwgggggwggggggggwgggwggggggggwgwggwggggggwwwggggwwgggggwgwgwggggwgggwgggggggggggwggggggwgggggwwgwgggggwwwggggwgggggggwgg",
     "optimalSolution": [
       0,
@@ -10461,6 +10809,7 @@
     "date": "2027-02-11",
     "size": 19,
     "goal": 141,
+    "maxWalls": 14,
     "map": "ggwgwgwgggggggggggwgggwggggwgwwggwgwwwwggggwgwggggwwgwgwwgggwgwgwwwgggggwwwgggggggggwgggwggwggwggwgggggggggwgwwggggggwwggggwggggggwgggwggggggggwwggggwgwgwggggggggggwggwgggwggggwwgwhggwwwgggwgwgwgggwggggwwgggwgggggggwwwwggwwwwgggggwwgwgwggwggggggggggggggwgwgggwwwgggwwgggwgwggggggggggggggwwwggggggwgggwggwwgwggwggwggwgwwggggggggggwgwgggwgwgwgwgwwgwwwggggggwwgwgw",
     "optimalSolution": [
       0,
@@ -10499,6 +10848,7 @@
     "date": "2027-02-12",
     "size": 10,
     "goal": 10,
+    "maxWalls": 7,
     "map": "gggwwgggwwgwgggggggggwwggggwwgggggggggggggggggggggggggghgwwggggggggwggwgggwggggwwggggggwgwwggggwgggg",
     "optimalSolution": [
       4,
@@ -10523,6 +10873,7 @@
     "date": "2027-02-13",
     "size": 19,
     "goal": 126,
+    "maxWalls": 14,
     "map": "gggggggggggggwgggggwgggwgwggggwgwgggwggggwgwgggggggggwggwgwgggwggwggggggwgwggwggwwwwwgggwgwgggwggggwggggggggggwgggggwgggwwgwgggggggwggwwwggwgggwggggwwwgwggwgwgggggggggggggggwggggwghwggwggwwwgwggggggwwgwgggggggggwgggggwgwgggwgwwgggwgggggwggwgwwggggwwgwgwgwwgggwggwggggwgwgwwgggggwgwwwgwwggggwggwwggwgggggggggggggwwggwggggggggggggggggwgwgggggggwwwgggwggggwwgggwgg",
     "optimalSolution": [
       0,
@@ -10561,6 +10912,7 @@
     "date": "2027-02-14",
     "size": 11,
     "goal": 37,
+    "maxWalls": 8,
     "map": "wgwwgwgwwwggggwggwwggwwwgwgwgwgggggwwwgwggggggwggggggggwwwgghwggwgggwggggwgggwwwwgwgggggwggggwgggggggwgggwgggggwgggggwwgg",
     "optimalSolution": [
       2,
@@ -10587,6 +10939,7 @@
     "date": "2027-02-15",
     "size": 15,
     "goal": 79,
+    "maxWalls": 11,
     "map": "wggggggggwggggwggwggwggggggwwgwggggwggggggwgwwgggwgggwggwggwggwwgwggggggggwggwggggwwggwwgggwggwwggggwwgwggggggwghggwgwggggggggggwggwggwwggggwgggwwwggggggwggggggwgggwggggggggggwggggwgggwgwwgggggwgwgwwggwwwwggwgggwgggggggwwgwgg",
     "optimalSolution": [
       1,
@@ -10619,6 +10972,7 @@
     "date": "2027-02-16",
     "size": 12,
     "goal": 34,
+    "maxWalls": 9,
     "map": "gggwggggggwggggwwwgwgwwgwwgggggwgwwgwgwgggggggggggwgwgggwgggggggwwggggwggggwgghggwggggggggwwgggggggggggggwgggwwggwgggggggggwwggggwgggggggwwgggwg",
     "optimalSolution": [
       0,
@@ -10647,6 +11001,7 @@
     "date": "2027-02-17",
     "size": 17,
     "goal": 122,
+    "maxWalls": 12,
     "map": "wwggwggwggggwggggggggwwwggwgggwggggwggggwgwwggggwgggwgwgggwggwgggggggggggwgwgggwgwwgwggwgwggggwggggwwwgwggwgggggwggwgwggwwgwggggggwgwwgggggggggghgggwwggggwwggwwwgggwgggwwgwgwggggggggwgggggwgwwggwggggwgggwggwgwwwwgggggggwwwwgwgggggwgggggwggggwwwwggwggggggwgggwggwgwwgggwggggwggggwgwwgwggwww",
     "optimalSolution": [
       0,
@@ -10681,6 +11036,7 @@
     "date": "2027-02-18",
     "size": 13,
     "goal": 52,
+    "maxWalls": 9,
     "map": "wwgggwggwggggwgwwgggwggggwwgggwggwggggggggwgwggwgwwwggwgwwggwwwwgwgwgggggwgggggggwgghggggwgwgwwggwgggggggwggggggggwgwggggggggwgggwggggwwgggggwgggggggggggwgwgwwgggggggggw",
     "optimalSolution": [
       2,
@@ -10709,6 +11065,7 @@
     "date": "2027-02-19",
     "size": 11,
     "goal": 30,
+    "maxWalls": 8,
     "map": "ggggggggggwwgwggwgggwgggggggggggwwgwggggggggwgggwggggggwwwgghwgwgwwgwwgggwwwggwggwgggwgggggwgwggggggggwwwgwgggwgwwgggwggw",
     "optimalSolution": [
       0,
@@ -10735,6 +11092,7 @@
     "date": "2027-02-20",
     "size": 17,
     "goal": 104,
+    "maxWalls": 12,
     "map": "wgggggwwggwgggwggggwwwwwwggggggggwggwggwgwwwwwwgwwgggggggggwgwwggggggggwwwgggwgwgwggggggggggwggggggggwggggggggwwggggggggwgwgwwgggwgwgggwgwggwggghggggggggwgggggggggggwgggwwggwgwgggggwgwggggggggwwwgwggggggwwggggggwggggggggwwgggwggwgggggggggwwwwwwgwwwgggwgggggwggwggwwggwgwwggggggwgggwwgggwgg",
     "optimalSolution": [
       3,
@@ -10769,6 +11127,7 @@
     "date": "2027-02-21",
     "size": 12,
     "goal": 38,
+    "maxWalls": 9,
     "map": "ggwwgwwgggggggwggwggwwwgggwgggggwgggggggwggwggwggwgwggwgwgwgggwwgwggwgwwgggggghgwwgwggwgwggggwwgwgwwgwwwwwggggwwwwgggwgggwggwggwgggwgggwwggwgggg",
     "optimalSolution": [
       0,
@@ -10797,6 +11156,7 @@
     "date": "2027-02-22",
     "size": 21,
     "goal": 195,
+    "maxWalls": 15,
     "map": "gggggwgwggwgwgwgwwgggwwgwwgggggwgggwgggggggwggggwwgggwggggwgwgggggggggwgwwgggwwwwgwwgwggggwgwwgggwgwggggwgwgggwwgwgggwgggwwgwggggwggggggwggggwggwggwgwwggwggwgwgggwgwgwggwgggggwwggggwgggggggggwwgwwggwwggggwwgggggwwwwggggghggggggggwgggwggggggwggwggwgwwgwwgwgggggggwggggggggwwggwggwgwgwwggggggwgwgwgwggwggggggwggggwwggggwwgwwgwwgwgwgwgwgwgggwggwgwgwwggwgggggwgwwwggggwggwwgwwgggwwgwgggwwwwwwggwwwwggggwwwggggggggwgggwgggwgwwwggwwgggwwgggggwwggg",
     "optimalSolution": [
       0,
@@ -10837,6 +11197,7 @@
     "date": "2027-02-23",
     "size": 15,
     "goal": 83,
+    "maxWalls": 11,
     "map": "gggwgggggggggggwwgggwwgggwwggggwggwwggggggwggggwggggggggggggggwggggggwggwggwgwwgwwggggwggggwwwwgggwgggggwwggwggghgggwwgwwwwwwgwggwggggwwwggwgggwwgggwggggggwggggwwgwgwgwwwggggggwwgwgggwwgggwwgwgggwggwgggggwggggggggwggggggggwgw",
     "optimalSolution": [
       0,
@@ -10869,6 +11230,7 @@
     "date": "2027-02-24",
     "size": 21,
     "goal": 160,
+    "maxWalls": 15,
     "map": "wwggggggwggwgggwgggggggwgggggwgggggwgwgggwgggggwwggggggwgggwggggggwggwggwgggggggwgggwwgwwgwgggggggwggwgggggwggggwgwgwwwggwgwgwggggggggggggggwwgggggwgwgwwgwwgggwgggwgggwgwggwgggggggwgwwgggwgggwwggwggggggwgwggwwggggggwwwgghgggggwgggggwggggwwwgggwwgwgwggwggwggggggwgwggggwggwgggggwwgggwggwwgwggggwgggggwggwwwggggwgggggwggwwggwgggggwggggwgwggggggggggggggwwgwwwwggggwggggggggwgggggwwgggggwgwgwgggwgggggggggwgggggwggggggwgggggggwggggwggggggggwgggg",
     "optimalSolution": [
       0,
@@ -10909,6 +11271,7 @@
     "date": "2027-02-25",
     "size": 13,
     "goal": 51,
+    "maxWalls": 9,
     "map": "gggwgwwwggwwggggggwggwgwwgwggggggwwwwwgwwgggggggwwggggggggwggggggggwgwwgwgwgwwgwgggghwggwggggwwggwgwggggggggwggggggwggggggggggwgggggwgwwgggwgwwgwgggggwgwgwwggwwwggwggwgw",
     "optimalSolution": [
       2,
@@ -10937,6 +11300,7 @@
     "date": "2027-02-26",
     "size": 12,
     "goal": 43,
+    "maxWalls": 9,
     "map": "gwgggwggggwgggggggggwggggwggggggwwgggwwggggwgggggwwwggwgwgggwwggwggggwgwgggggghgwgggggggggggggggggggggggggggwwwgwwwggwwwgwggggwwgwggwgwgwwwggwgw",
     "optimalSolution": [
       4,
@@ -10965,6 +11329,7 @@
     "date": "2027-02-27",
     "size": 11,
     "goal": 29,
+    "maxWalls": 8,
     "map": "wggwggggwggwggggwwggwwgwgggggggwwggggwwgwgwggwggggwgwwwggggghgwggggggggwgggwgggwggwgggggwgggggggggggwggwgwwggwgggggwggggg",
     "optimalSolution": [
       2,

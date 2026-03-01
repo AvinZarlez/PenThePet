@@ -300,11 +300,13 @@ class Menu {
         this.game.grid.saveInitialState();
         this.game.wallCount = 0;
 
-        // Set goal and maxWalls (maxWalls derived from grid size)
+        // Set goal and maxWalls
         if (mapData.goal !== undefined) {
             this.game.goalAreaSize = mapData.goal;
         }
-        this.game.maxWalls = CONSTANTS.maxWallsForSize(mapData.size);
+        if (mapData.maxWalls !== undefined) {
+            this.game.maxWalls = mapData.maxWalls;
+        }
 
         // Update current date and optimal solution (parse compact flat array into pairs)
         this.game.currentDate = mapData.date || null;

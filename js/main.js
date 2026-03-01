@@ -130,8 +130,12 @@ async function initGame() {
         console.warn('Map does not have a goal value, using default');
     }
     
-    // Set maxWalls derived from grid size
-    game.maxWalls = CONSTANTS.maxWallsForSize(mapData.size);
+    // Set maxWalls from database (or use default if not present)
+    if (mapData.maxWalls !== undefined) {
+        game.maxWalls = mapData.maxWalls;
+    } else {
+        console.warn('Map does not have a maxWalls value, using default');
+    }
     
     // Store current date and optimal solution (parse compact flat array into pairs)
     game.currentDate = mapData.date;

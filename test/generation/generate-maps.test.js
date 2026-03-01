@@ -374,21 +374,20 @@ describe('Map Database Validation', () => {
             }
         });
         
-        test('optimalSolution wall count should not exceed maxWalls for grid size', () => {
+        test('optimalSolution wall count should not exceed maxWalls', () => {
             const dates = Object.keys(maps);
             
             for (const date of dates) {
                 const map = maps[date];
                 // Flat array: divide by 2 to get number of walls
                 const wallCount = map.optimalSolution.length / 2;
-                const maxWalls = CONSTANTS.maxWallsForSize(map.size);
-                expect(wallCount).toBeLessThanOrEqual(maxWalls);
+                expect(wallCount).toBeLessThanOrEqual(map.maxWalls);
             }
         });
         
         test('all maps should have required fields', () => {
             const dates = Object.keys(maps);
-            const requiredFields = ['dayNumber', 'mapName', 'date', 'size', 'goal', 'map', 'optimalSolution'];
+            const requiredFields = ['dayNumber', 'mapName', 'date', 'size', 'goal', 'maxWalls', 'map', 'optimalSolution'];
             
             for (const date of dates) {
                 for (const field of requiredFields) {

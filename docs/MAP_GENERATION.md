@@ -87,6 +87,7 @@ Maps are stored in a compact format in `maps.json` to minimise load time. Each m
   "date": "2026-02-06",    // Date in YYYY-MM-DD format
   "size": 7,               // Grid side length (produces a size×size grid)
   "goal": 13,              // Maximum achievable penned area
+  "maxWalls": 5,           // Wall budget (stored per-map; typically floor(size * 0.75))
   "map": "gwgwh...",       // Compact tile string (see below)
   "optimalSolution": [1, 0, 2, 3, ...]   // Flat coordinate list (see below)
 }
@@ -111,13 +112,10 @@ Use `parseCompactMap(mapStr, size)` (defined in `js/Grid.js`) to decode this int
 
 A flat array of integers `[r0, c0, r1, c1, …]` where each consecutive pair `(rN, cN)` is the
 row and column of one optimal wall. The number of walls is `optimalSolution.length / 2`, which is
-always ≤ `CONSTANTS.maxWallsForSize(size)`.
+always ≤ `maxWalls`.
 
 Use `parseCompactSolution(flatArr)` (defined in `js/Grid.js`) to decode this into an array of
 `[row, col]` pairs.
-
-> **Note:** `maxWalls` is **not** stored in the map data — it is always derived at runtime as
-> `CONSTANTS.maxWallsForSize(size)` (`Math.floor(size * 0.75)`).
 
 ### Field Descriptions
 
@@ -126,6 +124,7 @@ Use `parseCompactSolution(flatArr)` (defined in `js/Grid.js`) to decode this int
 - **date**: Date string used as the map key in maps.json
 - **size**: Grid side length (grid is always square: size × size)
 - **goal**: The maximum area achievable with optimal wall placement within the wall budget
+- **maxWalls**: The wall budget for this map (stored explicitly per-map; computed as `floor(size * 0.75)` during generation)
 - **map**: Compact tile string (g=grass, w=water, h=home), row-major, length = size²
 - **optimalSolution**: Flat array `[r0, c0, r1, c1, …]` of optimal wall coordinates
 
@@ -450,7 +449,7 @@ node scripts/generate-map.js --count 3 --size 7
 
 **Key Invariants:**
 
-- maxWalls = floor(size × 0.75) per grid size (**not stored in maps.json** — always computed at runtime)
+- maxWalls = floor(size × 0.75) per grid size (stored explicitly per-map in maps.json)
 - Goal = maximum achievable area
 - goalArea >= 5 (minimum difficulty)
 - At least one wall not on edge (strategic placement)

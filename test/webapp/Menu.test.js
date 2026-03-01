@@ -87,6 +87,7 @@ function mockFetch() {
                     date: '2026-02-06',
                     size: 7,
                     goal: 11,
+                    maxWalls: 3,
                     map: 'g'.repeat(49)
                 },
                 '2026-02-05': {
@@ -95,6 +96,7 @@ function mockFetch() {
                     date: '2026-02-05',
                     size: 7,
                     goal: 8,
+                    maxWalls: 4,
                     map: 'g'.repeat(49)
                 },
                 '2099-12-31': {
@@ -103,6 +105,7 @@ function mockFetch() {
                     date: '2099-12-31',
                     size: 7,
                     goal: 15,
+                    maxWalls: 5,
                     map: 'g'.repeat(49)
                 }
             })
@@ -287,8 +290,7 @@ describe('Menu', () => {
             
             expect(game.grid.loadMap).toHaveBeenCalled();
             expect(game.goalAreaSize).toBe(11);
-            // maxWalls is computed from size: CONSTANTS.maxWallsForSize(7) = floor(7 * 0.75) = 5
-            expect(game.maxWalls).toBe(5);
+            expect(game.maxWalls).toBe(3);
         });
 
         test('should save selected level to cookie', async () => {
@@ -314,6 +316,18 @@ describe('Menu', () => {
             
             const mapData = { ...menu.mapsDatabase['2026-02-06'] };
             delete mapData.goal;
+            
+            await menu.loadLevel(mapData);
+            
+            // Should still load without crashing
+            expect(game.grid.loadMap).toHaveBeenCalled();
+        });
+
+        test('should handle missing maxWalls in level data', async () => {
+            await menu.loadMapsDatabase();
+            
+            const mapData = { ...menu.mapsDatabase['2026-02-06'] };
+            delete mapData.maxWalls;
             
             await menu.loadLevel(mapData);
             
