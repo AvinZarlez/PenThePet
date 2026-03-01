@@ -476,4 +476,3 @@ node scripts/generate-map.js --count 3 --size 7
    - This ensures all maps meet same quality standards
 
 All production paths use the MILP solver and validation rules.
-Time-limited generation has been removed to ensure consistent quality.

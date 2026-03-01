@@ -371,16 +371,6 @@ describe('MapGenerator', () => {
         });
     });
 
-    /*
-     * Note: _generateGuaranteedValidMap() method has been removed (2026-02-06)
-     * 
-     * Reason: Per requirements, map generation must not fall back to simplified
-     * map generation methods. If generation fails, it should throw an error
-     * instead of falling back to a guaranteed valid but potentially lower-quality map.
-     * 
-     * This ensures all generated maps meet the same quality standards consistently.
-     */
-
     describe('calculateGoal()', () => {
         test('should convert string map to numeric format', () => {
             const spy = jest.spyOn(MILPSolver, 'solveMap').mockReturnValue({

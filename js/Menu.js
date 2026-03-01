@@ -271,7 +271,7 @@ class Menu {
 
         const sortedMonths = Object.keys(monthGroups).sort();
 
-        // Default to the most recent month, or reset if current month no longer valid
+        // Default to the most recent month; fall back if the current month has no maps
         if (!this.currentCalendarMonth || !monthGroups[this.currentCalendarMonth]) {
             this.currentCalendarMonth = sortedMonths[sortedMonths.length - 1];
         }

@@ -328,7 +328,7 @@
     transform-origin: center center;
 }
 
-/* Legacy path overlay for data-overlay fallback */
+/* Path overlay using data-overlay attribute */
 .cell::after {
     content: attr(data-overlay);
     position: absolute;

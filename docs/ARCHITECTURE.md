@@ -287,31 +287,6 @@ scripts/
 - JavaScript can check millions of operations per second
 - Negligible performance impact
 
-### Memory-Efficient Combination Generation
-
-**Decision:** Generate combinations on-the-fly instead of storing all
-
-**Why:**
-
-- Original implementation caused heap overflow for large maps
-- Storing all combinations uses O(n^k) memory
-- Generating on-the-fly uses O(k) memory
-- Trade CPU for memory (acceptable for our use case)
-
-**Pattern:**
-
-```javascript
-// Instead of:
-const allCombinations = generateAll(); // Huge array in memory
-for (const combo of allCombinations) { ... }
-
-// Do:
-for (let i = 0; i < combinationCount; i++) {
-    const combo = generateNthCombination(i); // Generate one
-    // Process immediately
-}
-```
-
 ## Performance Considerations
 
 ### Grid Size Limits

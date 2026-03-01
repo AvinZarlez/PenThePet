@@ -26,7 +26,7 @@ const CONFIG = {
     // Cell visual settings
     cell: {
         size: CONSTANTS.CELL.MAX_SIZE,       // Cell size in pixels (desktop)
-        sizeSmall: 40,                       // Cell size in pixels (mobile) - deprecated, dynamic sizing used
+        sizeSmall: 40,                       // Cell size in pixels (mobile, minimum)
         gap: CONSTANTS.CELL.GAP,             // Gap between cells in pixels
     },
 
