@@ -24,7 +24,7 @@ Tests live in `test/webapp/` (browser components) and `test/generation/` (map ge
 
 ## Architecture
 
-**Browser code** (`js/`): Loads maps from `maps.json`, renders the game, checks if pet is penned. No map generation or solving in the browser.
+**Browser code** (`js/`): Loads maps from `maps/YYYY.json`, renders the game, checks if pet is penned. No map generation or solving in the browser.
 
 **Generation scripts** (`scripts/`): Offline Node.js scripts that generate maps using a Python MILP solver (PuLP + CBC). Goal = **MAXIMUM** penned area — not minimum.
 
@@ -33,7 +33,7 @@ constants.js → config.js → tileTypes.js → CookieUtils.js → DateUtils.js 
 
 ## Map Generation
 
-Maps are pre-generated offline in `maps.json`. Wall budget = `floor(size × 0.75)`. All maps validated by `MapValidator`. No fallbacks — generation throws on failure. See [docs/MAP_GENERATION.md](../docs/MAP_GENERATION.md) for full details.
+Maps are pre-generated offline in `maps/YYYY.json`. Wall budget = `floor(size × 0.75)`. All maps validated by `MapValidator`. No fallbacks — generation throws on failure. See [docs/MAP_GENERATION.md](../docs/MAP_GENERATION.md) for full details.
 
 ## Documentation
 

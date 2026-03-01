@@ -423,7 +423,7 @@ font-size: clamp(12px, 2vw, 16px);
    ```javascript
    // js/constants.js
    const CONSTANTS = {
-       MAX_WALLS: 20, // Changed from 15
+       MAX_WALLS: 20,
        // ...
    };
    ```

@@ -40,15 +40,11 @@ class Game {
         this.viewingOptimal = false;  // Track if user is viewing optimal solution
         
         this.attachEventListeners();
-        // Note: init() is NOT called here automatically
-        // Instead, main.js loads the map from maps/YYYY.json and calls render() directly
-        // init() is only used for debug map generation
+        // main.js loads the map from maps/YYYY.json and calls render() directly
     }
 
-    // Note: init(), newGame(), and generateDebugMap() have been removed.
-    // Maps are loaded from maps/YYYY.json only. The Game class is now a pure
-    // checker/renderer - it checks if the pet is penned with current wall
-    // placement, not a solver that generates new maps.
+    // The Game class is a pure checker/renderer - it checks if the pet is penned
+    // with current wall placement. Maps are loaded from maps/YYYY.json via main.js.
     // All map generation happens in the Python MILP pipeline (scripts/solver/solve.py).
 
     /**

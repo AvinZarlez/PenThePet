@@ -222,7 +222,7 @@ Pure state management for the grid:
 - Save/reset functionality (saveInitialState, reset)
 - Home position tracking (getHomePosition)
 
-**Note**: Grid no longer generates maps. Maps are loaded from `maps/YYYY.json` only.
+**Note**: Grid loads maps from `maps/YYYY.json` only. It does not generate maps.
 
 ### `js/Game.js`
 
@@ -236,7 +236,7 @@ Game controller that checks if the pet is penned:
 - Score submission and optimal solution viewing
 - Delegates cookie operations to CookieUtils
 
-**Note**: Game no longer generates maps or has debug tools. Maps are loaded from `maps/YYYY.json` via main.js.
+**Note**: The Game class is a pure checker/renderer. Maps are loaded from `maps/YYYY.json` via main.js.
 
 **To add gameplay features:** Extend this class with new methods for character movement, scoring, etc.
 
