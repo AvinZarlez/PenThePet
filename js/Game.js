@@ -1371,6 +1371,7 @@ class Game {
 
     /**
      * Hide the pause overlay and restore game content below the map-info banner.
+     * Only restores elements that were explicitly hidden by _showPauseOverlay.
      * @private
      */
     _hidePauseOverlay() {
@@ -1378,11 +1379,14 @@ class Game {
         if (overlay) overlay.style.display = 'none';
         for (const selector of Game.PAUSE_HIDDEN_SELECTORS) {
             const el = document.querySelector(selector);
-            if (el) {
-                el.style.display = el.dataset.pauseHidden ?? '';
+            if (el && 'pauseHidden' in el.dataset) {
+                el.style.display = el.dataset.pauseHidden;
                 delete el.dataset.pauseHidden;
             }
         }
+        // Re-sync the solution toggle bar visibility after restoring from pause,
+        // ensuring it only shows when a solution has been submitted.
+        this.updateSolutionToggleBar();
     }
 }
 

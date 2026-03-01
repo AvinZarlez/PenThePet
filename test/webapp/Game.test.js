@@ -467,4 +467,51 @@ describe('Game — Timer', () => {
             expect(document.getElementById('timerValue').textContent).toBe('02:05');
         });
     });
+
+    // ------------------------------------------------------------------
+    // solutionToggleBar visibility — regression for always-visible bug
+    // ------------------------------------------------------------------
+    describe('solutionToggleBar visibility', () => {
+        test('stays hidden after initTimerForDate when not submitted', () => {
+            game.isSubmitted = false;
+            game.initTimerForDate('2026-01-01');
+            expect(document.getElementById('solutionToggleBar').style.display).toBe('none');
+        });
+
+        test('stays hidden after lockTimer when not submitted', () => {
+            game.isSubmitted = false;
+            game.initTimerForDate('2026-01-01');
+            game.lockTimer();
+            expect(document.getElementById('solutionToggleBar').style.display).toBe('none');
+        });
+
+        test('stays hidden after resetTimer when not submitted', () => {
+            game.isSubmitted = false;
+            game.initTimerForDate('2026-01-01');
+            game.resetTimer();
+            expect(document.getElementById('solutionToggleBar').style.display).toBe('none');
+        });
+
+        test('stays hidden through pause and resume when not submitted', () => {
+            game.isSubmitted = false;
+            game.initTimerForDate('2026-01-01');
+            game.pauseTimer();
+            game.resumeTimer();
+            expect(document.getElementById('solutionToggleBar').style.display).toBe('none');
+        });
+
+        test('remains visible through pause and resume when submitted with optimal solution', () => {
+            game.isSubmitted = true;
+            game.optimalSolution = [[1, 1]];
+            game.updateSolutionToggleBar();
+            expect(document.getElementById('solutionToggleBar').style.display).toBe('flex');
+
+            game.isPaused = false;
+            game.isTimerLocked = true;
+            game.pauseTimer(); // no-op because locked
+            game.resumeTimer(); // no-op because locked
+            // Still visible — locked timer means no pause possible
+            expect(document.getElementById('solutionToggleBar').style.display).toBe('flex');
+        });
+    });
 });
