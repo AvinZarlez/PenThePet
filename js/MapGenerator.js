@@ -134,7 +134,7 @@ class MapGenerator {
                 // Last tile type gets the remainder to ensure exact total
                 count = fillCount - placed;
             } else {
-                count = Math.round((t.chance / totalChance) * fillCount);
+                count = Math.floor((t.chance / totalChance) * fillCount);
             }
             for (let j = 0; j < count; j++) {
                 tileList.push(t.name);

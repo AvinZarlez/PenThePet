@@ -27,6 +27,7 @@ export default [
                 isWallPlaceable: 'readonly',
                 getTileScore: 'readonly',
                 getNumericTileScore: 'readonly',
+                getEligibleTileTypes: 'readonly',
                 getTileType: 'readonly',
                 isTileClickable: 'readonly',
                 Grid: 'readonly',

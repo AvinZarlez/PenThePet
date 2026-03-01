@@ -421,7 +421,7 @@ describe('PathfindingUtils', () => {
             ];
             const customScores = {0:0, 1:1, 2:1, 3:5, 5:0};
             const score = PathfindingUtils.calculatePennedScore(map, 1, 1, customScores);
-            expect(score).toBe(6); // 1 home + 1 star * 5
+            expect(score).toBe(6); // home(1) + star(5) = 6
         });
 
         test('should not count blocking tiles', () => {

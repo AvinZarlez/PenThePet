@@ -97,8 +97,7 @@ def solve_map(map_data, max_walls):
             non_water.append((r, c))
             tile_set.add((r, c))
             tile_score_map[(r, c)] = tile_scores.get(tile, 1)
-            # Wall-placeable tiles (grass, star, and any future type with score > 0
-            # that isn't home). We check by exclusion: not water, not home.
+            # Wall-placeable tiles: all non-water, non-home tiles (water already excluded above)
             if tile != 'home':
                 wall_placeable.append((r, c))
             if tile == 'home':

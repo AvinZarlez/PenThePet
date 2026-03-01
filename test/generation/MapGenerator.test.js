@@ -223,11 +223,8 @@ describe('MapGenerator', () => {
             const generator = new MapGenerator(7);
             const map = generator._generateRandomMap();
 
-            // Valid types include all tiles with chance > 0 plus 'home'
-            const validTypes = Object.entries(TILE_DATA)
-                .filter(([, data]) => data.chance > 0)
-                .map(([name]) => name)
-                .concat('home');
+            // Valid types are eligible tiles plus 'home'
+            const validTypes = [...getEligibleTileTypes(), 'home'];
             map.forEach(row => {
                 row.forEach(tile => {
                     expect(validTypes).toContain(tile);
@@ -265,9 +262,7 @@ describe('MapGenerator', () => {
             expect(counts.home).toBe(1);
 
             // All non-home tiles should be from eligible set
-            const eligible = Object.entries(TILE_DATA)
-                .filter(([, data]) => data.chance > 0)
-                .map(([name]) => name);
+            const eligible = getEligibleTileTypes();
             for (const [name, count] of Object.entries(counts)) {
                 if (name !== 'home') {
                     expect(eligible).toContain(name);

@@ -120,19 +120,16 @@ for (const [name, data] of Object.entries(TILE_DATA)) {
 }
 
 /**
- * Set of numericIds that block movement (score === 0 and not passable).
- * Water (0) and wall (5) block movement.
+ * Set of numericIds that block movement.
+ * Tiles block movement if they are not wall-placeable and are not 'home'.
  * @type {Set<number>}
  */
 const BLOCKING_NUMERIC_IDS = new Set();
 for (const data of Object.values(TILE_DATA)) {
-    if (!data.wallPlaceable && data.chance === 0 && data.name !== 'home') {
+    if (!data.wallPlaceable && data.name !== 'home') {
         BLOCKING_NUMERIC_IDS.add(data.numericId);
     }
 }
-// Water also blocks
-BLOCKING_NUMERIC_IDS.add(TILE_DATA.water.numericId);
-BLOCKING_NUMERIC_IDS.add(TILE_DATA.wall.numericId);
 
 /**
  * Check if a tile name represents a wall-placeable tile.
@@ -172,6 +169,16 @@ function isBlockingNumericId(numericId) {
     return BLOCKING_NUMERIC_IDS.has(numericId);
 }
 
+/**
+ * Get eligible tile type names (those with chance > 0) for map generation.
+ * @returns {string[]} Array of tile type names
+ */
+function getEligibleTileTypes() {
+    return Object.entries(TILE_DATA)
+        .filter(([, data]) => data.chance > 0)
+        .map(([name]) => name);
+}
+
 // Export for use in other modules
 if (typeof module !== 'undefined' && module.exports) {
     module.exports = {
@@ -186,5 +193,6 @@ if (typeof module !== 'undefined' && module.exports) {
         getTileScore,
         getNumericTileScore,
         isBlockingNumericId,
+        getEligibleTileTypes,
     };
 }
