@@ -68,16 +68,36 @@ class MapGenerator {
                     
                     // Check if we got a valid result
                     if (result !== null && result.optimalWallCount <= maxWalls) {
+                        // Rule 1: Set maxWalls to the minimum walls needed
+                        // The solver already minimises wall usage (epsilon tiebreak),
+                        // so optimalWallCount is the true minimum for this score.
+                        const effectiveMaxWalls = result.optimalWallCount;
+                        
                         // Validate the map meets quality standards
-                        const validation = MapValidator.validate(map, result);
+                        const validation = MapValidator.validate(map, {
+                            ...result,
+                            maxWalls: effectiveMaxWalls
+                        });
                         
                         if (validation.valid) {
-                            return { 
-                                map, 
-                                goal: result.goalArea, 
-                                maxWalls: maxWalls,
-                                optimalSolution: result.optimalSolution
-                            };
+                            // Rule 3: Wall budget must be a meaningful constraint
+                            // Solve with unlimited walls and verify the unconstrained
+                            // score is strictly higher. If unlimited walls can't improve
+                            // the score, the wall limit is decorative and the level is
+                            // rejected.
+                            const unlimitedResult = this.calculateGoal(map, this.size * this.size);
+                            if (unlimitedResult !== null && unlimitedResult.goalArea > result.goalArea) {
+                                return { 
+                                    map, 
+                                    goal: result.goalArea, 
+                                    maxWalls: effectiveMaxWalls,
+                                    optimalSolution: result.optimalSolution
+                                };
+                            }
+                            // Wall limit doesn't constrain scoring - try another map
+                            if (totalAttempts % 10 === 0) {
+                                console.log('Wall budget does not constrain scoring - skipping map');
+                            }
                         } else {
                             // Log validation failures for debugging
                             if (totalAttempts % 10 === 0) {

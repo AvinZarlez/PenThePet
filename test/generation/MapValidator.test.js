@@ -173,5 +173,73 @@ describe('MapValidator', () => {
             expect(result.valid).toBe(false);
             expect(result.errors.length).toBeGreaterThan(1);
         });
+        
+        test('should fail when not all walls are needed (rule 1)', () => {
+            const map = [
+                ['grass', 'grass', 'grass', 'grass', 'grass', 'grass', 'grass'],
+                ['grass', 'water', 'grass', 'water', 'grass', 'water', 'grass'],
+                ['grass', 'grass', 'grass', 'grass', 'grass', 'grass', 'grass'],
+                ['grass', 'water', 'grass', 'home', 'grass', 'water', 'grass'],
+                ['grass', 'grass', 'grass', 'grass', 'grass', 'grass', 'grass'],
+                ['grass', 'water', 'grass', 'water', 'grass', 'water', 'grass'],
+                ['grass', 'grass', 'grass', 'grass', 'grass', 'grass', 'grass']
+            ];
+            
+            const solution = {
+                goalArea: 10,
+                optimalWallCount: 3, // Solver only uses 3
+                maxWalls: 5,         // But level gives 5
+                optimalSolution: [[1, 2], [2, 1], [3, 2]]
+            };
+            
+            const result = MapValidator.validate(map, solution);
+            expect(result.valid).toBe(false);
+            expect(result.errors).toContain('Not all walls needed for optimal score (uses 3 of 5 walls)');
+        });
+        
+        test('should pass when all walls are needed (rule 1)', () => {
+            const map = [
+                ['grass', 'grass', 'grass', 'grass', 'grass', 'grass', 'grass'],
+                ['grass', 'water', 'grass', 'water', 'grass', 'water', 'grass'],
+                ['grass', 'grass', 'grass', 'grass', 'grass', 'grass', 'grass'],
+                ['grass', 'water', 'grass', 'home', 'grass', 'water', 'grass'],
+                ['grass', 'grass', 'grass', 'grass', 'grass', 'grass', 'grass'],
+                ['grass', 'water', 'grass', 'water', 'grass', 'water', 'grass'],
+                ['grass', 'grass', 'grass', 'grass', 'grass', 'grass', 'grass']
+            ];
+            
+            const solution = {
+                goalArea: 10,
+                optimalWallCount: 4,
+                maxWalls: 4, // Matches optimalWallCount
+                optimalSolution: [[1, 2], [2, 1], [3, 2], [4, 1]]
+            };
+            
+            const result = MapValidator.validate(map, solution);
+            expect(result.valid).toBe(true);
+            expect(result.errors).toHaveLength(0);
+        });
+        
+        test('should skip rule 1 when maxWalls not provided in solution', () => {
+            const map = [
+                ['grass', 'grass', 'grass', 'grass', 'grass', 'grass', 'grass'],
+                ['grass', 'water', 'grass', 'water', 'grass', 'water', 'grass'],
+                ['grass', 'grass', 'grass', 'grass', 'grass', 'grass', 'grass'],
+                ['grass', 'water', 'grass', 'home', 'grass', 'water', 'grass'],
+                ['grass', 'grass', 'grass', 'grass', 'grass', 'grass', 'grass'],
+                ['grass', 'water', 'grass', 'water', 'grass', 'water', 'grass'],
+                ['grass', 'grass', 'grass', 'grass', 'grass', 'grass', 'grass']
+            ];
+            
+            // No maxWalls provided — rule 1 should be skipped
+            const solution = {
+                goalArea: 10,
+                optimalWallCount: 3,
+                optimalSolution: [[1, 2], [2, 1], [3, 2]]
+            };
+            
+            const result = MapValidator.validate(map, solution);
+            expect(result.valid).toBe(true);
+        });
     });
 });
