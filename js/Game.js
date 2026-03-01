@@ -422,9 +422,9 @@ class Game {
                     statusElement.dataset.interactive = 'true';
                     statusElement.dataset.areaSize = this.submittedScore;
                 } else {
-                    statusElement.textContent = '✗';
+                    statusElement.innerHTML = '<span class="submit-label">Unsolved</span><span class="submit-check">✗</span>';
                     statusElement.className = 'penned-status not-penned';
-                    statusElement.title = 'Path exists - pet can escape! ✗';
+                    statusElement.title = 'Pet can still escape - keep building walls!';
                     statusElement.disabled = true;
                     statusElement.dataset.interactive = 'false';
                     statusElement.dataset.areaSize = '0';
