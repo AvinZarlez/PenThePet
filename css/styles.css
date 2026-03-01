@@ -924,68 +924,127 @@ footer {
     transform: translateX(5px);
 }
 
-/* ========== Level List Styles ========== */
+/* ========== Level List / Calendar View Styles ========== */
 .level-list {
     display: flex;
     flex-direction: column;
     gap: 10px;
-    max-height: 400px;
-    overflow-y: auto;
 }
 
-.level-item {
+/* -------- Calendar Navigation -------- */
+.calendar-nav {
     display: flex;
-    justify-content: space-between;
     align-items: center;
-    padding: 15px;
+    justify-content: space-between;
+    margin-bottom: 8px;
+}
+
+.calendar-nav-btn {
+    background: none;
+    border: 2px solid #667eea;
+    border-radius: 6px;
+    color: #667eea;
+    font-size: 1.3em;
+    line-height: 1;
+    padding: 4px 10px;
+    cursor: pointer;
+    transition: background 0.2s ease, color 0.2s ease;
+}
+
+.calendar-nav-btn:hover {
+    background: #667eea;
+    color: white;
+}
+
+.calendar-nav-btn:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+}
+
+.calendar-month-label {
+    font-weight: bold;
+    font-size: 1.05em;
+    color: #333;
+}
+
+/* -------- Calendar Grid -------- */
+.calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 4px;
+}
+
+.calendar-day-header {
+    text-align: center;
+    font-size: 0.7em;
+    font-weight: bold;
+    color: #999;
+    padding: 4px 0;
+}
+
+.calendar-day {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 4px 2px;
+    border-radius: 6px;
+    min-height: 60px;
+    font-size: 0.72em;
+    color: #ccc;
+    text-align: center;
+}
+
+.calendar-day-empty {
+    background: transparent;
+    min-height: 60px;
+}
+
+.calendar-day-level {
     background: #f8f9fa;
     border: 2px solid #e9ecef;
-    border-radius: 10px;
     cursor: pointer;
-    transition: all 0.2s ease;
+    color: #333;
+    transition: background 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
 }
 
-.level-item:hover {
+.calendar-day-level:hover {
     background: #e9ecef;
     border-color: #667eea;
-    transform: translateX(5px);
+    transform: scale(1.06);
 }
 
-.level-item.active {
+.calendar-day-level.active {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     color: white;
     border-color: #667eea;
 }
 
-.level-item-info {
-    display: flex;
-    flex-direction: column;
-    gap: 5px;
-}
-
-.level-item-day {
+.calendar-day-num {
     font-weight: bold;
-    font-size: 1.1em;
+    font-size: 1em;
+    line-height: 1.2;
 }
 
-.level-item-name {
-    color: #666;
-    font-size: 0.9em;
+.calendar-level-num {
+    font-size: 0.8em;
+    opacity: 0.7;
+    white-space: nowrap;
 }
 
-.level-item.active .level-item-name {
-    color: #fff;
-    opacity: 0.9;
+.calendar-level-name {
+    font-size: 0.8em;
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
 }
 
-.level-item-date {
-    color: #999;
-    font-size: 0.85em;
-}
-
-.level-item.active .level-item-date {
-    color: #fff;
-    opacity: 0.8;
+.calendar-status {
+    font-size: 1em;
+    line-height: 1.2;
+    margin-top: 2px;
 }
 
 /* ========== Cloud Sync Styles ========== */

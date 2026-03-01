@@ -16,7 +16,8 @@ class Menu {
         this.currentLevel = null; // Track current level date
         this.mapsDatabase = null; // Store loaded maps
         this.showAllLevels = false; // Debug: show future levels in selector
-        
+        this.currentCalendarMonth = null; // Track which month is shown in the calendar
+
         this.attachEventListeners();
     }
 
@@ -218,7 +219,7 @@ class Menu {
     }
 
     /**
-     * Populate the level list with available maps.
+     * Populate the level list as a calendar view, grouped by month.
      * Only shows levels dated today or before, unless showAllLevels debug flag is set.
      */
     populateLevelList() {
@@ -231,34 +232,156 @@ class Menu {
         const currentDate = this._getCurrentLevelDate();
         const today = DateUtils.getTodayDate();
 
-        // Sort dates in reverse chronological order
-        let dates = Object.keys(this.mapsDatabase).sort().reverse();
-
         // Filter out future dates unless debug showAllLevels is enabled
+        let dates = Object.keys(this.mapsDatabase).sort();
         if (!this.showAllLevels) {
             dates = dates.filter(date => date <= today);
         }
 
+        if (dates.length === 0) return;
+
+        // Group dates by YYYY-MM
+        const monthGroups = {};
         dates.forEach(date => {
-            const mapData = this.mapsDatabase[date];
-            const levelItem = document.createElement('div');
-            levelItem.className = 'level-item';
-            
-            if (date === currentDate) {
-                levelItem.classList.add('active');
+            const month = date.substring(0, 7);
+            if (!monthGroups[month]) monthGroups[month] = [];
+            monthGroups[month].push(date);
+        });
+
+        const sortedMonths = Object.keys(monthGroups).sort();
+
+        // Default to the most recent month, or reset if current month no longer valid
+        if (!this.currentCalendarMonth || !monthGroups[this.currentCalendarMonth]) {
+            this.currentCalendarMonth = sortedMonths[sortedMonths.length - 1];
+        }
+
+        // Build navigation bar
+        const nav = document.createElement('div');
+        nav.className = 'calendar-nav';
+
+        const prevBtn = document.createElement('button');
+        prevBtn.className = 'calendar-nav-btn';
+        prevBtn.textContent = '‹';
+        prevBtn.setAttribute('aria-label', 'Previous month');
+
+        const monthLabel = document.createElement('span');
+        monthLabel.className = 'calendar-month-label';
+
+        const nextBtn = document.createElement('button');
+        nextBtn.className = 'calendar-nav-btn';
+        nextBtn.textContent = '›';
+        nextBtn.setAttribute('aria-label', 'Next month');
+
+        nav.appendChild(prevBtn);
+        nav.appendChild(monthLabel);
+        nav.appendChild(nextBtn);
+        levelList.appendChild(nav);
+
+        const calendarContainer = document.createElement('div');
+        calendarContainer.className = 'calendar-container';
+        levelList.appendChild(calendarContainer);
+
+        const renderMonth = (yearMonth) => {
+            this.currentCalendarMonth = yearMonth;
+            const currentMonthIdx = sortedMonths.indexOf(yearMonth);
+
+            const [year, month] = yearMonth.split('-');
+            const labelDate = new Date(parseInt(year), parseInt(month) - 1, 1);
+            monthLabel.textContent = labelDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+
+            prevBtn.disabled = currentMonthIdx === 0;
+            nextBtn.disabled = currentMonthIdx === sortedMonths.length - 1;
+
+            calendarContainer.innerHTML = '';
+            this._renderCalendarGrid(calendarContainer, yearMonth, monthGroups[yearMonth] || [], currentDate);
+        };
+
+        prevBtn.addEventListener('click', () => {
+            const idx = sortedMonths.indexOf(this.currentCalendarMonth);
+            if (idx > 0) renderMonth(sortedMonths[idx - 1]);
+        });
+
+        nextBtn.addEventListener('click', () => {
+            const idx = sortedMonths.indexOf(this.currentCalendarMonth);
+            if (idx < sortedMonths.length - 1) renderMonth(sortedMonths[idx + 1]);
+        });
+
+        renderMonth(this.currentCalendarMonth);
+    }
+
+    /**
+     * Render a calendar grid for a given month into the provided container.
+     * @param {HTMLElement} container - Container element to render into
+     * @param {string} yearMonth - Month string in "YYYY-MM" format
+     * @param {string[]} datesInMonth - Array of date strings with levels in this month
+     * @param {string} currentDate - Currently active level date
+     */
+    _renderCalendarGrid(container, yearMonth, datesInMonth, currentDate) {
+        const DAY_HEADERS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+        const [year, month] = yearMonth.split('-').map(Number);
+        const firstDayOfWeek = new Date(year, month - 1, 1).getDay();
+        const daysInMonth = new Date(year, month, 0).getDate();
+
+        // Build a lookup: day-of-month → full date string
+        const dateLookup = {};
+        datesInMonth.forEach(date => {
+            const day = parseInt(date.split('-')[2]);
+            dateLookup[day] = date;
+        });
+
+        const grid = document.createElement('div');
+        grid.className = 'calendar-grid';
+
+        // Day-of-week headers
+        DAY_HEADERS.forEach(day => {
+            const header = document.createElement('div');
+            header.className = 'calendar-day-header';
+            header.textContent = day;
+            grid.appendChild(header);
+        });
+
+        // Empty cells before the first day
+        for (let i = 0; i < firstDayOfWeek; i++) {
+            const empty = document.createElement('div');
+            empty.className = 'calendar-day calendar-day-empty';
+            grid.appendChild(empty);
+        }
+
+        // Day cells
+        for (let day = 1; day <= daysInMonth; day++) {
+            const cell = document.createElement('div');
+            const date = dateLookup[day];
+
+            if (date) {
+                const mapData = this.mapsDatabase[date];
+                cell.className = 'calendar-day calendar-day-level';
+                if (date === currentDate) {
+                    cell.classList.add('active');
+                }
+
+                const submission = this.game.loadSubmission(date);
+                let statusHtml = '';
+                if (submission) {
+                    const metGoal = submission.score >= mapData.goal;
+                    statusHtml = `<span class="calendar-status">${metGoal ? '🏆' : '✓'}</span>`;
+                }
+
+                cell.innerHTML = `
+                    <span class="calendar-day-num">${day}</span>
+                    <span class="calendar-level-num">Day ${mapData.dayNumber}</span>
+                    <span class="calendar-level-name">${mapData.mapName}</span>
+                    ${statusHtml}
+                `;
+                cell.addEventListener('click', () => this.selectLevel(date));
+            } else {
+                cell.className = 'calendar-day';
+                cell.innerHTML = `<span class="calendar-day-num">${day}</span>`;
             }
 
-            levelItem.innerHTML = `
-                <div class="level-item-info">
-                    <div class="level-item-day">Day ${mapData.dayNumber}</div>
-                    <div class="level-item-name">${mapData.mapName}</div>
-                    <div class="level-item-date">${this._formatDate(date)}</div>
-                </div>
-            `;
+            grid.appendChild(cell);
+        }
 
-            levelItem.addEventListener('click', () => this.selectLevel(date));
-            levelList.appendChild(levelItem);
-        });
+        container.appendChild(grid);
     }
 
     /**
