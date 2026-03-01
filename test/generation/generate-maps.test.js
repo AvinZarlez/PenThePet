@@ -357,37 +357,38 @@ describe('Map Database Validation', () => {
             }
         });
         
-        test('optimalSolution entries should be [row, col] coordinate pairs', () => {
+        test('optimalSolution entries should be flat [row, col, ...] number pairs', () => {
             const dates = Object.keys(maps);
             
             for (const date of dates) {
                 const map = maps[date];
-                for (const coord of map.optimalSolution) {
-                    expect(Array.isArray(coord)).toBe(true);
-                    expect(coord).toHaveLength(2);
-                    expect(typeof coord[0]).toBe('number');
-                    expect(typeof coord[1]).toBe('number');
+                // Flat array: even indices are rows, odd indices are columns
+                expect(map.optimalSolution.length % 2).toBe(0);
+                for (let i = 0; i < map.optimalSolution.length; i++) {
+                    expect(typeof map.optimalSolution[i]).toBe('number');
+                    const val = map.optimalSolution[i];
                     // Coordinates should be within grid bounds
-                    expect(coord[0]).toBeGreaterThanOrEqual(0);
-                    expect(coord[0]).toBeLessThan(map.size);
-                    expect(coord[1]).toBeGreaterThanOrEqual(0);
-                    expect(coord[1]).toBeLessThan(map.size);
+                    expect(val).toBeGreaterThanOrEqual(0);
+                    expect(val).toBeLessThan(map.size);
                 }
             }
         });
         
-        test('optimalSolution wall count should not exceed maxWalls', () => {
+        test('optimalSolution wall count should not exceed maxWalls for grid size', () => {
             const dates = Object.keys(maps);
             
             for (const date of dates) {
                 const map = maps[date];
-                expect(map.optimalSolution.length).toBeLessThanOrEqual(map.maxWalls);
+                // Flat array: divide by 2 to get number of walls
+                const wallCount = map.optimalSolution.length / 2;
+                const maxWalls = CONSTANTS.maxWallsForSize(map.size);
+                expect(wallCount).toBeLessThanOrEqual(maxWalls);
             }
         });
         
         test('all maps should have required fields', () => {
             const dates = Object.keys(maps);
-            const requiredFields = ['dayNumber', 'mapName', 'date', 'size', 'goal', 'maxWalls', 'map', 'optimalSolution'];
+            const requiredFields = ['dayNumber', 'mapName', 'date', 'size', 'goal', 'map', 'optimalSolution'];
             
             for (const date of dates) {
                 for (const field of requiredFields) {

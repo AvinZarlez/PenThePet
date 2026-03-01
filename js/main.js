@@ -5,6 +5,8 @@
  * Modify this file to change initialization behavior or add global event handlers.
  */
 
+/* global parseCompactMap, parseCompactSolution */
+
 let game;
 let menu;
 
@@ -116,8 +118,8 @@ async function initGame() {
     // Update map info display
     updateMapInfo(mapData);
     
-    // Load the map into the grid using proper encapsulation
-    game.grid.loadMap(mapData.map);
+    // Load the map into the grid (parse compact string format)
+    game.grid.loadMap(parseCompactMap(mapData.map, mapData.size));
     game.grid.saveInitialState();
     game.wallCount = 0;
     
@@ -128,16 +130,13 @@ async function initGame() {
         console.warn('Map does not have a goal value, using default');
     }
     
-    // Set maxWalls from database (or use default if not present)
-    if (mapData.maxWalls !== undefined) {
-        game.maxWalls = mapData.maxWalls;
-    } else {
-        console.warn('Map does not have a maxWalls value, using default');
-    }
+    // Set maxWalls derived from grid size
+    game.maxWalls = CONSTANTS.maxWallsForSize(mapData.size);
     
-    // Store current date and optimal solution
+    // Store current date and optimal solution (parse compact flat array into pairs)
     game.currentDate = mapData.date;
-    game.optimalSolution = mapData.optimalSolution || null;
+    game.optimalSolution = mapData.optimalSolution ?
+        parseCompactSolution(mapData.optimalSolution) : null;
     
     // Check if user has already submitted for this puzzle
     const submission = game.loadSubmission(mapData.date);

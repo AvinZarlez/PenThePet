@@ -4,6 +4,8 @@
  * Manages the menu modal system including level selector, instructions, about, and options.
  */
 
+/* global parseCompactMap, parseCompactSolution */
+
 class Menu {
     /**
      * Create a new Menu system
@@ -293,22 +295,21 @@ class Menu {
             updateMapInfo(mapData);
         }
 
-        // Load the map (also updates grid size to match)
-        this.game.grid.loadMap(mapData.map);
+        // Load the map (parse compact string format, then load 2D array)
+        this.game.grid.loadMap(parseCompactMap(mapData.map, mapData.size));
         this.game.grid.saveInitialState();
         this.game.wallCount = 0;
 
-        // Set goal and maxWalls
+        // Set goal and maxWalls (maxWalls derived from grid size)
         if (mapData.goal !== undefined) {
             this.game.goalAreaSize = mapData.goal;
         }
-        if (mapData.maxWalls !== undefined) {
-            this.game.maxWalls = mapData.maxWalls;
-        }
+        this.game.maxWalls = CONSTANTS.maxWallsForSize(mapData.size);
 
-        // Update current date and optimal solution
+        // Update current date and optimal solution (parse compact flat array into pairs)
         this.game.currentDate = mapData.date || null;
-        this.game.optimalSolution = mapData.optimalSolution || null;
+        this.game.optimalSolution = mapData.optimalSolution ?
+            parseCompactSolution(mapData.optimalSolution) : null;
 
         // Reset submission state for the new level
         this.game.isSubmitted = false;

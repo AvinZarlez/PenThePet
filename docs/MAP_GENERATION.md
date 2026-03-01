@@ -74,39 +74,60 @@ If a map cannot meet quality standards, the generation:
 
 This ensures all maps in the game meet quality standards.
 
-## Map Metadata Structure
+## Map Data Format
 
-Each map in `maps.json` contains the following fields:
+### Compact Format
+
+Maps are stored in a compact format in `maps.json` to minimise load time. Each map entry (keyed by date) contains:
 
 ```json
 {
   "dayNumber": 1,          // Sequential ordering (1, 2, 3, ...)
   "mapName": "Coral",      // Random English word for personality
   "date": "2026-02-06",    // Date in YYYY-MM-DD format
-  "size": 7,               // Grid size (7x7, 9x9, 11x11, etc.)
+  "size": 7,               // Grid side length (produces a size×size grid)
   "goal": 13,              // Maximum achievable penned area
-  "maxWalls": 5,           // Wall budget: floor(size * 0.75)
-  "map": [                 // 2D array of tile types
-    ["grass", "water", ...],
-    ...
-  ],
-  "optimalSolution": [     // Wall coordinates for the optimal solution
-    [row, col],
-    ...
-  ]
+  "map": "gwgwh...",       // Compact tile string (see below)
+  "optimalSolution": [1, 0, 2, 3, ...]   // Flat coordinate list (see below)
 }
 ```
+
+#### `map` — Compact Tile String
+
+A single string of exactly `size × size` characters, stored row-major (row 0 first, then row 1, …).
+Each character encodes one tile:
+
+| Char | Tile  |
+|------|-------|
+| `g`  | grass |
+| `w`  | water |
+| `h`  | home  |
+
+Example for a 3×3 grid: `"gwghwhgwg"` → row 0 = `g w g`, row 1 = `h w h`, row 2 = `g w g`.
+
+Use `parseCompactMap(mapStr, size)` (defined in `js/Grid.js`) to decode this into a 2D array of tile-type strings.
+
+#### `optimalSolution` — Flat Coordinate Array
+
+A flat array of integers `[r0, c0, r1, c1, …]` where each consecutive pair `(rN, cN)` is the
+row and column of one optimal wall. The number of walls is `optimalSolution.length / 2`, which is
+always ≤ `CONSTANTS.maxWallsForSize(size)`.
+
+Use `parseCompactSolution(flatArr)` (defined in `js/Grid.js`) to decode this into an array of
+`[row, col]` pairs.
+
+> **Note:** `maxWalls` is **not** stored in the map data — it is always derived at runtime as
+> `CONSTANTS.maxWallsForSize(size)` (`Math.floor(size * 0.75)`).
 
 ### Field Descriptions
 
 - **dayNumber**: Sequential number for ordering maps. First map is 1, second is 2, etc.
 - **mapName**: Random English word from `js/wordList.js` for memorable map identification
 - **date**: Date string used as the map key in maps.json
-- **size**: Grid dimensions (always square: size x size)
+- **size**: Grid side length (grid is always square: size × size)
 - **goal**: The maximum area achievable with optimal wall placement within the wall budget
-- **maxWalls**: The wall budget for the player, computed as `floor(size * 0.75)`
-- **map**: 2D array where each cell is `"grass"`, `"water"`, or `"home"`
-- **optimalSolution**: Array of `[row, col]` coordinate pairs identifying where the optimal walls are placed
+- **map**: Compact tile string (g=grass, w=water, h=home), row-major, length = size²
+- **optimalSolution**: Flat array `[r0, c0, r1, c1, …]` of optimal wall coordinates
 
 ## Constants Configuration
 
@@ -279,16 +300,17 @@ Each generated map is validated to ensure:
 ### Key Files
 
 1. **js/constants.js**: All configurable constants including `maxWallsForSize()`
-2. **js/MapValidator.js**: Quality validation rules
-3. **js/MapGenerator.js**: Main map generation logic (NO FALLBACKS)
-4. **scripts/solver/MILPSolver.js**: Node.js wrapper that calls Python MILP solver
-5. **js/PathfindingUtils.js**: BFS pathfinding for penning checks
-6. **js/wordList.js**: Random English words for map names
-7. **scripts/solver/solve.py**: Python MILP solver using PuLP + CBC
-8. **scripts/solver/requirements.txt**: Python dependencies
-9. **scripts/generate-map.js**: Generation entry point — single map, batch, or fresh replacement (used by GitHub Actions and locally)
-10. **scripts/lib/mapUtils.js**: Shared pure utilities — date helpers, size parsing, database validation/fix
-11. **scripts/audit-maps.js**: Validates all maps in maps.json against MapValidator
+2. **js/Grid.js**: Grid state management; also exports `parseCompactMap()` and `parseCompactSolution()` helpers
+3. **js/MapValidator.js**: Quality validation rules
+4. **js/MapGenerator.js**: Main map generation logic (NO FALLBACKS)
+5. **scripts/solver/MILPSolver.js**: Node.js wrapper that calls Python MILP solver
+6. **js/PathfindingUtils.js**: BFS pathfinding for penning checks
+7. **js/wordList.js**: Random English words for map names
+8. **scripts/solver/solve.py**: Python MILP solver using PuLP + CBC
+9. **scripts/solver/requirements.txt**: Python dependencies
+10. **scripts/generate-map.js**: Generation entry point — single map, batch, or fresh replacement (used by GitHub Actions and locally); encodes maps using `encodeCompactMap` / `encodeCompactSolution`
+11. **scripts/lib/mapUtils.js**: Shared pure utilities — date helpers, size parsing, database validation/fix
+12. **scripts/audit-maps.js**: Validates all maps in maps.json against MapValidator
 
 ### Generation Flow
 
@@ -385,6 +407,7 @@ To add new tile types beyond grass/water:
 1. Update `CONSTANTS.TILE_DISTRIBUTION` in constants.js
 2. Define new tile in `js/tileTypes.js`
 3. Update solver's blocking logic in `js/PathfindingUtils.js`
+4. Add a new single-character code to `COMPACT_TILE_CHARS` in `js/Grid.js` and `TILE_TO_CHAR` in `scripts/generate-map.js`
 
 ## Testing Map Generation
 
@@ -427,12 +450,13 @@ node scripts/generate-map.js --count 3 --size 7
 
 **Key Invariants:**
 
-- maxWalls = floor(size × 0.75) per grid size
+- maxWalls = floor(size × 0.75) per grid size (**not stored in maps.json** — always computed at runtime)
 - Goal = maximum achievable area
 - goalArea >= 5 (minimum difficulty)
 - At least one wall not on edge (strategic placement)
 - Maps validated to have path to edge initially
 - **NO FALLBACKS**: Generation throws error if it fails (never falls back to simplified maps)
+- Map data uses compact format: tile string (`g`/`w`/`h`) and flat solution array
 
 **Solver Usage Policy:**
 

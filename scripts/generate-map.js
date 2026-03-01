@@ -30,6 +30,30 @@ const {
 } = require('./lib/mapUtils.js');
 
 /**
+ * Tile-to-character mapping for encoding maps in compact format.
+ * @type {Object}
+ */
+const TILE_TO_CHAR = { grass: 'g', water: 'w', home: 'h' };
+
+/**
+ * Encode a 2D map array into a compact single-character-per-tile string.
+ * @param {Array} map2d - 2D array of tile type strings
+ * @returns {string} Compact map string (row-major, g/w/h per tile)
+ */
+function encodeCompactMap(map2d) {
+    return map2d.map(row => row.map(t => TILE_TO_CHAR[t] || 'g').join('')).join('');
+}
+
+/**
+ * Encode an optimal solution (array of [row,col] pairs) into a flat array.
+ * @param {Array} solution - Array of [row, col] coordinate pairs
+ * @returns {Array<number>} Flat array [r0, c0, r1, c1, ...]
+ */
+function encodeCompactSolution(solution) {
+    return solution.reduce((acc, pair) => { acc.push(pair[0], pair[1]); return acc; }, []);
+}
+
+/**
  * Generate one map with MILP solving and quality validation.
  * Returns null on failure (caller decides whether to abort or continue).
  * @param {string} date - Date key in YYYY-MM-DD format
@@ -86,9 +110,8 @@ async function generateMap(date, size) {
         mapName: mapName,
         size: size,
         goal: result.goal,
-        maxWalls: result.maxWalls,
-        map: result.map,
-        optimalSolution: result.optimalSolution
+        map: encodeCompactMap(result.map),
+        optimalSolution: encodeCompactSolution(result.optimalSolution)
     };
 }
 
