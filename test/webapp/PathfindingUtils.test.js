@@ -352,5 +352,89 @@ describe('PathfindingUtils', () => {
             // Should not include tile above home (blocked by wall)
             expect(area).toBeGreaterThan(0);
         });
+
+        test('should treat tile type 3 (star) as passable', () => {
+            const map = [
+                [5, 5, 5],
+                [5, 2, 3],
+                [5, 5, 5]
+            ];
+            const area = PathfindingUtils.calculatePennedArea(map, 1, 1);
+            expect(area).toBe(2); // home + star
+        });
+    });
+
+    describe('calculatePennedScore()', () => {
+        test('should return 1 for isolated home (no star tiles)', () => {
+            const map = [
+                [0, 0, 0],
+                [0, 2, 0],
+                [0, 0, 0]
+            ];
+            const score = PathfindingUtils.calculatePennedScore(map, 1, 1);
+            expect(score).toBe(1);
+        });
+
+        test('should count star tiles as 3 points each', () => {
+            const map = [
+                [5, 5, 5, 5, 5],
+                [5, 1, 3, 1, 5],
+                [5, 1, 2, 1, 5],
+                [5, 1, 1, 1, 5],
+                [5, 5, 5, 5, 5]
+            ];
+            // 7 grass + 1 home + 1 star: 8*1 + 1*3 = 11
+            const score = PathfindingUtils.calculatePennedScore(map, 2, 2);
+            expect(score).toBe(11); // 8 non-star tiles + 1 star * 3
+        });
+
+        test('should count all tiles as 1 when no stars present', () => {
+            const map = [
+                [5, 5, 5, 5, 5],
+                [5, 1, 1, 1, 5],
+                [5, 1, 2, 1, 5],
+                [5, 1, 1, 1, 5],
+                [5, 5, 5, 5, 5]
+            ];
+            const score = PathfindingUtils.calculatePennedScore(map, 2, 2);
+            expect(score).toBe(9); // same as calculatePennedArea
+        });
+
+        test('should handle multiple star tiles', () => {
+            const map = [
+                [5, 5, 5, 5, 5],
+                [5, 3, 3, 3, 5],
+                [5, 3, 2, 3, 5],
+                [5, 3, 3, 3, 5],
+                [5, 5, 5, 5, 5]
+            ];
+            // 1 home + 8 stars: 1 + 8*3 = 25
+            const score = PathfindingUtils.calculatePennedScore(map, 2, 2);
+            expect(score).toBe(25);
+        });
+
+        test('should accept custom score map', () => {
+            const map = [
+                [5, 5, 5],
+                [5, 2, 3],
+                [5, 5, 5]
+            ];
+            const customScores = {0:0, 1:1, 2:1, 3:5, 5:0};
+            const score = PathfindingUtils.calculatePennedScore(map, 1, 1, customScores);
+            expect(score).toBe(6); // home(1) + star(5) = 6
+        });
+
+        test('should not count blocking tiles', () => {
+            const map = [
+                [5, 5, 5, 5, 5],
+                [5, 3, 0, 3, 5],
+                [5, 1, 2, 1, 5],
+                [5, 1, 1, 1, 5],
+                [5, 5, 5, 5, 5]
+            ];
+            // Reachable from home: 5 grass + 2 stars + 1 home = 5*1 + 2*3 + 1 = 12
+            const score = PathfindingUtils.calculatePennedScore(map, 2, 2);
+            expect(score).toBe(12);
+        });
     });
 });

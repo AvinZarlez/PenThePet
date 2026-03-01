@@ -21,6 +21,8 @@ PenThePet/
 │   ├── wall.svg            # Wall/fence tile texture
 │   ├── home.svg            # Dog house tile artwork
 │   ├── penned.svg          # Penned area (yellow-tinted grass) texture
+│   ├── star.svg            # Star tile overlay (3 points)
+│   ├── bee.svg             # Bee tile overlay (-3 points)
 │   └── paw.svg             # Paw print path overlay icon
 ├── css/
 │   ├── base.css            # Global reset, container, typography, buttons, footer, responsive
@@ -30,6 +32,7 @@ PenThePet/
 ├── js/
 │   ├── constants.js        # Centralized constants for game parameters
 │   ├── config.js           # Game configuration (references constants)
+│   ├── tileData.js         # Tile data definitions (single source of truth for all tile properties)
 │   ├── tileTypes.js        # Tile type definitions and properties
 │   ├── wordList.js         # Random English words for map naming
 │   ├── CookieUtils.js      # Shared cookie get/set helpers
@@ -189,15 +192,13 @@ Shared pathfinding utilities used by game logic, generation scripts, and validat
 
 ### `js/tileTypes.js`
 
-Defines all tile types and their properties:
+Compatibility wrapper that builds `TILE_TYPES` programmatically from `TILE_DATA`:
 
-- Name, display name, and description
-- Whether the tile is clickable
-- CSS class and gradient colors (fallback)
-- Image path to SVG art asset
-- ARIA labels for accessibility
+- All tile properties live in `js/tileData.js` (single source of truth)
+- Python solver reads tile data via Node.js subprocess
+- `tileTypes.js` is a thin loop that copies `TILE_DATA` entries into `TILE_TYPES`
 
-**To add new tile types:** Add a new entry to the TILE_TYPES object with all required properties.
+**To add new tile types:** See [TILE_SYSTEM.md](TILE_SYSTEM.md). Add a single entry to `js/tileData.js`.
 
 ### `js/MapGenerator.js`
 
@@ -342,44 +343,7 @@ Comprehensive documentation for map generation:
 
 ### Adding a New Tile Type
 
-1. **Define the tile type** in `js/tileTypes.js`:
-
-```javascript
-sand: {
-    name: 'sand',
-    displayName: 'Sand',
-    description: 'Sand tile - special properties',
-    clickable: true,
-    cssClass: 'sand',
-    gradient: 'linear-gradient(135deg, #ffd54f 0%, #ffb300 100%)',
-    image: 'assets/sand.svg',
-    ariaLabel: (row, col) => `Sand tile at row ${row + 1}, column ${col + 1}.`,
-}
-```
-
-1. **Add the CSS styling** in `css/game.css` under "Cell Styles":
-
-```css
-.cell.sand {
-    background: url('../assets/sand.svg') center/cover no-repeat;
-}
-```
-
-1. **Update tile generation** in map generation scripts if needed (tiles are generated during map creation, not at runtime):
-
-```javascript
-// In MapGenerator.js (used by generation scripts only)
-// Update TILE_DISTRIBUTION in constants.js
-```
-
-1. **Add legend entry** in `index.html` (optional):
-
-```html
-<div class="legend-item">
-    <div class="legend-box sand"></div>
-    <span>Sand (special)</span>
-</div>
-```
+See [TILE_SYSTEM.md](TILE_SYSTEM.md) for full details. In short: add a single entry to `js/tileData.js` — all game logic, rendering, generation, scoring, the Python solver, and player instructions are built automatically from this data.
 
 ### Adding a Character
 

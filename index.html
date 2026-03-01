@@ -153,13 +153,7 @@
             </div>
             <div class="modal-section">
                 <h3>Gameplay</h3>
-                <ul>
-                    <li>Click on grass tiles (green) to place walls</li>
-                    <li>Water tiles (blue) are blocked and cannot be clicked</li>
-                    <li>Click on walls to remove them</li>
-                    <li>Your pet starts at the home tile (🏠)</li>
-                    <li>You have a limited number of walls to place</li>
-                </ul>
+                <div id="tileDescriptions" class="tile-descriptions"></div>
             </div>
             <div class="modal-section">
                 <h3>Scoring</h3>
@@ -274,6 +268,7 @@
     <!-- Game Scripts (Load in order: constants -> config -> types -> utils -> pathfinding -> grid -> game -> cloud -> menu -> main) -->
     <script src="js/constants.js"></script>
     <script src="js/config.js"></script>
+    <script src="js/tileData.js"></script>
     <script src="js/tileTypes.js"></script>
     <script src="js/CookieUtils.js"></script>
     <script src="js/DateUtils.js"></script>

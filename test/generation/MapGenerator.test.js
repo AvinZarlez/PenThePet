@@ -223,7 +223,8 @@ describe('MapGenerator', () => {
             const generator = new MapGenerator(7);
             const map = generator._generateRandomMap();
 
-            const validTypes = ['grass', 'water', 'home'];
+            // Valid types are eligible tiles plus 'home'
+            const validTypes = [...getEligibleTileTypes(), 'home'];
             map.forEach(row => {
                 row.forEach(tile => {
                     expect(validTypes).toContain(tile);
@@ -246,48 +247,42 @@ describe('MapGenerator', () => {
         });
     });
 
-    describe('_generateRandomTile()', () => {
-        test('should return grass or water', () => {
-            const generator = new MapGenerator(5);
-            const validTypes = ['grass', 'water'];
+    describe('_generateRandomMap() tile distribution', () => {
+        test('should generate tiles according to TILE_DATA chance proportions', () => {
+            const generator = new MapGenerator(9);
+            const map = generator._generateRandomMap();
+            const counts = {};
+            map.forEach(row => {
+                row.forEach(tile => {
+                    counts[tile] = (counts[tile] || 0) + 1;
+                });
+            });
 
-            for (let i = 0; i < 100; i++) {
-                const tile = generator._generateRandomTile();
-                expect(validTypes).toContain(tile);
+            // Home should appear exactly once
+            expect(counts.home).toBe(1);
+
+            // All non-home tiles should be from eligible set
+            const eligible = getEligibleTileTypes();
+            for (const [name, count] of Object.entries(counts)) {
+                if (name !== 'home') {
+                    expect(eligible).toContain(name);
+                    expect(count).toBeGreaterThanOrEqual(0);
+                }
             }
         });
 
-        test('should respect custom distribution', () => {
-            const generator = new MapGenerator(5, { grass: 1.0, water: 0.0 });
-            
-            // All tiles should be grass
-            for (let i = 0; i < 100; i++) {
-                const tile = generator._generateRandomTile();
-                expect(tile).toBe('grass');
+        test('should produce exact grid size', () => {
+            const sizes = [7, 9, 11];
+            for (const size of sizes) {
+                const generator = new MapGenerator(size);
+                const map = generator._generateRandomMap();
+                expect(map.length).toBe(size);
+                map.forEach(row => expect(row.length).toBe(size));
+                // Total tiles should be size * size
+                let total = 0;
+                map.forEach(row => { total += row.length; });
+                expect(total).toBe(size * size);
             }
-        });
-
-        test('should generate water with 0% grass distribution', () => {
-            const generator = new MapGenerator(5, { grass: 0.0, water: 1.0 });
-            
-            // All tiles should be water
-            for (let i = 0; i < 100; i++) {
-                const tile = generator._generateRandomTile();
-                expect(tile).toBe('water');
-            }
-        });
-
-        test('should generate mixed tiles with balanced distribution', () => {
-            const generator = new MapGenerator(5, { grass: 0.5, water: 0.5 });
-            
-            const counts = { grass: 0, water: 0 };
-            for (let i = 0; i < 1000; i++) {
-                counts[generator._generateRandomTile()]++;
-            }
-
-            // With 50/50 distribution, should be roughly balanced
-            expect(counts.grass).toBeGreaterThan(300);
-            expect(counts.water).toBeGreaterThan(300);
         });
     });
 

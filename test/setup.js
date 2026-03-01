@@ -17,6 +17,26 @@ const localStorageMock = {
 };
 global.localStorage = localStorageMock;
 
+// Load tile data first (single source of truth for tile properties)
+const tileDataModule = require('../js/tileData.js');
+global.TILE_DATA = tileDataModule.TILE_DATA;
+global.COMPACT_CHAR_TO_TILE = tileDataModule.COMPACT_CHAR_TO_TILE;
+global.TILE_TO_COMPACT_CHAR = tileDataModule.TILE_TO_COMPACT_CHAR;
+global.NUMERIC_ID_TO_SCORE = tileDataModule.NUMERIC_ID_TO_SCORE;
+global.TILE_TO_NUMERIC = tileDataModule.TILE_TO_NUMERIC;
+global.NUMERIC_TO_TILE = tileDataModule.NUMERIC_TO_TILE;
+global.BLOCKING_NUMERIC_IDS = tileDataModule.BLOCKING_NUMERIC_IDS;
+global.BLOCKING_TILES = tileDataModule.BLOCKING_TILES;
+global.isWallPlaceable = tileDataModule.isWallPlaceable;
+global.getTileScore = tileDataModule.getTileScore;
+global.getNumericTileScore = tileDataModule.getNumericTileScore;
+global.getEligibleTileTypes = tileDataModule.getEligibleTileTypes;
+global.isBlockingTile = tileDataModule.isBlockingTile;
+global.getTileType = tileDataModule.getTileType;
+global.isTileClickable = tileDataModule.isTileClickable;
+global.getTileAssets = tileDataModule.getTileAssets;
+global.getPawOverlay = tileDataModule.getPawOverlay;
+
 // Load game modules in the correct order for Node.js environment
 // Note: MILPSolver is loaded for generation pipeline tests (MapGenerator.test.js).
 // It is NOT used by browser-side code (Grid.test.js, Menu.test.js, etc.)
@@ -36,49 +56,8 @@ global.Grid = _Grid;
 global.parseCompactMap = _Grid.parseCompactMap;
 global.parseCompactSolution = _Grid.parseCompactSolution;
 
-// Mock getTileType for tests that need it
-global.getTileType = function(tileType) {
-    const TILE_TYPES = {
-        grass: {
-            name: 'grass',
-            displayName: 'Grass',
-            description: 'Grass tile - can be clicked to place walls',
-            clickable: true,
-            cssClass: 'grass',
-            gradient: 'linear-gradient(135deg, #a8e063 0%, #56ab2f 100%)',
-            image: 'assets/grass.svg',
-            ariaLabel: (row, col) => `Grass tile at row ${row + 1}, column ${col + 1}. Click to place a wall.`,
-        },
-        water: {
-            name: 'water',
-            displayName: 'Water',
-            description: 'Water tile - blocks movement',
-            clickable: false,
-            cssClass: 'water',
-            gradient: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-            image: 'assets/water.svg',
-            ariaLabel: (row, col) => `Water tile at row ${row + 1}, column ${col + 1}. Blocks movement.`,
-        },
-        wall: {
-            name: 'wall',
-            displayName: 'Wall',
-            description: 'Wall tile - blocks movement',
-            clickable: true,
-            cssClass: 'wall',
-            gradient: 'linear-gradient(135deg, #b0b0b0 0%, #606060 100%)',
-            image: 'assets/wall.svg',
-            ariaLabel: (row, col) => `Wall at row ${row + 1}, column ${col + 1}. Click to remove.`,
-        },
-        home: {
-            name: 'home',
-            displayName: 'Home',
-            description: 'Home tile - starting position',
-            clickable: false,
-            cssClass: 'home',
-            gradient: 'linear-gradient(135deg, #ffd89b 0%, #19547b 100%)',
-            image: 'assets/home.svg',
-            ariaLabel: (row, col) => `Home tile at row ${row + 1}, column ${col + 1}. Your pet starts here.`,
-        },
-    };
-    return TILE_TYPES[tileType] || TILE_TYPES.grass;
-};
+// Load getTileType from tileTypes.js (uses TILE_DATA as source of truth)
+const { getTileType, isTileClickable, TILE_TYPES } = require('../js/tileTypes.js');
+global.getTileType = getTileType;
+global.isTileClickable = isTileClickable;
+global.TILE_TYPES = TILE_TYPES;

@@ -15,7 +15,9 @@ function setupDOM() {
         <div id="levelSelectorModal" class="modal">
             <div id="levelList"></div>
         </div>
-        <div id="instructionsModal" class="modal"></div>
+        <div id="instructionsModal" class="modal">
+            <div id="tileDescriptions" class="tile-descriptions"></div>
+        </div>
         <div id="aboutModal" class="modal"></div>
         <div id="optionsModal" class="modal">
             <select id="modalPetType"></select>
@@ -173,6 +175,23 @@ describe('Menu', () => {
             menu.openInstructions();
             const instructionsModal = document.getElementById('instructionsModal');
             expect(instructionsModal.classList.contains('show')).toBe(true);
+        });
+
+        test('should populate tile descriptions from TILE_DATA', () => {
+            menu.openInstructions();
+            const container = document.getElementById('tileDescriptions');
+            const rows = container.querySelectorAll('.tile-desc-row');
+            const tilesWithDesc = Object.values(TILE_DATA).filter(d => d.description);
+            expect(rows.length).toBe(tilesWithDesc.length);
+        });
+
+        test('should not duplicate tile descriptions on multiple opens', () => {
+            menu.openInstructions();
+            menu.openInstructions();
+            const container = document.getElementById('tileDescriptions');
+            const rows = container.querySelectorAll('.tile-desc-row');
+            const tilesWithDesc = Object.values(TILE_DATA).filter(d => d.description);
+            expect(rows.length).toBe(tilesWithDesc.length);
         });
 
         test('should open about modal', () => {

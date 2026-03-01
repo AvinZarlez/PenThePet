@@ -1,86 +1,33 @@
 /**
- * Tile Type Definitions
- * 
- * Defines the properties and behavior of different tile types in the game.
- * Add new tile types here to extend the game with additional block types.
+ * Tile Type Definitions — compatibility layer
+ *
+ * All tile properties now live in tileData.js (the single source of truth).
+ * This file builds the legacy TILE_TYPES object that some rendering code
+ * still references, deriving every value from TILE_DATA.
+ *
+ * To add a new tile type: edit tileData.js only — nothing else needs to change.
  */
 
-const TILE_TYPES = {
-    grass: {
-        name: 'grass',
-        displayName: 'Grass',
-        description: 'Grass tile - click to build a wall',
-        clickable: true,
-        cssClass: 'grass',
-        gradient: 'linear-gradient(135deg, #7ed957 0%, #4caf50 100%)',
-        image: 'assets/grass.svg',
-        ariaLabel: (row, col) => `Grass tile at row ${row + 1}, column ${col + 1}. Click to build a wall.`,
-    },
-
-    water: {
-        name: 'water',
-        displayName: 'Water',
-        description: 'Water tile - cannot be clicked',
-        clickable: false,
-        cssClass: 'water',
-        gradient: 'linear-gradient(135deg, #4fc3f7 0%, #2196f3 100%)',
-        image: 'assets/water.svg',
-        ariaLabel: (row, col) => `Water tile at row ${row + 1}, column ${col + 1}. Cannot be clicked.`,
-    },
-
-    wall: {
-        name: 'wall',
-        displayName: 'Wall',
-        description: 'Wall - placed by player',
-        clickable: true,
-        cssClass: 'wall',
-        gradient: 'linear-gradient(135deg, #8d6e63 0%, #5d4037 100%)',
-        image: 'assets/wall.svg',
-        ariaLabel: (row, col) => `Wall at row ${row + 1}, column ${col + 1}. Click to remove.`,
-    },
-
-    home: {
-        name: 'home',
-        displayName: 'Home',
-        description: 'Home - pet starting location',
-        clickable: false,
-        cssClass: 'home',
-        gradient: 'linear-gradient(135deg, #ffeb3b 0%, #ffc107 100%)',
-        image: 'assets/home.svg',
-        emoji: '🏠🐾',
-        ariaLabel: (row, col) => `Home tile at row ${row + 1}, column ${col + 1}. Pet starting location.`,
-    },
-
-    // Add more tile types here for future expansion
-    // Example:
-    // sand: {
-    //     name: 'sand',
-    //     displayName: 'Sand',
-    //     description: 'Sand tile - special properties',
-    //     clickable: true,
-    //     cssClass: 'sand',
-    //     gradient: 'linear-gradient(135deg, #ffd54f 0%, #ffb300 100%)',
-    //     ariaLabel: (row, col) => `Sand tile at row ${row + 1}, column ${col + 1}.`,
-    // },
-};
-
-/**
- * Get tile type by name
- * @param {string} typeName - The name of the tile type
- * @returns {Object} The tile type object
- */
-function getTileType(typeName) {
-    return TILE_TYPES[typeName] || TILE_TYPES.grass;
+// Import TILE_DATA if in Node.js environment
+if (typeof TILE_DATA === 'undefined' && typeof require !== 'undefined') {
+    const _td = require('./tileData.js');
+    global.TILE_DATA = _td.TILE_DATA;
+    global.getTileType = _td.getTileType;
+    global.isTileClickable = _td.isTileClickable;
+    global.isBlockingTile = _td.isBlockingTile;
+    global.BLOCKING_TILES = _td.BLOCKING_TILES;
 }
 
 /**
- * Check if a tile type is clickable
- * @param {string} typeName - The name of the tile type
- * @returns {boolean} True if the tile can be clicked
+ * TILE_TYPES — built programmatically from TILE_DATA.
+ * Each entry mirrors the TILE_DATA properties and adds a `clickable` flag
+ * so existing rendering code can work unchanged.
  */
-function isTileClickable(typeName) {
-    const tileType = getTileType(typeName);
-    return tileType.clickable;
+const TILE_TYPES = {};
+for (const [name, data] of Object.entries(TILE_DATA)) {
+    TILE_TYPES[name] = {
+        ...data,
+    };
 }
 
 // Export for use in other modules

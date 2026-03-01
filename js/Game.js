@@ -95,29 +95,76 @@ class Game {
         
         // Add penned class if this tile is accessible when pet is penned
         const coordKey = `${row},${col}`;
-        if (accessibleTiles.has(coordKey)) {
+        const isPennedTile = accessibleTiles.has(coordKey);
+        if (isPennedTile) {
             cell.classList.add('penned');
         }
         
         cell.dataset.row = row;
         cell.dataset.col = col;
         
-        // Add pet emoji centered inside the home tile (doghouse image is background)
-        if (tileType === 'home') {
-            cell.textContent = this.petEmoji;
+        // Choose asset list: use enclosedAssets when tile is penned and they're defined
+        const assetList = getTileAssets(tileType, isPennedTile);
+        
+        // Set background from first asset via inline style (data-driven, overrides CSS)
+        if (assetList && assetList.length > 0) {
+            cell.style.background = `url('assets/${assetList[0]}') center/cover no-repeat`;
         }
         
-        // Add paw image overlay if this cell is on the escape path
-        if (pathSet && pathSet.has(coordKey) && tileType !== 'home') {
-            const paw = document.createElement('img');
-            paw.src = 'assets/paw.svg';
-            paw.alt = '';
-            paw.className = 'paw-overlay';
-            paw.setAttribute('aria-hidden', 'true');
-            // Calculate rotation based on direction to next path step
-            const angle = directions && directions.has(coordKey) ? directions.get(coordKey) : 0;
-            paw.style.transform = `translate(-50%, -50%) rotate(${angle}deg)`;
-            cell.appendChild(paw);
+        // Render additional asset overlays from the chosen list (index 1+)
+        if (assetList && assetList.length > 1) {
+            for (let i = 1; i < assetList.length; i++) {
+                const asset = assetList[i];
+                if (asset.endsWith('.svg')) {
+                    const overlay = document.createElement('img');
+                    overlay.src = `assets/${asset}`;
+                    overlay.alt = '';
+                    overlay.className = 'tile-overlay';
+                    overlay.setAttribute('aria-hidden', 'true');
+                    cell.appendChild(overlay);
+                } else {
+                    // Treat as emoji / text overlay
+                    const emojiSpan = document.createElement('span');
+                    emojiSpan.className = 'tile-overlay-emoji';
+                    emojiSpan.textContent = asset;
+                    emojiSpan.setAttribute('aria-hidden', 'true');
+                    cell.appendChild(emojiSpan);
+                }
+            }
+        }
+        
+        // Add pet emoji overlay on top of all other layers
+        if (tileInfo.emoji) {
+            const petSpan = document.createElement('span');
+            petSpan.className = 'pet-emoji';
+            petSpan.textContent = this.petEmoji;
+            petSpan.setAttribute('aria-hidden', 'true');
+            cell.appendChild(petSpan);
+        }
+        
+        // Add paw overlay if this cell is on the escape path
+        if (pathSet && pathSet.has(coordKey)) {
+            const pawAssets = getPawOverlay(tileType);
+            if (pawAssets.length > 0) {
+                const angle = directions && directions.has(coordKey) ? directions.get(coordKey) : 0;
+                for (const asset of pawAssets) {
+                    if (asset.endsWith('.svg')) {
+                        const paw = document.createElement('img');
+                        paw.src = `assets/${asset}`;
+                        paw.alt = '';
+                        paw.className = 'paw-overlay';
+                        paw.setAttribute('aria-hidden', 'true');
+                        paw.style.transform = `translate(-50%, -50%) rotate(${angle}deg)`;
+                        cell.appendChild(paw);
+                    } else {
+                        const emojiSpan = document.createElement('span');
+                        emojiSpan.className = 'paw-overlay-emoji';
+                        emojiSpan.textContent = asset;
+                        emojiSpan.setAttribute('aria-hidden', 'true');
+                        cell.appendChild(emojiSpan);
+                    }
+                }
+            }
         }
         
         // Add accessibility attributes
@@ -160,8 +207,8 @@ class Game {
         
         const currentTileType = this.grid.getTile(row, col);
         
-        // Allow clicking on grass tiles (convert to wall)
-        if (currentTileType === 'grass') {
+        // Allow clicking on wall-placeable tiles (convert to wall)
+        if (isWallPlaceable(currentTileType)) {
             // Check if wall limit reached
             if (this.wallCount >= this.maxWalls) {
                 this.showNotification(`All ${this.maxWalls} walls have been placed!`);
@@ -172,9 +219,10 @@ class Game {
             this.render();
             this.updateWallCounter();
         }
-        // Allow clicking on walls to remove them
+        // Allow clicking on walls to remove them (revert to original tile type)
         else if (currentTileType === 'wall') {
-            this.grid.setTile(row, col, 'grass');
+            const originalTile = this.grid.initialTiles[row] && this.grid.initialTiles[row][col];
+            this.grid.setTile(row, col, originalTile || 'grass');
             this.wallCount = Math.max(0, this.wallCount - 1);
             this.render();
             this.updateWallCounter();
@@ -202,14 +250,13 @@ class Game {
     }
 
     /**
-     * Check if a tile type blocks pathfinding
+     * Check if a tile type blocks pathfinding.
+     * Uses the blocksMovement property from TILE_DATA.
      * @param {string} tileType - The tile type to check
      * @returns {boolean} True if the tile blocks paths
      */
     isBlockingTile(tileType) {
-        // List of tile types that block pathfinding
-        const blockingTiles = ['wall', 'water'];
-        return blockingTiles.includes(tileType);
+        return isBlockingTile(tileType);
     }
 
     /**
@@ -387,13 +434,29 @@ class Game {
     }
 
     /**
+     * Calculate the score from accessible tiles.
+     * Uses score values from TILE_DATA for each tile type.
+     * @returns {number} Weighted score of the penned area
+     */
+    calculateScore() {
+        const accessible = this.getAccessibleTiles();
+        let score = 0;
+        for (const coordKey of accessible) {
+            const [row, col] = coordKey.split(',').map(Number);
+            const tileType = this.grid.getTile(row, col);
+            score += getTileScore(tileType);
+        }
+        return score;
+    }
+
+    /**
      * Update the penned status indicator
      * @param {boolean} isPenned - Whether the pet is penned
      */
     updatePennedStatus(isPenned) {
         const statusElement = document.getElementById('pennedStatus');
         if (statusElement) {
-            const yellowTileCount = isPenned ? this.getAccessibleTiles().size : 0;
+            const yellowTileCount = isPenned ? this.calculateScore() : 0;
             
             if (isPenned) {
                 // Change button text based on submission state
@@ -441,7 +504,7 @@ class Game {
             const isPenned = !pathInfo.hasPath;
             
             if (isPenned) {
-                const areaSize = this.getAccessibleTiles().size;
+                const areaSize = this.calculateScore();
                 
                 // Display area size based on hint mode
                 if (this.hintMode === 'revealTarget') {
@@ -770,19 +833,21 @@ class Game {
      * @param {Array} wallPositions - Array of [row, col] positions
      */
     loadWallPositions(wallPositions) {
-        // Clear all existing walls first
+        // Clear all existing walls first (revert to original tile type)
         for (let i = 0; i < this.grid.size; i++) {
             for (let j = 0; j < this.grid.size; j++) {
                 if (this.grid.getTile(i, j) === 'wall') {
-                    this.grid.setTile(i, j, 'grass');
+                    const originalTile = this.grid.initialTiles[i] && this.grid.initialTiles[i][j];
+                    this.grid.setTile(i, j, originalTile || 'grass');
                 }
             }
         }
         
-        // Place new walls
+        // Place new walls (on wall-placeable tiles)
         this.wallCount = 0;
         for (const [row, col] of wallPositions) {
-            if (this.isValidPosition(row, col) && this.grid.getTile(row, col) === 'grass') {
+            const tile = this.isValidPosition(row, col) ? this.grid.getTile(row, col) : null;
+            if (tile && isWallPlaceable(tile)) {
                 this.grid.setTile(row, col, 'wall');
                 this.wallCount++;
             }

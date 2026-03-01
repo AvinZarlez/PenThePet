@@ -11,6 +11,11 @@
         if (typeof global.CONSTANTS === 'undefined') {
             global.CONSTANTS = require('./constants.js');
         }
+        if (typeof global.TILE_DATA === 'undefined') {
+            const td = require('./tileData.js');
+            global.TILE_DATA = td.TILE_DATA;
+            global.TILE_TO_NUMERIC = td.TILE_TO_NUMERIC;
+        }
         if (typeof global.PathfindingUtils === 'undefined') {
             global.PathfindingUtils = require('./PathfindingUtils.js');
         }
@@ -98,37 +103,67 @@ class MapGenerator {
     }
 
     /**
-     * Generate a random map without validation
+     * Generate a random map without validation.
+     * Uses chance values from TILE_DATA to determine tile counts,
+     * builds an exact-size tile list, then shuffles to randomise placement.
      * @private
      * @returns {Array} 2D array of tile types
      */
     _generateRandomMap() {
+        const totalTiles = this.size * this.size;
+        const reservedTiles = 1; // home tile placed separately
+        const fillCount = totalTiles - reservedTiles;
+        
+        // Build a list of eligible tile types and their chances from TILE_DATA
+        const eligibleTiles = [];
+        let totalChance = 0;
+        for (const [name, data] of Object.entries(TILE_DATA)) {
+            if (data.chance > 0) {
+                eligibleTiles.push({ name, chance: data.chance });
+                totalChance += data.chance;
+            }
+        }
+        
+        // Compute how many of each tile type based on chance proportions
+        const tileList = [];
+        let placed = 0;
+        for (let i = 0; i < eligibleTiles.length; i++) {
+            const t = eligibleTiles[i];
+            let count;
+            if (i === eligibleTiles.length - 1) {
+                // Last tile type gets the remainder to ensure exact total
+                count = fillCount - placed;
+            } else {
+                count = Math.floor((t.chance / totalChance) * fillCount);
+            }
+            for (let j = 0; j < count; j++) {
+                tileList.push(t.name);
+            }
+            placed += count;
+        }
+        
+        // Shuffle the tile list (Fisher-Yates)
+        for (let i = tileList.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [tileList[i], tileList[j]] = [tileList[j], tileList[i]];
+        }
+        
+        // Insert home at center position so every slot is accounted for
+        const centerIndex = Math.floor(this.size / 2) * this.size + Math.floor(this.size / 2);
+        tileList.splice(centerIndex, 0, 'home');
+        
+        // Build the 2D map
         const map = [];
+        let idx = 0;
         for (let i = 0; i < this.size; i++) {
             const row = [];
             for (let j = 0; j < this.size; j++) {
-                row.push(this._generateRandomTile());
+                row.push(tileList[idx++]);
             }
             map.push(row);
         }
         
-        // Place home tile at center
-        const centerRow = Math.floor(this.size / 2);
-        const centerCol = Math.floor(this.size / 2);
-        map[centerRow][centerCol] = 'home';
-        
         return map;
-    }
-
-    /**
-     * Generate a random tile type based on distribution
-     * @private
-     * @returns {string} The tile type name
-     */
-    _generateRandomTile() {
-        const rand = Math.random();
-        const grassThreshold = this.tileDistribution.grass;
-        return rand < grassThreshold ? 'grass' : 'water';
     }
 
     /**
@@ -143,18 +178,15 @@ class MapGenerator {
     }
 
     /**
-     * Convert map from string format to numeric format
+     * Convert map from string format to numeric format.
+     * Uses TILE_TO_NUMERIC from tileData.js for the mapping.
      * @param {Array} stringMap - 2D array of tile type strings
-     * @returns {Array} 2D array of numeric tile values (0=water, 1=grass, 2=home, 5=wall)
+     * @returns {Array} 2D array of numeric tile values
      * @private
      */
     _mapToNumeric(stringMap) {
         return stringMap.map(row => row.map(tile => {
-            if (tile === 'water') return 0;
-            if (tile === 'grass') return 1;
-            if (tile === 'home') return 2;
-            if (tile === 'wall') return 5;
-            return 1; // default to grass
+            return TILE_TO_NUMERIC[tile] !== undefined ? TILE_TO_NUMERIC[tile] : 1;
         }));
     }
     

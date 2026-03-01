@@ -174,6 +174,74 @@ describe('CONSTANTS', () => {
         });
     });
 
+    describe('Tile Data Integration', () => {
+        test('TILE_DATA should define score for star tiles', () => {
+            expect(typeof TILE_DATA.star.score).toBe('number');
+            expect(TILE_DATA.star.score).toBe(3);
+        });
+
+        test('TILE_DATA should define score for grass tiles', () => {
+            expect(TILE_DATA.grass.score).toBe(1);
+        });
+
+        test('all tiles should have required properties', () => {
+            for (const [, data] of Object.entries(TILE_DATA)) {
+                expect(data).toHaveProperty('score');
+                expect(data).toHaveProperty('wallPlaceable');
+                expect(data).toHaveProperty('chance');
+                expect(data).toHaveProperty('compactChar');
+                expect(data).toHaveProperty('numericId');
+                expect(data).toHaveProperty('assets');
+            }
+        });
+
+        test('enclosedAssets should fall back to assets when not defined', () => {
+            expect(getTileAssets('water', true)).toEqual(['water.svg']);
+            expect(getTileAssets('wall', true)).toEqual(['wall.svg']);
+        });
+
+        test('enclosedAssets should override assets when tile is enclosed', () => {
+            expect(getTileAssets('grass', true)).toEqual(['penned.svg']);
+            expect(getTileAssets('star', true)).toEqual(['penned.svg', 'star.svg']);
+            expect(getTileAssets('home', true)).toEqual(['penned.svg', 'home.svg']);
+        });
+
+        test('getTileAssets returns normal assets when not enclosed', () => {
+            expect(getTileAssets('grass', false)).toEqual(['grass.svg']);
+            expect(getTileAssets('home', false)).toEqual(['grass.svg', 'home.svg']);
+            expect(getTileAssets('star', false)).toEqual(['grass.svg', 'star.svg']);
+        });
+
+        test('getTileAssets falls back to grass.svg for unknown tile', () => {
+            expect(getTileAssets('nonexistent', false)).toEqual(['grass.svg']);
+        });
+
+        test('getPawOverlay returns default paw.svg for undefined pawOverlay', () => {
+            expect(getPawOverlay('grass')).toEqual(['paw.svg']);
+            expect(getPawOverlay('star')).toEqual(['paw.svg']);
+        });
+
+        test('getPawOverlay returns empty array for tiles with pawOverlay: []', () => {
+            expect(getPawOverlay('home')).toEqual([]);
+            expect(getPawOverlay('water')).toEqual([]);
+            expect(getPawOverlay('wall')).toEqual([]);
+        });
+
+        test('getPawOverlay returns default for unknown tile', () => {
+            expect(getPawOverlay('nonexistent')).toEqual(['paw.svg']);
+        });
+
+        test('home tile has grass base asset', () => {
+            expect(TILE_DATA.home.assets[0]).toBe('grass.svg');
+            expect(TILE_DATA.home.assets[1]).toBe('home.svg');
+        });
+
+        test('star tile has grass base asset', () => {
+            expect(TILE_DATA.star.assets[0]).toBe('grass.svg');
+            expect(TILE_DATA.star.assets[1]).toBe('star.svg');
+        });
+    });
+
     describe('Value Reasonableness', () => {
         test('all numeric values should be finite', () => {
             expect(Number.isFinite(CONSTANTS.MAX_WALLS)).toBe(true);

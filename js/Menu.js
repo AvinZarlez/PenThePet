@@ -517,7 +517,7 @@ class Menu {
 
                 // Restore submitted wall positions
                 for (const [row, col] of submission.walls) {
-                    if (this.game.isValidPosition(row, col) && this.game.grid.getTile(row, col) === 'grass') {
+                    if (this.game.isValidPosition(row, col) && isWallPlaceable(this.game.grid.getTile(row, col))) {
                         this.game.grid.setTile(row, col, 'wall');
                         this.game.wallCount++;
                     }
@@ -539,9 +539,50 @@ class Menu {
      */
     openInstructions() {
         this.closeAllModals();
+        this._populateTileDescriptions();
         const instructionsModal = document.getElementById('instructionsModal');
         if (instructionsModal) {
             instructionsModal.classList.add('show');
+        }
+    }
+
+    /**
+     * Populate the tile descriptions list from TILE_DATA.
+     * Each tile with a description is rendered as a row with its
+     * first asset icon and description text.
+     * @private
+     */
+    _populateTileDescriptions() {
+        const container = document.getElementById('tileDescriptions');
+        if (!container || container.children.length > 0) return;
+
+        for (const [, data] of Object.entries(TILE_DATA)) {
+            if (!data.description) continue;
+
+            const row = document.createElement('div');
+            row.className = 'tile-desc-row';
+
+            const icon = document.createElement('div');
+            icon.className = 'tile-desc-icon';
+            if (data.assets && data.assets.length > 0) {
+                for (const asset of data.assets) {
+                    if (asset.endsWith('.svg')) {
+                        const img = document.createElement('img');
+                        img.src = `assets/${asset}`;
+                        img.alt = '';
+                        img.setAttribute('aria-hidden', 'true');
+                        icon.appendChild(img);
+                    }
+                }
+            }
+
+            const text = document.createElement('span');
+            text.className = 'tile-desc-text';
+            text.textContent = data.description;
+
+            row.appendChild(icon);
+            row.appendChild(text);
+            container.appendChild(row);
         }
     }
 

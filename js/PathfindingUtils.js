@@ -10,6 +10,20 @@
  * - Checking if home has a path to an edge (string map format)
  */
 
+// Import blocking-tile sets from tileData if in Node.js environment
+if (typeof BLOCKING_NUMERIC_IDS === 'undefined' && typeof require !== 'undefined') {
+    const _td = require('./tileData.js');
+    if (typeof global.BLOCKING_NUMERIC_IDS === 'undefined') {
+        global.BLOCKING_NUMERIC_IDS = _td.BLOCKING_NUMERIC_IDS;
+    }
+    if (typeof global.BLOCKING_TILES === 'undefined') {
+        global.BLOCKING_TILES = _td.BLOCKING_TILES;
+    }
+    if (typeof global.isBlockingTile === 'undefined') {
+        global.isBlockingTile = _td.isBlockingTile;
+    }
+}
+
 class PathfindingUtils {
     /**
      * Check if home is penned in (cannot reach any edge).
@@ -52,7 +66,7 @@ class PathfindingUtils {
                 }
                 
                 const tileType = map[newRow][newCol];
-                if (tileType === 0 || tileType === 5) { // water or wall
+                if (BLOCKING_NUMERIC_IDS.has(tileType)) {
                     continue;
                 }
                 
@@ -99,7 +113,7 @@ class PathfindingUtils {
                 }
                 
                 const tileType = map[newRow][newCol];
-                if (tileType === 0 || tileType === 5) { // water or wall
+                if (BLOCKING_NUMERIC_IDS.has(tileType)) {
                     continue;
                 }
                 
@@ -112,7 +126,59 @@ class PathfindingUtils {
     }
 
     /**
-     * Check if home has a path to any edge tile (string map format).
+     * Calculate the penned score (weighted sum of tiles reachable from home).
+     * Uses score values from TILE_DATA (via NUMERIC_ID_TO_SCORE lookup).
+     * Uses BFS to find all tiles reachable from home without crossing blocking tiles.
+     * 
+     * @param {Array} map - 2D array of numeric tile IDs (see tileData.js numericId)
+     * @param {number} homeRow - Row index of home tile
+     * @param {number} homeCol - Column index of home tile
+     * @param {Object} scoreMap - Optional map of numericId→score (default: NUMERIC_ID_TO_SCORE from tileData)
+     * @returns {number} Weighted score of the penned area
+     */
+    static calculatePennedScore(map, homeRow, homeCol, scoreMap) {
+        // Use provided score map or fall back to the global NUMERIC_ID_TO_SCORE
+        const scores = scoreMap || (typeof NUMERIC_ID_TO_SCORE !== 'undefined' ? NUMERIC_ID_TO_SCORE : {0:0, 1:1, 2:1, 3:3, 5:0});
+        const verticalTiles = map.length;
+        const horizontalTiles = map[0].length;
+        
+        const visited = new Set([`${homeRow},${homeCol}`]);
+        const queue = [[homeRow, homeCol]];
+        const directions = [[-1, 0], [1, 0], [0, -1], [0, 1]];
+        let score = scores[map[homeRow][homeCol]] !== undefined ? scores[map[homeRow][homeCol]] : 1;
+        
+        while (queue.length > 0) {
+            const [row, col] = queue.shift();
+            
+            // Explore neighbors
+            for (const [dr, dc] of directions) {
+                const newRow = row + dr;
+                const newCol = col + dc;
+                const key = `${newRow},${newCol}`;
+                
+                if (newRow < 0 || newRow >= verticalTiles || newCol < 0 || newCol >= horizontalTiles) {
+                    continue;
+                }
+                
+                if (visited.has(key)) {
+                    continue;
+                }
+                
+                const tileType = map[newRow][newCol];
+                if (BLOCKING_NUMERIC_IDS.has(tileType)) {
+                    continue;
+                }
+                
+                visited.add(key);
+                queue.push([newRow, newCol]);
+                score += scores[tileType] !== undefined ? scores[tileType] : 1;
+            }
+        }
+        
+        return score;
+    }
+
+    /**
      * Used by MapGenerator and MapValidator to verify map connectivity.
      * Water tiles block movement; grass and home tiles are passable.
      * 
@@ -170,7 +236,7 @@ class PathfindingUtils {
                     continue;
                 }
 
-                if (map[newRow][newCol] === 'water') {
+                if (isBlockingTile(map[newRow][newCol])) {
                     continue;
                 }
 

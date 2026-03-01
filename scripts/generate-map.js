@@ -18,6 +18,7 @@ const path = require('path');
 const MapGenerator = require('../js/MapGenerator.js');
 const MapValidator = require('../js/MapValidator.js');
 const { getRandomWord } = require('../js/wordList.js');
+const { TILE_TO_COMPACT_CHAR } = require('../js/tileData.js');
 const {
     parseSizeInput,
     getRandomSize,
@@ -31,18 +32,13 @@ const {
 } = require('./lib/mapUtils.js');
 
 /**
- * Tile-to-character mapping for encoding maps in compact format.
- * @type {Object}
- */
-const TILE_TO_CHAR = { grass: 'g', water: 'w', home: 'h' };
-
-/**
  * Encode a 2D map array into a compact single-character-per-tile string.
+ * Uses TILE_TO_COMPACT_CHAR from tileData.js as source of truth.
  * @param {Array} map2d - 2D array of tile type strings
- * @returns {string} Compact map string (row-major, g/w/h per tile)
+ * @returns {string} Compact map string (row-major)
  */
 function encodeCompactMap(map2d) {
-    return map2d.map(row => row.map(t => TILE_TO_CHAR[t] || 'g').join('')).join('');
+    return map2d.map(row => row.map(t => TILE_TO_COMPACT_CHAR[t] || 'g').join('')).join('');
 }
 
 /**
