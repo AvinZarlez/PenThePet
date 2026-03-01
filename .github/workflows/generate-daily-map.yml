@@ -68,7 +68,7 @@ jobs:
       - name: Check for changes
         id: check_changes
         run: |
-          if git diff --quiet maps.json; then
+          if git diff --quiet maps/; then
             echo "has_changes=false" >> $GITHUB_OUTPUT
           else
             echo "has_changes=true" >> $GITHUB_OUTPUT
@@ -79,7 +79,7 @@ jobs:
         run: |
           git config user.name "GitHub Actions Bot"
           git config user.email "actions@github.com"
-          git add maps.json
+          git add maps/
           DATE_ARG="${{ github.event.inputs.date }}"
           COUNT_ARG="${{ github.event.inputs.count }}"
           if [ "${COUNT_ARG}" -gt 1 ]; then

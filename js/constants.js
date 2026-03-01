@@ -26,6 +26,9 @@ const CONSTANTS = {
     MIN_GRID_SIZE: 7,           // Minimum grid size (7x7)
     DEFAULT_GRID_SIZE: 9,       // Default grid size (9x9)
     
+    // Map data
+    FIRST_MAP_YEAR: 2026,          // First year that has map data files in maps/
+
     // Map generation
     MAX_GENERATION_ATTEMPTS: 100,  // Maximum attempts to generate a valid map
     

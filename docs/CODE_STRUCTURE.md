@@ -42,7 +42,7 @@ PenThePet/
 │   └── main.js             # Application entry point and initialization
 ├── scripts/
 │   ├── generate-map.js # Map generation entry point (GitHub Actions + local)
-│   ├── audit-maps.js          # Validate all existing maps in maps.json
+│   ├── audit-maps.js          # Validate all existing maps in maps/ directory
 │   ├── lib/
 │   │   └── mapUtils.js        # Shared pure utilities (dates, size parsing, DB validation)
 │   └── solver/                # MILP solver pipeline (Node.js + Python)
@@ -58,7 +58,9 @@ PenThePet/
 │   ├── DEVELOPMENT.md      # Developer guide
 │   ├── MAP_GENERATION.md   # Algorithm details
 │   └── README.md          # Documentation index
-└── maps.json               # Generated maps with metadata (dayNumber, mapName, etc.)
+├── maps/                   # Pre-generated map data, one JSON file per year
+│   ├── README.md           # Maps directory documentation
+│   └── YYYY.json           # e.g. 2026.json — all maps for that year
 ```
 
 ## 🎯 File Purposes
@@ -183,13 +185,13 @@ See MAP_GENERATION.md for complete documentation.
 Pure state management for the grid:
 
 - Grid initialization and tile storage
-- Loads maps from pre-generated map data (maps.json)
+- Loads maps from pre-generated map data (`maps/YYYY.json`)
 - Grid state management (current state, initial state)
 - Tile getter/setter methods (getTile, setTile, getAllTiles)
 - Save/reset functionality (saveInitialState, reset)
 - Home position tracking (getHomePosition)
 
-**Note**: Grid no longer generates maps. Maps are loaded from maps.json only.
+**Note**: Grid no longer generates maps. Maps are loaded from `maps/YYYY.json` only.
 
 ### `js/Game.js`
 
@@ -203,7 +205,7 @@ Game controller that checks if the pet is penned:
 - Score submission and optimal solution viewing
 - Delegates cookie operations to CookieUtils
 
-**Note**: Game no longer generates maps or has debug tools. Maps are loaded from maps.json via main.js.
+**Note**: Game no longer generates maps or has debug tools. Maps are loaded from `maps/YYYY.json` via main.js.
 
 **To add gameplay features:** Extend this class with new methods for character movement, scoring, etc.
 
@@ -212,7 +214,7 @@ Game controller that checks if the pet is penned:
 Menu system for navigation and settings:
 
 - **Modal Management**: Opens/closes menu, level selector, instructions, about, and options modals
-- **Level Selector**: Displays available maps from maps.json, allows switching between different day's puzzles
+- **Level Selector**: Displays available maps from `maps/YYYY.json`, allows switching between different day's puzzles
 - **Level Loading**: Dynamically loads selected map into the game, fully resets game state (grid size, submission, optimal solution)
 - **Options Management**: Syncs pet type and hint mode settings
 - **Cookie Persistence**: Delegates to CookieUtils for all cookie operations
@@ -228,7 +230,7 @@ Menu system for navigation and settings:
 Application entry point:
 
 - Initializes the game when the page loads
-- Loads maps from maps.json
+- Loads maps from `maps/YYYY.json` (one file per year)
 - Checks for saved level selection in cookies
 - Displays map information (day, name, date)
 - Initializes Menu system
@@ -244,7 +246,7 @@ Application entry point:
 
 The single map generation entry point for both GitHub Actions and local use:
 
-- Generates one or more maps and appends them to maps.json
+- Generates one or more maps and appends them to the `maps/` directory (split by year)
 - Supports `--count N` for batch generation (sequential dates)
 - Supports `--size N` or `--size N-M` (exact size or random range per map)
 - Supports `--fresh` to replace all existing maps
@@ -264,17 +266,18 @@ node scripts/generate-map.js --fresh --count 10 --date 2026-03-01 --size 9
 Shared pure utility functions used by generation and audit scripts:
 
 - `parseSizeInput(str)` / `getRandomSize(parsed)` — parse and sample size ranges
-- `incrementDate(str)` / `getNextAvailableDate(path)` — date helpers
-- `getNextDayNumber(path)` — sequential day numbering
-- `validateMapsDatabase(maps)` / `fixMapsDatabase(maps)` — database integrity checks
+- `incrementDate(str)` / `getNextAvailableDate(mapsDir)` — date helpers
+- `getNextDayNumber(mapsDir)` — sequential day numbering
+- `readAllMaps(mapsDir)` — merge all year files into one maps object
+- `saveMapsToDirectory(mapsDir, maps)` — split maps by year and save
 
 ### `scripts/audit-maps.js`
 
-Validates all maps in maps.json against MapValidator:
+Validates all maps in the `maps/` directory against MapValidator:
 
 - Checks path-to-edge, goal area ≥ 5, wall budget, and strategic wall placement
 - Uses the stored `optimalSolution` for each map (full validation)
-- Useful after changing MapValidator rules, manually editing maps.json, or importing maps
+- Useful after changing MapValidator rules, manually editing year files, or importing maps
 - Exits with code 1 if any map fails
 
 **Usage:**
@@ -283,13 +286,13 @@ Validates all maps in maps.json against MapValidator:
 node scripts/audit-maps.js
 ```
 
-### `maps.json`
+### `maps/YYYY.json`
 
-Generated maps with complete metadata:
+Generated maps with complete metadata, split one file per calendar year:
 
 - Key: Date string (YYYY-MM-DD)
 - Value: Map object with dayNumber, mapName, size, goal, maxWalls, map, optimalSolution
-- Generated by `scripts/generate-map.js`
+- Generated by `scripts/generate-map.js` (writes to `maps/YYYY.json`)
 - See MAP_GENERATION.md for metadata structure
 
 ### `MAP_GENERATION.md`

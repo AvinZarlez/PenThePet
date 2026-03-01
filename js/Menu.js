@@ -203,15 +203,22 @@ class Menu {
     }
 
     /**
-     * Load maps database from maps.json
+     * Load maps database from per-year files in the maps/ directory.
+     * Loads all years from CONSTANTS.FIRST_MAP_YEAR up to the current year + 1.
      */
     async loadMapsDatabase() {
         try {
-            const response = await fetch('maps.json');
-            if (!response.ok) {
-                throw new Error('Failed to load maps database');
+            const currentYear = new Date().getFullYear();
+            const merged = {};
+            for (let year = CONSTANTS.FIRST_MAP_YEAR; year <= currentYear + 1; year++) {
+                try {
+                    const response = await fetch(`maps/${year}.json`);
+                    if (response.ok) {
+                        Object.assign(merged, await response.json());
+                    }
+                } catch { /* year file not found — stop */ }
             }
-            this.mapsDatabase = await response.json();
+            this.mapsDatabase = merged;
         } catch (error) {
             console.error('Error loading maps database:', error);
             this.mapsDatabase = {};
@@ -410,7 +417,7 @@ class Menu {
      * Load a specific level into the game.
      * Fully resets game state to match the new level, including grid size,
      * submission state, and optimal solution data.
-     * @param {Object} mapData - Map data object from maps.json
+     * @param {Object} mapData - Map data object from maps/YYYY.json
      */
     async loadLevel(mapData) {
         // Update map info display

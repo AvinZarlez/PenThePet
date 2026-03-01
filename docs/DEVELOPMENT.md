@@ -65,7 +65,7 @@ PenThePet/
 │   └── main.js          # Entry point
 ├── scripts/
 │   ├── generate-map.js # Map generation entry point (single, batch, or fresh)
-│   ├── audit-maps.js    # Validate all maps in maps.json
+│   ├── audit-maps.js    # Validate all maps in maps/ directory
 │   ├── lib/
 │   │   └── mapUtils.js  # Shared utilities (dates, size parsing, DB validation)
 │   └── solver/          # MILP solver pipeline
@@ -74,7 +74,7 @@ PenThePet/
 │       └── requirements.txt # Python deps (PuLP)
 ├── test/                # Test suite
 ├── docs/                # Documentation
-└── maps.json            # Daily puzzles
+└── maps/                # Daily puzzles (one JSON file per year)
 ```
 
 ## Development Workflow
@@ -543,7 +543,7 @@ console.log('Clicked:', row, col, tileType);
 
 **Network Tab:**
 
-- Check if maps.json loads correctly
+- Check if `maps/YYYY.json` files load correctly
 - Verify no 404 errors
 
 ### Common Issues
@@ -788,7 +788,7 @@ npm install
 
 - Are all paths relative (not absolute)?
 - Are filenames case-correct?
-- Is maps.json committed?
+- Are `maps/YYYY.json` files committed?
 - Check browser console for 404 errors
 
 **Fix:**

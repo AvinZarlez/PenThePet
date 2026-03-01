@@ -235,69 +235,58 @@ describe('Map Database Validation', () => {
     });
 
     describe('getNextDayNumber', () => {
-        test('should return 1 for non-existent file', () => {
-            const fakePath = '/tmp/nonexistent-maps-test-file.json';
-            const result = getNextDayNumber(fakePath);
+        test('should return 1 for non-existent directory', () => {
+            const fakeDir = '/tmp/nonexistent-maps-test-dir-' + Date.now();
+            const result = getNextDayNumber(fakeDir);
             expect(result).toBe(1);
         });
 
-        test('should return correct next day number from existing file', () => {
-            // Create a temporary test file
-            const testPath = '/tmp/test-maps-' + Date.now() + '.json';
+        test('should return correct next day number from existing directory', () => {
+            const testDir = '/tmp/test-maps-dir-' + Date.now();
+            fs.mkdirSync(testDir);
             const testMaps = {
                 '2026-01-01': { dayNumber: 1, mapName: 'Alpha' },
                 '2026-01-02': { dayNumber: 2, mapName: 'Beta' },
                 '2026-01-03': { dayNumber: 3, mapName: 'Gamma' }
             };
-            
-            fs.writeFileSync(testPath, JSON.stringify(testMaps));
-            
+            fs.writeFileSync(`${testDir}/2026.json`, JSON.stringify(testMaps));
+
             try {
-                const result = getNextDayNumber(testPath);
+                const result = getNextDayNumber(testDir);
                 expect(result).toBe(4);
             } finally {
-                // Cleanup
-                if (fs.existsSync(testPath)) {
-                    fs.unlinkSync(testPath);
-                }
+                fs.rmSync(testDir, { recursive: true });
             }
         });
 
-        test('should handle empty maps file', () => {
-            // Create a temporary test file with empty maps
-            const testPath = '/tmp/test-maps-empty-' + Date.now() + '.json';
-            fs.writeFileSync(testPath, JSON.stringify({}));
-            
+        test('should handle empty maps directory', () => {
+            const testDir = '/tmp/test-maps-empty-dir-' + Date.now();
+            fs.mkdirSync(testDir);
+            fs.writeFileSync(`${testDir}/2026.json`, JSON.stringify({}));
+
             try {
-                const result = getNextDayNumber(testPath);
+                const result = getNextDayNumber(testDir);
                 expect(result).toBe(1);
             } finally {
-                // Cleanup
-                if (fs.existsSync(testPath)) {
-                    fs.unlinkSync(testPath);
-                }
+                fs.rmSync(testDir, { recursive: true });
             }
         });
 
         test('should handle non-sequential day numbers', () => {
-            // Create a temporary test file with non-sequential day numbers
-            const testPath = '/tmp/test-maps-nonseq-' + Date.now() + '.json';
+            const testDir = '/tmp/test-maps-nonseq-dir-' + Date.now();
+            fs.mkdirSync(testDir);
             const testMaps = {
                 '2026-01-01': { dayNumber: 1, mapName: 'Alpha' },
                 '2026-01-02': { dayNumber: 5, mapName: 'Beta' },  // Gap
                 '2026-01-03': { dayNumber: 3, mapName: 'Gamma' }
             };
-            
-            fs.writeFileSync(testPath, JSON.stringify(testMaps));
-            
+            fs.writeFileSync(`${testDir}/2026.json`, JSON.stringify(testMaps));
+
             try {
-                const result = getNextDayNumber(testPath);
+                const result = getNextDayNumber(testDir);
                 expect(result).toBe(6);  // Next after max (5)
             } finally {
-                // Cleanup
-                if (fs.existsSync(testPath)) {
-                    fs.unlinkSync(testPath);
-                }
+                fs.rmSync(testDir, { recursive: true });
             }
         });
     });
@@ -336,13 +325,13 @@ describe('Map Database Validation', () => {
         });
     });
 
-    describe('maps.json structure', () => {
+    describe('maps/ directory structure', () => {
         let maps;
         
         beforeAll(() => {
-            const mapsPath = require('path').join(__dirname, '../../maps.json');
-            const data = fs.readFileSync(mapsPath, 'utf8');
-            maps = JSON.parse(data);
+            const mapsDir = require('path').join(__dirname, '../../maps');
+            const { readAllMaps } = require('../../scripts/lib/mapUtils.js');
+            maps = readAllMaps(mapsDir);
         });
         
         test('all maps should have optimalSolution field', () => {

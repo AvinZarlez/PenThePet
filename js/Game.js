@@ -41,12 +41,12 @@ class Game {
         
         this.attachEventListeners();
         // Note: init() is NOT called here automatically
-        // Instead, main.js loads the map from maps.json and calls render() directly
+        // Instead, main.js loads the map from maps/YYYY.json and calls render() directly
         // init() is only used for debug map generation
     }
 
     // Note: init(), newGame(), and generateDebugMap() have been removed.
-    // Maps are loaded from maps.json only. The Game class is now a pure
+    // Maps are loaded from maps/YYYY.json only. The Game class is now a pure
     // checker/renderer - it checks if the pet is penned with current wall
     // placement, not a solver that generates new maps.
     // All map generation happens in the Python MILP pipeline (scripts/solver/solve.py).
