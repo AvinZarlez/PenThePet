@@ -89,7 +89,7 @@ service cloud.firestore {
 > documents stored under their own user ID. No user can access another
 > user's data.
 
-### Step 6 — Restrict Your API Key (Recommended)
+### Step 6 — Restrict Your API Key
 
 To ensure that **only your website** can use your Firebase project (not a
 fork running on a different domain):
@@ -128,7 +128,7 @@ be on a different domain and Firebase will reject their requests.
 
 > **Important:** After adding or changing referrers, wait up to five minutes
 > for the changes to propagate before testing.
-
+>
 > ⚠️ **Two separate settings — both are required.**
 > Step 6 (Google Cloud Console) and Step 7 (Firebase console) are completely
 > separate services. **Adding a domain in Firebase Authentication does NOT
