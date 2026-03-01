@@ -47,6 +47,14 @@
 
 
 
+        <div id="pauseOverlay" class="pause-overlay" style="display: none;" aria-live="polite">
+            <div class="pause-content">
+                <div class="pause-title">Pause</div>
+                <div id="pauseTime" class="pause-time">00:00</div>
+                <button id="resumeBtn" class="resume-btn">▶ Resume</button>
+            </div>
+        </div>
+
         <div class="controls">
             <button id="resetBtn">Reset</button>
             <div class="wall-counter">
@@ -93,12 +101,6 @@
 
         <div class="grid-container">
             <div id="grid" class="grid"></div>
-            <div id="pauseOverlay" class="pause-overlay" style="display: none;" aria-live="polite">
-                <div class="pause-content">
-                    <div class="pause-title">PAUSED</div>
-                    <button id="resumeBtn" class="resume-btn">▶ Resume</button>
-                </div>
-            </div>
         </div>
 
         <div class="debug-section" style="display: none;">

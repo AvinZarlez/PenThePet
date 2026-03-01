@@ -199,14 +199,11 @@
 
 /* ========== Pause Overlay ========== */
 .pause-overlay {
-    position: absolute;
-    inset: 0;
-    background: rgba(20, 20, 20, 0.88);
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: 10px;
-    z-index: 10;
+    margin: 20px auto;
+    max-width: 360px;
 }
 
 .pause-content {
@@ -214,6 +211,12 @@
     flex-direction: column;
     align-items: center;
     gap: 20px;
+    padding: 40px 60px;
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    border-radius: 16px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    width: 100%;
 }
 
 .pause-title {
@@ -222,6 +225,15 @@
     color: white;
     letter-spacing: 0.15em;
     text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+}
+
+.pause-time {
+    font-size: 1.8em;
+    font-weight: bold;
+    color: #a8d8ea;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0.1em;
+    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
 }
 
 .resume-btn {
