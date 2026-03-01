@@ -142,17 +142,29 @@ class Game {
             cell.appendChild(petSpan);
         }
         
-        // Add paw image overlay if this cell is on the escape path
-        if (pathSet && pathSet.has(coordKey) && showsPawOverlay(tileType)) {
-            const paw = document.createElement('img');
-            paw.src = 'assets/paw.svg';
-            paw.alt = '';
-            paw.className = 'paw-overlay';
-            paw.setAttribute('aria-hidden', 'true');
-            // Calculate rotation based on direction to next path step
-            const angle = directions && directions.has(coordKey) ? directions.get(coordKey) : 0;
-            paw.style.transform = `translate(-50%, -50%) rotate(${angle}deg)`;
-            cell.appendChild(paw);
+        // Add paw overlay if this cell is on the escape path
+        if (pathSet && pathSet.has(coordKey)) {
+            const pawAssets = getPawOverlay(tileType);
+            if (pawAssets.length > 0) {
+                const angle = directions && directions.has(coordKey) ? directions.get(coordKey) : 0;
+                for (const asset of pawAssets) {
+                    if (asset.endsWith('.svg')) {
+                        const paw = document.createElement('img');
+                        paw.src = `assets/${asset}`;
+                        paw.alt = '';
+                        paw.className = 'paw-overlay';
+                        paw.setAttribute('aria-hidden', 'true');
+                        paw.style.transform = `translate(-50%, -50%) rotate(${angle}deg)`;
+                        cell.appendChild(paw);
+                    } else {
+                        const emojiSpan = document.createElement('span');
+                        emojiSpan.className = 'paw-overlay-emoji';
+                        emojiSpan.textContent = asset;
+                        emojiSpan.setAttribute('aria-hidden', 'true');
+                        cell.appendChild(emojiSpan);
+                    }
+                }
+            }
         }
         
         // Add accessibility attributes

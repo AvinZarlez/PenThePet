@@ -192,7 +192,6 @@ describe('CONSTANTS', () => {
                 expect(data).toHaveProperty('compactChar');
                 expect(data).toHaveProperty('numericId');
                 expect(data).toHaveProperty('assets');
-                expect(data).toHaveProperty('showPawOverlay');
                 expect(data.name).toBe(name);
             }
         });
@@ -218,12 +217,19 @@ describe('CONSTANTS', () => {
             expect(getTileAssets('nonexistent', false)).toEqual(['grass.svg']);
         });
 
-        test('showsPawOverlay returns correct values', () => {
-            expect(showsPawOverlay('grass')).toBe(true);
-            expect(showsPawOverlay('star')).toBe(true);
-            expect(showsPawOverlay('home')).toBe(false);
-            expect(showsPawOverlay('water')).toBe(false);
-            expect(showsPawOverlay('wall')).toBe(false);
+        test('getPawOverlay returns default paw.svg for undefined pawOverlay', () => {
+            expect(getPawOverlay('grass')).toEqual(['paw.svg']);
+            expect(getPawOverlay('star')).toEqual(['paw.svg']);
+        });
+
+        test('getPawOverlay returns empty array for tiles with pawOverlay: []', () => {
+            expect(getPawOverlay('home')).toEqual([]);
+            expect(getPawOverlay('water')).toEqual([]);
+            expect(getPawOverlay('wall')).toEqual([]);
+        });
+
+        test('getPawOverlay returns default for unknown tile', () => {
+            expect(getPawOverlay('nonexistent')).toEqual(['paw.svg']);
         });
 
         test('home tile has grass base asset', () => {
