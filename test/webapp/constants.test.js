@@ -230,6 +230,11 @@ describe('CONSTANTS', () => {
             expect(TILE_DATA.home.assets[0]).toBe('grass.svg');
             expect(TILE_DATA.home.assets[1]).toBe('home.svg');
         });
+
+        test('star tile has grass base asset', () => {
+            expect(TILE_DATA.star.assets[0]).toBe('grass.svg');
+            expect(TILE_DATA.star.assets[1]).toBe('star.svg');
+        });
     });
 
     describe('Value Reasonableness', () => {

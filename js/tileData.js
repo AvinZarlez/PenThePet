@@ -297,12 +297,13 @@ function getTileAssets(tileName, isEnclosed) {
 
 /**
  * Check if a tile type shows paw overlay on escape path.
+ * Returns false if showPawOverlay is not explicitly set to true.
  * @param {string} tileName - Tile type name
  * @returns {boolean}
  */
 function showsPawOverlay(tileName) {
     const data = TILE_DATA[tileName];
-    return data ? data.showPawOverlay !== false : true;
+    return data ? data.showPawOverlay === true : false;
 }
 
 // Export for use in other modules
