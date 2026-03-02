@@ -62,6 +62,7 @@ const CloudSync = (function () {
     let currentUser = null;
     let unsubscribeListener = null;
     let isSyncing = false;
+    let username = null;
 
     const COLLECTION_NAME = 'submissions';
     const SETTINGS_DOC = 'settings';
@@ -107,7 +108,11 @@ const CloudSync = (function () {
             auth = firebase.auth();
             db = firebase.firestore();
             auth.onAuthStateChanged(handleAuthStateChange);
+            completeSignInWithEmailLink().catch(function (e) {
+                console.error('CloudSync: Email link sign-in check failed:', e);
+            });
             showCloudSyncUI();
+            showOptionsAccountSection();
         } catch (e) {
             console.error('CloudSync: Firebase initialisation failed:', e);
         }
@@ -125,6 +130,13 @@ const CloudSync = (function () {
         }
     }
 
+    /** Show the account section in the Options modal once Firebase is ready. */
+    function showOptionsAccountSection() {
+        const section = document.getElementById('optionsAccountSection');
+        if (section) section.style.display = 'block';
+        updateOptionsAccountSection();
+    }
+
     /** Update header UI to reflect signed-in / signed-out state. */
     function updateAuthUI(user) {
         const loginBtn = document.getElementById('cloudSyncLoginBtn');
@@ -135,12 +147,29 @@ const CloudSync = (function () {
         if (user) {
             if (loginBtn) loginBtn.style.display = 'none';
             if (userInfo) userInfo.style.display = 'flex';
-            if (userEmail) userEmail.textContent = user.email;
+            if (userEmail) userEmail.textContent = username || user.email;
             updateSyncStatus('synced');
         } else {
+            username = null;
             if (loginBtn) loginBtn.style.display = 'inline-block';
             if (userInfo) userInfo.style.display = 'none';
             if (syncStatus) syncStatus.style.display = 'none';
+        }
+    }
+
+    /** Update the Options modal account section to reflect signed-in / signed-out state. */
+    function updateOptionsAccountSection() {
+        const signedOutSection = document.getElementById('optionsAccountSignedOut');
+        const signedInSection = document.getElementById('optionsAccountSignedIn');
+        const optionsUsername = document.getElementById('optionsUsername');
+
+        if (currentUser) {
+            if (signedOutSection) signedOutSection.style.display = 'none';
+            if (signedInSection) signedInSection.style.display = 'block';
+            if (optionsUsername) optionsUsername.textContent = username || currentUser.email;
+        } else {
+            if (signedOutSection) signedOutSection.style.display = 'block';
+            if (signedInSection) signedInSection.style.display = 'none';
         }
     }
 
@@ -172,6 +201,7 @@ const CloudSync = (function () {
     async function handleAuthStateChange(user) {
         currentUser = user;
         updateAuthUI(user);
+        updateOptionsAccountSection();
 
         if (user) {
             await syncFromCloud();
@@ -186,30 +216,61 @@ const CloudSync = (function () {
     // ----------------------------------------------------------------
 
     /**
-     * Sign in with email and password.
-     * @param {string} email
-     * @param {string} password
+     * Sign in with a Google account using a popup.
      */
-    async function signIn(email, password) {
+    async function signInWithGoogle() {
         if (!auth) throw new Error('Firebase not initialised');
         try {
-            await auth.signInWithEmailAndPassword(email, password);
+            const provider = new firebase.auth.GoogleAuthProvider();
+            await auth.signInWithPopup(provider);
         } catch (e) {
             throw new Error(getAuthErrorMessage(e.code), { cause: e });
         }
     }
 
     /**
-     * Create a new account.
+     * Send a passwordless sign-in link to the given email address.
+     * The user receives an email with a magic link; clicking it returns them
+     * to the app where completeSignInWithEmailLink() finishes sign-in.
      * @param {string} email
-     * @param {string} password
      */
-    async function signUp(email, password) {
+    async function sendSignInLink(email) {
         if (!auth) throw new Error('Firebase not initialised');
+        const actionCodeSettings = {
+            url: window.location.origin + window.location.pathname,
+            handleCodeInApp: true
+        };
         try {
-            await auth.createUserWithEmailAndPassword(email, password);
+            await auth.sendSignInLinkToEmail(email, actionCodeSettings);
+            window.localStorage.setItem('emailForSignIn', email);
         } catch (e) {
             throw new Error(getAuthErrorMessage(e.code), { cause: e });
+        }
+    }
+
+    /**
+     * Check whether the current URL contains a sign-in email link and, if
+     * so, complete the passwordless sign-in automatically. Called from init().
+     */
+    async function completeSignInWithEmailLink() {
+        if (!auth) return;
+        if (typeof window === 'undefined') return;
+        if (!auth.isSignInWithEmailLink(window.location.href)) return;
+
+        let email = window.localStorage.getItem('emailForSignIn');
+        if (!email) {
+            // User opened the link on a different device — ask for their email
+            email = window.prompt('Please enter your email to complete sign-in:');
+        }
+        if (!email) return;
+
+        try {
+            await auth.signInWithEmailLink(email, window.location.href);
+            window.localStorage.removeItem('emailForSignIn');
+            // Remove the sign-in token from the URL without reloading the page
+            window.history.replaceState({}, document.title, window.location.pathname);
+        } catch (e) {
+            console.error('CloudSync: Failed to complete email link sign-in:', e);
         }
     }
 
@@ -268,6 +329,33 @@ const CloudSync = (function () {
             await docRef.set(settings, { merge: true });
         } catch (e) {
             console.error('CloudSync: Failed to save settings:', e);
+        }
+    }
+
+    /**
+     * Save a display username to Firestore and update the UI.
+     * @param {string} newUsername
+     */
+    async function saveUsername(newUsername) {
+        if (!db || !currentUser) throw new Error('Not signed in');
+        await saveSettings({ username: newUsername });
+        username = newUsername;
+        updateAuthUI(currentUser);
+        updateOptionsAccountSection();
+    }
+
+    /**
+     * Update the Firebase Auth email for the current user.
+     * Uses verifyBeforeUpdateEmail so the change only takes effect after
+     * the user clicks the verification link in their inbox.
+     * @param {string} newEmail
+     */
+    async function saveEmail(newEmail) {
+        if (!auth || !currentUser) throw new Error('Not signed in');
+        try {
+            await currentUser.verifyBeforeUpdateEmail(newEmail);
+        } catch (e) {
+            throw new Error(getAuthErrorMessage(e.code), { cause: e });
         }
     }
 
@@ -435,6 +523,11 @@ const CloudSync = (function () {
         if (settings.hintMode) {
             CookieUtils.setCookie('hintMode', settings.hintMode, 365);
         }
+        if (settings.username !== undefined) {
+            username = settings.username;
+            updateAuthUI(currentUser);
+            updateOptionsAccountSection();
+        }
     }
 
     /**
@@ -546,7 +639,9 @@ const CloudSync = (function () {
         const modal = document.getElementById('cloudSyncModal');
         if (modal) {
             modal.style.display = 'flex';
-            const emailInput = document.getElementById('authEmail');
+            clearAuthLinkError();
+            clearAuthLinkSuccess();
+            const emailInput = document.getElementById('authEmailLink');
             if (emailInput) emailInput.focus();
         }
     }
@@ -554,68 +649,188 @@ const CloudSync = (function () {
     function closeAuthModal() {
         const modal = document.getElementById('cloudSyncModal');
         if (modal) modal.style.display = 'none';
-        clearAuthError();
+        clearAuthLinkError();
+        clearAuthLinkSuccess();
     }
 
-    function clearAuthError() {
-        const el = document.getElementById('authError');
+    function openEditProfileModal() {
+        const modal = document.getElementById('editProfileModal');
+        if (modal) {
+            const usernameInput = document.getElementById('profileUsername');
+            const emailInput = document.getElementById('profileEmail');
+            if (usernameInput) usernameInput.value = username || '';
+            if (emailInput && currentUser) emailInput.value = currentUser.email || '';
+            modal.style.display = 'flex';
+            clearProfileError();
+            clearProfileSuccess();
+            updateLinkedProviders();
+            if (usernameInput) usernameInput.focus();
+        }
+    }
+
+    function closeEditProfileModal() {
+        const modal = document.getElementById('editProfileModal');
+        if (modal) modal.style.display = 'none';
+        clearProfileError();
+        clearProfileSuccess();
+    }
+
+    function clearAuthLinkError() {
+        const el = document.getElementById('authLinkError');
         if (el) {
             el.style.display = 'none';
             el.textContent = '';
         }
     }
 
-    function showAuthError(msg) {
-        const el = document.getElementById('authError');
+    function showAuthLinkError(msg) {
+        const el = document.getElementById('authLinkError');
         if (el) {
             el.textContent = msg;
             el.style.display = 'block';
         }
     }
 
-    function getAuthFormValues() {
-        const email = (document.getElementById('authEmail') || {}).value || '';
-        const password = (document.getElementById('authPassword') || {}).value || '';
-        return { email: email.trim(), password };
+    function clearAuthLinkSuccess() {
+        const el = document.getElementById('authLinkSuccess');
+        if (el) {
+            el.style.display = 'none';
+            el.textContent = '';
+        }
     }
 
-    /** Called by the Sign In button in the modal. */
-    async function handleSignIn() {
-        clearAuthError();
-        const { email, password } = getAuthFormValues();
-        if (!email || !password) {
-            showAuthError('Please enter your email and password.');
+    function showAuthLinkSuccess(msg) {
+        const el = document.getElementById('authLinkSuccess');
+        if (el) {
+            el.textContent = msg;
+            el.style.display = 'block';
+        }
+    }
+
+    function clearProfileError() {
+        const el = document.getElementById('profileError');
+        if (el) {
+            el.style.display = 'none';
+            el.textContent = '';
+        }
+    }
+
+    function showProfileError(msg) {
+        const el = document.getElementById('profileError');
+        if (el) {
+            el.textContent = msg;
+            el.style.display = 'block';
+        }
+    }
+
+    function clearProfileSuccess() {
+        const el = document.getElementById('profileSuccess');
+        if (el) {
+            el.style.display = 'none';
+            el.textContent = '';
+        }
+    }
+
+    function showProfileSuccess(msg) {
+        const el = document.getElementById('profileSuccess');
+        if (el) {
+            el.textContent = msg;
+            el.style.display = 'block';
+        }
+    }
+
+    /** Called by the Send Sign-In Link button in the passwordless view. */
+    async function handleSendSignInLink() {
+        clearAuthLinkError();
+        clearAuthLinkSuccess();
+        const emailInput = document.getElementById('authEmailLink');
+        const email = emailInput ? emailInput.value.trim() : '';
+        if (!email) {
+            showAuthLinkError('Please enter your email address.');
             return;
         }
-        const btn = document.getElementById('authSignInBtn');
+        const btn = document.getElementById('authSendLinkBtn');
         if (btn) btn.disabled = true;
         try {
-            await signIn(email, password);
-            closeAuthModal();
+            await sendSignInLink(email);
+            showAuthLinkSuccess(`A sign-in link has been sent to ${email}. Check your inbox and click the link to sign in.`);
         } catch (e) {
-            showAuthError(e.message);
+            showAuthLinkError(e.message);
         } finally {
             if (btn) btn.disabled = false;
         }
     }
 
-    /** Called by the Create Account button in the modal. */
-    async function handleSignUp() {
-        clearAuthError();
-        const { email, password } = getAuthFormValues();
-        if (!email || !password) {
-            showAuthError('Please enter an email and password.');
-            return;
-        }
-        const btn = document.getElementById('authSignUpBtn');
+    /** Called by the Sign in with Google button in the auth modal. */
+    async function handleSignInWithGoogle() {
+        clearAuthLinkError();
+        const btn = document.getElementById('authGoogleBtn');
         if (btn) btn.disabled = true;
         try {
-            await signUp(email, password);
+            await signInWithGoogle();
             closeAuthModal();
         } catch (e) {
-            showAuthError(e.message);
+            showAuthLinkError(e.message);
         } finally {
             if (btn) btn.disabled = false;
+        }
+    }
+
+    /**
+     * Returns true if the current user has the given Firebase provider linked.
+     * @param {string} providerId - e.g. 'google.com'
+     * @returns {boolean}
+     */
+    function hasLinkedProvider(providerId) {
+        if (!currentUser) return false;
+        for (var i = 0; i < currentUser.providerData.length; i++) {
+            if (currentUser.providerData[i].providerId === providerId) return true;
+        }
+        return false;
+    }
+
+    /**
+     * Update the connected-accounts buttons in the edit profile modal.
+     * Checks providerData of the current user and marks Google as
+     * connected or disconnected.
+     */
+    function updateLinkedProviders() {
+        if (!currentUser) return;
+        updateProviderButton('linkGoogleBtn', hasLinkedProvider('google.com'));
+    }
+
+    /** Helper to update a single provider link/unlink button. */
+    function updateProviderButton(btnId, isLinked) {
+        const btn = document.getElementById(btnId);
+        if (!btn) return;
+        btn.textContent = isLinked ? 'Disconnect' : 'Connect';
+        if (isLinked) {
+            btn.classList.add('linked-account-disconnect');
+        } else {
+            btn.classList.remove('linked-account-disconnect');
+        }
+    }
+
+    /**
+     * Toggle Google account link/unlink for the currently signed-in user.
+     * Called from the Connect/Disconnect Google button in Edit Profile.
+     */
+    async function handleLinkWithGoogle() {
+        if (!auth || !currentUser) return;
+        clearProfileError();
+        clearProfileSuccess();
+        try {
+            if (hasLinkedProvider('google.com')) {
+                await currentUser.unlink('google.com');
+                showProfileSuccess('Google account disconnected.');
+            } else {
+                const provider = new firebase.auth.GoogleAuthProvider();
+                await currentUser.linkWithPopup(provider);
+                showProfileSuccess('Google account connected.');
+            }
+            updateLinkedProviders();
+        } catch (e) {
+            showProfileError(getAuthErrorMessage(e.code));
         }
     }
 
@@ -625,6 +840,40 @@ const CloudSync = (function () {
             await signOut();
         } catch (e) {
             console.error('CloudSync: Sign out failed:', e);
+        }
+    }
+
+    /** Called by the Save Changes button in the edit profile modal. */
+    async function handleSaveProfile() {
+        clearProfileError();
+        clearProfileSuccess();
+        const usernameInput = document.getElementById('profileUsername');
+        const emailInput = document.getElementById('profileEmail');
+        const newUsername = usernameInput ? usernameInput.value.trim() : '';
+        const newEmail = emailInput ? emailInput.value.trim() : '';
+
+        const btn = document.getElementById('profileSaveBtn');
+        if (btn) btn.disabled = true;
+
+        let emailVerificationPending = false;
+        try {
+            if ((newUsername || '') !== (username || '')) {
+                await saveUsername(newUsername);
+            }
+            if (newEmail && currentUser && newEmail !== currentUser.email) {
+                await saveEmail(newEmail);
+                emailVerificationPending = true;
+            }
+            if (emailVerificationPending) {
+                showProfileSuccess(`A verification email has been sent to ${newEmail}. Your email will update after you click the link.`);
+                if (emailInput && currentUser) emailInput.value = currentUser.email || '';
+            } else {
+                closeEditProfileModal();
+            }
+        } catch (e) {
+            showProfileError(e.message);
+        } finally {
+            if (btn) btn.disabled = false;
         }
     }
 
@@ -641,9 +890,18 @@ const CloudSync = (function () {
             'auth/invalid-email': 'Please enter a valid email address.',
             'auth/too-many-requests': 'Too many attempts. Please wait a moment and try again.',
             'auth/invalid-credential': 'Invalid email or password.',
-            'auth/operation-not-allowed': 'Email/password sign-in is not enabled in the Firebase console.',
+            'auth/operation-not-allowed': 'This sign-in method is not enabled in the Firebase console.',
             'auth/invalid-api-key': 'Invalid Firebase API key. Check firebase-config.js.',
-            'auth/configuration-not-found': 'Firebase Authentication is not configured. Enable it in the Firebase console.'
+            'auth/configuration-not-found': 'Firebase Authentication is not configured. Enable it in the Firebase console.',
+            'auth/requires-recent-login': 'Please sign out and sign in again before changing your email.',
+            'auth/expired-action-code': 'The sign-in link has expired. Please request a new one.',
+            'auth/invalid-action-code': 'The sign-in link is invalid or has already been used.',
+            'auth/popup-closed-by-user': 'Sign-in cancelled. Please try again.',
+            'auth/popup-blocked': 'The sign-in popup was blocked. Please allow popups for this site.',
+            'auth/cancelled-popup-request': 'Only one sign-in popup can be open at a time.',
+            'auth/account-exists-with-different-credential': 'An account already exists with this email using a different sign-in method. Sign in with that method first, then connect additional accounts from your profile settings.',
+            'auth/credential-already-in-use': 'This account is already linked to another user.',
+            'auth/provider-already-linked': 'This sign-in method is already connected to your account.'
         };
         if (code && code.startsWith('auth/requests-from-referer-') && code.endsWith('-are-blocked')) {
             const blockedDomain = code
@@ -681,19 +939,26 @@ const CloudSync = (function () {
         init: init,
         isConfigured: isConfigured,
         isLoggedIn: function () { return currentUser !== null; },
+        getUsername: function () { return username; },
         saveSubmission: saveSubmission,
         saveTimerState: saveTimerState,
         deleteSubmission: deleteSubmission,
         deleteAllSubmissions: deleteAllSubmissions,
         saveSettings: saveSettings,
-        signIn: signIn,
-        signUp: signUp,
+        saveUsername: saveUsername,
+        saveEmail: saveEmail,
+        sendSignInLink: sendSignInLink,
+        signInWithGoogle: signInWithGoogle,
         signOut: signOut,
         openAuthModal: openAuthModal,
         closeAuthModal: closeAuthModal,
-        handleSignIn: handleSignIn,
-        handleSignUp: handleSignUp,
-        handleSignOut: handleSignOut
+        openEditProfileModal: openEditProfileModal,
+        closeEditProfileModal: closeEditProfileModal,
+        handleSendSignInLink: handleSendSignInLink,
+        handleSignInWithGoogle: handleSignInWithGoogle,
+        handleLinkWithGoogle: handleLinkWithGoogle,
+        handleSignOut: handleSignOut,
+        handleSaveProfile: handleSaveProfile
     };
 })();
 

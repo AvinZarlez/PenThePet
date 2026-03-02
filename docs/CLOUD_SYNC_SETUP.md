@@ -51,14 +51,63 @@ for normal use.
 > scanners, so this repository uses GitHub repository secrets instead
 > (see Step 8).
 
-### Step 3 — Enable Email/Password Authentication
+### Step 3 — Enable Authentication Sign-In Methods
+
+#### 3a — Email Link (Passwordless)
 
 1. In the Firebase console left sidebar, click **Build → Authentication**.
 2. Click **Get started**.
 3. Under the **Sign-in method** tab, click **Email/Password**.
 4. Toggle **Enable** to on.
-5. Leave "Email link (passwordless sign-in)" disabled.
+5. Toggle **Email link (passwordless sign-in)** to on. This allows Firebase
+   to send sign-in link emails and email-change verification emails.
 6. Click **Save**.
+
+#### 3b — Google Sign-In
+
+1. Under the **Sign-in method** tab, click **Google**.
+2. Toggle **Enable** to on.
+3. Select a **Project support email** from the dropdown (required by Google).
+4. Click **Save**.
+
+When you enable Google Sign-In, Firebase automatically creates an **OAuth 2.0
+Client ID** in the Google Cloud Console. This Client ID has an **Authorized
+JavaScript origins** list, and the Google popup will be blocked unless every
+domain the app is served from is in that list.
+
+1. Go to the
+   [Google Cloud Console → Credentials](https://console.cloud.google.com/apis/credentials).
+2. Under **OAuth 2.0 Client IDs**, click the entry that Firebase created
+   (it is typically named **Web client (auto created by Google Service)**).
+3. Under **Authorized JavaScript origins**, add every domain the app is served
+   from. Examples:
+   - **GitHub Pages (default domain):**
+
+     ```text
+     https://YOUR_USERNAME.github.io
+     ```
+
+   - **Custom domain** (e.g. `www.your-domain.com`):
+
+     ```text
+     https://www.your-domain.com
+     ```
+
+   - **Local development:**
+
+     ```text
+     http://localhost:8080
+     ```
+
+   Click **+ Add URI** for each domain. Origins do not use wildcards — list
+   each domain exactly, without a trailing slash or path.
+
+4. Click **Save**.
+
+> **Note:** This OAuth Client ID is separate from the API key you restrict in
+> Step 6. Both must be configured. If you add a domain to the API key
+> referrers (Step 6) but forget the OAuth Client ID here, the Google popup
+> will show a `redirect_uri_mismatch` or `origin_mismatch` error.
 
 ### Step 4 — Create a Firestore Database
 
@@ -102,7 +151,6 @@ fork running on a different domain):
 3. Click the **Browser key** that Firebase created automatically.
 4. Under **Application restrictions**, select **HTTP referrers (web sites)**.
 5. Add every domain the app is served from. Examples:
-
    - **GitHub Pages (default domain):**
 
      ```text
@@ -131,13 +179,19 @@ be on a different domain and Firebase will reject their requests.
 > **Important:** After adding or changing referrers, wait up to five minutes
 > for the changes to propagate before testing.
 >
-> ⚠️ **Two separate settings — both are required.**
-> Step 6 (Google Cloud Console) and Step 7 (Firebase console) are completely
-> separate services. **Adding a domain in Firebase Authentication does NOT
-> update Google Cloud Console, and vice versa.** If you only complete one of
-> these steps you will still see the "requests-from-referer-…-are-blocked"
-> error. Every domain the app is served from must be registered in **both**
-> places.
+> ⚠️ **Three separate settings — all are required.**
+> Step 3b (OAuth 2.0 Client ID authorized origins), Step 6 (Google Cloud
+> Console API key referrers), and Step 7 (Firebase Authentication authorized
+> domains) are completely separate settings in different places. **Updating
+> one does NOT update the others.** Every domain the app is served from must
+> be registered in **all three** places:
+>
+> - **OAuth 2.0 Client ID** (Step 3b) — controls which origins can open the
+>   Google sign-in popup.
+> - **API key HTTP referrers** (Step 6) — controls which sites can call
+>   Firebase APIs at all.
+> - **Firebase Authentication authorized domains** (Step 7) — controls which
+>   domains Firebase will redirect sign-in flows back to.
 
 ### Step 7 — Authorise Your Domain in Firebase Authentication
 
@@ -150,8 +204,8 @@ appear in this list or sign-in will be blocked.
 3. Under **Authorised domains**, click **Add domain**.
 4. Add every domain the app is served from, for example:
    - `YOUR_USERNAME.github.io`
-   - `YOUR_CUSTOM_DOMAIN` *(e.g. `www.your-domain.com`, if applicable)*
-   - `localhost` *(for local development)*
+   - `YOUR_CUSTOM_DOMAIN` _(e.g. `www.your-domain.com`, if applicable)_
+   - `localhost` _(for local development)_
 5. Click **Add** after each domain.
 
 > **Note:** `firebaseapp.com` and `localhost` are pre-authorised by default.
@@ -167,14 +221,14 @@ This keeps credentials out of the committed codebase.
 2. Click **New repository secret** and add each of the following secrets with
    the corresponding value from the `firebaseConfig` object you copied in Step 2:
 
-   | Repository Secret            | Example value                              |
-   |------------------------------|--------------------------------------------|
-   | `FIREBASE_API_KEY`           | `AIzaSy…`                                  |
-   | `FIREBASE_AUTH_DOMAIN`       | `your-project.firebaseapp.com`             |
-   | `FIREBASE_PROJECT_ID`        | `your-project`                             |
-   | `FIREBASE_STORAGE_BUCKET`    | `your-project.firebasestorage.app`         |
-   | `FIREBASE_MESSAGING_SENDER_ID` | `1234567890`                             |
-   | `FIREBASE_APP_ID`            | `1:1234567890:web:abcdef`                  |
+   | Repository Secret              | Example value                      |
+   | ------------------------------ | ---------------------------------- |
+   | `FIREBASE_API_KEY`             | `AIzaSy…`                          |
+   | `FIREBASE_AUTH_DOMAIN`         | `your-project.firebaseapp.com`     |
+   | `FIREBASE_PROJECT_ID`          | `your-project`                     |
+   | `FIREBASE_STORAGE_BUCKET`      | `your-project.firebasestorage.app` |
+   | `FIREBASE_MESSAGING_SENDER_ID` | `1234567890`                       |
+   | `FIREBASE_APP_ID`              | `1:1234567890:web:abcdef`          |
 
 3. Push any change to `main` (or trigger the **Deploy static content to Pages**
    workflow manually). The workflow will substitute the secrets into
@@ -188,12 +242,65 @@ credentials are stored in the repository.
 
 1. Open the app (your GitHub Pages URL).
 2. A **"☁️ Sign In to Sync"** button should appear below the menu button.
-3. Click it, enter your email and a password (min 6 characters), then
-   click **Create Account**.
-4. After signing in, you should see your email and a **☁️ Synced** badge.
+3. Click it. The sign-in modal shows two options:
+   - **Sign in with Google** — opens a Google OAuth popup; sign in with any
+     Google account.
+   - **Email link** — enter your email and click **Send Sign-In Link**;
+     Firebase emails a one-time magic link; clicking it signs you in
+     automatically — no password required.
+4. After signing in, you should see your email (or username) and a **☁️ Synced** badge.
 5. Submit a puzzle — it should upload to Firestore automatically.
 6. Open the same URL in a different browser or device, sign in with the
    same account, and verify that the submission appears.
+
+## Sign-In Methods
+
+### Email Link (Magic Links)
+
+Once **Email link (passwordless sign-in)** is enabled in Step 3a, users can
+sign in without a password:
+
+1. Click **"☁️ Sign In to Sync"** in the app.
+2. Enter your email and click **Send Sign-In Link**.
+3. Check your inbox for an email from Firebase — click the link inside.
+4. The app opens and you are signed in automatically.
+
+| Step                 | What happens                                                                                                     |
+| -------------------- | ---------------------------------------------------------------------------------------------------------------- |
+| User requests a link | `sendSignInLinkToEmail()` is called; Firebase emails a one-time magic link; the email is saved in `localStorage` |
+| User clicks the link | Browser opens the app URL with a sign-in token in the query string                                               |
+| App loads            | `init()` detects the token, reads the saved email, calls `signInWithEmailLink()`, then cleans the URL            |
+| Different device     | If the link is opened on a different device, the app prompts for the email before completing sign-in             |
+
+### Google Sign-In
+
+Users click **Sign in with Google** in the auth modal. Firebase opens a
+Google OAuth popup, the user selects their Google account, and they are
+signed in. Requires Step 3b to be enabled.
+
+### Linking Multiple Sign-In Methods
+
+A single Firebase account (and thus a single set of puzzle data) can be
+signed in to using multiple methods. For example, a user can sign in via
+email link AND Google — both will map to the same Firebase UID and the
+same Firestore data.
+
+To connect additional sign-in methods to an existing account:
+
+1. Sign in with your existing method.
+2. Go to **Options → ☁️ Account → ✏️ Edit Username / Email**.
+3. Under **Connected accounts**, click **Connect** next to Google.
+4. Complete the OAuth flow.
+
+Once connected, the user can sign in with either method and always access
+the same data.
+
+> **What if I try to sign in with Google but I already have an email link
+> account with the same email?**
+> Firebase's default "one account per email address" setting will return an
+> error: _"An account already exists with this email using a different
+> sign-in method."_ Sign in with your email link first, then connect Google
+> from your profile settings.
 
 ## How Data Is Stored
 
@@ -220,30 +327,30 @@ users/{userId}/submissions/settings
 
 ## How Sync Works
 
-| Event | What happens |
-|---|---|
-| **Sign in** | Cloud submissions are downloaded and merged into local cookies (cloud wins on conflict). Cloud settings overwrite local settings. Cloud timer states are merged by taking the highest elapsed time. Local-only data is then uploaded. |
-| **Submit a puzzle** | Saved to cookie AND uploaded to Firestore immediately. |
-| **Timer auto-save** | Elapsed seconds saved to cookie AND Firestore every 30 s and on every pause (including tab hide / window close). |
-| **Change pet or hint mode** | Saved to cookie AND uploaded to Firestore immediately. |
-| **Realtime update** | Changes from other signed-in devices are pushed to cookies automatically. |
-| **Sign out** | Realtime listener stops. Local cookies remain untouched. |
+| Event                       | What happens                                                                                                                                                                                                                          |
+| --------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Sign in**                 | Cloud submissions are downloaded and merged into local cookies (cloud wins on conflict). Cloud settings overwrite local settings. Cloud timer states are merged by taking the highest elapsed time. Local-only data is then uploaded. |
+| **Submit a puzzle**         | Saved to cookie AND uploaded to Firestore immediately.                                                                                                                                                                                |
+| **Timer auto-save**         | Elapsed seconds saved to cookie AND Firestore every 30 s and on every pause (including tab hide / window close).                                                                                                                      |
+| **Change pet or hint mode** | Saved to cookie AND uploaded to Firestore immediately.                                                                                                                                                                                |
+| **Realtime update**         | Changes from other signed-in devices are pushed to cookies automatically.                                                                                                                                                             |
+| **Sign out**                | Realtime listener stops. Local cookies remain untouched.                                                                                                                                                                              |
 
 ## Conflict Resolution
 
 When local cookie data and Firestore hold different values for the same key,
 the following rules apply:
 
-| Data type | Rule | Rationale |
-|---|---|---|
-| **Submissions** (`YYYY-MM-DD`) | **Cloud wins** | The cloud is the authoritative record of completed puzzles. If you solved a puzzle offline and then log in, the cloud version is kept. |
-| **Settings** (`selectedPet`, `hintMode`) | **Cloud wins** | The cloud holds the user's most recently saved preference from any signed-in device. |
-| **Timer** (`timer_YYYY-MM-DD`) | **Highest elapsed wins** | The timer should never go backwards. Whichever device has made the most progress keeps that value so no elapsed time is ever lost. |
+| Data type                                | Rule                     | Rationale                                                                                                                              |
+| ---------------------------------------- | ------------------------ | -------------------------------------------------------------------------------------------------------------------------------------- |
+| **Submissions** (`YYYY-MM-DD`)           | **Cloud wins**           | The cloud is the authoritative record of completed puzzles. If you solved a puzzle offline and then log in, the cloud version is kept. |
+| **Settings** (`selectedPet`, `hintMode`) | **Cloud wins**           | The cloud holds the user's most recently saved preference from any signed-in device.                                                   |
+| **Timer** (`timer_YYYY-MM-DD`)           | **Highest elapsed wins** | The timer should never go backwards. Whichever device has made the most progress keeps that value so no elapsed time is ever lost.     |
 
 > **Offline play then sign-in example:** You solve three puzzles while offline.
 > When you sign in, the cloud's submissions for those dates are applied first
-> (cloud wins on conflict).  Any of your offline puzzles for dates that are
-> **not** already in the cloud are then uploaded.  If the cloud already had a
+> (cloud wins on conflict). Any of your offline puzzles for dates that are
+> **not** already in the cloud are then uploaded. If the cloud already had a
 > submission for the same date, the cloud version is kept and your local offline
 > solve for that date is replaced with the cloud version.
 
@@ -258,12 +365,12 @@ stays in local cookies and the cloud sync UI is hidden.
 
 Firebase's Spark (free) plan is sufficient for normal use:
 
-| Resource | Free quota |
-|---|---|
-| Firestore reads | 50,000 / day |
-| Firestore writes | 20,000 / day |
-| Firestore storage | 1 GiB |
-| Authentication users | Unlimited |
+| Resource             | Free quota   |
+| -------------------- | ------------ |
+| Firestore reads      | 50,000 / day |
+| Firestore writes     | 20,000 / day |
+| Firestore storage    | 1 GiB        |
+| Authentication users | Unlimited    |
 
 A typical user saving a few submissions per day will use a handful of
 reads and writes — far below the free limits.
@@ -276,9 +383,31 @@ The `apiKey` was not injected at deploy time. Verify that all six
 `FIREBASE_*` repository secrets are set (Step 8) and that the
 **Deploy static content to Pages** workflow ran after you added them.
 
-### "Email/password sign-in is not enabled"
+### "This sign-in method is not enabled in the Firebase console"
 
-Return to Step 3 and enable the **Email/Password** provider.
+Return to Step 3 and enable the relevant provider:
+
+- **Email link** — toggle on both **Email/Password** and **Email link
+  (passwordless sign-in)** and click **Save** (Step 3a).
+- **Google** — toggle on **Google** and click **Save** (Step 3b).
+
+### "Sign-in cancelled" (popup closed immediately)
+
+The user closed the popup before completing sign-in. This is not an error.
+
+### "The sign-in popup was blocked"
+
+The browser blocked the OAuth popup. Ask the user to allow popups for the
+site and try again, or use the email link method instead.
+
+### "An account already exists with this email using a different sign-in method"
+
+The user tried to sign in with Google but a Firebase account with the
+same email already exists via email link (or vice versa). Fix:
+
+1. Sign in with the original method (e.g. email link).
+2. Go to **Options → ☁️ Account → ✏️ Edit Username / Email**.
+3. Connect Google under **Connected accounts**.
 
 ### "Firestore permission denied" or "⚠️ Sync error"
 
@@ -291,12 +420,14 @@ database.
 
 ### "This domain is not authorised to use Firebase" or "requests-from-referer-…-are-blocked"
 
-Two separate settings must both include the domain you are signing in from:
+Three separate settings must all include the domain you are signing in from:
 
-1. **Google Cloud Console API key referrers** (Step 6) — add the URL pattern
+1. **OAuth 2.0 Client ID authorized origins** (Step 3b) — add the bare
+   origin, e.g. `https://www.your-domain.com` and `http://localhost:8080`.
+2. **Google Cloud Console API key referrers** (Step 6) — add the URL pattern
    with a trailing slash and wildcard, e.g. `https://www.your-domain.com/*`
    and `http://localhost:8080/*`.
-2. **Firebase Authentication → Settings → Authorised Domains** (Step 7) —
+3. **Firebase Authentication → Settings → Authorised Domains** (Step 7) —
    add the bare domain, e.g. `www.your-domain.com` and `localhost`.
 
 > **Why the `/*` pattern matters:** Modern browsers send only the bare
@@ -309,14 +440,22 @@ Two separate settings must both include the domain you are signing in from:
 > trailing `/`) is sent, so the `/*` patterns work correctly. If you fork
 > this repository, do not remove that meta tag.
 
-After saving both settings, wait up to five minutes for changes to
+After saving all settings, wait up to five minutes for changes to
 propagate, then try again.
+
+### Google sign-in popup shows "Error 400: redirect_uri_mismatch" or "origin_mismatch"
+
+The OAuth 2.0 Client ID that Firebase created does not have your domain in
+its **Authorized JavaScript origins** list. Return to Step 3b and add the
+exact origin (e.g. `https://YOUR_USERNAME.github.io`) to the Client ID in
+the Google Cloud Console.
 
 ### Firebase works locally but not on GitHub Pages (or custom domain)
 
-Check both the API key referrers (Step 6) and the Firebase Authentication
-authorised domains (Step 7) — both must list every domain the app is served
-from, including your custom domain if you use one.
+Check all three settings — OAuth 2.0 Client ID origins (Step 3b), API key
+referrers (Step 6), and Firebase Authentication authorised domains (Step 7)
+— all must list every domain the app is served from, including your custom
+domain if you use one.
 
 ## Additional Resources
 
