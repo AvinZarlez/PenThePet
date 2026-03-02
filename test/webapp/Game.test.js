@@ -983,3 +983,96 @@ describe('Game — handleCellClick focus restoration', () => {
         expect(document.activeElement).toBe(homeCell);
     });
 });
+
+// ------------------------------------------------------------------
+// Shore overlay rendering
+// ------------------------------------------------------------------
+describe('Game — Shore Overlays', () => {
+    /**
+     * Build a 5×5 grid with home at (2,2).
+     * Callers fill in water tiles as needed before calling render().
+     */
+    function createGame5(tilesFn) {
+        setupDOM();
+        const g = new Game(5);
+        const tiles = Array.from({ length: 5 }, () => Array(5).fill('grass'));
+        tiles[2][2] = 'home';
+        if (tilesFn) tilesFn(tiles);
+        g.grid.loadMap(tiles);
+        g.grid.saveInitialState();
+        g.render();
+        return g;
+    }
+
+    function getCell(g, row, col) {
+        return g.gridElement.querySelector(`[data-row="${row}"][data-col="${col}"]`);
+    }
+
+    function shoreCount(g, row, col) {
+        return getCell(g, row, col).querySelectorAll('.shore-overlay').length;
+    }
+
+    test('isolated water tile surrounded by grass gets 4 shore overlays', () => {
+        // water at (1,1) — all 4 neighbours are grass
+        const g = createGame5(tiles => { tiles[1][1] = 'water'; });
+        expect(shoreCount(g, 1, 1)).toBe(4);
+    });
+
+    test('two horizontally adjacent water tiles each get 3 shore overlays', () => {
+        // water at (1,1) and (1,2) — they share a side
+        const g = createGame5(tiles => {
+            tiles[1][1] = 'water';
+            tiles[1][2] = 'water';
+        });
+        expect(shoreCount(g, 1, 1)).toBe(3);
+        expect(shoreCount(g, 1, 2)).toBe(3);
+    });
+
+    test('two vertically adjacent water tiles each get 3 shore overlays', () => {
+        const g = createGame5(tiles => {
+            tiles[1][1] = 'water';
+            tiles[2][1] = 'water';
+        });
+        expect(shoreCount(g, 1, 1)).toBe(3);
+        expect(shoreCount(g, 2, 1)).toBe(3);
+    });
+
+    test('2×2 water block — each tile gets 2 shore overlays', () => {
+        const g = createGame5(tiles => {
+            tiles[0][0] = 'water';
+            tiles[0][1] = 'water';
+            tiles[1][0] = 'water';
+            tiles[1][1] = 'water';
+        });
+        expect(shoreCount(g, 0, 0)).toBe(2);
+        expect(shoreCount(g, 0, 1)).toBe(2);
+        expect(shoreCount(g, 1, 0)).toBe(2);
+        expect(shoreCount(g, 1, 1)).toBe(2);
+    });
+
+    test('grass tiles have no shore overlays', () => {
+        const g = createGame5();
+        expect(shoreCount(g, 0, 0)).toBe(0);
+        expect(shoreCount(g, 2, 3)).toBe(0);
+    });
+
+    test('shore overlay images reference shore.svg', () => {
+        const g = createGame5(tiles => { tiles[1][1] = 'water'; });
+        const shores = getCell(g, 1, 1).querySelectorAll('.shore-overlay');
+        for (const shore of shores) {
+            expect(shore.src).toContain('shore.svg');
+        }
+    });
+
+    test('shore overlay rotation angles reflect the correct sides', () => {
+        // water at (2,1): left=(2,0)=grass→270°, right=(2,2)=home→90°,
+        // top=(1,1)=grass→0°, bottom=(3,1)=grass→180°
+        const g = createGame5(tiles => { tiles[2][1] = 'water'; });
+        const shores = Array.from(getCell(g, 2, 1).querySelectorAll('.shore-overlay'));
+        const angles = shores.map(s => s.style.transform);
+        expect(angles).toContain('rotate(0deg)');
+        expect(angles).toContain('rotate(90deg)');
+        expect(angles).toContain('rotate(180deg)');
+        expect(angles).toContain('rotate(270deg)');
+    });
+});

@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 50 50">
+  <defs>
+    <linearGradient id="shoreGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#c8a96e" stop-opacity="0.95"/>
+      <stop offset="60%" stop-color="#c8a96e" stop-opacity="0.35"/>
+      <stop offset="100%" stop-color="#c8a96e" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+  <!-- Sandy shore strip visible in the top ~16px, fading to transparent -->
+  <rect width="50" height="16" fill="url(#shoreGrad)"/>
+</svg>
