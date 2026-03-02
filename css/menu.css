@@ -377,15 +377,6 @@
     background: #f8f9fa;
 }
 
-.auth-oauth-apple {
-    background: #000;
-    color: #fff;
-}
-
-.auth-oauth-apple:hover:not(:disabled) {
-    background: #1a1a1a;
-}
-
 .auth-oauth-icon {
     font-size: 1.1em;
     font-weight: 700;

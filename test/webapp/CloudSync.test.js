@@ -82,7 +82,6 @@ describe('CloudSync', () => {
                     <div id="authLinkSuccess" style="display: none;"></div>
                     <button id="authSendLinkBtn"></button>
                     <button id="authGoogleBtn"></button>
-                    <button id="authAppleBtn"></button>
                 </div>
             `;
         });
@@ -107,12 +106,6 @@ describe('CloudSync', () => {
 
         test('handleSignInWithGoogle should show error when Firebase not initialised', async () => {
             await CloudSync.handleSignInWithGoogle();
-            const error = document.getElementById('authLinkError');
-            expect(error.style.display).toBe('block');
-        });
-
-        test('handleSignInWithApple should show error when Firebase not initialised', async () => {
-            await CloudSync.handleSignInWithApple();
             const error = document.getElementById('authLinkError');
             expect(error.style.display).toBe('block');
         });
@@ -148,12 +141,6 @@ describe('CloudSync', () => {
         });
     });
 
-    describe('signInWithApple()', () => {
-        test('should throw when Firebase is not initialised', async () => {
-            await expect(CloudSync.signInWithApple()).rejects.toThrow('Firebase not initialised');
-        });
-    });
-
     describe('edit profile modal helpers', () => {
         beforeEach(() => {
             document.body.innerHTML = `
@@ -164,7 +151,6 @@ describe('CloudSync', () => {
                     <div id="profileSuccess" style="display: none;"></div>
                     <button id="profileSaveBtn"></button>
                     <button id="linkGoogleBtn"></button>
-                    <button id="linkAppleBtn"></button>
                 </div>
             `;
         });
@@ -188,10 +174,6 @@ describe('CloudSync', () => {
 
         test('handleLinkWithGoogle should do nothing when not signed in', async () => {
             await expect(CloudSync.handleLinkWithGoogle()).resolves.toBeUndefined();
-        });
-
-        test('handleLinkWithApple should do nothing when not signed in', async () => {
-            await expect(CloudSync.handleLinkWithApple()).resolves.toBeUndefined();
         });
     });
 });

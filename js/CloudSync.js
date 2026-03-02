@@ -185,19 +185,6 @@ const CloudSync = (function () {
     }
 
     /**
-     * Sign in with an Apple account using a popup.
-     */
-    async function signInWithApple() {
-        if (!auth) throw new Error('Firebase not initialised');
-        try {
-            const provider = new firebase.auth.OAuthProvider('apple.com');
-            await auth.signInWithPopup(provider);
-        } catch (e) {
-            throw new Error(getAuthErrorMessage(e.code), { cause: e });
-        }
-    }
-
-    /**
      * Send a passwordless sign-in link to the given email address.
      * The user receives an email with a magic link; clicking it returns them
      * to the app where completeSignInWithEmailLink() finishes sign-in.
@@ -658,24 +645,9 @@ const CloudSync = (function () {
         }
     }
 
-    /** Called by the Sign in with Apple button in the auth modal. */
-    async function handleSignInWithApple() {
-        clearAuthLinkError();
-        const btn = document.getElementById('authAppleBtn');
-        if (btn) btn.disabled = true;
-        try {
-            await signInWithApple();
-            closeAuthModal();
-        } catch (e) {
-            showAuthLinkError(e.message);
-        } finally {
-            if (btn) btn.disabled = false;
-        }
-    }
-
     /**
      * Returns true if the current user has the given Firebase provider linked.
-     * @param {string} providerId - e.g. 'google.com' or 'apple.com'
+     * @param {string} providerId - e.g. 'google.com'
      * @returns {boolean}
      */
     function hasLinkedProvider(providerId) {
@@ -688,13 +660,12 @@ const CloudSync = (function () {
 
     /**
      * Update the connected-accounts buttons in the edit profile modal.
-     * Checks providerData of the current user and marks Google/Apple as
+     * Checks providerData of the current user and marks Google as
      * connected or disconnected.
      */
     function updateLinkedProviders() {
         if (!currentUser) return;
         updateProviderButton('linkGoogleBtn', hasLinkedProvider('google.com'));
-        updateProviderButton('linkAppleBtn', hasLinkedProvider('apple.com'));
     }
 
     /** Helper to update a single provider link/unlink button. */
@@ -725,29 +696,6 @@ const CloudSync = (function () {
                 const provider = new firebase.auth.GoogleAuthProvider();
                 await currentUser.linkWithPopup(provider);
                 showProfileSuccess('Google account connected.');
-            }
-            updateLinkedProviders();
-        } catch (e) {
-            showProfileError(getAuthErrorMessage(e.code));
-        }
-    }
-
-    /**
-     * Toggle Apple account link/unlink for the currently signed-in user.
-     * Called from the Connect/Disconnect Apple button in Edit Profile.
-     */
-    async function handleLinkWithApple() {
-        if (!auth || !currentUser) return;
-        clearProfileError();
-        clearProfileSuccess();
-        try {
-            if (hasLinkedProvider('apple.com')) {
-                await currentUser.unlink('apple.com');
-                showProfileSuccess('Apple account disconnected.');
-            } else {
-                const provider = new firebase.auth.OAuthProvider('apple.com');
-                await currentUser.linkWithPopup(provider);
-                showProfileSuccess('Apple account connected.');
             }
             updateLinkedProviders();
         } catch (e) {
@@ -869,7 +817,6 @@ const CloudSync = (function () {
         saveEmail: saveEmail,
         sendSignInLink: sendSignInLink,
         signInWithGoogle: signInWithGoogle,
-        signInWithApple: signInWithApple,
         signOut: signOut,
         openAuthModal: openAuthModal,
         closeAuthModal: closeAuthModal,
@@ -877,9 +824,7 @@ const CloudSync = (function () {
         closeEditProfileModal: closeEditProfileModal,
         handleSendSignInLink: handleSendSignInLink,
         handleSignInWithGoogle: handleSignInWithGoogle,
-        handleSignInWithApple: handleSignInWithApple,
         handleLinkWithGoogle: handleLinkWithGoogle,
-        handleLinkWithApple: handleLinkWithApple,
         handleSignOut: handleSignOut,
         handleSaveProfile: handleSaveProfile
     };

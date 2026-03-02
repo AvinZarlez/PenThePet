@@ -287,10 +287,6 @@
                         <span class="linked-account-name">Google</span>
                         <button id="linkGoogleBtn" class="auth-btn auth-btn-secondary auth-btn-sm" onclick="CloudSync.handleLinkWithGoogle()">Connect</button>
                     </div>
-                    <div class="linked-account-row">
-                        <span class="linked-account-name">Apple</span>
-                        <button id="linkAppleBtn" class="auth-btn auth-btn-secondary auth-btn-sm" onclick="CloudSync.handleLinkWithApple()">Connect</button>
-                    </div>
                 </div>
                 <div id="profileError" class="auth-error" style="display: none;"></div>
                 <div id="profileSuccess" class="profile-success" style="display: none;"></div>
@@ -311,9 +307,6 @@
             <div class="auth-form">
                 <button id="authGoogleBtn" class="auth-oauth-btn auth-oauth-google" onclick="CloudSync.handleSignInWithGoogle()">
                     <span class="auth-oauth-icon" aria-hidden="true">G</span> Sign in with Google
-                </button>
-                <button id="authAppleBtn" class="auth-oauth-btn auth-oauth-apple" onclick="CloudSync.handleSignInWithApple()">
-                    <span class="auth-oauth-icon" aria-hidden="true">🍎</span> Sign in with Apple
                 </button>
                 <div class="auth-divider"><span>or use email link</span></div>
                 <label for="authEmailLink">Email</label>
