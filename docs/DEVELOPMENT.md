@@ -587,6 +587,83 @@ if (DEBUG) {
 }
 ```
 
+### Debug Mode Access (Game Testers)
+
+Debug mode is restricted to a named list of **game testers**. It is always
+disabled for all other players and cannot be enabled through the UI or
+cookies.
+
+#### How it works
+
+1. At startup, `CloudSync.init()` fetches `game-testers.json` from the
+   repository root and builds the allowed Firebase UID list.
+2. When a user signs in, `CloudSync` checks their **Firebase User UID**
+   (a permanent, server-assigned identifier that cannot be changed) against
+   that list.
+3. Only matching users see the **Enable Debug Mode** toggle in Options.
+4. For all other users the cookie is silently cleared and the debug toolbar
+   at the bottom of the page stays hidden.
+5. The check runs again on sign-in and sign-out.
+
+#### Why Firebase UID instead of username?
+
+- UIDs are assigned by Firebase and **cannot be changed** by the user.
+- UIDs do not expose any personally-identifiable information (email, name).
+- A malicious user cannot impersonate a tester by renaming themselves.
+- UIDs are safe to commit to a public repository.
+
+#### game-testers.json
+
+Located at the **repository root**. The `testers` array holds the Firebase
+UIDs (case-sensitive) of everyone allowed to use debug mode:
+
+```json
+{
+    "testers": ["Firebase_UID_here"]
+}
+```
+
+This file is fetched by the browser at runtime and is publicly visible —
+do not put email addresses, display names, or other private data here.
+
+#### Finding your Firebase UID
+
+Your **Firebase User UID** is shown in the Firebase console:
+
+1. Go to the [Firebase console](https://console.firebase.google.com/) and
+   open your project.
+2. Navigate to **Authentication → Users**.
+3. Find your account in the list and copy the **User UID** column value
+   (a 28-character alphanumeric string, e.g. `aBcDeFgH1234567890ijklmnop`).
+
+Alternatively, the UID can be read from the browser console after signing in:
+
+```javascript
+// Open browser DevTools console while signed in to the app
+firebase.auth().currentUser.uid
+```
+
+#### Adding a new game tester
+
+1. Get the tester's Firebase UID from the Firebase console
+   (Authentication → Users → find their account → copy UID).
+2. Add their UID to `game-testers.json`:
+
+   ```json
+   {
+       "testers": ["ExistingTesterUID", "NewTesterUID"]
+   }
+   ```
+
+3. Commit and push the file. The change takes effect immediately after the
+   next page load because `game-testers.json` is fetched at runtime.
+
+#### Scope of "Reset All Data" (debug tool)
+
+The **Reset All Data** debug button deletes only the signed-in user's own
+data. In Firestore it operates on `users/{uid}/submissions/` where `{uid}`
+is the current user's UID. No other user's data is touched.
+
 ## CI/CD and Automation
 
 ### GitHub Actions Workflows

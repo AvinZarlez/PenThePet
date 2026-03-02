@@ -63,6 +63,7 @@ const CloudSync = (function () {
     let unsubscribeListener = null;
     let isSyncing = false;
     let username = null;
+    let gameTesters = [];
 
     const COLLECTION_NAME = 'submissions';
     const SETTINGS_DOC = 'settings';
@@ -83,6 +84,68 @@ const CloudSync = (function () {
     }
 
     // ----------------------------------------------------------------
+    // Game tester helpers
+    // ----------------------------------------------------------------
+
+    /**
+     * Load the list of game-tester Firebase UIDs from game-testers.json.
+     * Falls back to an empty list if the file cannot be read.
+     */
+    async function loadGameTesters() {
+        try {
+            const response = await fetch('game-testers.json');
+            if (response.ok) {
+                const data = await response.json();
+                gameTesters = Array.isArray(data.testers) ? data.testers : [];
+            }
+        } catch (e) {
+            console.warn('CloudSync: Could not load game-testers.json — debug mode disabled for all users.', e);
+        }
+    }
+
+    /**
+     * Returns true when the currently signed-in user's Firebase UID appears
+     * in the game-testers list.
+     * @returns {boolean}
+     */
+    function isGameTester() {
+        if (!currentUser) return false;
+        return gameTesters.includes(currentUser.uid);
+    }
+
+    /**
+     * Show or hide the debug mode option in the Options modal and enforce
+     * debug mode off for non-testers.
+     * Called whenever auth state or username changes.
+     */
+    function updateDebugOptionVisibility() {
+        const allowed = isGameTester();
+        const cookiesAvailable = typeof CookieUtils !== 'undefined';
+
+        const debugOptionItem = document.getElementById('debugModeOptionItem');
+        if (debugOptionItem) {
+            debugOptionItem.style.display = allowed ? '' : 'none';
+        }
+
+        // Force debug off for non-testers; restore saved preference for testers
+        const debugEnabled = allowed && cookiesAvailable &&
+            CookieUtils.getCookie('debugMode') === 'true';
+
+        if (!allowed && cookiesAvailable) {
+            CookieUtils.setCookie('debugMode', 'false', 365);
+        }
+
+        const debugSection = document.querySelector('.debug-section');
+        if (debugSection) {
+            debugSection.style.display = debugEnabled ? 'block' : 'none';
+        }
+        const debugModeCheckbox = document.getElementById('debugModeCheckbox');
+        if (debugModeCheckbox) {
+            debugModeCheckbox.checked = debugEnabled;
+        }
+    }
+
+    // ----------------------------------------------------------------
     // Initialisation
     // ----------------------------------------------------------------
 
@@ -90,7 +153,10 @@ const CloudSync = (function () {
      * Initialise Firebase and wire up the auth state listener.
      * Called once from main.js after the DOM is ready.
      */
-    function init() {
+    async function init() {
+        await loadGameTesters();
+        updateDebugOptionVisibility(); // hide debug option until tester status confirmed
+
         if (!isConfigured()) {
             return; // local-only mode
         }
@@ -202,6 +268,7 @@ const CloudSync = (function () {
         currentUser = user;
         updateAuthUI(user);
         updateOptionsAccountSection();
+        updateDebugOptionVisibility(); // enforce debug off when signed out
 
         if (user) {
             await syncFromCloud();
@@ -939,6 +1006,7 @@ const CloudSync = (function () {
         init: init,
         isConfigured: isConfigured,
         isLoggedIn: function () { return currentUser !== null; },
+        isGameTester: isGameTester,
         getUsername: function () { return username; },
         saveSubmission: saveSubmission,
         saveTimerState: saveTimerState,

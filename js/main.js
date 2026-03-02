@@ -183,9 +183,8 @@ async function initGame() {
     // eslint-disable-next-line no-undef
     menu = new Menu(game);
     
-    // Load debug mode setting and apply visibility
-    const debugMode = CookieUtils.getCookie('debugMode') === 'true';
-    menu.updateDebugToolsVisibility(debugMode);
+    // Debug tools are hidden by default; CloudSync will enable them for game testers after auth
+    menu.updateDebugToolsVisibility(false);
     
     // Set grid size input attributes from config
     const gridSizeInput = document.getElementById('gridSize');

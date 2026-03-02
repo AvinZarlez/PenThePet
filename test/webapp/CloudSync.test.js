@@ -186,4 +186,34 @@ describe('CloudSync', () => {
             await expect(CloudSync.handleLinkWithGoogle()).resolves.toBeUndefined();
         });
     });
+
+    describe('isGameTester()', () => {
+        test('should return false when not signed in', () => {
+            expect(CloudSync.isGameTester()).toBe(false);
+        });
+    });
+
+    describe('init() with tester list', () => {
+        test('should not throw when game-testers.json fetch fails', async () => {
+            global.fetch = jest.fn(() => Promise.reject(new Error('network error')));
+            await expect(CloudSync.init()).resolves.toBeUndefined();
+        });
+
+        test('should keep isGameTester false after fetch failure', async () => {
+            global.fetch = jest.fn(() => Promise.reject(new Error('network error')));
+            await CloudSync.init();
+            expect(CloudSync.isGameTester()).toBe(false);
+        });
+
+        test('should not throw when game-testers.json returns non-ok response', async () => {
+            global.fetch = jest.fn(() => Promise.resolve({ ok: false }));
+            await expect(CloudSync.init()).resolves.toBeUndefined();
+        });
+
+        test('should keep isGameTester false when testers file returns non-ok response', async () => {
+            global.fetch = jest.fn(() => Promise.resolve({ ok: false }));
+            await CloudSync.init();
+            expect(CloudSync.isGameTester()).toBe(false);
+        });
+    });
 });
