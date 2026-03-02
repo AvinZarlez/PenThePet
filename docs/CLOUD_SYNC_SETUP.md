@@ -45,9 +45,11 @@ for normal use.
 5. Firebase shows you a `firebaseConfig` object — copy the values.
 6. Click **Continue to console**.
 
-> **Note:** Firebase API keys are **not secret**. They identify your
-> project but all access is controlled by Authentication and Security Rules.
-> It is safe to commit `firebase-config.js` with your real values.
+> **Note:** Firebase API keys are **not secret** in a technical sense — they
+> identify your project but all access is controlled by Authentication and
+> Security Rules. However, committing them can trigger automated security
+> scanners, so this repository uses GitHub repository secrets instead
+> (see Step 8).
 
 ### Step 3 — Enable Email/Password Authentication
 
@@ -155,23 +157,32 @@ appear in this list or sign-in will be blocked.
 > **Note:** `firebaseapp.com` and `localhost` are pre-authorised by default.
 > You only need to add domains that are not already in the list.
 
-### Step 8 — Add Your Config to the Repository
+### Step 8 — Add Your Config as GitHub Secrets
 
-Open `js/firebase-config.js` in your fork and fill in the values from Step 2:
+Instead of editing `js/firebase-config.js` directly, add the Firebase values as
+**repository secrets** so that the deploy workflow injects them automatically.
+This keeps credentials out of the committed codebase.
 
-```js
-const FIREBASE_CONFIG = {
-    apiKey: 'AIzaSy...',
-    authDomain: 'your-project.firebaseapp.com',
-    projectId: 'your-project',
-    storageBucket: 'your-project.firebasestorage.app',
-    messagingSenderId: '1234567890',
-    appId: '1:1234567890:web:abcdef'
-};
-```
+1. In your fork on GitHub, go to **Settings → Secrets and variables → Actions**.
+2. Click **New repository secret** and add each of the following secrets with
+   the corresponding value from the `firebaseConfig` object you copied in Step 2:
 
-Commit and push. The app detects that `apiKey` is non-empty and
-automatically enables the cloud sync UI.
+   | Repository Secret            | Example value                              |
+   |------------------------------|--------------------------------------------|
+   | `FIREBASE_API_KEY`           | `AIzaSy…`                                  |
+   | `FIREBASE_AUTH_DOMAIN`       | `your-project.firebaseapp.com`             |
+   | `FIREBASE_PROJECT_ID`        | `your-project`                             |
+   | `FIREBASE_STORAGE_BUCKET`    | `your-project.firebasestorage.app`         |
+   | `FIREBASE_MESSAGING_SENDER_ID` | `1234567890`                             |
+   | `FIREBASE_APP_ID`            | `1:1234567890:web:abcdef`                  |
+
+3. Push any change to `main` (or trigger the **Deploy static content to Pages**
+   workflow manually). The workflow will substitute the secrets into
+   `js/firebase-config.js` at deploy time.
+
+The app detects that `apiKey` is non-empty and automatically enables the
+cloud sync UI. The committed file always contains empty strings, so no
+credentials are stored in the repository.
 
 ### Step 9 — Test the Setup
 
@@ -212,10 +223,10 @@ users/{userId}/submissions/settings
 
 ## Running Without Cloud Sync
 
-If you fork this repository and do **not** want cloud sync, simply leave
-`js/firebase-config.js` unchanged (with an empty `apiKey`). The app will
-behave exactly as before — all data stays in local cookies and the cloud
-sync UI is hidden.
+If you fork this repository and do **not** want cloud sync, simply skip Step 8
+(do not add the secrets). The `apiKey` in `js/firebase-config.js` will remain
+empty after deployment and the app will behave exactly as before — all data
+stays in local cookies and the cloud sync UI is hidden.
 
 ## Firebase Free Tier Limits
 
@@ -235,7 +246,9 @@ reads and writes — far below the free limits.
 
 ### "☁️ Sign In to Sync" button does not appear
 
-The `apiKey` in `js/firebase-config.js` is empty. Complete Step 8.
+The `apiKey` was not injected at deploy time. Verify that all six
+`FIREBASE_*` repository secrets are set (Step 8) and that the
+**Deploy static content to Pages** workflow ran after you added them.
 
 ### "Email/password sign-in is not enabled"
 
