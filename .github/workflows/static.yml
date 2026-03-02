@@ -53,7 +53,7 @@ jobs:
           with open('js/firebase-config.js') as f:
               content = f.read()
           for js_key, env_var in fields:
-              value = os.environ.get(env_var, '')
+              value = os.environ.get(env_var, '').strip()
               if value:
                   if "'" in value or '\\' in value:
                       print(f'Error: {env_var} contains invalid characters', file=sys.stderr)
