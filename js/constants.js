@@ -58,6 +58,33 @@ const CONSTANTS = {
     // UI timings
     SHARE_BUTTON_FLASH_MS: 2000,   // How long the "Copied!" label shows on the share button (ms)
 
+    // Timezone
+    DEFAULT_TIMEZONE: 'America/Los_Angeles',    // Default timezone (Pacific / California)
+
+    // Timezone options for the user to select from
+    TIMEZONE_OPTIONS: [
+        { value: 'Pacific/Honolulu',      label: 'Hawaii (HST, UTC-10)'              },
+        { value: 'America/Anchorage',     label: 'Alaska (AKST, UTC-9)'              },
+        { value: 'America/Los_Angeles',   label: 'Pacific (PST/PDT, UTC-8/-7)'       },
+        { value: 'America/Denver',        label: 'Mountain (MST/MDT, UTC-7/-6)'      },
+        { value: 'America/Chicago',       label: 'Central (CST/CDT, UTC-6/-5)'       },
+        { value: 'America/New_York',      label: 'Eastern (EST/EDT, UTC-5/-4)'       },
+        { value: 'America/Sao_Paulo',     label: 'Brasilia (BRT, UTC-3)'             },
+        { value: 'Europe/London',         label: 'London (GMT/BST, UTC+0/+1)'        },
+        { value: 'Europe/Paris',          label: 'Central Europe (CET/CEST, UTC+1/+2)' },
+        { value: 'Europe/Helsinki',       label: 'Eastern Europe (EET/EEST, UTC+2/+3)' },
+        { value: 'Europe/Moscow',         label: 'Moscow (MSK, UTC+3)'               },
+        { value: 'Asia/Dubai',            label: 'Gulf (GST, UTC+4)'                 },
+        { value: 'Asia/Karachi',          label: 'Pakistan (PKT, UTC+5)'             },
+        { value: 'Asia/Kolkata',          label: 'India (IST, UTC+5:30)'             },
+        { value: 'Asia/Dhaka',            label: 'Bangladesh (BST, UTC+6)'           },
+        { value: 'Asia/Bangkok',          label: 'Indochina (ICT, UTC+7)'            },
+        { value: 'Asia/Shanghai',         label: 'China (CST, UTC+8)'                },
+        { value: 'Asia/Tokyo',            label: 'Japan (JST, UTC+9)'                },
+        { value: 'Australia/Sydney',      label: 'Australia Eastern (AEST, UTC+10)'  },
+        { value: 'Pacific/Auckland',      label: 'New Zealand (NZST, UTC+12)'        },
+    ],
+
     // Animal options for pet selection
     ANIMAL_OPTIONS: [
         { emoji: '🐶', name: 'Dog' },
