@@ -394,7 +394,7 @@ reads and writes — far below the free limits.
 
 ### "☁️ Sign In to Sync" button does not appear
 
-The `apiKey` was not injected at deploy time. Verify that all six
+The `apiKey` was not injected at deploy time. Verify that all four
 `FIREBASE_*` repository secrets are set (Step 8) and that the
 **Deploy static content to Pages** workflow ran after you added them.
 
