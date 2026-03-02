@@ -22,6 +22,7 @@ function setupDOM() {
         </div>
         <div class="map-info">
             <span id="mapDay">42</span>
+            <span id="mapName">Squirrel Scramble</span>
         </div>
         <div class="grid-container">
             <div id="grid" class="grid"></div>
@@ -668,6 +669,23 @@ describe('buildShareText()', () => {
     test('contains the day number from the DOM', () => {
         const text = game.buildShareText();
         expect(text).toContain('Day 42');
+    });
+
+    test('contains the level name from the DOM', () => {
+        const text = game.buildShareText();
+        expect(text).toContain('Squirrel Scramble');
+    });
+
+    test('day line format is Day X - NAME - Date when name is present', () => {
+        const text = game.buildShareText();
+        expect(text).toContain('Day 42 - Squirrel Scramble -');
+    });
+
+    test('day line format is Day X - Date when name is absent', () => {
+        document.getElementById('mapName').textContent = '';
+        const text = game.buildShareText();
+        expect(text).toContain('Day 42 -');
+        expect(text).not.toContain('Day 42 -  -');
     });
 
     test('contains the score percentage', () => {

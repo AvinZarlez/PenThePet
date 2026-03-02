@@ -774,13 +774,19 @@ class Game {
         const date = this.currentDate || '';
         const displayDate = date ? DateUtils.formatDate(date) : '';
 
-        // Day number from the DOM (set by updateMapInfo)
+        // Day number and level name from the DOM (set by updateMapInfo)
         const dayNumEl = document.getElementById('mapDay');
         const dayNum = dayNumEl ? dayNumEl.textContent : '?';
+        const mapNameEl = document.getElementById('mapName');
+        const mapName = mapNameEl ? mapNameEl.textContent : '';
+
+        const dateLine = mapName
+            ? `Day ${dayNum} - ${mapName} - ${displayDate}`
+            : `Day ${dayNum} - ${displayDate}`;
 
         return [
             `Pen The Pet ${this.petEmoji}`,
-            `Day ${dayNum} - ${displayDate}`,
+            dateLine,
             `Score: ${pct}% (${score}/${goal}) Time: ${timeStr}`,
         ].join('\n');
     }
