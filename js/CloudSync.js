@@ -88,7 +88,7 @@ const CloudSync = (function () {
     // ----------------------------------------------------------------
 
     /**
-     * Load the list of game-tester usernames from game-testers.json.
+     * Load the list of game-tester Firebase UIDs from game-testers.json.
      * Falls back to an empty list if the file cannot be read.
      */
     async function loadGameTesters() {
@@ -104,13 +104,13 @@ const CloudSync = (function () {
     }
 
     /**
-     * Returns true when the currently signed-in user's username appears in
-     * the game-testers list.
+     * Returns true when the currently signed-in user's Firebase UID appears
+     * in the game-testers list.
      * @returns {boolean}
      */
     function isGameTester() {
-        if (!currentUser || !username) return false;
-        return gameTesters.includes(username);
+        if (!currentUser) return false;
+        return gameTesters.includes(currentUser.uid);
     }
 
     /**
@@ -594,7 +594,6 @@ const CloudSync = (function () {
             username = settings.username;
             updateAuthUI(currentUser);
             updateOptionsAccountSection();
-            updateDebugOptionVisibility(); // update tester access when username changes
         }
     }
 

@@ -596,57 +596,73 @@ cookies.
 #### How it works
 
 1. At startup, `CloudSync.init()` fetches `game-testers.json` from the
-   repository root and builds the allowed-username list.
-2. When a user signs in, `CloudSync` checks their saved **app username**
-   (set via Options → Edit Profile) against that list.
+   repository root and builds the allowed Firebase UID list.
+2. When a user signs in, `CloudSync` checks their **Firebase User UID**
+   (a permanent, server-assigned identifier that cannot be changed) against
+   that list.
 3. Only matching users see the **Enable Debug Mode** toggle in Options.
 4. For all other users the cookie is silently cleared and the debug toolbar
    at the bottom of the page stays hidden.
-5. The check runs again whenever the username changes or the user signs out.
+5. The check runs again on sign-in and sign-out.
+
+#### Why Firebase UID instead of username?
+
+- UIDs are assigned by Firebase and **cannot be changed** by the user.
+- UIDs do not expose any personally-identifiable information (email, name).
+- A malicious user cannot impersonate a tester by renaming themselves.
+- UIDs are safe to commit to a public repository.
 
 #### game-testers.json
 
-Located at the **repository root**. The `testers` array holds the app
-usernames (case-sensitive) of everyone allowed to use debug mode:
+Located at the **repository root**. The `testers` array holds the Firebase
+UIDs (case-sensitive) of everyone allowed to use debug mode:
 
 ```json
 {
-    "testers": ["YourAppUsername"]
+    "testers": ["Firebase_UID_here"]
 }
 ```
 
 This file is fetched by the browser at runtime and is publicly visible —
-do not put email addresses or other private data here.
+do not put email addresses, display names, or other private data here.
 
-#### Finding your app username
+#### Finding your Firebase UID
 
-Your **app username** is the custom display name you set inside the game:
+Your **Firebase User UID** is shown in the Firebase console:
 
-1. Open the game and sign in to your cloud account.
-2. Open Options (☰ → Options).
-3. Under **☁️ Account**, click **✏️ Edit Username / Email**.
-4. Your current username is shown in the Username field.
+1. Go to the [Firebase console](https://console.firebase.google.com/) and
+   open your project.
+2. Navigate to **Authentication → Users**.
+3. Find your account in the list and copy the **User UID** column value
+   (a 28-character alphanumeric string, e.g. `aBcDeFgH1234567890ijklmnop`).
 
-If you have not set a username, set one first before adding yourself to the
-testers list.
+Alternatively, the UID can be read from the browser console after signing in:
+
+```javascript
+// Open browser DevTools console while signed in to the app
+firebase.auth().currentUser.uid
+```
 
 #### Adding a new game tester
 
-1. Ask the tester to sign into the game and check their username
-   (Options → Edit Profile → Username field).
-2. Add their username to `game-testers.json`:
+1. Get the tester's Firebase UID from the Firebase console
+   (Authentication → Users → find their account → copy UID).
+2. Add their UID to `game-testers.json`:
 
    ```json
    {
-       "testers": ["ExistingTester", "NewTester"]
+       "testers": ["ExistingTesterUID", "NewTesterUID"]
    }
    ```
 
 3. Commit and push the file. The change takes effect immediately after the
    next page load because `game-testers.json` is fetched at runtime.
 
-> **Note:** Usernames can be changed in the app. If a tester renames
-> themselves you must update `game-testers.json` to match.
+#### Scope of "Reset All Data" (debug tool)
+
+The **Reset All Data** debug button deletes only the signed-in user's own
+data. In Firestore it operates on `users/{uid}/submissions/` where `{uid}`
+is the current user's UID. No other user's data is touched.
 
 ## CI/CD and Automation
 
