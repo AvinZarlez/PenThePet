@@ -1076,3 +1076,135 @@ describe('Game — Shore Overlays', () => {
         expect(angles).toContain('rotate(270deg)');
     });
 });
+
+// ------------------------------------------------------------------
+// Score modifier popups (_showScorePopup)
+// ------------------------------------------------------------------
+describe('Game — Score Modifier Popups', () => {
+    let game;
+
+    beforeEach(() => {
+        setupDOM();
+        jest.useFakeTimers();
+        game = createGame();
+    });
+
+    afterEach(() => {
+        jest.useRealTimers();
+    });
+
+    function makeCell() {
+        const cell = document.createElement('div');
+        cell.className = 'cell';
+        document.body.appendChild(cell);
+        return cell;
+    }
+
+    test('appends a .score-popup element to the cell', () => {
+        const cell = makeCell();
+        game._showScorePopup(cell, 3);
+        const popup = cell.querySelector('.score-popup');
+        expect(popup).not.toBeNull();
+    });
+
+    test('displays "+3" text for a positive score', () => {
+        const cell = makeCell();
+        game._showScorePopup(cell, 3);
+        expect(cell.querySelector('.score-popup').textContent).toBe('+3');
+    });
+
+    test('displays "-3" text for a negative score', () => {
+        const cell = makeCell();
+        game._showScorePopup(cell, -3);
+        expect(cell.querySelector('.score-popup').textContent).toBe('-3');
+    });
+
+    test('adds "positive" class for a positive score', () => {
+        const cell = makeCell();
+        game._showScorePopup(cell, 3);
+        expect(cell.querySelector('.score-popup').classList.contains('positive')).toBe(true);
+    });
+
+    test('adds "negative" class for a negative score', () => {
+        const cell = makeCell();
+        game._showScorePopup(cell, -3);
+        expect(cell.querySelector('.score-popup').classList.contains('negative')).toBe(true);
+    });
+
+    test('popup has aria-hidden set to "true"', () => {
+        const cell = makeCell();
+        game._showScorePopup(cell, 3);
+        expect(cell.querySelector('.score-popup').getAttribute('aria-hidden')).toBe('true');
+    });
+
+    test('removes the popup after SCORE_POPUP_DURATION_MS', () => {
+        const cell = makeCell();
+        game._showScorePopup(cell, 3);
+        expect(cell.querySelector('.score-popup')).not.toBeNull();
+        jest.advanceTimersByTime(CONSTANTS.SCORE_POPUP_DURATION_MS);
+        expect(cell.querySelector('.score-popup')).toBeNull();
+    });
+
+    test('popup is not removed before SCORE_POPUP_DURATION_MS has elapsed', () => {
+        const cell = makeCell();
+        game._showScorePopup(cell, 3);
+        jest.advanceTimersByTime(CONSTANTS.SCORE_POPUP_DURATION_MS - 1);
+        expect(cell.querySelector('.score-popup')).not.toBeNull();
+    });
+
+    test('_animatePennedArea shows popup for star tile (score 3)', () => {
+        setupDOM();
+        const g = new Game(5);
+        const tiles = Array.from({ length: 5 }, () => Array(5).fill('grass'));
+        tiles[2][2] = 'home';
+        tiles[2][3] = 'star';
+        // Surround with walls to pen the pet
+        tiles[0][0] = 'wall'; tiles[0][1] = 'wall'; tiles[0][2] = 'wall'; tiles[0][3] = 'wall'; tiles[0][4] = 'wall';
+        tiles[1][0] = 'wall';                                                                     tiles[1][4] = 'wall';
+        tiles[2][0] = 'wall';                                                                     tiles[2][4] = 'wall';
+        tiles[3][0] = 'wall';                                                                     tiles[3][4] = 'wall';
+        tiles[4][0] = 'wall'; tiles[4][1] = 'wall'; tiles[4][2] = 'wall'; tiles[4][3] = 'wall'; tiles[4][4] = 'wall';
+        g.grid.loadMap(tiles);
+        g.grid.saveInitialState();
+        g.render();
+
+        // Advance enough time to trigger all wave callbacks but not the popup removal
+        jest.advanceTimersByTime(CONSTANTS.PENNED_ANIMATION_DELAY_MS * 10);
+
+        const starCell = g.gridElement.querySelector('[data-row="2"][data-col="3"]');
+        expect(starCell).not.toBeNull();
+        expect(starCell.classList.contains('penned')).toBe(true);
+        const popup = starCell.querySelector('.score-popup');
+        expect(popup).not.toBeNull();
+        expect(popup.textContent).toBe('+3');
+        expect(popup.classList.contains('positive')).toBe(true);
+    });
+
+    test('_animatePennedArea shows popup for bee tile (score -3)', () => {
+        setupDOM();
+        const g = new Game(5);
+        const tiles = Array.from({ length: 5 }, () => Array(5).fill('grass'));
+        tiles[2][2] = 'home';
+        tiles[2][1] = 'bee';
+        // Surround with walls to pen the pet
+        tiles[0][0] = 'wall'; tiles[0][1] = 'wall'; tiles[0][2] = 'wall'; tiles[0][3] = 'wall'; tiles[0][4] = 'wall';
+        tiles[1][0] = 'wall';                                                                     tiles[1][4] = 'wall';
+        tiles[2][0] = 'wall';                                                                     tiles[2][4] = 'wall';
+        tiles[3][0] = 'wall';                                                                     tiles[3][4] = 'wall';
+        tiles[4][0] = 'wall'; tiles[4][1] = 'wall'; tiles[4][2] = 'wall'; tiles[4][3] = 'wall'; tiles[4][4] = 'wall';
+        g.grid.loadMap(tiles);
+        g.grid.saveInitialState();
+        g.render();
+
+        // Advance enough time to trigger all wave callbacks but not the popup removal
+        jest.advanceTimersByTime(CONSTANTS.PENNED_ANIMATION_DELAY_MS * 10);
+
+        const beeCell = g.gridElement.querySelector('[data-row="2"][data-col="1"]');
+        expect(beeCell).not.toBeNull();
+        expect(beeCell.classList.contains('penned')).toBe(true);
+        const popup = beeCell.querySelector('.score-popup');
+        expect(popup).not.toBeNull();
+        expect(popup.textContent).toBe('-3');
+        expect(popup.classList.contains('negative')).toBe(true);
+    });
+});

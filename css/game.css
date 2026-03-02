@@ -505,6 +505,40 @@
     animation: tileFloat 8s ease-in-out infinite;
 }
 
+/* Score modifier popup — fades in, floats up, fades out when a tile becomes penned */
+@keyframes scorePopupFloat {
+    0%   { opacity: 0;   transform: translateX(-50%) translateY(0); }
+    15%  { opacity: 1;   transform: translateX(-50%) translateY(-30%); }
+    75%  { opacity: 1;   transform: translateX(-50%) translateY(-160%); }
+    100% { opacity: 0;   transform: translateX(-50%) translateY(-220%); }
+}
+
+.cell .score-popup {
+    position: absolute;
+    bottom: 50%;
+    left: 50%;
+    transform: translateX(-50%);
+    font-weight: bold;
+    font-size: clamp(0.75em, calc(var(--cell-size, 50px) / 22), 1.3em);
+    pointer-events: none;
+    z-index: 20;
+    white-space: nowrap;
+    animation: scorePopupFloat var(--score-popup-duration, 1.8s) ease-out forwards;
+    text-shadow:
+        -1px -1px 0 #000,
+         1px -1px 0 #000,
+        -1px  1px 0 #000,
+         1px  1px 0 #000;
+}
+
+.cell .score-popup.positive {
+    color: #6ecf6e;
+}
+
+.cell .score-popup.negative {
+    color: #e8665a;
+}
+
 /* Emoji/text tile overlays */
 .cell .tile-overlay-emoji {
     position: absolute;
