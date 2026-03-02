@@ -752,7 +752,7 @@ const CloudSync = (function () {
                     collRef.doc(docId).set(JSON.parse(cookieValue)).catch(function (e) {
                         console.error('CloudSync: Failed to push local win to Firestore:', e);
                     });
-                } catch (e) { /* malformed cookie — defer to next full sync */ }
+                } catch { /* malformed cookie — defer to next full sync */ }
             });
 
             // Notify the app whenever submissions or timers changed.
