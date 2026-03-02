@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 50 50">
+  <!-- Dark green silhouette outline for star, scaled ~1.1x from center (25,25) -->
+  <!-- Different shade of green to stand out on grass (#5cb85c) -->
+  <polygon points="25,1.9 31.1,17.9 48.1,17.9 34.4,28.9 39.3,45.4 25,34.9 10.7,45.4 15.7,28.9 1.9,17.9 19.0,17.9"
+           fill="#1a5c00" stroke-linejoin="round"/>
+</svg>

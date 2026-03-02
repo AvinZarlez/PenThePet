@@ -202,14 +202,14 @@ describe('CONSTANTS', () => {
 
         test('enclosedAssets should override assets when tile is enclosed', () => {
             expect(getTileAssets('grass', true)).toEqual(['penned.svg']);
-            expect(getTileAssets('star', true)).toEqual(['penned.svg', 'star.svg']);
+            expect(getTileAssets('star', true)).toEqual(['penned.svg', 'star-outline.svg', 'star.svg']);
             expect(getTileAssets('home', true)).toEqual(['penned.svg', 'home.svg']);
         });
 
         test('getTileAssets returns normal assets when not enclosed', () => {
             expect(getTileAssets('grass', false)).toEqual(['grass.svg']);
             expect(getTileAssets('home', false)).toEqual(['grass.svg', 'home.svg']);
-            expect(getTileAssets('star', false)).toEqual(['grass.svg', 'star.svg']);
+            expect(getTileAssets('star', false)).toEqual(['grass.svg', 'star-outline.svg', 'star.svg']);
         });
 
         test('getTileAssets falls back to grass.svg for unknown tile', () => {
@@ -238,7 +238,8 @@ describe('CONSTANTS', () => {
 
         test('star tile has grass base asset', () => {
             expect(TILE_DATA.star.assets[0]).toBe('grass.svg');
-            expect(TILE_DATA.star.assets[1]).toBe('star.svg');
+            expect(TILE_DATA.star.assets[1]).toBe('star-outline.svg');
+            expect(TILE_DATA.star.assets[2]).toBe('star.svg');
         });
     });
 

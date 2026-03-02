@@ -106,8 +106,8 @@ const TILE_DATA = {
         numericId: 3,
         cssClass: 'grass',
         description: 'Star tiles act like grass but score 3 points instead of 1 when inside your penned area. Walls cannot be placed on stars.',
-        assets: ['grass.svg', 'star.svg'],
-        enclosedAssets: ['penned.svg', 'star.svg'],
+        assets: ['grass.svg', 'star-outline.svg', 'star.svg'],
+        enclosedAssets: ['penned.svg', 'star-outline.svg', 'star.svg'],
         ariaLabel: (row, col) => `Star tile at row ${row + 1}, column ${col + 1}. Worth 3 points. Cannot place a wall here.`,
     },
     bee: {
@@ -120,8 +120,8 @@ const TILE_DATA = {
         numericId: 4,
         cssClass: 'grass',
         description: 'Bee tiles act like grass but subtract 3 points when inside your penned area. Try to keep bees outside! Walls cannot be placed on bees.',
-        assets: ['grass.svg', 'bee.svg'],
-        enclosedAssets: ['penned.svg', 'bee.svg'],
+        assets: ['grass.svg', 'bee-outline.svg', 'bee.svg'],
+        enclosedAssets: ['penned.svg', 'bee-outline.svg', 'bee.svg'],
         ariaLabel: (row, col) => `Bee tile at row ${row + 1}, column ${col + 1}. Costs 3 points. Cannot place a wall here.`,
     },
 };
