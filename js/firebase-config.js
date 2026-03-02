@@ -23,7 +23,13 @@ const FIREBASE_CONFIG = {
     projectId: '',
     storageBucket: '',
     messagingSenderId: '',
-    appId: ''
+    appId: '',
+    // ECDSA P-256 key pair for score signatures.
+    // Values are injected at build time from GitHub secrets (SIGNATURE_PUBLIC_KEY,
+    // SIGNATURE_PRIVATE_KEY) and must never be committed to the repository.
+    // Leave empty to fall back to a deterministic checksum (no anti-forgery).
+    signaturePublicKey: '',
+    signaturePrivateKey: ''
 };
 
 // Export for use in other modules

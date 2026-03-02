@@ -195,3 +195,53 @@
         width: 100%;
     }
 }
+
+/* ========== Verify Score Modal ========== */
+.verify-input {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 10px;
+    font-size: 0.9em;
+    font-family: monospace;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    resize: vertical;
+    margin-bottom: 10px;
+}
+
+.verify-submit-btn {
+    padding: 10px 24px;
+    font-size: 1em;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: opacity 0.2s ease;
+}
+
+.verify-submit-btn:hover {
+    opacity: 0.9;
+}
+
+.verify-result {
+    margin-top: 14px;
+    padding: 12px;
+    border-radius: 8px;
+    font-size: 0.95em;
+    line-height: 1.5;
+    min-height: 20px;
+}
+
+.verify-result-valid {
+    background: #e8f5e9;
+    border: 1px solid #4CAF50;
+    color: #2e7d32;
+}
+
+.verify-result-error {
+    background: #ffebee;
+    border: 1px solid #ef5350;
+    color: #c62828;
+}

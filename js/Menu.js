@@ -37,6 +37,7 @@ class Menu {
         const instructionsBtn = document.getElementById('instructionsBtn');
         const aboutBtn = document.getElementById('aboutBtn');
         const optionsBtn = document.getElementById('optionsBtn');
+        const verifyBtn = document.getElementById('verifyBtn');
 
         if (levelSelectorBtn) {
             levelSelectorBtn.addEventListener('click', () => this.openLevelSelector());
@@ -49,6 +50,9 @@ class Menu {
         }
         if (optionsBtn) {
             optionsBtn.addEventListener('click', () => this.openOptions());
+        }
+        if (verifyBtn) {
+            verifyBtn.addEventListener('click', () => this.openVerify());
         }
 
         // Close buttons for all modals
@@ -650,6 +654,120 @@ class Menu {
         if (optionsModal) {
             optionsModal.classList.add('show');
         }
+    }
+
+    /**
+     * Open the verify score modal
+     */
+    openVerify() {
+        this.closeAllModals();
+        if (this.game && typeof this.game.pauseTimer === 'function') {
+            this.game.pauseTimer();
+        }
+
+        // Clear previous state
+        const verifyInput = document.getElementById('verifyInput');
+        const verifyResult = document.getElementById('verifyResult');
+        if (verifyInput) verifyInput.value = '';
+        if (verifyResult) {
+            verifyResult.textContent = '';
+            verifyResult.className = 'verify-result';
+        }
+
+        // Attach submit handler once (guard against duplicates with a flag)
+        const verifySubmitBtn = document.getElementById('verifySubmitBtn');
+        if (verifySubmitBtn && !verifySubmitBtn._verifyHandlerAttached) {
+            verifySubmitBtn._verifyHandlerAttached = true;
+            verifySubmitBtn.addEventListener('click', () => this._handleVerifySubmit());
+        }
+
+        const verifyModal = document.getElementById('verifyModal');
+        if (verifyModal) {
+            verifyModal.classList.add('show');
+        }
+    }
+
+    /**
+     * Handle the Verify submit button click.
+     * Parses the pasted share text and verifies its cryptographic signature.
+     * @private
+     */
+    async _handleVerifySubmit() {
+        const verifyInput = document.getElementById('verifyInput');
+        const verifyResult = document.getElementById('verifyResult');
+        if (!verifyInput || !verifyResult) return;
+
+        const text = verifyInput.value.trim();
+        if (!text) {
+            verifyResult.textContent = 'Please paste a score message first.';
+            verifyResult.className = 'verify-result verify-result-error';
+            return;
+        }
+
+        if (typeof SignatureUtils === 'undefined') {
+            verifyResult.textContent = 'Signature verification is not available.';
+            verifyResult.className = 'verify-result verify-result-error';
+            return;
+        }
+
+        verifyResult.textContent = 'Verifying…';
+        verifyResult.className = 'verify-result';
+
+        const parsed = SignatureUtils.parseShareText(text);
+        if (!parsed) {
+            verifyResult.textContent = '❌ Could not parse the score message. Make sure you paste the full message.';
+            verifyResult.className = 'verify-result verify-result-error';
+            return;
+        }
+
+        const { username, date, score, goal, timeSeconds, signature } = parsed;
+        const payload = SignatureUtils.buildPayload(username, date, score, goal, timeSeconds);
+        const valid = await SignatureUtils.verify(payload, signature);
+
+        if (valid) {
+            const pct = goal > 0 ? Math.round((score / goal) * 100) : 0;
+            const timeStr = this._formatTime(timeSeconds);
+            verifyResult.innerHTML =
+                '✅ <strong>Valid!</strong><br>' +
+                `Player: <strong>${this._escapeHtml(username)}</strong><br>` +
+                `Date: ${this._escapeHtml(date)}<br>` +
+                `Score: ${score}/${goal} (${pct}%) — Time: ${timeStr}`;
+            verifyResult.className = 'verify-result verify-result-valid';
+        } else {
+            verifyResult.textContent = '❌ Invalid signature — this score could not be verified.';
+            verifyResult.className = 'verify-result verify-result-error';
+        }
+    }
+
+    /**
+     * Convert elapsed seconds to a human-readable time string.
+     * @param {number} totalSeconds
+     * @returns {string}
+     * @private
+     */
+    _formatTime(totalSeconds) {
+        const s = Math.floor(totalSeconds);
+        const h = Math.floor(s / 3600);
+        const m = Math.floor((s % 3600) / 60);
+        const sec = s % 60;
+        if (h > 0) {
+            return `${h}:${String(m).padStart(2, '0')}:${String(sec).padStart(2, '0')}`;
+        }
+        return `${String(m).padStart(2, '0')}:${String(sec).padStart(2, '0')}`;
+    }
+
+    /**
+     * Escape HTML special characters to safely display user-provided text.
+     * @param {string} str
+     * @returns {string}
+     * @private
+     */
+    _escapeHtml(str) {
+        return String(str)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;');
     }
 
     /**

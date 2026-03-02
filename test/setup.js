@@ -56,6 +56,9 @@ global.Grid = _Grid;
 global.parseCompactMap = _Grid.parseCompactMap;
 global.parseCompactSolution = _Grid.parseCompactSolution;
 
+// Load SignatureUtils (uses FIREBASE_CONFIG global which is already set above)
+global.SignatureUtils = require('../js/SignatureUtils.js');
+
 // Load getTileType from tileTypes.js (uses TILE_DATA as source of truth)
 const { getTileType, isTileClickable, TILE_TYPES } = require('../js/tileTypes.js');
 global.getTileType = getTileType;

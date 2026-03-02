@@ -39,6 +39,8 @@ jobs:
           FIREBASE_STORAGE_BUCKET: ${{ secrets.FIREBASE_STORAGE_BUCKET }}
           FIREBASE_MESSAGING_SENDER_ID: ${{ secrets.FIREBASE_MESSAGING_SENDER_ID }}
           FIREBASE_APP_ID: ${{ secrets.FIREBASE_APP_ID }}
+          SIGNATURE_PUBLIC_KEY: ${{ secrets.SIGNATURE_PUBLIC_KEY }}
+          SIGNATURE_PRIVATE_KEY: ${{ secrets.SIGNATURE_PRIVATE_KEY }}
         run: |
           python3 - <<'PYEOF'
           import os, sys
@@ -59,6 +61,21 @@ jobs:
                       print(f'Error: {env_var} contains invalid characters', file=sys.stderr)
                       sys.exit(1)
                   content = content.replace(f"{js_key}: ''", f"{js_key}: '{value}'")
+          # Inject signature keys (stored as JSON strings, so use double-quoted JS strings)
+          for js_key, env_var in [('signaturePublicKey', 'SIGNATURE_PUBLIC_KEY'),
+                                   ('signaturePrivateKey', 'SIGNATURE_PRIVATE_KEY')]:
+              value = os.environ.get(env_var, '').strip()
+              if value:
+                  # Validate: must be valid JSON and contain no single quotes
+                  import json
+                  try:
+                      json.loads(value)
+                  except json.JSONDecodeError:
+                      print(f'Error: {env_var} is not valid JSON', file=sys.stderr)
+                      sys.exit(1)
+                  # Escape for embedding inside a JS single-quoted string
+                  escaped = value.replace('\\', '\\\\').replace("'", "\\'")
+                  content = content.replace(f"{js_key}: ''", f"{js_key}: '{escaped}'")
           with open('js/firebase-config.js', 'w') as f:
               f.write(content)
           PYEOF

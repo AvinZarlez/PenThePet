@@ -92,9 +92,11 @@
                 <section class="metrics-display">
                     <label class="metric-label">Roaming Area Score</label>
                     <output class="metric-value" id="roamAreaMetric">0</output>
+                    <small class="metric-percentage" id="roamAreaPercentage"></small>
                     <small class="metric-helper">yellow tiles counted</small>
                 </section>
                 <footer class="viewer-footer">
+                    <button id="shareScoreBtn" class="share-score-btn">📋 Copy Score</button>
                     <button id="exitViewer" class="exit-viewer-btn">Back to Game</button>
                 </footer>
             </article>
@@ -139,6 +141,7 @@
                 <button id="instructionsBtn" class="menu-option-btn">📖 Instructions</button>
                 <button id="aboutBtn" class="menu-option-btn">ℹ️ About</button>
                 <button id="optionsBtn" class="menu-option-btn">⚙️ Options</button>
+                <button id="verifyBtn" class="menu-option-btn">🔍 Verify Score</button>
             </div>
         </div>
     </div>
@@ -318,6 +321,21 @@
         </div>
     </div>
 
+    <!-- Verify Score Modal -->
+    <div id="verifyModal" class="modal">
+        <div class="modal-content">
+            <button class="modal-close" aria-label="Close verify">&times;</button>
+            <h2>🔍 Verify Score</h2>
+            <p class="modal-description">Paste a shared score message to verify its authenticity.</p>
+            <div class="modal-section">
+                <textarea id="verifyInput" class="verify-input" rows="6"
+                    placeholder="Paste the full score message here…" aria-label="Score message to verify"></textarea>
+                <button id="verifySubmitBtn" class="verify-submit-btn">Verify</button>
+                <div id="verifyResult" class="verify-result" aria-live="polite"></div>
+            </div>
+        </div>
+    </div>
+
     <!-- Firebase SDK (compat) — loaded only when needed; CloudSync gracefully no-ops if missing -->
     <script src="https://www.gstatic.com/firebasejs/11.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/11.7.1/firebase-auth-compat.js"></script>
@@ -333,6 +351,7 @@
     <script src="js/PathfindingUtils.js"></script>
     <script src="js/Grid.js"></script>
     <script src="js/firebase-config.js"></script>
+    <script src="js/SignatureUtils.js"></script>
     <script src="js/CloudSync.js"></script>
     <script src="js/Game.js"></script>
     <script src="js/Menu.js"></script>

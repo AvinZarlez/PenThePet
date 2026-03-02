@@ -47,6 +47,7 @@ export default [
                 getRandomWord: 'readonly',
                 WORD_LIST: 'readonly',
                 updateMapInfo: 'readonly',
+                SignatureUtils: 'readonly',
             },
         },
         rules: {
