@@ -587,6 +587,67 @@ if (DEBUG) {
 }
 ```
 
+### Debug Mode Access (Game Testers)
+
+Debug mode is restricted to a named list of **game testers**. It is always
+disabled for all other players and cannot be enabled through the UI or
+cookies.
+
+#### How it works
+
+1. At startup, `CloudSync.init()` fetches `game-testers.json` from the
+   repository root and builds the allowed-username list.
+2. When a user signs in, `CloudSync` checks their saved **app username**
+   (set via Options → Edit Profile) against that list.
+3. Only matching users see the **Enable Debug Mode** toggle in Options.
+4. For all other users the cookie is silently cleared and the debug toolbar
+   at the bottom of the page stays hidden.
+5. The check runs again whenever the username changes or the user signs out.
+
+#### game-testers.json
+
+Located at the **repository root**. The `testers` array holds the app
+usernames (case-sensitive) of everyone allowed to use debug mode:
+
+```json
+{
+    "testers": ["YourAppUsername"]
+}
+```
+
+This file is fetched by the browser at runtime and is publicly visible —
+do not put email addresses or other private data here.
+
+#### Finding your app username
+
+Your **app username** is the custom display name you set inside the game:
+
+1. Open the game and sign in to your cloud account.
+2. Open Options (☰ → Options).
+3. Under **☁️ Account**, click **✏️ Edit Username / Email**.
+4. Your current username is shown in the Username field.
+
+If you have not set a username, set one first before adding yourself to the
+testers list.
+
+#### Adding a new game tester
+
+1. Ask the tester to sign into the game and check their username
+   (Options → Edit Profile → Username field).
+2. Add their username to `game-testers.json`:
+
+   ```json
+   {
+       "testers": ["ExistingTester", "NewTester"]
+   }
+   ```
+
+3. Commit and push the file. The change takes effect immediately after the
+   next page load because `game-testers.json` is fetched at runtime.
+
+> **Note:** Usernames can be changed in the app. If a tester renames
+> themselves you must update `game-testers.json` to match.
+
 ## CI/CD and Automation
 
 ### GitHub Actions Workflows
