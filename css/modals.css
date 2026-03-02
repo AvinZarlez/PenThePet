@@ -245,3 +245,10 @@
     border: 1px solid #ef5350;
     color: #c62828;
 }
+
+.verify-instructions {
+    font-size: 0.9em;
+    color: #555;
+    line-height: 1.5;
+    margin-bottom: 12px;
+}

@@ -33,6 +33,14 @@ function setupDOM() {
         <button id="instructionsBtn"></button>
         <button id="aboutBtn"></button>
         <button id="optionsBtn"></button>
+        <button id="verifyBtn"></button>
+        <div id="verifyModal" class="modal">
+            <div class="modal-section">
+                <textarea id="verifyInput" rows="6"></textarea>
+                <button id="verifySubmitBtn"></button>
+                <div id="verifyResult" class="verify-result"></div>
+            </div>
+        </div>
         <select id="petType"></select>
         <select id="hintMode"></select>
         <div class="debug-section" style="display: none;">
@@ -723,6 +731,65 @@ describe('Menu', () => {
 
             expect(spy).toHaveBeenCalled();
             spy.mockRestore();
+        });
+    });
+
+    describe('Verify Score modal', () => {
+        test('openVerify() shows the verify modal', () => {
+            menu.openVerify();
+            const modal = document.getElementById('verifyModal');
+            expect(modal.classList.contains('show')).toBe(true);
+        });
+
+        test('openVerify() clears previous input and result', () => {
+            document.getElementById('verifyInput').value = 'old text';
+            document.getElementById('verifyResult').textContent = 'old result';
+            menu.openVerify();
+            expect(document.getElementById('verifyInput').value).toBe('');
+            expect(document.getElementById('verifyResult').textContent).toBe('');
+        });
+
+        test('_handleVerifySubmit() shows error for empty input', async () => {
+            menu.openVerify();
+            document.getElementById('verifyInput').value = '';
+            await menu._handleVerifySubmit();
+            const result = document.getElementById('verifyResult');
+            expect(result.className).toContain('verify-result-error');
+        });
+
+        test('_handleVerifySubmit() shows error for undecodable input', async () => {
+            menu.openVerify();
+            document.getElementById('verifyInput').value = 'not a valid token at all';
+            await menu._handleVerifySubmit();
+            const result = document.getElementById('verifyResult');
+            expect(result.className).toContain('verify-result-error');
+        });
+
+        test('_handleVerifySubmit() shows valid result for a correct token', async () => {
+            menu.openVerify();
+            const payload = SignatureUtils.buildPayload('Alice', '2026-03-01', 8, 10, 93);
+            const token = await SignatureUtils.sign(payload);
+            document.getElementById('verifyInput').value = token;
+            await menu._handleVerifySubmit();
+            const result = document.getElementById('verifyResult');
+            expect(result.className).toContain('verify-result-valid');
+            expect(result.innerHTML).toContain('Alice');
+        });
+
+        test('_handleVerifySubmit() accepts a full share message', async () => {
+            menu.openVerify();
+            const payload = SignatureUtils.buildPayload('Bob', '2026-03-01', 5, 10, 60);
+            const token = await SignatureUtils.sign(payload);
+            const shareMsg = [
+                'Pen The Pet 🐶',
+                'Day 1 - March 1, 2026',
+                'Score: 50% (5/10) Time: 01:00',
+                `Signature: ${token}`,
+            ].join('\n');
+            document.getElementById('verifyInput').value = shareMsg;
+            await menu._handleVerifySubmit();
+            const result = document.getElementById('verifyResult');
+            expect(result.className).toContain('verify-result-valid');
         });
     });
 

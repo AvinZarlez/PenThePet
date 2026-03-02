@@ -48,6 +48,7 @@
       "!js/Game.js",
       "!js/tileTypes.js",
       "!js/firebase-config.js",
+      "!js/site-config.js",
       "!js/CloudSync.js"
     ],
     "coverageThreshold": {

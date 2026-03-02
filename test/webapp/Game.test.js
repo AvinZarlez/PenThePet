@@ -685,16 +685,21 @@ describe('buildShareText()', () => {
         expect(text).toContain('01:33');
     });
 
-    test('Signature line present', async () => {
+    test('Signature line is present and contains a self-contained token', async () => {
         const text = await game.buildShareText();
         expect(text).toMatch(/^Signature:/m);
+        // Token should have base64url.<hexsig> format (contains a dot)
+        const sigLine = text.split('\n').find(l => /^Signature:/i.test(l));
+        const token = sigLine.replace(/^Signature:\s*/i, '').trim();
+        expect(token).toContain('.');
     });
 
-    test('parseable by SignatureUtils.parseShareText', async () => {
+    test('token is decodable via SignatureUtils.decodeToken', async () => {
         const text = await game.buildShareText();
-        const parsed = SignatureUtils.parseShareText(text);
-        expect(parsed).not.toBeNull();
-        expect(parsed.score).toBe(8);
-        expect(parsed.goal).toBe(10);
+        const token = SignatureUtils.extractToken(text);
+        const decoded = SignatureUtils.decodeToken(token);
+        expect(decoded).not.toBeNull();
+        expect(decoded.score).toBe(8);
+        expect(decoded.goal).toBe(10);
     });
 });

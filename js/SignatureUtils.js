@@ -1,19 +1,34 @@
 /**
  * SignatureUtils
  *
- * Generates and verifies cryptographic signatures for player scores using
- * ECDSA P-256 (or a deterministic fallback when no keys are configured).
+ * Generates and verifies score tokens for the Pen the Pet share/verify flow.
  *
- * The private key is injected at build time from GitHub secrets and never
- * committed to the repository.  The public key is stored in FIREBASE_CONFIG
- * so that the verify screen can confirm any signature without a server.
+ * ── Token format ──────────────────────────────────────────────────────────
+ * A token is a self-contained string that encodes all the game data AND a
+ * tamper-detection checksum in a single value:
  *
- * Canonical payload format (pipe-separated, no spaces):
- *   "<username>|<date>|<score>|<goal>|<timeSeconds>"
+ *   <base64url(payload)>.<hexsig>
  *
- * When neither key is configured the module falls back to a simple hex
- * checksum so that the share/verify flow still works end-to-end (albeit
- * without meaningful anti-forgery protection).
+ * where  payload  = "username|date|score|goal|timeSeconds"  (pipe-separated)
+ *   and  hexsig   = FNV-1a hash of the payload (fallback)
+ *                OR ECDSA-P256 hex signature   (when a public key is configured)
+ *
+ * Because the token contains all the data, the recipient only needs to paste
+ * the token (or the full share message) to see every detail and verify it.
+ *
+ * ── Security model ────────────────────────────────────────────────────────
+ * Signing happens entirely in the browser using a deterministic hash.  This
+ * means the "signature" is tamper-evident at the application level — casual
+ * users cannot accidentally corrupt a score — but a technically motivated
+ * user who reads the JavaScript source could forge one.
+ *
+ * Truly unforgeable signatures would require a server-side signing endpoint.
+ * Since Pen the Pet is a static GitHub Pages site, that is out of scope for
+ * now.  The ECDSA path in verify() is preserved for a future upgrade.
+ *
+ * IMPORTANT: The PRIVATE key must NEVER be placed in browser JavaScript.
+ * Only the public key (stored in FIREBASE_CONFIG.signaturePublicKey) is used
+ * client-side, for ECDSA verification only.
  */
 
 const SignatureUtils = (() => {
@@ -30,14 +45,6 @@ const SignatureUtils = (() => {
     }
 
     /**
-     * Return the private key JWK string from FIREBASE_CONFIG, or '' if absent.
-     * @returns {string}
-     */
-    function _privateKeyStr() {
-        return (typeof FIREBASE_CONFIG !== 'undefined' && FIREBASE_CONFIG.signaturePrivateKey) || '';
-    }
-
-    /**
      * Parse a JWK JSON string, returning null on any error.
      * @param {string} str
      * @returns {Object|null}
@@ -51,27 +58,18 @@ const SignatureUtils = (() => {
     }
 
     /**
-     * Deterministic hex checksum used as a fallback when no ECDSA keys are
-     * configured.  Not cryptographically secure, but keeps the UI functional.
+     * Deterministic FNV-1a 32-bit hash, returned as an 8-char hex string.
+     * Used as the signature when no ECDSA keys are configured.
      * @param {string} data
-     * @returns {string} 8-character hex string
+     * @returns {string}
      */
     function _fallbackHash(data) {
-        let h = 0x811c9dc5; // FNV-1a 32-bit offset basis
+        let h = 0x811c9dc5;
         for (let i = 0; i < data.length; i++) {
             h ^= data.charCodeAt(i);
             h = Math.imul(h, 0x01000193) >>> 0;
         }
         return h.toString(16).padStart(8, '0');
-    }
-
-    /**
-     * Convert a Uint8Array to a lower-case hex string.
-     * @param {Uint8Array} bytes
-     * @returns {string}
-     */
-    function _toHex(bytes) {
-        return Array.from(bytes).map(b => b.toString(16).padStart(2, '0')).join('');
     }
 
     /**
@@ -87,14 +85,45 @@ const SignatureUtils = (() => {
         return arr;
     }
 
+    /**
+     * Encode a UTF-8 string to a URL-safe base64 string (no padding).
+     * @param {string} str
+     * @returns {string}
+     */
+    function _base64urlEncode(str) {
+        // Convert UTF-8 string to percent-encoded, then to binary, then base64
+        const binary = encodeURIComponent(str)
+            .replace(/%([0-9A-F]{2})/gi, (_, hex) => String.fromCharCode(parseInt(hex, 16)));
+        return btoa(binary)
+            .replace(/\+/g, '-')
+            .replace(/\//g, '_')
+            .replace(/=/g, '');
+    }
+
+    /**
+     * Decode a URL-safe base64 string back to a UTF-8 string.
+     * @param {string} b64url
+     * @returns {string}
+     */
+    function _base64urlDecode(b64url) {
+        const b64 = b64url.replace(/-/g, '+').replace(/_/g, '/');
+        // Add padding if needed
+        const padded = b64 + '==='.slice(0, (4 - b64.length % 4) % 4);
+        const binary = atob(padded);
+        // Convert binary bytes back to UTF-8
+        return decodeURIComponent(
+            binary.split('').map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)).join('')
+        );
+    }
+
     // ----------------------------------------------------------------
     // Public API
     // ----------------------------------------------------------------
 
     /**
-     * Build the canonical payload string that is signed.
+     * Build the canonical payload string that is embedded in the token.
      * @param {string} username
-     * @param {string} date      - ISO date string, e.g. "2026-03-01"
+     * @param {string} date        - ISO date string, e.g. "2026-03-01"
      * @param {number} score
      * @param {number} goal
      * @param {number} timeSeconds
@@ -105,59 +134,108 @@ const SignatureUtils = (() => {
     }
 
     /**
-     * Sign a payload with the configured ECDSA private key.
-     * Falls back to a deterministic hash when no private key is available.
+     * Create a self-contained share token that encodes the payload AND its
+     * tamper-detection signature:
      *
-     * @param {string} payload - The canonical payload string
-     * @returns {Promise<string>} Hex-encoded signature
+     *   <base64url(payload)>.<hexsig>
+     *
+     * The hexsig is computed with the FNV-1a fallback hash (client-side only).
+     * If a server-side ECDSA signer is integrated in the future, the hexsig
+     * portion can be replaced with the ECDSA hex signature — the decodeToken()
+     * and verify() methods already support it.
+     *
+     * @param {string} payload - The canonical payload string from buildPayload()
+     * @returns {Promise<string>} The full self-contained token
      */
     async function sign(payload) {
-        const privateKeyStr = _privateKeyStr();
+        const hexSig = _fallbackHash(payload);
+        return `${_base64urlEncode(payload)}.${hexSig}`;
+    }
 
-        if (!privateKeyStr) {
-            return _fallbackHash(payload);
-        }
+    /**
+     * Decode a share token and return all the embedded game fields.
+     * Returns null if the token is malformed.
+     *
+     * @param {string} token - A token produced by sign()
+     * @returns {{payload:string, username:string, date:string, score:number,
+     *            goal:number, timeSeconds:number, signature:string}|null}
+     */
+    function decodeToken(token) {
+        if (!token || typeof token !== 'string') return null;
+        const dotIdx = token.indexOf('.');
+        if (dotIdx === -1) return null;
+
+        const encoded = token.slice(0, dotIdx);
+        const signature = token.slice(dotIdx + 1);
 
         try {
-            const jwk = _parseJwk(privateKeyStr);
-            if (!jwk) return _fallbackHash(payload);
+            const payload = _base64urlDecode(encoded);
+            const parts = payload.split('|');
+            if (parts.length !== 5) return null;
 
-            const key = await crypto.subtle.importKey(
-                'jwk',
-                jwk,
-                { name: 'ECDSA', namedCurve: 'P-256' },
-                false,
-                ['sign']
-            );
+            const score = parseInt(parts[2], 10);
+            const goal = parseInt(parts[3], 10);
+            const timeSeconds = parseInt(parts[4], 10);
 
-            const encoder = new TextEncoder();
-            const sigBuffer = await crypto.subtle.sign(
-                { name: 'ECDSA', hash: 'SHA-256' },
-                key,
-                encoder.encode(payload)
-            );
+            if (isNaN(score) || isNaN(goal) || isNaN(timeSeconds)) return null;
 
-            return _toHex(new Uint8Array(sigBuffer));
+            return {
+                payload,
+                username: parts[0],
+                date: parts[1],
+                score,
+                goal,
+                timeSeconds,
+                signature,
+            };
         } catch {
-            return _fallbackHash(payload);
+            return null;
         }
     }
 
     /**
-     * Verify a hex-encoded ECDSA signature against a payload.
-     * When no public key is configured, falls back to comparing deterministic
-     * hashes (consistent with the sign() fallback).
+     * Extract the token from user-pasted text.
      *
-     * @param {string} payload   - The canonical payload string
-     * @param {string} signature - Hex-encoded signature to verify
+     * Accepts two forms:
+     *   1. The full share message  — finds the "Signature: <token>" line
+     *   2. Just the token itself  — uses the trimmed input directly
+     *
+     * @param {string} text - Raw pasted text
+     * @returns {string|null} The token, or null if nothing usable was found
+     */
+    function extractToken(text) {
+        if (!text || typeof text !== 'string') return null;
+        const trimmed = text.trim();
+
+        // Look for a "Signature: <token>" line anywhere in the text
+        for (const line of trimmed.split('\n')) {
+            const m = line.trim().match(/^Signature:\s*(.+)$/i);
+            if (m) return m[1].trim();
+        }
+
+        // Treat the entire input as a bare token
+        return trimmed || null;
+    }
+
+    /**
+     * Verify a share token.
+     *
+     * If an ECDSA public key is configured in FIREBASE_CONFIG.signaturePublicKey the
+     * signature portion is verified using Web Crypto ECDSA-P256-SHA256.
+     * Otherwise, the FNV-1a fallback hash is recomputed and compared.
+     *
+     * @param {string} token - A token produced by sign()
      * @returns {Promise<boolean>}
      */
-    async function verify(payload, signature) {
+    async function verify(token) {
+        const decoded = decodeToken(token);
+        if (!decoded) return false;
+
         const publicKeyStr = _publicKeyStr();
 
         if (!publicKeyStr) {
-            // Fallback: compare hash strings
-            return _fallbackHash(payload) === signature;
+            // Fallback: recompute hash and compare
+            return _fallbackHash(decoded.payload) === decoded.signature;
         }
 
         try {
@@ -173,111 +251,29 @@ const SignatureUtils = (() => {
             );
 
             const encoder = new TextEncoder();
-            const sigBytes = _fromHex(signature);
+            const sigBytes = _fromHex(decoded.signature);
 
             return await crypto.subtle.verify(
                 { name: 'ECDSA', hash: 'SHA-256' },
                 key,
                 sigBytes,
-                encoder.encode(payload)
+                encoder.encode(decoded.payload)
             );
         } catch {
             return false;
         }
     }
 
-    /**
-     * Parse the share-text block pasted by a user and extract the individual
-     * fields needed for verification.
-     *
-     * Expected format (any extra whitespace is tolerated):
-     *   Pen The Pet <emoji>
-     *   Day <N> - <DATE>
-     *   Score: <pct>% (<score>/<goal>) Time: <MM:SS>
-     *   Signature: <username> <hexSig>
-     *
-     * @param {string} text - Raw pasted text
-     * @returns {{username:string,date:string,score:number,goal:number,timeSeconds:number,signature:string}|null}
-     *          Parsed fields, or null if the text cannot be parsed.
-     */
-    function parseShareText(text) {
-        if (!text || typeof text !== 'string') return null;
-
-        const lines = text.split('\n').map(l => l.trim()).filter(Boolean);
-
-        // --- Day/Date line: "Day 42 - March 1, 2026" ---
-        const dayLine = lines.find(l => /^Day\s+\d+\s+-\s+/i.test(l));
-        if (!dayLine) return null;
-
-        const dateStr = _parseDateFromDisplay(dayLine.replace(/^Day\s+\d+\s+-\s+/i, '').trim());
-        if (!dateStr) return null;
-
-        // --- Score line: "Score: 50% (5/10) Time: 01:23" ---
-        const scoreLine = lines.find(l => /^Score:/i.test(l));
-        if (!scoreLine) return null;
-
-        const scoreMatch = scoreLine.match(/\((\d+)\/(\d+)\)/);
-        const timeMatch = scoreLine.match(/Time:\s*([\d:]+)/i);
-        if (!scoreMatch || !timeMatch) return null;
-
-        const score = parseInt(scoreMatch[1], 10);
-        const goal = parseInt(scoreMatch[2], 10);
-        const timeSeconds = _parseTimeToSeconds(timeMatch[1]);
-
-        // --- Signature line: "Signature: Username abc123..." ---
-        const sigLine = lines.find(l => /^Signature:/i.test(l));
-        if (!sigLine) return null;
-
-        const sigParts = sigLine.replace(/^Signature:\s*/i, '').trim().split(/\s+/);
-        if (sigParts.length < 2) return null;
-
-        // Last token is the hex signature; everything before it is the username.
-        const signature = sigParts[sigParts.length - 1];
-        const username = sigParts.slice(0, -1).join(' ');
-
-        return { username, date: dateStr, score, goal, timeSeconds, signature };
-    }
-
-    /**
-     * Convert a displayed date string (e.g. "March 1, 2026") back to ISO
-     * format "YYYY-MM-DD".  Returns null if parsing fails.
-     * @param {string} displayDate
-     * @returns {string|null}
-     */
-    function _parseDateFromDisplay(displayDate) {
-        try {
-            const d = new Date(displayDate);
-            if (isNaN(d.getTime())) return null;
-            const year = d.getFullYear();
-            const month = String(d.getMonth() + 1).padStart(2, '0');
-            const day = String(d.getDate()).padStart(2, '0');
-            return `${year}-${month}-${day}`;
-        } catch {
-            return null;
-        }
-    }
-
-    /**
-     * Convert a "MM:SS" or "H:MM:SS" time string to total seconds.
-     * @param {string} timeStr
-     * @returns {number}
-     */
-    function _parseTimeToSeconds(timeStr) {
-        const parts = timeStr.split(':').map(Number);
-        if (parts.length === 2) return parts[0] * 60 + parts[1];
-        if (parts.length === 3) return parts[0] * 3600 + parts[1] * 60 + parts[2];
-        return 0;
-    }
-
     return {
         buildPayload,
         sign,
+        decodeToken,
+        extractToken,
         verify,
-        parseShareText,
         /** @internal exposed for unit tests only */
         _fallbackHash,
-        _parseDateFromDisplay,
-        _parseTimeToSeconds,
+        _base64urlEncode,
+        _base64urlDecode,
     };
 })();
 
@@ -285,3 +281,4 @@ const SignatureUtils = (() => {
 if (typeof module !== 'undefined' && module.exports) {
     module.exports = SignatureUtils;
 }
+

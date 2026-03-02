@@ -326,10 +326,16 @@
         <div class="modal-content">
             <button class="modal-close" aria-label="Close verify">&times;</button>
             <h2>🔍 Verify Score</h2>
-            <p class="modal-description">Paste a shared score message to verify its authenticity.</p>
+            <p class="modal-description">Confirm that a shared score is authentic.</p>
             <div class="modal-section">
+                <p class="verify-instructions">
+                    Paste either the <strong>full score message</strong> you received, or
+                    just the <strong>signature token</strong> from the Signature line —
+                    both work. All details are read directly from the token, so no other
+                    text is trusted.
+                </p>
                 <textarea id="verifyInput" class="verify-input" rows="6"
-                    placeholder="Paste the full score message here…" aria-label="Score message to verify"></textarea>
+                    placeholder="Paste the score message or just the Signature token here…" aria-label="Score to verify"></textarea>
                 <button id="verifySubmitBtn" class="verify-submit-btn">Verify</button>
                 <div id="verifyResult" class="verify-result" aria-live="polite"></div>
             </div>
@@ -350,7 +356,7 @@
     <script src="js/DateUtils.js"></script>
     <script src="js/PathfindingUtils.js"></script>
     <script src="js/Grid.js"></script>
-    <script src="js/firebase-config.js"></script>
+    <script src="js/site-config.js"></script>
     <script src="js/SignatureUtils.js"></script>
     <script src="js/CloudSync.js"></script>
     <script src="js/Game.js"></script>

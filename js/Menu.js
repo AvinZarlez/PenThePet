@@ -689,7 +689,9 @@ class Menu {
 
     /**
      * Handle the Verify submit button click.
-     * Parses the pasted share text and verifies its cryptographic signature.
+     * Accepts either a full share message or a bare signature token.
+     * All displayed details come exclusively from the decoded token — the
+     * rest of the pasted text is ignored.
      * @private
      */
     async _handleVerifySubmit() {
@@ -699,7 +701,7 @@ class Menu {
 
         const text = verifyInput.value.trim();
         if (!text) {
-            verifyResult.textContent = 'Please paste a score message first.';
+            verifyResult.textContent = 'Please paste a signature token or score message first.';
             verifyResult.className = 'verify-result verify-result-error';
             return;
         }
@@ -713,16 +715,24 @@ class Menu {
         verifyResult.textContent = 'Verifying…';
         verifyResult.className = 'verify-result';
 
-        const parsed = SignatureUtils.parseShareText(text);
-        if (!parsed) {
-            verifyResult.textContent = '❌ Could not parse the score message. Make sure you paste the full message.';
+        // Extract the token from either the full share message or a bare token
+        const token = SignatureUtils.extractToken(text);
+        if (!token) {
+            verifyResult.textContent = '❌ Could not find a signature token. Paste the full score message or just the token from the Signature line.';
             verifyResult.className = 'verify-result verify-result-error';
             return;
         }
 
-        const { username, date, score, goal, timeSeconds, signature } = parsed;
-        const payload = SignatureUtils.buildPayload(username, date, score, goal, timeSeconds);
-        const valid = await SignatureUtils.verify(payload, signature);
+        // Decode all game details directly from the token (never trust other pasted text)
+        const decoded = SignatureUtils.decodeToken(token);
+        if (!decoded) {
+            verifyResult.textContent = '❌ Could not decode the token. Make sure you copied it completely.';
+            verifyResult.className = 'verify-result verify-result-error';
+            return;
+        }
+
+        const valid = await SignatureUtils.verify(token);
+        const { username, date, score, goal, timeSeconds } = decoded;
 
         if (valid) {
             const pct = goal > 0 ? Math.round((score / goal) * 100) : 0;
@@ -734,7 +744,7 @@ class Menu {
                 `Score: ${score}/${goal} (${pct}%) — Time: ${timeStr}`;
             verifyResult.className = 'verify-result verify-result-valid';
         } else {
-            verifyResult.textContent = '❌ Invalid signature — this score could not be verified.';
+            verifyResult.textContent = '❌ Invalid — this score could not be verified.';
             verifyResult.className = 'verify-result verify-result-error';
         }
     }

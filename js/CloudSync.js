@@ -53,7 +53,7 @@
 
 // Import FIREBASE_CONFIG if in Node.js environment
 if (typeof FIREBASE_CONFIG === 'undefined' && typeof require !== 'undefined') {
-    global.FIREBASE_CONFIG = require('./firebase-config.js');
+    global.FIREBASE_CONFIG = require('./site-config.js');
 }
 
 const CloudSync = (function () {
@@ -891,7 +891,7 @@ const CloudSync = (function () {
             'auth/too-many-requests': 'Too many attempts. Please wait a moment and try again.',
             'auth/invalid-credential': 'Invalid email or password.',
             'auth/operation-not-allowed': 'This sign-in method is not enabled in the Firebase console.',
-            'auth/invalid-api-key': 'Invalid Firebase API key. Check firebase-config.js.',
+            'auth/invalid-api-key': 'Invalid Firebase API key. Check site-config.js.',
             'auth/configuration-not-found': 'Firebase Authentication is not configured. Enable it in the Firebase console.',
             'auth/requires-recent-login': 'Please sign out and sign in again before changing your email.',
             'auth/expired-action-code': 'The sign-in link has expired. Please request a new one.',

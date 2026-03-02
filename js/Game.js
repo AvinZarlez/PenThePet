@@ -945,17 +945,17 @@ class Game {
         const dayNumEl = document.getElementById('mapDay');
         const dayNum = dayNumEl ? dayNumEl.textContent : '?';
 
-        let signature = '';
+        let token = '';
         if (typeof SignatureUtils !== 'undefined') {
             const payload = SignatureUtils.buildPayload(username, date, score, goal, this.elapsedSeconds);
-            signature = await SignatureUtils.sign(payload);
+            token = await SignatureUtils.sign(payload);
         }
 
         return [
             `Pen The Pet ${this.petEmoji}`,
             `Day ${dayNum} - ${displayDate}`,
             `Score: ${pct}% (${score}/${goal}) Time: ${timeStr}`,
-            `Signature: ${username} ${signature}`,
+            `Signature: ${token}`,
         ].join('\n');
     }
 

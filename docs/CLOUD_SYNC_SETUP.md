@@ -230,7 +230,7 @@ appear in this list or sign-in will be blocked.
 
 ### Step 8 — Add Your Config as GitHub Secrets
 
-Instead of editing `js/firebase-config.js` directly, add the Firebase values as
+Instead of editing `js/site-config.js` directly, add the Firebase values as
 **repository secrets** so that the deploy workflow injects them automatically.
 This keeps credentials out of the committed codebase.
 
@@ -249,7 +249,7 @@ This keeps credentials out of the committed codebase.
 
 3. Push any change to `main` (or trigger the **Deploy static content to Pages**
    workflow manually). The workflow will substitute the secrets into
-   `js/firebase-config.js` at deploy time.
+   `js/site-config.js` at deploy time.
 
 The app detects that `apiKey` is non-empty and automatically enables the
 cloud sync UI. The committed file always contains empty strings, so no
@@ -374,7 +374,7 @@ the following rules apply:
 ## Running Without Cloud Sync
 
 If you fork this repository and do **not** want cloud sync, simply skip Step 8
-(do not add the secrets). The `apiKey` in `js/firebase-config.js` will remain
+(do not add the secrets). The `apiKey` in `js/site-config.js` will remain
 empty after deployment and the app will behave exactly as before — all data
 stays in local cookies and the cloud sync UI is hidden.
 
@@ -480,3 +480,4 @@ domain if you use one.
 - [Firebase Firestore Documentation](https://firebase.google.com/docs/firestore)
 - [Firebase Authentication Documentation](https://firebase.google.com/docs/auth)
 - [Firebase Pricing (Spark plan)](https://firebase.google.com/pricing)
+- [Score Signature Keys Setup](SIGNATURE_KEYS.md)
