@@ -31,33 +31,33 @@ player instructions, and the Python solver read from `js/tileData.js` automatica
 
 ## Tile Properties Reference
 
-| Property | Type | Required | Description |
-|---|---|---|---|
-| `score` | number | ✅ | Points when inside penned area (grass=1, star=3, water=0) |
-| `wallPlaceable` | boolean | ✅ | Whether player can place/remove walls on this tile |
-| `clickable` | boolean | ✅ | Whether clicking the tile does anything |
-| `blocksMovement` | boolean | ✅ | Whether tile blocks pet pathfinding |
-| `chance` | number | ✅ | Probability (0.00–1.00) for map generation. 0 = not randomly placed |
-| `compactChar` | string | ✅ | Single character for compact map format |
-| `numericId` | number | ✅ | Numeric value for solver map format |
-| `cssClass` | string | ✅ | CSS class applied to the cell element |
-| `description` | string | ❌ | Player-facing description shown in the instructions modal |
-| `assets` | string[] | ✅ | Ordered list of visual layers (SVGs as `<img>`, text/emoji as `<span>`) |
-| `ariaLabel` | function | ✅ | Function `(row, col) => string` for screen reader labels |
-| `enclosedAssets` | string[] | ❌ | Alternate asset list when tile is inside penned area. Falls back to `assets` |
-| `pawOverlay` | string[] | ❌ | Escape-path overlay. Undefined = default `['paw.svg']`, `[]` = none |
-| `emoji` | string | ❌ | Emoji shown inside the tile (e.g. pet on home tile) |
+| Property         | Type     | Required | Description                                                                  |
+| ---------------- | -------- | -------- | ---------------------------------------------------------------------------- |
+| `score`          | number   | ✅       | Points when inside penned area (grass=1, star=3, water=0)                    |
+| `wallPlaceable`  | boolean  | ✅       | Whether player can place/remove walls on this tile                           |
+| `clickable`      | boolean  | ✅       | Whether clicking the tile does anything                                      |
+| `blocksMovement` | boolean  | ✅       | Whether tile blocks pet pathfinding                                          |
+| `chance`         | number   | ✅       | Probability (0.00–1.00) for map generation. 0 = not randomly placed          |
+| `compactChar`    | string   | ✅       | Single character for compact map format                                      |
+| `numericId`      | number   | ✅       | Numeric value for solver map format                                          |
+| `cssClass`       | string   | ✅       | CSS class applied to the cell element                                        |
+| `description`    | string   | ❌       | Player-facing description shown in the instructions modal                    |
+| `assets`         | string[] | ✅       | Ordered list of visual layers (SVGs as `<img>`, text/emoji as `<span>`)      |
+| `ariaLabel`      | function | ✅       | Function `(row, col) => string` for screen reader labels                     |
+| `enclosedAssets` | string[] | ❌       | Alternate asset list when tile is inside penned area. Falls back to `assets` |
+| `pawOverlay`     | string[] | ❌       | Escape-path overlay. Undefined = default `['paw.svg']`, `[]` = none          |
+| `emoji`          | boolean  | ❌       | Pet Emoji shown on tile                                                      |
 
 ## Current Tile Types
 
-| Tile | Score | Wall Placeable | Blocks Movement | Generation Chance |
-|---|---|---|---|---|
-| Grass | 1 | ✅ | ❌ | 65% |
-| Water | 0 | ❌ | ✅ | 30% |
-| Star | 3 | ❌ | ❌ | 5% |
-| Bee | -3 | ❌ | ❌ | 3% |
-| Home | 1 | ❌ | ❌ | Placed at center |
-| Wall | 0 | ❌ | ✅ | Player-placed only |
+| Tile  | Score | Wall Placeable | Blocks Movement | Generation Chance  |
+| ----- | ----- | -------------- | --------------- | ------------------ |
+| Grass | 1     | ✅             | ❌              | 65%                |
+| Water | 0     | ❌             | ✅              | 30%                |
+| Star  | 3     | ❌             | ❌              | 5%                 |
+| Bee   | -3    | ❌             | ❌              | 3%                 |
+| Home  | 1     | ❌             | ❌              | Placed at center   |
+| Wall  | 0     | ❌             | ✅              | Player-placed only |
 
 ## Architecture
 

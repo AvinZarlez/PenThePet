@@ -206,19 +206,21 @@ class Game {
         
         // Render additional asset overlays from the chosen list (index 1+)
         if (assetList && assetList.length > 1) {
+            const isLastFloating = tileInfo.floatAnimation === true;
             for (let i = 1; i < assetList.length; i++) {
                 const asset = assetList[i];
+                const isTopLayer = isLastFloating && i === assetList.length - 1;
                 if (asset.endsWith('.svg')) {
                     const overlay = document.createElement('img');
                     overlay.src = `assets/${asset}`;
                     overlay.alt = '';
-                    overlay.className = 'tile-overlay';
+                    overlay.className = isTopLayer ? 'tile-overlay tile-overlay-float' : 'tile-overlay';
                     overlay.setAttribute('aria-hidden', 'true');
                     cell.appendChild(overlay);
                 } else {
                     // Treat as emoji / text overlay
                     const emojiSpan = document.createElement('span');
-                    emojiSpan.className = 'tile-overlay-emoji';
+                    emojiSpan.className = isTopLayer ? 'tile-overlay-emoji tile-overlay-float' : 'tile-overlay-emoji';
                     emojiSpan.textContent = asset;
                     emojiSpan.setAttribute('aria-hidden', 'true');
                     cell.appendChild(emojiSpan);

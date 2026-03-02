@@ -26,6 +26,9 @@
  *   enclosedAssets - Optional. When defined and the tile is inside the penned
  *                   (enclosed) area, these assets are used instead of `assets`.
  *                   Falls back to `assets` if not defined.
+ *   floatAnimation - Optional boolean. When true, the last overlay layer renders
+ *                   with a gentle floating/wiggle CSS animation (top layer only).
+ *                   The outline layer beneath it stays still to ground the tile.
  *   pawOverlay    - Optional list of assets to render as escape-path overlay.
  *                   If undefined, uses default ['paw.svg'].
  *                   If [] (empty), no overlay is rendered.
@@ -93,7 +96,7 @@ const TILE_DATA = {
         assets: ['grass.svg', 'home.svg'],
         enclosedAssets: ['penned.svg', 'home.svg'],
         pawOverlay: [],
-        emoji: '🏠🐾',
+        emoji: true,
         ariaLabel: (row, col) => `Home tile at row ${row + 1}, column ${col + 1}. Pet starting location.`,
     },
     star: {
@@ -105,6 +108,7 @@ const TILE_DATA = {
         compactChar: 's',
         numericId: 3,
         cssClass: 'grass',
+        floatAnimation: true,
         description: 'Star tiles act like grass but score 3 points instead of 1 when inside your penned area. Walls cannot be placed on stars.',
         assets: ['grass.svg', 'star-outline.svg', 'star.svg'],
         enclosedAssets: ['penned.svg', 'star-outline.svg', 'star.svg'],
@@ -119,6 +123,7 @@ const TILE_DATA = {
         compactChar: 'b',
         numericId: 4,
         cssClass: 'grass',
+        floatAnimation: true,
         description: 'Bee tiles act like grass but subtract 3 points when inside your penned area. Try to keep bees outside! Walls cannot be placed on bees.',
         assets: ['grass.svg', 'bee-outline.svg', 'bee.svg'],
         enclosedAssets: ['penned.svg', 'bee-outline.svg', 'bee.svg'],

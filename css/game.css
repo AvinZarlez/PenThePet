@@ -488,6 +488,23 @@
     transform: translate(-50%, -50%);
 }
 
+/* Floating animation for top-layer tile overlays (e.g. star, bee) */
+@keyframes tileFloat {
+    0%   { transform: translate(-50%, -50%); }
+    15%  { transform: translate(calc(-50% + 3px), calc(-50% - 4px)); }
+    25%  { transform: translate(-50%, -50%); }
+    40%  { transform: translate(calc(-50% - 3px), calc(-50% + 4px)); }
+    50%  { transform: translate(-50%, -50%); }
+    65%  { transform: translate(calc(-50% - 3px), calc(-50% - 4px)); }
+    75%  { transform: translate(-50%, -50%); }
+    90%  { transform: translate(calc(-50% + 3px), calc(-50% + 4px)); }
+    100% { transform: translate(-50%, -50%); }
+}
+
+.cell .tile-overlay-float {
+    animation: tileFloat 8s ease-in-out infinite;
+}
+
 /* Emoji/text tile overlays */
 .cell .tile-overlay-emoji {
     position: absolute;
