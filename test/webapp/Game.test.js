@@ -703,3 +703,107 @@ describe('buildShareText()', () => {
         expect(text).toContain('01:33');
     });
 });
+
+// ------------------------------------------------------------------
+// Penned-area animation
+// ------------------------------------------------------------------
+describe('Game — Penned Animation', () => {
+    let game;
+
+    /**
+     * Build a 5×5 grid with home at centre (2,2) and walls forming a
+     * tight enclosure so the pet is definitely penned.
+     *
+     *  g g g g g
+     *  g W W W g
+     *  g W h W g
+     *  g W W W g
+     *  g g g g g
+     *
+     * Penned area = home only (1 tile).
+     */
+    function createPennedGame() {
+        setupDOM();
+        const g = new Game(5);
+        const tiles = Array.from({ length: 5 }, () => Array(5).fill('grass'));
+        tiles[2][2] = 'home';
+        // surround home with walls
+        tiles[1][1] = 'wall'; tiles[1][2] = 'wall'; tiles[1][3] = 'wall';
+        tiles[2][1] = 'wall';                         tiles[2][3] = 'wall';
+        tiles[3][1] = 'wall'; tiles[3][2] = 'wall'; tiles[3][3] = 'wall';
+        g.grid.loadMap(tiles);
+        g.grid.saveInitialState();
+        g.wallCount = 8;
+        return g;
+    }
+
+    beforeEach(() => {
+        jest.useFakeTimers();
+    });
+
+    afterEach(() => {
+        jest.useRealTimers();
+    });
+
+    test('_cancelPennedAnimation clears all pending timeouts', () => {
+        game = createPennedGame();
+        game.render();
+        expect(game._pennedAnimationTimeouts.length).toBeGreaterThan(0);
+        game._cancelPennedAnimation();
+        expect(game._pennedAnimationTimeouts).toHaveLength(0);
+    });
+
+    test('cells do not have penned class before animation fires', () => {
+        game = createPennedGame();
+        game.render();
+        const homeCell = game.gridElement.querySelector('[data-row="2"][data-col="2"]');
+        expect(homeCell.classList.contains('penned')).toBe(false);
+    });
+
+    test('home tile gets penned class after first wave fires', () => {
+        game = createPennedGame();
+        game.render();
+        jest.advanceTimersByTime(CONSTANTS.PENNED_ANIMATION_DELAY_MS);
+        const homeCell = game.gridElement.querySelector('[data-row="2"][data-col="2"]');
+        expect(homeCell.classList.contains('penned')).toBe(true);
+    });
+
+    test('all accessible tiles are penned after animation completes', () => {
+        game = createPennedGame();
+        const accessibleTiles = game.getAccessibleTiles();
+        game.render();
+        // Run all timers
+        jest.runAllTimers();
+        for (const coordKey of accessibleTiles) {
+            const [row, col] = coordKey.split(',').map(Number);
+            const cell = game.gridElement.querySelector(`[data-row="${row}"][data-col="${col}"]`);
+            expect(cell.classList.contains('penned')).toBe(true);
+        }
+    });
+
+    test('re-rendering cancels the previous animation', () => {
+        game = createPennedGame();
+        game.render();
+        const firstTimeouts = [...game._pennedAnimationTimeouts];
+        expect(firstTimeouts.length).toBeGreaterThan(0);
+
+        // Render again — should cancel and replace with a fresh set
+        game.render();
+        const secondTimeouts = game._pennedAnimationTimeouts;
+        expect(secondTimeouts.length).toBeGreaterThan(0);
+        // None of the original timeout IDs should remain
+        for (const id of firstTimeouts) {
+            expect(secondTimeouts).not.toContain(id);
+        }
+    });
+
+    test('no animation timeouts are queued when pet is not penned', () => {
+        setupDOM();
+        game = new Game(5);
+        const tiles = Array.from({ length: 5 }, () => Array(5).fill('grass'));
+        tiles[2][2] = 'home';
+        game.grid.loadMap(tiles);
+        game.render();
+        expect(game._pennedAnimationTimeouts).toHaveLength(0);
+    });
+});

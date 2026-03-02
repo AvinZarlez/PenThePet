@@ -39,6 +39,9 @@ class Game {
         this.optimalSolution = null;
         this.viewingOptimal = false;  // Track if user is viewing optimal solution
         
+        // Animation state
+        this._pennedAnimationTimeouts = [];
+
         // Timer state
         this.elapsedSeconds = 0;
         this._timerInterval = null;
@@ -58,6 +61,7 @@ class Game {
      * Render the grid to the DOM
      */
     render() {
+        this._cancelPennedAnimation();
         this.gridElement.innerHTML = '';
         this.gridElement.style.gridTemplateColumns = `repeat(${this.grid.size}, 1fr)`;
         
@@ -73,14 +77,34 @@ class Game {
         
         for (let i = 0; i < this.grid.size; i++) {
             for (let j = 0; j < this.grid.size; j++) {
-                const cellElement = this._createCellElement(i, j, allTiles[i][j], pathInfo.path, accessibleTiles, pathInfo.directions);
+                // Render cells without penned state; animation applies it progressively
+                const cellElement = this._createCellElement(i, j, allTiles[i][j], pathInfo.path, new Set(), pathInfo.directions);
                 this.gridElement.appendChild(cellElement);
             }
         }
         
-        // Update penned status indicator
+        // Update penned status indicator (logic is immediate, regardless of animation)
         this.updatePennedStatus(isPenned);
         this.updateAreaSizeDisplay();
+
+        // Animate the penned area spreading out from home
+        if (isPenned) {
+            this._animatePennedArea(accessibleTiles);
+        }
+    }
+
+    /**
+     * Apply the first asset from a tile's asset list as the cell's inline background.
+     * @private
+     * @param {HTMLElement} cell - The cell element to update
+     * @param {string} tileType - The tile type name
+     * @param {boolean} isEnclosed - Whether to use enclosed assets
+     */
+    _setCellBackground(cell, tileType, isEnclosed) {
+        const assetList = getTileAssets(tileType, isEnclosed);
+        if (assetList && assetList.length > 0) {
+            cell.style.background = `url('assets/${assetList[0]}') center/cover no-repeat`;
+        }
     }
 
     /**
@@ -110,13 +134,11 @@ class Game {
         cell.dataset.row = row;
         cell.dataset.col = col;
         
-        // Choose asset list: use enclosedAssets when tile is penned and they're defined
-        const assetList = getTileAssets(tileType, isPennedTile);
-        
         // Set background from first asset via inline style (data-driven, overrides CSS)
-        if (assetList && assetList.length > 0) {
-            cell.style.background = `url('assets/${assetList[0]}') center/cover no-repeat`;
-        }
+        this._setCellBackground(cell, tileType, isPennedTile);
+
+        // Choose asset list for overlay rendering (index 1+)
+        const assetList = getTileAssets(tileType, isPennedTile);
         
         // Render additional asset overlays from the chosen list (index 1+)
         if (assetList && assetList.length > 1) {
@@ -438,6 +460,68 @@ class Game {
         }
 
         return accessible;
+    }
+
+    /**
+     * Cancel any in-progress penned-area animation.
+     * Clears all pending timeouts so stale DOM updates are dropped.
+     */
+    _cancelPennedAnimation() {
+        for (const id of this._pennedAnimationTimeouts) {
+            clearTimeout(id);
+        }
+        this._pennedAnimationTimeouts = [];
+    }
+
+    /**
+     * Animate the penned area spreading outward from home using BFS waves.
+     * Each wave of tiles (by BFS distance from home) is revealed after an
+     * incremental delay so the enclosed area appears to "fill in" rather
+     * than appearing all at once.
+     * @param {Set} accessibleTiles - Set of coordinate strings in the penned area
+     */
+    _animatePennedArea(accessibleTiles) {
+        const homePos = this.grid.getHomePosition();
+        if (!homePos) return;
+
+        const { row: startRow, col: startCol } = homePos;
+        const visited = new Set();
+        visited.add(`${startRow},${startCol}`);
+        let currentWave = [[startRow, startCol]];
+        const waves = [];
+        const neighborDirs = [[-1, 0], [1, 0], [0, -1], [0, 1]];
+
+        // BFS to group accessible tiles by wave distance from home
+        while (currentWave.length > 0) {
+            waves.push([...currentWave]);
+            const nextWave = [];
+            for (const [row, col] of currentWave) {
+                for (const [dr, dc] of neighborDirs) {
+                    const newRow = row + dr;
+                    const newCol = col + dc;
+                    const coordKey = `${newRow},${newCol}`;
+                    if (!visited.has(coordKey) && accessibleTiles.has(coordKey)) {
+                        visited.add(coordKey);
+                        nextWave.push([newRow, newCol]);
+                    }
+                }
+            }
+            currentWave = nextWave;
+        }
+
+        const delay = CONSTANTS.PENNED_ANIMATION_DELAY_MS;
+        waves.forEach((wave, waveIndex) => {
+            const timeoutId = setTimeout(() => {
+                for (const [row, col] of wave) {
+                    const cell = this.gridElement.querySelector(`[data-row="${row}"][data-col="${col}"]`);
+                    if (cell) {
+                        cell.classList.add('penned');
+                        this._setCellBackground(cell, this.grid.getTile(row, col), true);
+                    }
+                }
+            }, waveIndex * delay);
+            this._pennedAnimationTimeouts.push(timeoutId);
+        });
     }
 
     /**

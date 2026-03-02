@@ -374,6 +374,16 @@
     position: relative;
 }
 
+/* Brief fade-in when a cell becomes part of the penned area */
+@keyframes pennedReveal {
+    from { opacity: 0.4; }
+    to   { opacity: 1;   }
+}
+
+.cell.penned {
+    animation: pennedReveal 0.15s ease-out;
+}
+
 .cell:hover {
     transform: scale(1.05);
     box-shadow: 0 3px 8px rgba(0, 0, 0, 0.3);
