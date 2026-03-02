@@ -270,41 +270,52 @@ describe('CloudSync', () => {
             });
         });
 
-        describe('applyCloudSubmission – rule 4: earliest timestamp wins', () => {
+        describe('applyCloudSubmission – rule 4: lower score wins; tiebreak by earliest submission timestamp', () => {
+            // "score" = penned-area value (lower is better per game rules).
+            // "timestamp" = when the puzzle was submitted (NOT elapsed solve time).
+
             test('writes cloud submission when no local cookie exists (only cloud has data)', () => {
                 CloudSync.applyCloudSubmission(DATE, { score: 5, timestamp: later });
                 expect(JSON.parse(CookieUtils.getCookie(submissionCookie)).score).toBe(5);
             });
 
-            test('keeps local submission when local timestamp is earlier than cloud', () => {
-                CookieUtils.setCookie(submissionCookie, JSON.stringify({ score: 5, timestamp: earlier }), 1);
-                const updated = CloudSync.applyCloudSubmission(DATE, { score: 3, timestamp: later });
-                expect(updated).toBe(false);
-                expect(JSON.parse(CookieUtils.getCookie(submissionCookie)).score).toBe(5);
+            test('writes cloud submission when no local cookie and no cloud timestamp', () => {
+                CloudSync.applyCloudSubmission(DATE, { score: 7 });
+                expect(JSON.parse(CookieUtils.getCookie(submissionCookie)).score).toBe(7);
             });
 
-            test('overwrites local submission when cloud timestamp is earlier than local', () => {
-                CookieUtils.setCookie(submissionCookie, JSON.stringify({ score: 5, timestamp: later }), 1);
-                const updated = CloudSync.applyCloudSubmission(DATE, { score: 3, timestamp: earlier });
+            test('uses cloud when cloud score is lower (better) than local score', () => {
+                CookieUtils.setCookie(submissionCookie, JSON.stringify({ score: 5, timestamp: earlier }), 1);
+                const updated = CloudSync.applyCloudSubmission(DATE, { score: 3, timestamp: later });
                 expect(updated).toBe(true);
                 expect(JSON.parse(CookieUtils.getCookie(submissionCookie)).score).toBe(3);
             });
 
-            test('uses cloud when local has no timestamp (cannot prove local was first)', () => {
-                CookieUtils.setCookie(submissionCookie, JSON.stringify({ score: 5 }), 1);
-                CloudSync.applyCloudSubmission(DATE, { score: 3, timestamp: earlier });
+            test('keeps local when local score is lower (better) than cloud score', () => {
+                CookieUtils.setCookie(submissionCookie, JSON.stringify({ score: 3, timestamp: later }), 1);
+                const updated = CloudSync.applyCloudSubmission(DATE, { score: 5, timestamp: earlier });
+                expect(updated).toBe(false);
                 expect(JSON.parse(CookieUtils.getCookie(submissionCookie)).score).toBe(3);
             });
 
-            test('uses cloud when cloud has no timestamp (default to cloud)', () => {
+            test('keeps local when scores are equal and local submission timestamp is earlier', () => {
                 CookieUtils.setCookie(submissionCookie, JSON.stringify({ score: 5, timestamp: earlier }), 1);
-                CloudSync.applyCloudSubmission(DATE, { score: 3 });
-                expect(JSON.parse(CookieUtils.getCookie(submissionCookie)).score).toBe(3);
+                const updated = CloudSync.applyCloudSubmission(DATE, { score: 5, timestamp: later });
+                expect(updated).toBe(false);
+                expect(JSON.parse(CookieUtils.getCookie(submissionCookie)).score).toBe(5);
             });
 
-            test('writes cloud submission when no local cookie and no cloud timestamp', () => {
-                CloudSync.applyCloudSubmission(DATE, { score: 7 });
-                expect(JSON.parse(CookieUtils.getCookie(submissionCookie)).score).toBe(7);
+            test('uses cloud when scores are equal and cloud submission timestamp is earlier', () => {
+                CookieUtils.setCookie(submissionCookie, JSON.stringify({ score: 5, timestamp: later }), 1);
+                const updated = CloudSync.applyCloudSubmission(DATE, { score: 5, timestamp: earlier });
+                expect(updated).toBe(true);
+                expect(JSON.parse(CookieUtils.getCookie(submissionCookie)).score).toBe(5);
+            });
+
+            test('uses cloud when scores are equal and local has no timestamp', () => {
+                CookieUtils.setCookie(submissionCookie, JSON.stringify({ score: 5 }), 1);
+                CloudSync.applyCloudSubmission(DATE, { score: 5, timestamp: earlier });
+                expect(JSON.parse(CookieUtils.getCookie(submissionCookie)).score).toBe(5);
             });
         });
     });

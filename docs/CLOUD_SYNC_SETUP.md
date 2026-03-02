@@ -365,19 +365,21 @@ For each puzzle date, when local cookie data and Firestore hold different values
 
 3. **Both in-progress (timer only)** — take the **higher elapsed time**. Both sides are updated to that value so no progress is lost.
 
-4. **Both submitted** — the **earlier submission timestamp** wins (first completed solve is the authentic result). Both sides are updated to that version.
+4. **Both submitted** — the **lower score wins** (lower score = better result). Both sides are updated to that version's data (score, wall placements, solve time, and submission timestamp). If scores are equal, the **earlier submission timestamp** breaks the tie (first completed solve is kept).
 
-| Data type                                | Rule                                | Rationale                                                                                                          |
-| ---------------------------------------- | ----------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
-| **Submissions** (`YYYY-MM-DD`)           | **See rules 1–4 above**             | Submitted result always beats in-progress; when both are submitted, the first solve (earliest timestamp) is kept. |
-| **Settings** (`selectedPet`, `hintMode`) | **Cloud wins**                      | The cloud holds the user's most recently saved preference from any signed-in device.                              |
-| **Timer** (`timer_YYYY-MM-DD`)           | **Highest elapsed wins**            | The timer should never go backwards. Whichever device has made the most progress keeps that value.                |
+   > **Note on field names:** `timestamp` = when the puzzle was submitted (wall-clock time the entry was saved). `time` = how many seconds the user spent solving the puzzle. Only `timestamp` is used for tiebreaking.
+
+| Data type                                | Rule                                | Rationale                                                                                                                          |
+| ---------------------------------------- | ----------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
+| **Submissions** (`YYYY-MM-DD`)           | **See rules 1–4 above**             | Submitted result always beats in-progress; when both are submitted, lower score wins; same score → first submitted is kept.        |
+| **Settings** (`selectedPet`, `hintMode`) | **Cloud wins**                      | The cloud holds the user's most recently saved preference from any signed-in device.                                              |
+| **Timer** (`timer_YYYY-MM-DD`)           | **Highest elapsed wins**            | The timer should never go backwards. Whichever device has made the most progress keeps that value.                                |
 
 > **Offline play then sign-in example:** You submit three puzzles while offline.
 > When you sign in, each date is merged against the cloud:
 >
-> - If the cloud already has a submitted result for that date, whichever
->   submission was made **first** is kept and applied to both sides.
+> - If the cloud already has a submitted result for that date, the lower score wins.
+>   If both scores are equal, whichever submission was made **first** is kept.
 > - If the cloud only has an in-progress timer, your offline submission wins.
 > - If the cloud has nothing, your offline submission is uploaded.
 

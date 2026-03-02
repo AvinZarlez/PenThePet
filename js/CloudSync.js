@@ -487,7 +487,10 @@ const CloudSync = (function () {
 
     /**
      * Apply a cloud submission to the local cookie using conflict resolution.
-     * Conflict rule 4: BOTH SUBMITTED → EARLIEST TIMESTAMP WINS. See docs/CLOUD_SYNC_SETUP.md.
+     * Conflict rule 4: BOTH SUBMITTED → LOWER SCORE WINS; TIEBREAK BY EARLIEST SUBMISSION TIMESTAMP.
+     * "score" = penned-area value (lower is better). "timestamp" = when the puzzle was submitted
+     * (NOT how long it took the user to solve it — that is the separate `time` field).
+     * See docs/CLOUD_SYNC_SETUP.md for the full rule table.
      * @param {string} dateString - Puzzle date (YYYY-MM-DD)
      * @param {Object} cloudData - Cloud submission data
      * @returns {boolean} true if the local cookie was updated, false if local was kept
@@ -498,9 +501,15 @@ const CloudSync = (function () {
         if (localValue) {
             try {
                 const localData = JSON.parse(localValue);
-                if (localData.timestamp && cloudData.timestamp &&
+                const localScore = typeof localData.score === 'number' ? localData.score : Infinity;
+                const cloudScore = typeof cloudData.score === 'number' ? cloudData.score : Infinity;
+                if (localScore < cloudScore) {
+                    return false; // local score is better (lower) — keep it
+                }
+                if (localScore === cloudScore &&
+                    localData.timestamp && cloudData.timestamp &&
                     new Date(localData.timestamp) < new Date(cloudData.timestamp)) {
-                    return false; // local was submitted first — keep it; upload will follow
+                    return false; // same score; local was submitted first — keep it
                 }
             } catch { /* fall through to use cloud data */ }
         }
