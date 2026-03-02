@@ -57,6 +57,8 @@ const CONSTANTS = {
 
     // UI timings
     SHARE_BUTTON_FLASH_MS: 2000,   // How long the "Copied!" label shows on the share button (ms)
+    PENNED_ANIMATION_DELAY_MS: 50, // Delay between BFS wave steps in the penned-area animation (ms)
+    PAW_ANIMATION_DELAY_MS: 80,    // Delay between each paw step in the escape-path animation (ms)
 
     // Timezone
     DEFAULT_TIMEZONE: 'America/Los_Angeles',    // Default timezone (Pacific / California)
