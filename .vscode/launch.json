@@ -61,12 +61,18 @@
         "7,9"
       ],
       "console": "integratedTerminal"
+    },
+    {
+      "type": "node-terminal",
+      "request": "launch",
+      "name": "Open in Browser",
+      "command": "open http://localhost:8080 || xdg-open http://localhost:8080"
     }
   ],
   "compounds": [
     {
       "name": "Start in web browser",
-      "configurations": [],
+      "configurations": ["Open in Browser"],
       "preLaunchTask": "Start HTTP Server",
       "stopAll": true
     }
