@@ -211,6 +211,21 @@ async function initGame() {
     // Initialise cloud sync (no-ops if Firebase is not configured)
     if (typeof CloudSync !== 'undefined') {
         CloudSync.init();
+
+        // When cloud sync completes (on login or real-time update), reload the
+        // currently displayed level if its submission state has changed.  This
+        // ensures a device that had no local cookies (e.g. first login on a new
+        // device) shows the correct completed/trophy state without a manual refresh.
+        document.addEventListener('cloudsync:synced', function () {
+            if (!menu || !game || !game.currentDate) return;
+            if (!menu.mapsDatabase || !menu.mapsDatabase[game.currentDate]) return;
+
+            const hadSubmission = game.isSubmitted;
+            const hasSubmissionNow = game.loadSubmission(game.currentDate) !== null;
+            if (hadSubmission !== hasSubmissionNow) {
+                menu.loadLevel(menu.mapsDatabase[game.currentDate]);
+            }
+        });
     }
 }
 
