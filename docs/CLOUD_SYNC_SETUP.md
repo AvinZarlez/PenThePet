@@ -375,6 +375,7 @@ For each puzzle date, when local cookie data and Firestore hold different values
 
 > **Offline play then sign-in example:** You submit three puzzles while offline.
 > When you sign in, each date is merged against the cloud:
+>
 > - If the cloud already has a submitted result for that date, whichever
 >   submission was made **first** is kept and applied to both sides.
 > - If the cloud only has an in-progress timer, your offline submission wins.

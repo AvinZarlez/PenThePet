@@ -223,8 +223,11 @@ async function initGame() {
             const currentSubmission = game.loadSubmission(game.currentDate);
             const hasSubmissionNow = currentSubmission !== null;
             const submissionStateChanged = game.isSubmitted !== hasSubmissionNow;
-            const submissionDataChanged = game.isSubmitted && currentSubmission &&
-                currentSubmission.score !== game.submittedScore;
+            // Reload if score or time differs — catches earliest-wins merges changing either field.
+            const submissionDataChanged = game.isSubmitted && currentSubmission && (
+                currentSubmission.score !== game.submittedScore ||
+                (typeof currentSubmission.time === 'number' && typeof game.elapsedSeconds === 'number' &&
+                    currentSubmission.time !== game.elapsedSeconds));
 
             if (submissionStateChanged || submissionDataChanged) {
                 if (menu.mapsDatabase && menu.mapsDatabase[game.currentDate]) {

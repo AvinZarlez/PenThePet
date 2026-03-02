@@ -577,6 +577,8 @@ const CloudSync = (function () {
         if (!db || !currentUser) return;
 
         try {
+            // Guard our own writes so the realtime listener ignores them.
+            isSyncing = true;
             updateSyncStatus('syncing');
 
             const collRef = db
@@ -611,6 +613,8 @@ const CloudSync = (function () {
         } catch (e) {
             console.error('CloudSync: Failed to sync from cloud:', e);
             updateSyncStatus('error', getSyncErrorMessage(e));
+        } finally {
+            isSyncing = false;
         }
     }
 
@@ -703,6 +707,9 @@ const CloudSync = (function () {
         unsubscribeListener = collRef.onSnapshot(function (snapshot) {
             if (isSyncing) return; // ignore our own writes
             let submissionsUpdated = false;
+            let timerUpdated = false;
+            const localWinUploads = []; // docs where local submission "won" — push back to cloud
+
             snapshot.docChanges().forEach(function (change) {
                 if (change.type === 'added' || change.type === 'modified') {
                     if (change.doc.id === SETTINGS_DOC) {
@@ -711,11 +718,18 @@ const CloudSync = (function () {
                     }
                     if (change.doc.id.startsWith(TIMER_DOC_PREFIX)) {
                         applyCloudTimerState(change.doc.id, change.doc.data());
+                        // Timer update from another device — notify main.js to refresh the display.
+                        timerUpdated = true;
                         return;
                     }
-                    // Submission conflict resolution — see docs/CLOUD_SYNC_SETUP.md
-                    applyCloudSubmission(change.doc.id, change.doc.data());
+                    // Submission conflict resolution — see docs/CLOUD_SYNC_SETUP.md.
+                    // Returns true if cloud was applied; false if local submission was kept.
+                    const cloudApplied = applyCloudSubmission(change.doc.id, change.doc.data());
                     submissionsUpdated = true;
+                    if (!cloudApplied) {
+                        // Local submission "won" — schedule a writeback so other devices converge.
+                        localWinUploads.push(change.doc.id);
+                    }
                 } else if (change.type === 'removed') {
                     // Submission deleted on another device — remove local cookie too.
                     if (change.doc.id === SETTINGS_DOC) return;
@@ -727,8 +741,22 @@ const CloudSync = (function () {
                     submissionsUpdated = true;
                 }
             });
-            // Notify the app that submission cookies were updated by a remote change.
-            if (submissionsUpdated && typeof document !== 'undefined') {
+
+            // Push any local-win submissions back so all devices converge immediately.
+            // Fire-and-forget: the resulting echo snapshot will see identical timestamps
+            // and write the same cookie value — a harmless no-op.
+            localWinUploads.forEach(function (docId) {
+                const cookieValue = CookieUtils.getCookie('submission_' + docId);
+                if (!cookieValue) return;
+                try {
+                    collRef.doc(docId).set(JSON.parse(cookieValue)).catch(function (e) {
+                        console.error('CloudSync: Failed to push local win to Firestore:', e);
+                    });
+                } catch (e) { /* malformed cookie — defer to next full sync */ }
+            });
+
+            // Notify the app whenever submissions or timers changed.
+            if ((submissionsUpdated || timerUpdated) && typeof document !== 'undefined') {
                 document.dispatchEvent(new CustomEvent('cloudsync:synced'));
             }
         });
