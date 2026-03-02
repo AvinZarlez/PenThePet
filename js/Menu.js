@@ -37,7 +37,6 @@ class Menu {
         const instructionsBtn = document.getElementById('instructionsBtn');
         const aboutBtn = document.getElementById('aboutBtn');
         const optionsBtn = document.getElementById('optionsBtn');
-        const verifyBtn = document.getElementById('verifyBtn');
 
         if (levelSelectorBtn) {
             levelSelectorBtn.addEventListener('click', () => this.openLevelSelector());
@@ -50,9 +49,6 @@ class Menu {
         }
         if (optionsBtn) {
             optionsBtn.addEventListener('click', () => this.openOptions());
-        }
-        if (verifyBtn) {
-            verifyBtn.addEventListener('click', () => this.openVerify());
         }
 
         // Close buttons for all modals
@@ -653,99 +649,6 @@ class Menu {
         const optionsModal = document.getElementById('optionsModal');
         if (optionsModal) {
             optionsModal.classList.add('show');
-        }
-    }
-
-    /**
-     * Open the verify score modal
-     */
-    openVerify() {
-        this.closeAllModals();
-        if (this.game && typeof this.game.pauseTimer === 'function') {
-            this.game.pauseTimer();
-        }
-
-        // Clear previous state
-        const verifyInput = document.getElementById('verifyInput');
-        const verifyResult = document.getElementById('verifyResult');
-        if (verifyInput) verifyInput.value = '';
-        if (verifyResult) {
-            verifyResult.textContent = '';
-            verifyResult.className = 'verify-result';
-        }
-
-        // Attach submit handler once (guard against duplicates with a flag)
-        const verifySubmitBtn = document.getElementById('verifySubmitBtn');
-        if (verifySubmitBtn && !verifySubmitBtn._verifyHandlerAttached) {
-            verifySubmitBtn._verifyHandlerAttached = true;
-            verifySubmitBtn.addEventListener('click', () => this._handleVerifySubmit());
-        }
-
-        const verifyModal = document.getElementById('verifyModal');
-        if (verifyModal) {
-            verifyModal.classList.add('show');
-        }
-    }
-
-    /**
-     * Handle the Verify submit button click.
-     * Accepts either a full share message or a bare signature token.
-     * All displayed details come exclusively from the decoded token — the
-     * rest of the pasted text is ignored.
-     * @private
-     */
-    async _handleVerifySubmit() {
-        const verifyInput = document.getElementById('verifyInput');
-        const verifyResult = document.getElementById('verifyResult');
-        if (!verifyInput || !verifyResult) return;
-
-        const text = verifyInput.value.trim();
-        if (!text) {
-            verifyResult.textContent = 'Please paste a signature token or score message first.';
-            verifyResult.className = 'verify-result verify-result-error';
-            return;
-        }
-
-        if (typeof SignatureUtils === 'undefined') {
-            verifyResult.textContent = 'Signature verification is not available.';
-            verifyResult.className = 'verify-result verify-result-error';
-            return;
-        }
-
-        verifyResult.textContent = 'Verifying…';
-        verifyResult.className = 'verify-result';
-
-        // Extract the token from either the full share message or a bare token
-        const token = SignatureUtils.extractToken(text);
-        if (!token) {
-            verifyResult.textContent = '❌ Could not find a signature token. Paste the full score message or just the token from the Signature line.';
-            verifyResult.className = 'verify-result verify-result-error';
-            return;
-        }
-
-        // Decode all game details directly from the token (never trust other pasted text)
-        const decoded = SignatureUtils.decodeToken(token);
-        if (!decoded) {
-            verifyResult.textContent = '❌ Could not decode the token. Make sure you copied it completely.';
-            verifyResult.className = 'verify-result verify-result-error';
-            return;
-        }
-
-        const valid = await SignatureUtils.verify(token);
-        const { username, date, score, goal, timeSeconds } = decoded;
-
-        if (valid) {
-            const pct = goal > 0 ? Math.round((score / goal) * 100) : 0;
-            const timeStr = this._formatTime(timeSeconds);
-            verifyResult.innerHTML =
-                '✅ <strong>Valid!</strong><br>' +
-                `Player: <strong>${this._escapeHtml(username)}</strong><br>` +
-                `Date: ${this._escapeHtml(date)}<br>` +
-                `Score: ${score}/${goal} (${pct}%) — Time: ${timeStr}`;
-            verifyResult.className = 'verify-result verify-result-valid';
-        } else {
-            verifyResult.textContent = '❌ Invalid — this score could not be verified.';
-            verifyResult.className = 'verify-result verify-result-error';
         }
     }
 

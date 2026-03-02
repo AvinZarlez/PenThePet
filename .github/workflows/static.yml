@@ -37,10 +37,9 @@ jobs:
           FIREBASE_AUTH_DOMAIN: ${{ secrets.FIREBASE_AUTH_DOMAIN }}
           FIREBASE_PROJECT_ID: ${{ secrets.FIREBASE_PROJECT_ID }}
           FIREBASE_APP_ID: ${{ secrets.FIREBASE_APP_ID }}
-          SIGNATURE_PUBLIC_KEY: ${{ secrets.SIGNATURE_PUBLIC_KEY }}
         run: |
           python3 - <<'PYEOF'
-          import os, sys, json
+          import os, sys
           fields = [
               ('apiKey',             'FIREBASE_API_KEY'),
               ('authDomain',         'FIREBASE_AUTH_DOMAIN'),
@@ -56,18 +55,6 @@ jobs:
                       print(f'Error: {env_var} contains invalid characters', file=sys.stderr)
                       sys.exit(1)
                   content = content.replace(f"{js_key}: ''", f"{js_key}: '{value}'")
-          # Inject ECDSA public key (stored as a JWK JSON string).
-          # IMPORTANT: only the PUBLIC key is injected here — the private key
-          # must never appear in browser JavaScript. See docs/SIGNATURE_KEYS.md.
-          pub_key = os.environ.get('SIGNATURE_PUBLIC_KEY', '').strip()
-          if pub_key:
-              try:
-                  json.loads(pub_key)
-              except json.JSONDecodeError:
-                  print('Error: SIGNATURE_PUBLIC_KEY is not valid JSON', file=sys.stderr)
-                  sys.exit(1)
-              escaped = pub_key.replace('\\', '\\\\').replace("'", "\\'")
-              content = content.replace("signaturePublicKey: ''", f"signaturePublicKey: '{escaped}'")
           with open('js/site-config.js', 'w') as f:
               f.write(content)
           PYEOF

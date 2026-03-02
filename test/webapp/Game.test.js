@@ -660,46 +660,28 @@ describe('buildShareText()', () => {
         jest.useRealTimers();
     });
 
-    test('contains the pet emoji', async () => {
-        const text = await game.buildShareText();
+    test('contains the pet emoji', () => {
+        const text = game.buildShareText();
         expect(text).toContain('🐶');
     });
 
-    test('contains the day number from the DOM', async () => {
-        const text = await game.buildShareText();
+    test('contains the day number from the DOM', () => {
+        const text = game.buildShareText();
         expect(text).toContain('Day 42');
     });
 
-    test('contains the score percentage', async () => {
-        const text = await game.buildShareText();
+    test('contains the score percentage', () => {
+        const text = game.buildShareText();
         expect(text).toContain('80%');
     });
 
-    test('contains score fraction (score/goal)', async () => {
-        const text = await game.buildShareText();
+    test('contains score fraction (score/goal)', () => {
+        const text = game.buildShareText();
         expect(text).toContain('(8/10)');
     });
 
-    test('contains formatted time', async () => {
-        const text = await game.buildShareText();
+    test('contains formatted time', () => {
+        const text = game.buildShareText();
         expect(text).toContain('01:33');
-    });
-
-    test('Signature line is present and contains a self-contained token', async () => {
-        const text = await game.buildShareText();
-        expect(text).toMatch(/^Signature:/m);
-        // Token should have base64url.<hexsig> format (contains a dot)
-        const sigLine = text.split('\n').find(l => /^Signature:/i.test(l));
-        const token = sigLine.replace(/^Signature:\s*/i, '').trim();
-        expect(token).toContain('.');
-    });
-
-    test('token is decodable via SignatureUtils.decodeToken', async () => {
-        const text = await game.buildShareText();
-        const token = SignatureUtils.extractToken(text);
-        const decoded = SignatureUtils.decodeToken(token);
-        expect(decoded).not.toBeNull();
-        expect(decoded.score).toBe(8);
-        expect(decoded.goal).toBe(10);
     });
 });

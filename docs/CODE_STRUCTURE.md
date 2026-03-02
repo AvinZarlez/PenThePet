@@ -43,7 +43,7 @@ PenThePet/
 │   ├── Grid.js             # Grid state management (load, get/set, reset)
 │   ├── Game.js             # Game controller and checker (checks if pet is penned)
 │   ├── Menu.js             # Menu system (level selector, options, etc.)
-│   ├── site-config.js      # Runtime site configuration (Firebase + signature public key)
+│   ├── site-config.js      # Runtime site configuration (Firebase credentials)
 │   ├── CloudSync.js        # Optional cloud sync module (Firebase Auth + Firestore)
 │   └── main.js             # Application entry point and initialization
 ├── scripts/

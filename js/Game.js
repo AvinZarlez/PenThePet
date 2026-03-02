@@ -928,11 +928,10 @@ class Game {
 
     /**
      * Build the shareable score text for the current submission.
-     * Generates a cryptographic signature via SignatureUtils.
      *
-     * @returns {Promise<string>} Formatted share text
+     * @returns {string} Formatted share text
      */
-    async buildShareText() {
+    buildShareText() {
         const score = this.submittedScore ?? 0;
         const goal = Number(this.goalAreaSize);
         const pct = goal > 0 ? Math.round((score / goal) * 100) : 0;
@@ -945,18 +944,11 @@ class Game {
         const dayNumEl = document.getElementById('mapDay');
         const dayNum = dayNumEl ? dayNumEl.textContent : '?';
 
-        let token = '';
-        if (typeof SignatureUtils !== 'undefined') {
-            const payload = SignatureUtils.buildPayload(username, date, score, goal, this.elapsedSeconds);
-            token = await SignatureUtils.sign(payload);
-        }
-
         return [
             `Pen The Pet ${this.petEmoji}`,
             `Day ${dayNum} - ${displayDate}`,
             `Player: ${username}`,
             `Score: ${pct}% (${score}/${goal}) Time: ${timeStr}`,
-            `Signature: ${token}`,
         ].join('\n');
     }
 
@@ -969,30 +961,29 @@ class Game {
     _handleShareScore(btn) {
         if (!this.isSubmitted) return;
 
-        this.buildShareText().then(text => {
-            if (navigator.clipboard && navigator.clipboard.writeText) {
-                navigator.clipboard.writeText(text).then(() => {
-                    this._flashShareButton(btn, '✓ Copied!');
-                }).catch(() => {
-                    this._flashShareButton(btn, '✗ Failed');
-                });
-            } else {
-                // Fallback for environments without Clipboard API
-                const ta = document.createElement('textarea');
-                ta.value = text;
-                ta.style.position = 'fixed';
-                ta.style.opacity = '0';
-                document.body.appendChild(ta);
-                ta.select();
-                try {
-                    document.execCommand('copy');
-                    this._flashShareButton(btn, '✓ Copied!');
-                } catch {
-                    this._flashShareButton(btn, '✗ Failed');
-                }
-                document.body.removeChild(ta);
+        const text = this.buildShareText();
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(text).then(() => {
+                this._flashShareButton(btn, '✓ Copied!');
+            }).catch(() => {
+                this._flashShareButton(btn, '✗ Failed');
+            });
+        } else {
+            // Fallback for environments without Clipboard API
+            const ta = document.createElement('textarea');
+            ta.value = text;
+            ta.style.position = 'fixed';
+            ta.style.opacity = '0';
+            document.body.appendChild(ta);
+            ta.select();
+            try {
+                document.execCommand('copy');
+                this._flashShareButton(btn, '✓ Copied!');
+            } catch {
+                this._flashShareButton(btn, '✗ Failed');
             }
-        });
+            document.body.removeChild(ta);
+        }
     }
 
     /**

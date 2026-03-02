@@ -141,7 +141,6 @@
                 <button id="instructionsBtn" class="menu-option-btn">📖 Instructions</button>
                 <button id="aboutBtn" class="menu-option-btn">ℹ️ About</button>
                 <button id="optionsBtn" class="menu-option-btn">⚙️ Options</button>
-                <button id="verifyBtn" class="menu-option-btn">🔍 Verify Score</button>
             </div>
         </div>
     </div>
@@ -321,27 +320,6 @@
         </div>
     </div>
 
-    <!-- Verify Score Modal -->
-    <div id="verifyModal" class="modal">
-        <div class="modal-content">
-            <button class="modal-close" aria-label="Close verify">&times;</button>
-            <h2>🔍 Verify Score</h2>
-            <p class="modal-description">Confirm that a shared score is authentic.</p>
-            <div class="modal-section">
-                <p class="verify-instructions">
-                    Paste either the <strong>full score message</strong> you received, or
-                    just the <strong>signature token</strong> from the Signature line —
-                    both work. All details are read directly from the token, so no other
-                    text is trusted.
-                </p>
-                <textarea id="verifyInput" class="verify-input" rows="6"
-                    placeholder="Paste the score message or just the Signature token here…" aria-label="Score to verify"></textarea>
-                <button id="verifySubmitBtn" class="verify-submit-btn">Verify</button>
-                <div id="verifyResult" class="verify-result" aria-live="polite"></div>
-            </div>
-        </div>
-    </div>
-
     <!-- Firebase SDK (compat) — loaded only when needed; CloudSync gracefully no-ops if missing -->
     <script src="https://www.gstatic.com/firebasejs/11.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/11.7.1/firebase-auth-compat.js"></script>
@@ -357,7 +335,6 @@
     <script src="js/PathfindingUtils.js"></script>
     <script src="js/Grid.js"></script>
     <script src="js/site-config.js"></script>
-    <script src="js/SignatureUtils.js"></script>
     <script src="js/CloudSync.js"></script>
     <script src="js/Game.js"></script>
     <script src="js/Menu.js"></script>
