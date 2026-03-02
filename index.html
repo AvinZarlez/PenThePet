@@ -298,14 +298,30 @@
             <h2>☁️ Cloud Sync</h2>
             <p class="modal-description">Sign in to sync your puzzle progress across devices</p>
             <div class="auth-form">
-                <label for="authEmail">Email</label>
-                <input type="email" id="authEmail" class="auth-input" placeholder="you@example.com" autocomplete="email">
-                <label for="authPassword">Password</label>
-                <input type="password" id="authPassword" class="auth-input" placeholder="Password (min 6 characters)" autocomplete="current-password">
-                <div id="authError" class="auth-error" style="display: none;"></div>
-                <div class="auth-buttons">
-                    <button id="authSignInBtn" class="auth-btn auth-btn-primary" onclick="CloudSync.handleSignIn()">Sign In</button>
-                    <button id="authSignUpBtn" class="auth-btn auth-btn-secondary" onclick="CloudSync.handleSignUp()">Create Account</button>
+                <!-- Password sign-in view (default) -->
+                <div id="authPasswordView">
+                    <label for="authEmail">Email</label>
+                    <input type="email" id="authEmail" class="auth-input" placeholder="you@example.com" autocomplete="email">
+                    <label for="authPassword">Password</label>
+                    <input type="password" id="authPassword" class="auth-input" placeholder="Password (min 6 characters)" autocomplete="current-password">
+                    <div id="authError" class="auth-error" style="display: none;"></div>
+                    <div class="auth-buttons">
+                        <button id="authSignInBtn" class="auth-btn auth-btn-primary" onclick="CloudSync.handleSignIn()">Sign In</button>
+                        <button id="authSignUpBtn" class="auth-btn auth-btn-secondary" onclick="CloudSync.handleSignUp()">Create Account</button>
+                    </div>
+                    <p class="auth-toggle-hint"><button type="button" class="auth-link-btn" onclick="CloudSync.showPasswordlessView()">Sign in without a password →</button></p>
+                </div>
+                <!-- Passwordless sign-in view (email link / magic link) -->
+                <div id="authPasswordlessView" style="display: none;">
+                    <p class="auth-passwordless-hint">Enter your email and we'll send you a sign-in link — no password needed.</p>
+                    <label for="authEmailLink">Email</label>
+                    <input type="email" id="authEmailLink" class="auth-input" placeholder="you@example.com" autocomplete="email">
+                    <div id="authLinkError" class="auth-error" style="display: none;"></div>
+                    <div id="authLinkSuccess" class="profile-success" style="display: none;"></div>
+                    <div class="auth-buttons">
+                        <button id="authSendLinkBtn" class="auth-btn auth-btn-primary" onclick="CloudSync.handleSendSignInLink()">Send Sign-In Link</button>
+                    </div>
+                    <p class="auth-toggle-hint"><button type="button" class="auth-link-btn" onclick="CloudSync.showPasswordView()">← Use password instead</button></p>
                 </div>
             </div>
         </div>

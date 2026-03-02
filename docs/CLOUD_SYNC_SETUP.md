@@ -49,13 +49,15 @@ for normal use.
 > project but all access is controlled by Authentication and Security Rules.
 > It is safe to commit `firebase-config.js` with your real values.
 
-### Step 3 — Enable Email/Password Authentication
+### Step 3 — Enable Authentication Sign-In Methods
 
 1. In the Firebase console left sidebar, click **Build → Authentication**.
 2. Click **Get started**.
 3. Under the **Sign-in method** tab, click **Email/Password**.
 4. Toggle **Enable** to on.
-5. Leave "Email link (passwordless sign-in)" disabled.
+5. Toggle **Email link (passwordless sign-in)** to on as well. This enables
+   the "Sign in without a password" feature and allows Firebase to send
+   verification emails (including the email-change verification email).
 6. Click **Save**.
 
 ### Step 4 — Create a Firestore Database
@@ -177,12 +179,47 @@ automatically enables the cloud sync UI.
 
 1. Open the app (your GitHub Pages URL).
 2. A **"☁️ Sign In to Sync"** button should appear below the menu button.
-3. Click it, enter your email and a password (min 6 characters), then
-   click **Create Account**.
-4. After signing in, you should see your email and a **☁️ Synced** badge.
+3. Click it. You will see the sign-in modal with two options:
+   - **Email + password** — enter your email and a password (min 6 characters)
+     and click **Create Account** to register, or **Sign In** if you already
+     have an account.
+   - **Passwordless** — click "Sign in without a password →", enter your email,
+     and click **Send Sign-In Link**. Firebase will email you a magic link;
+     clicking it in your inbox returns you to the app and signs you in
+     automatically — no password required.
+4. After signing in, you should see your email (or username) and a **☁️ Synced** badge.
 5. Submit a puzzle — it should upload to Firestore automatically.
 6. Open the same URL in a different browser or device, sign in with the
    same account, and verify that the submission appears.
+
+## Passwordless Sign-In (Magic Links)
+
+Once **Email link (passwordless sign-in)** is enabled in Step 3, users can
+sign in without ever setting a password:
+
+1. Click **"☁️ Sign In to Sync"** in the app.
+2. Click **"Sign in without a password →"** at the bottom of the modal.
+3. Enter your email address and click **Send Sign-In Link**.
+4. Check your inbox for an email from Firebase — click the link inside.
+5. The app opens and you are signed in automatically.
+
+### How it works
+
+| Step | What happens |
+|---|---|
+| User requests a link | `sendSignInLinkToEmail()` is called; Firebase emails a one-time magic link; the email is saved in `localStorage` |
+| User clicks the link | Browser opens the app URL with a sign-in token in the query string |
+| App loads | `init()` detects the token, reads the saved email, calls `signInWithEmailLink()`, then cleans the URL |
+| Different device | If the link is opened on a different device, the app prompts for the email before completing sign-in |
+
+### Enabling email delivery
+
+Firebase sends sign-in link emails through its own delivery infrastructure
+when **Email link (passwordless sign-in)** is enabled. The same infrastructure
+also sends the **email-change verification** emails used by the "Edit Profile"
+feature. If you previously saw "Email/password sign-in is not enabled in the
+Firebase console" when attempting to change your email address, enabling this
+setting in Step 3 resolves it.
 
 ## How Data Is Stored
 
@@ -237,9 +274,12 @@ reads and writes — far below the free limits.
 
 The `apiKey` in `js/firebase-config.js` is empty. Complete Step 8.
 
-### "Email/password sign-in is not enabled"
+### "Email/password sign-in is not enabled" or "This sign-in method is not enabled"
 
-Return to Step 3 and enable the **Email/Password** provider.
+Return to Step 3. Make sure **Email/Password** is toggled on, and (for
+passwordless sign-in and email-change verification emails) make sure
+**Email link (passwordless sign-in)** is toggled on too. Click **Save** after
+each change.
 
 ### "Firestore permission denied" or "⚠️ Sync error"
 

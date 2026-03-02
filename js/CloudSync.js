@@ -64,6 +64,9 @@ const CloudSync = (function () {
             auth = firebase.auth();
             db = firebase.firestore();
             auth.onAuthStateChanged(handleAuthStateChange);
+            completeSignInWithEmailLink().catch(function (e) {
+                console.error('CloudSync: Email link sign-in check failed:', e);
+            });
             showCloudSyncUI();
             showOptionsAccountSection();
         } catch (e) {
@@ -179,6 +182,52 @@ const CloudSync = (function () {
             await auth.signInWithEmailAndPassword(email, password);
         } catch (e) {
             throw new Error(getAuthErrorMessage(e.code), { cause: e });
+        }
+    }
+
+    /**
+     * Send a passwordless sign-in link to the given email address.
+     * The user receives an email with a magic link; clicking it returns them
+     * to the app where completeSignInWithEmailLink() finishes sign-in.
+     * @param {string} email
+     */
+    async function sendSignInLink(email) {
+        if (!auth) throw new Error('Firebase not initialised');
+        const actionCodeSettings = {
+            url: window.location.origin + window.location.pathname,
+            handleCodeInApp: true
+        };
+        try {
+            await auth.sendSignInLinkToEmail(email, actionCodeSettings);
+            window.localStorage.setItem('emailForSignIn', email);
+        } catch (e) {
+            throw new Error(getAuthErrorMessage(e.code), { cause: e });
+        }
+    }
+
+    /**
+     * Check whether the current URL contains a sign-in email link and, if
+     * so, complete the passwordless sign-in automatically. Called from init().
+     */
+    async function completeSignInWithEmailLink() {
+        if (!auth) return;
+        if (typeof window === 'undefined') return;
+        if (!auth.isSignInWithEmailLink(window.location.href)) return;
+
+        let email = window.localStorage.getItem('emailForSignIn');
+        if (!email) {
+            // User opened the link on a different device — ask for their email
+            email = window.prompt('Please enter your email to complete sign-in:');
+        }
+        if (!email) return;
+
+        try {
+            await auth.signInWithEmailLink(email, window.location.href);
+            window.localStorage.removeItem('emailForSignIn');
+            // Remove the sign-in token from the URL without reloading the page
+            window.history.replaceState({}, document.title, window.location.pathname);
+        } catch (e) {
+            console.error('CloudSync: Failed to complete email link sign-in:', e);
         }
     }
 
@@ -474,6 +523,9 @@ const CloudSync = (function () {
         const modal = document.getElementById('cloudSyncModal');
         if (modal) {
             modal.style.display = 'flex';
+            showPasswordView();
+            clearAuthLinkError();
+            clearAuthLinkSuccess();
             const emailInput = document.getElementById('authEmail');
             if (emailInput) emailInput.focus();
         }
@@ -483,6 +535,8 @@ const CloudSync = (function () {
         const modal = document.getElementById('cloudSyncModal');
         if (modal) modal.style.display = 'none';
         clearAuthError();
+        clearAuthLinkError();
+        clearAuthLinkSuccess();
     }
 
     function openEditProfileModal() {
@@ -516,6 +570,57 @@ const CloudSync = (function () {
 
     function showAuthError(msg) {
         const el = document.getElementById('authError');
+        if (el) {
+            el.textContent = msg;
+            el.style.display = 'block';
+        }
+    }
+
+    function showPasswordlessView() {
+        const passwordView = document.getElementById('authPasswordView');
+        const passwordlessView = document.getElementById('authPasswordlessView');
+        if (passwordView) passwordView.style.display = 'none';
+        if (passwordlessView) passwordlessView.style.display = 'block';
+        clearAuthLinkError();
+        clearAuthLinkSuccess();
+        const emailInput = document.getElementById('authEmailLink');
+        if (emailInput) emailInput.focus();
+    }
+
+    function showPasswordView() {
+        const passwordView = document.getElementById('authPasswordView');
+        const passwordlessView = document.getElementById('authPasswordlessView');
+        if (passwordView) passwordView.style.display = 'block';
+        if (passwordlessView) passwordlessView.style.display = 'none';
+        clearAuthError();
+    }
+
+    function clearAuthLinkError() {
+        const el = document.getElementById('authLinkError');
+        if (el) {
+            el.style.display = 'none';
+            el.textContent = '';
+        }
+    }
+
+    function showAuthLinkError(msg) {
+        const el = document.getElementById('authLinkError');
+        if (el) {
+            el.textContent = msg;
+            el.style.display = 'block';
+        }
+    }
+
+    function clearAuthLinkSuccess() {
+        const el = document.getElementById('authLinkSuccess');
+        if (el) {
+            el.style.display = 'none';
+            el.textContent = '';
+        }
+    }
+
+    function showAuthLinkSuccess(msg) {
+        const el = document.getElementById('authLinkSuccess');
         if (el) {
             el.textContent = msg;
             el.style.display = 'block';
@@ -600,6 +705,28 @@ const CloudSync = (function () {
         }
     }
 
+    /** Called by the Send Sign-In Link button in the passwordless view. */
+    async function handleSendSignInLink() {
+        clearAuthLinkError();
+        clearAuthLinkSuccess();
+        const emailInput = document.getElementById('authEmailLink');
+        const email = emailInput ? emailInput.value.trim() : '';
+        if (!email) {
+            showAuthLinkError('Please enter your email address.');
+            return;
+        }
+        const btn = document.getElementById('authSendLinkBtn');
+        if (btn) btn.disabled = true;
+        try {
+            await sendSignInLink(email);
+            showAuthLinkSuccess(`A sign-in link has been sent to ${email}. Check your inbox and click the link to sign in.`);
+        } catch (e) {
+            showAuthLinkError(e.message);
+        } finally {
+            if (btn) btn.disabled = false;
+        }
+    }
+
     /** Called by the Sign Out button. */
     async function handleSignOut() {
         try {
@@ -656,10 +783,12 @@ const CloudSync = (function () {
             'auth/invalid-email': 'Please enter a valid email address.',
             'auth/too-many-requests': 'Too many attempts. Please wait a moment and try again.',
             'auth/invalid-credential': 'Invalid email or password.',
-            'auth/operation-not-allowed': 'Email/password sign-in is not enabled in the Firebase console.',
+            'auth/operation-not-allowed': 'This sign-in method is not enabled in the Firebase console.',
             'auth/invalid-api-key': 'Invalid Firebase API key. Check firebase-config.js.',
             'auth/configuration-not-found': 'Firebase Authentication is not configured. Enable it in the Firebase console.',
-            'auth/requires-recent-login': 'Please sign out and sign in again before changing your email.'
+            'auth/requires-recent-login': 'Please sign out and sign in again before changing your email.',
+            'auth/expired-action-code': 'The sign-in link has expired. Please request a new one.',
+            'auth/invalid-action-code': 'The sign-in link is invalid or has already been used.'
         };
         if (code && code.startsWith('auth/requests-from-referer-') && code.endsWith('-are-blocked')) {
             const blockedDomain = code
@@ -704,6 +833,7 @@ const CloudSync = (function () {
         saveSettings: saveSettings,
         saveUsername: saveUsername,
         saveEmail: saveEmail,
+        sendSignInLink: sendSignInLink,
         signIn: signIn,
         signUp: signUp,
         signOut: signOut,
@@ -711,8 +841,11 @@ const CloudSync = (function () {
         closeAuthModal: closeAuthModal,
         openEditProfileModal: openEditProfileModal,
         closeEditProfileModal: closeEditProfileModal,
+        showPasswordlessView: showPasswordlessView,
+        showPasswordView: showPasswordView,
         handleSignIn: handleSignIn,
         handleSignUp: handleSignUp,
+        handleSendSignInLink: handleSendSignInLink,
         handleSignOut: handleSignOut,
         handleSaveProfile: handleSaveProfile
     };

@@ -130,6 +130,12 @@ describe('CloudSync', () => {
         });
     });
 
+    describe('sendSignInLink()', () => {
+        test('should throw when Firebase is not initialised', async () => {
+            await expect(CloudSync.sendSignInLink('test@example.com')).rejects.toThrow('Firebase not initialised');
+        });
+    });
+
     describe('edit profile modal helpers', () => {
         beforeEach(() => {
             document.body.innerHTML = `
@@ -157,6 +163,49 @@ describe('CloudSync', () => {
             CloudSync.openEditProfileModal();
             await CloudSync.handleSaveProfile();
             expect(document.getElementById('editProfileModal').style.display).toBe('none');
+        });
+    });
+
+    describe('passwordless sign-in modal helpers', () => {
+        beforeEach(() => {
+            document.body.innerHTML = `
+                <div id="cloudSyncModal" class="modal" style="display: none;">
+                    <div id="authPasswordView">
+                        <input id="authEmail" value="">
+                        <input id="authPassword" value="">
+                        <div id="authError" style="display: none;"></div>
+                        <button id="authSignInBtn"></button>
+                        <button id="authSignUpBtn"></button>
+                    </div>
+                    <div id="authPasswordlessView" style="display: none;">
+                        <input id="authEmailLink" value="">
+                        <div id="authLinkError" style="display: none;"></div>
+                        <div id="authLinkSuccess" style="display: none;"></div>
+                        <button id="authSendLinkBtn"></button>
+                    </div>
+                </div>
+            `;
+        });
+
+        test('showPasswordlessView should show passwordless view and hide password view', () => {
+            CloudSync.showPasswordlessView();
+            expect(document.getElementById('authPasswordlessView').style.display).toBe('block');
+            expect(document.getElementById('authPasswordView').style.display).toBe('none');
+        });
+
+        test('showPasswordView should show password view and hide passwordless view', () => {
+            CloudSync.showPasswordlessView();
+            CloudSync.showPasswordView();
+            expect(document.getElementById('authPasswordView').style.display).toBe('block');
+            expect(document.getElementById('authPasswordlessView').style.display).toBe('none');
+        });
+
+        test('handleSendSignInLink should show error when email is empty', async () => {
+            CloudSync.showPasswordlessView();
+            await CloudSync.handleSendSignInLink();
+            const error = document.getElementById('authLinkError');
+            expect(error.style.display).toBe('block');
+            expect(error.textContent).toContain('email');
         });
     });
 });
