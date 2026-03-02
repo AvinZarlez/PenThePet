@@ -113,6 +113,37 @@ class Game {
     }
 
     /**
+     * Append shore-overlay DOM elements to a water cell based on its non-water neighbours.
+     * For each of the four cardinal directions where the adjacent tile is not water
+     * (or is outside the grid), a rotated shore image is added so that bodies of
+     * water look like unified lakes with sandy edges only where they meet land.
+     * @private
+     * @param {HTMLElement} cell - The water cell element to append shore overlays to
+     * @param {number} row - Row index of the cell
+     * @param {number} col - Column index of the cell
+     */
+    _addShoreOverlays(cell, row, col) {
+        const directions = [
+            { dRow: -1, dCol: 0, angle: 0 },    // top
+            { dRow: 0,  dCol: 1, angle: 90 },   // right
+            { dRow: 1,  dCol: 0, angle: 180 },  // bottom
+            { dRow: 0,  dCol: -1, angle: 270 }, // left
+        ];
+        for (const { dRow, dCol, angle } of directions) {
+            const neighbor = this.grid.getTile(row + dRow, col + dCol);
+            if (neighbor !== 'water') {
+                const shore = document.createElement('img');
+                shore.src = 'assets/shore.svg';
+                shore.alt = '';
+                shore.className = 'shore-overlay';
+                shore.setAttribute('aria-hidden', 'true');
+                shore.style.transform = `rotate(${angle}deg)`;
+                cell.appendChild(shore);
+            }
+        }
+    }
+
+    /**
      * Append paw-overlay DOM elements to a cell for a given tile and rotation angle.
      * @private
      * @param {HTMLElement} cell - The cell element to append paw overlays to
@@ -204,6 +235,11 @@ class Game {
             cell.appendChild(petSpan);
         }
         
+        // Add shore overlays on water tiles (one per non-water neighbour side)
+        if (tileType === 'water') {
+            this._addShoreOverlays(cell, row, col);
+        }
+
         // Add paw overlay if this cell is on the escape path
         if (pathSet && pathSet.has(coordKey)) {
             const angle = directions && directions.has(coordKey) ? directions.get(coordKey) : 0;

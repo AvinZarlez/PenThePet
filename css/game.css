@@ -466,6 +466,17 @@
     pointer-events: none;
 }
 
+/* Shore overlays — rendered on water tiles, one per non-water neighbour side */
+.cell .shore-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    transform-origin: center center;
+}
+
 /* Tile asset overlays (rendered from tileData.assets list) */
 .cell .tile-overlay {
     position: absolute;
