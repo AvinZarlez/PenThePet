@@ -75,11 +75,11 @@ Client ID** in the Google Cloud Console. This Client ID has an **Authorized
 JavaScript origins** list, and the Google popup will be blocked unless every
 domain the app is served from is in that list.
 
-5. Go to the
+1. Go to the
    [Google Cloud Console → Credentials](https://console.cloud.google.com/apis/credentials).
-6. Under **OAuth 2.0 Client IDs**, click the entry that Firebase created
+2. Under **OAuth 2.0 Client IDs**, click the entry that Firebase created
    (it is typically named **Web client (auto created by Google Service)**).
-7. Under **Authorized JavaScript origins**, add every domain the app is served
+3. Under **Authorized JavaScript origins**, add every domain the app is served
    from. Examples:
    - **GitHub Pages (default domain):**
 
@@ -102,7 +102,7 @@ domain the app is served from is in that list.
    Click **+ Add URI** for each domain. Origins do not use wildcards — list
    each domain exactly, without a trailing slash or path.
 
-8. Click **Save**.
+4. Click **Save**.
 
 > **Note:** This OAuth Client ID is separate from the API key you restrict in
 > Step 6. Both must be configured. If you add a domain to the API key
