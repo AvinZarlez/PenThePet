@@ -150,7 +150,14 @@ fork running on a different domain):
 2. Select the project you just created.
 3. Click the **Browser key** that Firebase created automatically.
 4. Under **Application restrictions**, select **HTTP referrers (web sites)**.
-5. Add every domain the app is served from. Examples:
+5. Add every domain the app is served from **plus Firebase's own domain**
+   (required for passwordless email link sign-in). Examples:
+   - **Firebase's sign-in handler (required for email link sign-in):**
+
+     ```text
+     https://YOUR_PROJECT_ID.firebaseapp.com/*
+     ```
+
    - **GitHub Pages (default domain):**
 
      ```text
@@ -169,12 +176,22 @@ fork running on a different domain):
      http://localhost:8080/*
      ```
 
-   Add one referrer per line. Replace the examples with your actual domains.
+   Add one referrer per line. Replace the examples with your actual values.
 
 6. Click **Save**.
 
 This means even if someone forks the repo and deploys it, their site will
 be on a different domain and Firebase will reject their requests.
+
+> ⚠️ **`firebaseapp.com` must be in the referrers list.**
+> When a user clicks a passwordless sign-in link, their browser first visits
+> `https://YOUR_PROJECT_ID.firebaseapp.com/__/auth/action?…` — Firebase's
+> own sign-in handler — before being redirected back to your app. That
+> handler calls the Firebase API using your API key, so
+> `https://YOUR_PROJECT_ID.firebaseapp.com/*` **must** appear in the
+> referrers list or the request will be rejected with an "API key expired /
+> invalid" error. Replace `YOUR_PROJECT_ID` with your actual Firebase project
+> ID (e.g. `penthepet-12345`).
 
 > **Important:** After adding or changing referrers, wait up to five minutes
 > for the changes to propagate before testing.
