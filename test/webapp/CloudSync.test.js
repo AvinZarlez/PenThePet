@@ -36,7 +36,7 @@ describe('CloudSync', () => {
         test('should not throw when Firebase SDK is not loaded', () => {
             // Temporarily set a fake config
             const original = global.FIREBASE_CONFIG;
-            global.FIREBASE_CONFIG = { apiKey: 'test-key', authDomain: '', projectId: '', storageBucket: '', messagingSenderId: '', appId: '' };
+            global.FIREBASE_CONFIG = { apiKey: 'test-key', authDomain: '', projectId: '', appId: '' };
             // firebase global does not exist in test env
             expect(() => CloudSync.init()).not.toThrow();
             global.FIREBASE_CONFIG = original;

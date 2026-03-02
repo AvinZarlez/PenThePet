@@ -20,6 +20,7 @@ The token is appended to the share message as:
 ```text
 Pen The Pet 🐶
 Day 42 - March 1, 2026
+Player: Alice
 Score: 80% (8/10) Time: 01:33
 Signature: QWxpY2V8MjAyNi0wMy0wMXw4fDEwfDkz.1a2b3c4d
 ```
@@ -69,28 +70,12 @@ Any modern environment with `openssl` or Node.js ≥ 20 will work.
 
 ### Option A — Node.js (recommended)
 
-```js
-// Run with: node generate-keys.js
-const { webcrypto } = require('crypto');
-const { subtle } = webcrypto;
-
-async function main() {
-    const pair = await subtle.generateKey(
-        { name: 'ECDSA', namedCurve: 'P-256' },
-        true,
-        ['sign', 'verify']
-    );
-    const pub  = await subtle.exportKey('jwk', pair.publicKey);
-    const priv = await subtle.exportKey('jwk', pair.privateKey);
-    console.log('PUBLIC KEY (add as SIGNATURE_PUBLIC_KEY secret):');
-    console.log(JSON.stringify(pub));
-    console.log('\nPRIVATE KEY (keep safe — never commit or share):');
-    console.log(JSON.stringify(priv));
-}
-main();
+```bash
+node scripts/generate-signature-keys.js
 ```
 
-Save the output — you will need both strings in the next step.
+The script prints the public key (to add as `SIGNATURE_PUBLIC_KEY` in GitHub Secrets) and the
+private key (for safekeeping — **never commit or share it**).
 
 ### Option B — openssl + manual JWK conversion
 

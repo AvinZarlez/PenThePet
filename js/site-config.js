@@ -12,10 +12,10 @@
  *
  * To enable cloud sync on your own fork:
  *   1. Create a Firebase project and register a web app.
- *   2. Add the six Firebase values below as repository secrets in GitHub
+ *   2. Add the four Firebase values below as repository secrets in GitHub
  *      (Settings → Secrets and variables → Actions):
  *        FIREBASE_API_KEY, FIREBASE_AUTH_DOMAIN, FIREBASE_PROJECT_ID,
- *        FIREBASE_STORAGE_BUCKET, FIREBASE_MESSAGING_SENDER_ID, FIREBASE_APP_ID
+ *        FIREBASE_APP_ID
  *   3. The deploy workflow will inject them automatically on every push.
  *
  * See docs/CLOUD_SYNC_SETUP.md for full Firebase setup instructions.
@@ -46,8 +46,6 @@ const FIREBASE_CONFIG = {
     apiKey: '',
     authDomain: '',
     projectId: '',
-    storageBucket: '',
-    messagingSenderId: '',
     appId: '',
 
     // ── Score signatures ──────────────────────────────────────────────────

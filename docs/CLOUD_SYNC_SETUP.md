@@ -243,8 +243,6 @@ This keeps credentials out of the committed codebase.
    | `FIREBASE_API_KEY`             | `AIzaSy…`                          |
    | `FIREBASE_AUTH_DOMAIN`         | `your-project.firebaseapp.com`     |
    | `FIREBASE_PROJECT_ID`          | `your-project`                     |
-   | `FIREBASE_STORAGE_BUCKET`      | `your-project.firebasestorage.app` |
-   | `FIREBASE_MESSAGING_SENDER_ID` | `1234567890`                       |
    | `FIREBASE_APP_ID`              | `1:1234567890:web:abcdef`          |
 
 3. Push any change to `main` (or trigger the **Deploy static content to Pages**
