@@ -269,6 +269,18 @@ class Game {
             this.wallCount = Math.max(0, this.wallCount - 1);
             this.render();
             this.updateWallCounter();
+        } else {
+            return;
+        }
+
+        // Re-focus the clicked cell after render() to prevent the view from snapping to the
+        // top on mobile browsers (e.g. Waterfox/Firefox on Android). render() clears
+        // gridElement.innerHTML, which removes the focused element from the DOM; some browsers
+        // then scroll to y=0 searching for a focus target. Restoring focus with
+        // preventScroll:true keeps the viewport in place.
+        const restoredCell = this.gridElement.querySelector(`[data-row="${row}"][data-col="${col}"]`);
+        if (restoredCell) {
+            restoredCell.focus({ preventScroll: true });
         }
     }
 
@@ -286,7 +298,7 @@ class Game {
             setTimeout(() => {
                 const cell = this.gridElement.querySelector(`[data-row="${row}"][data-col="${col}"]`);
                 if (cell) {
-                    cell.focus();
+                    cell.focus({ preventScroll: true });
                 }
             }, 10);
         }
