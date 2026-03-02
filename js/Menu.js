@@ -719,7 +719,20 @@ class Menu {
     }
 
     /**
-     * Save current level to cookie
+     * Returns true when CloudSync is configured and the user is signed in.
+     * Use this guard before any cloud upload call in Menu methods.
+     * @returns {boolean}
+     */
+    _shouldSyncToCloud() {
+        return typeof CloudSync !== 'undefined' &&
+            CloudSync.isConfigured() &&
+            CloudSync.isLoggedIn();
+    }
+
+    /**
+     * Save current level to cookie.
+     * NOTE: currentLevel is intentionally NOT synced to cloud — it is a
+     * transient UI preference (which puzzle is open) that is device-local.
      * @param {string} date - Date string to save
      */
     _saveCurrentLevelToCookie(date) {
@@ -727,23 +740,35 @@ class Menu {
     }
 
     /**
-     * Save pet emoji to cookie
+     * Save pet emoji to cookie and sync to cloud.
+     * To add a new synced setting: follow this pattern — write the cookie,
+     * then call CloudSync.saveSettings() with the new key/value pair.
      * @param {string} petEmoji - Pet emoji to save
      */
     _savePetToCookie(petEmoji) {
         CookieUtils.setCookie('selectedPet', petEmoji, 365);
+        // Sync to cloud so the preference is available on other devices.
+        if (this._shouldSyncToCloud()) {
+            CloudSync.saveSettings({ selectedPet: petEmoji });
+        }
     }
 
     /**
-     * Save hint mode to cookie
+     * Save hint mode to cookie and sync to cloud.
      * @param {string} hintMode - Hint mode to save
      */
     _saveHintModeToCookie(hintMode) {
         CookieUtils.setCookie('hintMode', hintMode, 365);
+        // Sync to cloud so the preference is available on other devices.
+        if (this._shouldSyncToCloud()) {
+            CloudSync.saveSettings({ hintMode: hintMode });
+        }
     }
 
     /**
-     * Save debug mode to cookie
+     * Save debug mode to cookie.
+     * NOTE: debugMode is intentionally NOT synced to cloud — it is a
+     * developer tool that is per-device by design.
      * @param {boolean} enabled - Debug mode state
      */
     _saveDebugModeToCookie(enabled) {

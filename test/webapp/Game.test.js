@@ -12,7 +12,7 @@ function setupDOM() {
     document.body.innerHTML = `
         <div id="pauseOverlay" class="pause-overlay" style="display: none;">
             <div class="pause-content">
-                <div class="pause-title">Pause</div>
+                <div id="pauseTitle" class="pause-title">Pause</div>
                 <div id="pauseTime" class="pause-time">00:00</div>
                 <button id="resumeBtn" class="resume-btn">&#9654; Resume</button>
             </div>
@@ -112,12 +112,14 @@ describe('Game — Timer', () => {
     // initTimerForDate
     // ------------------------------------------------------------------
     describe('initTimerForDate()', () => {
-        test('starts from 0 with no saved state', () => {
+        test('starts in ready state with no saved state', () => {
             game.isSubmitted = false;
             game.initTimerForDate('2026-01-01');
             expect(game.elapsedSeconds).toBe(0);
             expect(game.isTimerLocked).toBe(false);
-            expect(game._timerInterval).not.toBeNull();
+            expect(game.isPaused).toBe(true);
+            expect(game.isReadyPending).toBe(true);
+            expect(game._timerInterval).toBeNull();
         });
 
         test('restores elapsed seconds from timer cookie', () => {
@@ -140,19 +142,39 @@ describe('Game — Timer', () => {
             expect(game._timerInterval).toBeNull();
         });
 
-        test('timer interval increments elapsedSeconds each second', () => {
+        test('timer interval increments elapsedSeconds each second after Begin is clicked', () => {
             game.isSubmitted = false;
             game.initTimerForDate('2026-01-01');
             expect(game.elapsedSeconds).toBe(0);
+            // Timer should not start until user clicks Begin
+            jest.advanceTimersByTime(3000);
+            expect(game.elapsedSeconds).toBe(0);
+            // Simulate clicking Begin
+            game.resumeTimer();
             jest.advanceTimersByTime(3000);
             expect(game.elapsedSeconds).toBe(3);
         });
 
-        test('resets isPaused flag on new level load', () => {
-            game.isPaused = true;
+        test('shows ready overlay on level load for non-submitted puzzle', () => {
             game.isSubmitted = false;
             game.initTimerForDate('2026-01-01');
-            expect(game.isPaused).toBe(false);
+            expect(game.isPaused).toBe(true);
+            expect(game.isReadyPending).toBe(true);
+            const overlay = document.getElementById('pauseOverlay');
+            expect(overlay.style.display).toBe('flex');
+            expect(document.getElementById('pauseTitle').textContent).toBe('Ready?');
+            // Time is 0 — display is hidden but Begin button shown
+            expect(document.getElementById('pauseTime').style.visibility).toBe('hidden');
+            expect(document.getElementById('resumeBtn').textContent).toBe('▶ Begin');
+        });
+
+        test('shows Resume button and visible time when saved time > 0', () => {
+            CookieUtils.setCookie('timer_2026-01-02', JSON.stringify({ elapsed: 60 }), 1);
+            game.isSubmitted = false;
+            game.initTimerForDate('2026-01-02');
+            expect(document.getElementById('resumeBtn').textContent).toBe('▶ Resume');
+            expect(document.getElementById('pauseTime').style.visibility).toBe('visible');
+            expect(document.getElementById('pauseTime').textContent).toBe('01:00');
         });
     });
 
@@ -209,10 +231,13 @@ describe('Game — Timer', () => {
         test('shows current time in pause overlay', () => {
             game.isSubmitted = false;
             game.initTimerForDate('2026-01-01');
+            // Begin the game so the timer runs
+            game.resumeTimer();
             jest.advanceTimersByTime(3000);
             game.pauseTimer();
             const pauseTime = document.getElementById('pauseTime');
             expect(pauseTime.textContent).toBe('00:03');
+            expect(pauseTime.style.visibility).toBe('visible');
         });
 
         test('hides game content (controls, grid-container) when paused', () => {
@@ -252,14 +277,18 @@ describe('Game — Timer', () => {
         test('does nothing when not paused', () => {
             game.isSubmitted = false;
             game.initTimerForDate('2026-01-01');
+            // Exit ready state by clicking Begin
+            game.resumeTimer();
             const intervalBefore = game._timerInterval;
-            game.resumeTimer(); // should be no-op
+            game.resumeTimer(); // should be no-op — not paused
             expect(game._timerInterval).toBe(intervalBefore);
         });
 
         test('timer increments again after resume', () => {
             game.isSubmitted = false;
             game.initTimerForDate('2026-01-01');
+            // Start the timer by clicking Begin
+            game.resumeTimer();
             jest.advanceTimersByTime(2000);
             game.pauseTimer();
             jest.advanceTimersByTime(5000); // should NOT count
@@ -375,6 +404,8 @@ describe('Game — Timer', () => {
         test('resets elapsed to 0 and restarts interval', () => {
             game.isSubmitted = false;
             game.initTimerForDate('2026-01-01');
+            // Begin the game so the timer runs
+            game.resumeTimer();
             jest.advanceTimersByTime(10000);
             expect(game.elapsedSeconds).toBe(10);
 
@@ -414,6 +445,40 @@ describe('Game — Timer', () => {
             game.currentDate = null;
             game.elapsedSeconds = 50;
             expect(() => game._saveTimerState()).not.toThrow();
+        });
+
+        test('calls CloudSync.saveTimerState when logged in', () => {
+            const mockSaveTimerState = jest.fn();
+            const origCloudSync = global.CloudSync;
+            global.CloudSync = {
+                isConfigured: () => true,
+                isLoggedIn: () => true,
+                saveTimerState: mockSaveTimerState
+            };
+
+            game.currentDate = '2026-01-01';
+            game.elapsedSeconds = 65;
+            game._saveTimerState();
+
+            expect(mockSaveTimerState).toHaveBeenCalledWith('2026-01-01', 65);
+            global.CloudSync = origCloudSync;
+        });
+
+        test('does not call CloudSync.saveTimerState when not logged in', () => {
+            const mockSaveTimerState = jest.fn();
+            const origCloudSync = global.CloudSync;
+            global.CloudSync = {
+                isConfigured: () => true,
+                isLoggedIn: () => false,
+                saveTimerState: mockSaveTimerState
+            };
+
+            game.currentDate = '2026-01-01';
+            game.elapsedSeconds = 65;
+            game._saveTimerState();
+
+            expect(mockSaveTimerState).not.toHaveBeenCalled();
+            global.CloudSync = origCloudSync;
         });
     });
 

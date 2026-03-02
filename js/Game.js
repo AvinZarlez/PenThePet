@@ -44,6 +44,7 @@ class Game {
         this._timerInterval = null;
         this.isTimerLocked = false;
         this.isPaused = false;
+        this.isReadyPending = false;
         
         this.attachEventListeners();
         // main.js loads the map from maps/YYYY.json and calls render() directly
@@ -1147,6 +1148,7 @@ class Game {
         this._stopTimerInterval();
         this.isTimerLocked = false;
         this.isPaused = false;
+        this.isReadyPending = false;
         this._hidePauseOverlay();
 
         if (this.isSubmitted) {
@@ -1166,7 +1168,10 @@ class Game {
             } else {
                 this.elapsedSeconds = 0;
             }
-            this._startTimerInterval();
+            // Show ready overlay — timer starts only when user clicks Begin
+            this.isReadyPending = true;
+            this.isPaused = true;
+            this._showPauseOverlay();
         }
 
         this.updateTimerDisplay();
@@ -1204,7 +1209,7 @@ class Game {
     }
 
     /**
-     * Save the current elapsed time to a cookie.
+     * Save the current elapsed time to a cookie and sync to cloud if logged in.
      * Does nothing if the timer is locked (time is stored in submission).
      * @private
      */
@@ -1215,6 +1220,9 @@ class Game {
             JSON.stringify({ elapsed: this.elapsedSeconds }),
             365
         );
+        if (typeof CloudSync !== 'undefined' && CloudSync.isConfigured() && CloudSync.isLoggedIn()) {
+            CloudSync.saveTimerState(this.currentDate, this.elapsedSeconds);
+        }
     }
 
     /**
@@ -1238,6 +1246,7 @@ class Game {
      */
     resumeTimer() {
         if (this.isTimerLocked || !this.isPaused) return;
+        this.isReadyPending = false;
         this.isPaused = false;
         this._hidePauseOverlay();
         this._startTimerInterval();
@@ -1356,8 +1365,15 @@ class Game {
     _showPauseOverlay() {
         const overlay = document.getElementById('pauseOverlay');
         if (overlay) {
+            const pauseTitle = document.getElementById('pauseTitle');
+            if (pauseTitle) pauseTitle.textContent = this.isReadyPending ? 'Ready?' : 'Pause';
             const pauseTime = document.getElementById('pauseTime');
-            if (pauseTime) pauseTime.textContent = this._formatTime(this.elapsedSeconds);
+            if (pauseTime) {
+                pauseTime.textContent = this._formatTime(this.elapsedSeconds);
+                pauseTime.style.visibility = this.elapsedSeconds > 0 ? 'visible' : 'hidden';
+            }
+            const resumeBtn = document.getElementById('resumeBtn');
+            if (resumeBtn) resumeBtn.textContent = this.elapsedSeconds > 0 ? '▶ Resume' : '▶ Begin';
             overlay.style.display = 'flex';
         }
         for (const selector of Game.PAUSE_HIDDEN_SELECTORS) {

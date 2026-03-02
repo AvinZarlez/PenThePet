@@ -1,25 +1,29 @@
 /**
  * Firebase Configuration for Cloud Sync
  *
- * To enable cloud sync between devices, create a free Firebase project
- * and fill in your project's configuration values below.
+ * Values are intentionally left empty here. For the deployed site they are
+ * injected at build time from GitHub repository secrets by the Pages workflow.
+ *
+ * To enable cloud sync on your own fork:
+ *   1. Create a Firebase project and register a web app.
+ *   2. Add the six values below as repository secrets in GitHub
+ *      (Settings → Secrets and variables → Actions):
+ *        FIREBASE_API_KEY, FIREBASE_AUTH_DOMAIN, FIREBASE_PROJECT_ID,
+ *        FIREBASE_STORAGE_BUCKET, FIREBASE_MESSAGING_SENDER_ID, FIREBASE_APP_ID
+ *   3. The deploy workflow will inject them automatically on every push.
  *
  * See docs/CLOUD_SYNC_SETUP.md for full setup instructions.
- *
- * Note: Firebase API keys are NOT secret — they identify your project but
- * access is controlled by Firebase Authentication and Firestore Security Rules.
- * It is safe to commit this file with your actual project values.
  *
  * Leave apiKey empty to disable cloud sync (app works in local-only mode).
  */
 
 const FIREBASE_CONFIG = {
-    apiKey: 'AIzaSyAzCvpQeLuaix4qoTxehbEos2PBTh1d_RU',
-    authDomain: 'pen-the-pet.firebaseapp.com',
-    projectId: 'pen-the-pet',
-    storageBucket: 'pen-the-pet.firebasestorage.app',
-    messagingSenderId: '583837321004',
-    appId: '1:583837321004:web:10ee4c2ce4fed8b1dd4e89'
+    apiKey: '',
+    authDomain: '',
+    projectId: '',
+    storageBucket: '',
+    messagingSenderId: '',
+    appId: ''
 };
 
 // Export for use in other modules
