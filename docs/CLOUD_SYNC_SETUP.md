@@ -192,7 +192,7 @@ be on a different domain and Firebase will reject their requests.
 > referrers list or the request will be rejected with an "API key expired /
 > invalid" error. Replace `YOUR_PROJECT_ID` with your actual Firebase project
 > ID (e.g. `penthepet-12345`).
-
+>
 > **Important:** After adding or changing referrers, wait up to five minutes
 > for the changes to propagate before testing.
 >
