@@ -346,30 +346,42 @@ users/{userId}/submissions/settings
 
 | Event                       | What happens                                                                                                                                                                                                                          |
 | --------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Sign in**                 | Cloud submissions are downloaded and merged into local cookies (cloud wins on conflict). Cloud settings overwrite local settings. Cloud timer states are merged by taking the highest elapsed time. Local-only data is then uploaded. |
+| **Sign in**                 | Full sync of all levels: every cloud doc is merged against local cookies using the conflict rules below. The merged result is written to both sides. The currently displayed level is reloaded if its submission state changed. |
+| **Open level selector**     | A fresh full sync runs before the calendar is populated, so completion checkmarks (✓/🏆) always reflect the latest cloud state. |
+| **Select / load a level**   | A fresh full sync runs before the level is rendered, so the loaded submission and timer state are always current. |
 | **Submit a puzzle**         | Saved to cookie AND uploaded to Firestore immediately.                                                                                                                                                                                |
 | **Timer auto-save**         | Elapsed seconds saved to cookie AND Firestore every 30 s and on every pause (including tab hide / window close).                                                                                                                      |
 | **Change pet or hint mode** | Saved to cookie AND uploaded to Firestore immediately.                                                                                                                                                                                |
-| **Realtime update**         | Changes from other signed-in devices are pushed to cookies automatically.                                                                                                                                                             |
+| **Realtime update**         | Changes from other signed-in devices are pushed to cookies automatically. The displayed level reloads if its submission state or data changed. |
 | **Sign out**                | Realtime listener stops. Local cookies remain untouched.                                                                                                                                                                              |
 
 ## Conflict Resolution
 
-When local cookie data and Firestore hold different values for the same key,
-the following rules apply:
+For each puzzle date, when local cookie data and Firestore hold different values, the following rules are applied **in order**:
 
-| Data type                                | Rule                     | Rationale                                                                                                                              |
-| ---------------------------------------- | ------------------------ | -------------------------------------------------------------------------------------------------------------------------------------- |
-| **Submissions** (`YYYY-MM-DD`)           | **Cloud wins**           | The cloud is the authoritative record of completed puzzles. If you solved a puzzle offline and then log in, the cloud version is kept. |
-| **Settings** (`selectedPet`, `hintMode`) | **Cloud wins**           | The cloud holds the user's most recently saved preference from any signed-in device.                                                   |
-| **Timer** (`timer_YYYY-MM-DD`)           | **Highest elapsed wins** | The timer should never go backwards. Whichever device has made the most progress keeps that value so no elapsed time is ever lost.     |
+1. **Only one side has data** — copy it to the other so both match.
 
-> **Offline play then sign-in example:** You solve three puzzles while offline.
-> When you sign in, the cloud's submissions for those dates are applied first
-> (cloud wins on conflict). Any of your offline puzzles for dates that are
-> **not** already in the cloud are then uploaded. If the cloud already had a
-> submission for the same date, the cloud version is kept and your local offline
-> solve for that date is replaced with the cloud version.
+2. **One side is submitted, other is in-progress** — the submitted result wins and is written to both sides. "Submitted" = a completed puzzle result exists. "In-progress" = only an elapsed-time timer exists (no submission yet).
+
+3. **Both in-progress (timer only)** — take the **higher elapsed time**. Both sides are updated to that value so no progress is lost.
+
+4. **Both submitted** — the **higher score wins** (higher score = better result). Both sides are updated to that version's data (score, wall placements, solve time, and submission timestamp). If scores are equal, the **earlier submission timestamp** breaks the tie (first completed solve is kept).
+
+   > **Note on field names:** `timestamp` = when the puzzle was submitted (wall-clock time the entry was saved). `time` = how many seconds the user spent solving the puzzle. Only `timestamp` is used for tiebreaking.
+
+| Data type                                | Rule                                | Rationale                                                                                                                          |
+| ---------------------------------------- | ----------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
+| **Submissions** (`YYYY-MM-DD`)           | **See rules 1–4 above**             | Submitted result always beats in-progress; when both are submitted, higher score wins; same score → first submitted is kept.       |
+| **Settings** (`selectedPet`, `hintMode`) | **Cloud wins**                      | The cloud holds the user's most recently saved preference from any signed-in device.                                              |
+| **Timer** (`timer_YYYY-MM-DD`)           | **Highest elapsed wins**            | The timer should never go backwards. Whichever device has made the most progress keeps that value.                                |
+
+> **Offline play then sign-in example:** You submit three puzzles while offline.
+> When you sign in, each date is merged against the cloud:
+>
+> - If the cloud already has a submitted result for that date, the higher score wins.
+>   If both scores are equal, whichever submission was made **first** is kept.
+> - If the cloud only has an in-progress timer, your offline submission wins.
+> - If the cloud has nothing, your offline submission is uploaded.
 
 ## Running Without Cloud Sync
 

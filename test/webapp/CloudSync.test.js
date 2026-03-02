@@ -229,4 +229,94 @@ describe('CloudSync', () => {
             expect(received).toHaveLength(1);
         });
     });
+
+    // -----------------------------------------------------------------------
+    // Conflict resolution logic
+    // See docs/CLOUD_SYNC_SETUP.md for the full priority-ordered rules.
+    // -----------------------------------------------------------------------
+    describe('conflict resolution', () => {
+        const DATE = '2026-06-01';
+        const timerDocId = `timer_${DATE}`;
+        const submissionCookie = `submission_${DATE}`;
+        const earlier = new Date(Date.now() - 120000).toISOString(); // 2 min ago
+        const later = new Date(Date.now()).toISOString();             // now
+
+        beforeEach(() => {
+            CookieUtils.deleteCookie(timerDocId);
+            CookieUtils.deleteCookie(submissionCookie);
+        });
+
+        describe('applyCloudTimerState – rule 3: highest elapsed wins', () => {
+            test('uses cloud elapsed when cloud > local', () => {
+                CookieUtils.setCookie(timerDocId, JSON.stringify({ elapsed: 30 }), 1);
+                CloudSync.applyCloudTimerState(timerDocId, { elapsed: 45 });
+                expect(JSON.parse(CookieUtils.getCookie(timerDocId)).elapsed).toBe(45);
+            });
+
+            test('keeps local elapsed when local > cloud', () => {
+                CookieUtils.setCookie(timerDocId, JSON.stringify({ elapsed: 60 }), 1);
+                CloudSync.applyCloudTimerState(timerDocId, { elapsed: 30 });
+                expect(JSON.parse(CookieUtils.getCookie(timerDocId)).elapsed).toBe(60);
+            });
+
+            test('writes cloud elapsed when no local timer exists (only cloud has data)', () => {
+                CloudSync.applyCloudTimerState(timerDocId, { elapsed: 50 });
+                expect(JSON.parse(CookieUtils.getCookie(timerDocId)).elapsed).toBe(50);
+            });
+
+            test('does nothing when cloud data has no elapsed field', () => {
+                CloudSync.applyCloudTimerState(timerDocId, {});
+                expect(CookieUtils.getCookie(timerDocId)).toBeNull();
+            });
+        });
+
+        describe('applyCloudSubmission – rule 4: higher score wins; tiebreak by earliest submission timestamp', () => {
+            // "score" = penned-area value (higher is better per game rules).
+            // "timestamp" = when the puzzle was submitted (NOT elapsed solve time).
+
+            test('writes cloud submission when no local cookie exists (only cloud has data)', () => {
+                CloudSync.applyCloudSubmission(DATE, { score: 5, timestamp: later });
+                expect(JSON.parse(CookieUtils.getCookie(submissionCookie)).score).toBe(5);
+            });
+
+            test('writes cloud submission when no local cookie and no cloud timestamp', () => {
+                CloudSync.applyCloudSubmission(DATE, { score: 7 });
+                expect(JSON.parse(CookieUtils.getCookie(submissionCookie)).score).toBe(7);
+            });
+
+            test('uses cloud when cloud score is higher (better) than local score', () => {
+                CookieUtils.setCookie(submissionCookie, JSON.stringify({ score: 3, timestamp: earlier }), 1);
+                const updated = CloudSync.applyCloudSubmission(DATE, { score: 5, timestamp: later });
+                expect(updated).toBe(true);
+                expect(JSON.parse(CookieUtils.getCookie(submissionCookie)).score).toBe(5);
+            });
+
+            test('keeps local when local score is higher (better) than cloud score', () => {
+                CookieUtils.setCookie(submissionCookie, JSON.stringify({ score: 5, timestamp: later }), 1);
+                const updated = CloudSync.applyCloudSubmission(DATE, { score: 3, timestamp: earlier });
+                expect(updated).toBe(false);
+                expect(JSON.parse(CookieUtils.getCookie(submissionCookie)).score).toBe(5);
+            });
+
+            test('keeps local when scores are equal and local submission timestamp is earlier', () => {
+                CookieUtils.setCookie(submissionCookie, JSON.stringify({ score: 5, timestamp: earlier }), 1);
+                const updated = CloudSync.applyCloudSubmission(DATE, { score: 5, timestamp: later });
+                expect(updated).toBe(false);
+                expect(JSON.parse(CookieUtils.getCookie(submissionCookie)).score).toBe(5);
+            });
+
+            test('uses cloud when scores are equal and cloud submission timestamp is earlier', () => {
+                CookieUtils.setCookie(submissionCookie, JSON.stringify({ score: 5, timestamp: later }), 1);
+                const updated = CloudSync.applyCloudSubmission(DATE, { score: 5, timestamp: earlier });
+                expect(updated).toBe(true);
+                expect(JSON.parse(CookieUtils.getCookie(submissionCookie)).score).toBe(5);
+            });
+
+            test('uses cloud when scores are equal and local has no timestamp', () => {
+                CookieUtils.setCookie(submissionCookie, JSON.stringify({ score: 5 }), 1);
+                CloudSync.applyCloudSubmission(DATE, { score: 5, timestamp: earlier });
+                expect(JSON.parse(CookieUtils.getCookie(submissionCookie)).score).toBe(5);
+            });
+        });
+    });
 });
