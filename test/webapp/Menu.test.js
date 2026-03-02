@@ -26,6 +26,7 @@ function setupDOM() {
                 <option value="checkOptimal">Check Optimal</option>
                 <option value="revealTarget">Reveal Target</option>
             </select>
+            <select id="modalTimezone"></select>
             <input type="checkbox" id="debugModeCheckbox">
         </div>
         <button class="modal-close"></button>

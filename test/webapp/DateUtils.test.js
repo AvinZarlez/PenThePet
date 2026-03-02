@@ -11,11 +11,60 @@ describe('DateUtils', () => {
             expect(today).toMatch(/^\d{4}-\d{2}-\d{2}$/);
         });
 
-        test('should return current date', () => {
+        test('should return current date in default timezone (America/Los_Angeles)', () => {
             const today = DateUtils.getTodayDate();
-            const now = new Date();
-            const expected = now.toISOString().split('T')[0];
+            const expected = new Intl.DateTimeFormat('en-CA', {
+                timeZone: 'America/Los_Angeles',
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit'
+            }).format(new Date()).replace(/\//g, '-');
             expect(today).toBe(expected);
+        });
+
+        test('should return current date in the specified timezone', () => {
+            const today = DateUtils.getTodayDate('America/New_York');
+            const expected = new Intl.DateTimeFormat('en-CA', {
+                timeZone: 'America/New_York',
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit'
+            }).format(new Date()).replace(/\//g, '-');
+            expect(today).toBe(expected);
+        });
+
+        test('should return current date in UTC when passed UTC timezone', () => {
+            const today = DateUtils.getTodayDate('UTC');
+            const expected = new Date().toISOString().split('T')[0];
+            expect(today).toBe(expected);
+        });
+
+        test('should fall back gracefully on an invalid timezone', () => {
+            const today = DateUtils.getTodayDate('Invalid/Timezone');
+            expect(today).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+        });
+
+        test('should return different dates for timezones on opposite sides of midnight', () => {
+            // Freeze time to a moment that is definitively different between UTC-12 and UTC+12
+            // Use a fixed instant: 2026-03-02T11:00:00Z
+            // UTC+12  → 2026-03-02 23:00 (same day)
+            // UTC-12  → 2026-03-01 23:00 (previous day)
+            const fixedDate = new Date('2026-03-02T11:00:00Z');
+            const origNow = Date;
+            global.Date = class extends origNow {
+                constructor(...args) { super(...args.length ? args : [fixedDate]); }
+                static now() { return fixedDate.getTime(); }
+            };
+
+            let west, east;
+            try {
+                west = DateUtils.getTodayDate('Etc/GMT+12'); // UTC-12
+                east = DateUtils.getTodayDate('Etc/GMT-12'); // UTC+12
+            } finally {
+                global.Date = origNow;
+            }
+
+            expect(west).not.toBe(east);
         });
     });
 

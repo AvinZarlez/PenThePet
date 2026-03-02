@@ -82,6 +82,7 @@ class Menu {
     attachOptionsListeners() {
         const modalPetType = document.getElementById('modalPetType');
         const modalHintMode = document.getElementById('modalHintMode');
+        const modalTimezone = document.getElementById('modalTimezone');
         const debugModeCheckbox = document.getElementById('debugModeCheckbox');
 
         if (modalPetType) {
@@ -98,6 +99,12 @@ class Menu {
                 this.game.hintMode = e.target.value;
                 this._saveHintModeToCookie(this.game.hintMode);
                 this.game.render();
+            });
+        }
+
+        if (modalTimezone) {
+            modalTimezone.addEventListener('change', (e) => {
+                this._saveTimezoneToCookie(e.target.value);
             });
         }
 
@@ -268,7 +275,7 @@ class Menu {
 
         // Get current level from cookie or today's date
         const currentDate = this._getCurrentLevelDate();
-        const today = DateUtils.getTodayDate();
+        const today = DateUtils.getTodayDate(this._loadTimezoneFromCookie());
 
         // Filter out future dates unless debug showAllLevels is enabled
         let dates = Object.keys(this.mapsDatabase).sort();
@@ -642,9 +649,13 @@ class Menu {
         // Populate pet type options
         this.populateModalPetOptions();
 
+        // Populate timezone options
+        this.populateModalTimezoneOptions();
+
         // Set current values
         const modalPetType = document.getElementById('modalPetType');
         const modalHintMode = document.getElementById('modalHintMode');
+        const modalTimezone = document.getElementById('modalTimezone');
         const debugModeCheckbox = document.getElementById('debugModeCheckbox');
 
         if (modalPetType) {
@@ -652,6 +663,9 @@ class Menu {
         }
         if (modalHintMode) {
             modalHintMode.value = this.game.hintMode;
+        }
+        if (modalTimezone) {
+            modalTimezone.value = this._loadTimezoneFromCookie();
         }
         if (debugModeCheckbox) {
             debugModeCheckbox.checked = this._loadDebugModeFromCookie();
@@ -677,6 +691,23 @@ class Menu {
             option.value = animal.emoji;
             option.textContent = `${animal.emoji} ${animal.name}`;
             modalPetType.appendChild(option);
+        });
+    }
+
+    /**
+     * Populate timezone options in the modal timezone selector
+     */
+    populateModalTimezoneOptions() {
+        const modalTimezone = document.getElementById('modalTimezone');
+        if (!modalTimezone) return;
+
+        modalTimezone.innerHTML = '';
+
+        CONSTANTS.TIMEZONE_OPTIONS.forEach(tz => {
+            const option = document.createElement('option');
+            option.value = tz.value;
+            option.textContent = tz.label;
+            modalTimezone.appendChild(option);
         });
     }
 
@@ -726,7 +757,7 @@ class Menu {
     _getCurrentLevelDate() {
         const saved = CookieUtils.getCookie('currentLevel');
         if (saved) return saved;
-        return DateUtils.getTodayDate();
+        return DateUtils.getTodayDate(this._loadTimezoneFromCookie());
     }
 
     /**
@@ -774,6 +805,25 @@ class Menu {
         if (this._shouldSyncToCloud()) {
             CloudSync.saveSettings({ hintMode: hintMode });
         }
+    }
+
+    /**
+     * Save timezone preference to cookie.
+     * NOTE: timezone is intentionally NOT synced to cloud — it is a
+     * device-local preference tied to the user's physical location.
+     * @param {string} timezone - IANA timezone string to save
+     */
+    _saveTimezoneToCookie(timezone) {
+        CookieUtils.setCookie('timezone', timezone, 365);
+    }
+
+    /**
+     * Load timezone preference from cookie.
+     * Falls back to CONSTANTS.DEFAULT_TIMEZONE if not set.
+     * @returns {string} IANA timezone string
+     */
+    _loadTimezoneFromCookie() {
+        return CookieUtils.getCookie('timezone') || CONSTANTS.DEFAULT_TIMEZONE;
     }
 
     /**
