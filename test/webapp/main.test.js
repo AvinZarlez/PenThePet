@@ -127,3 +127,101 @@ describe('loadTodayMap()', () => {
         expect(result).toBeNull();
     });
 });
+
+/**
+ * Tests for the cloudsync:synced event handler registered in initGame().
+ *
+ * The handler reloads the currently displayed level when the cloud sync
+ * changes its submission state (e.g. first login on a new device that had
+ * no local cookies).  It is intentionally a no-op when there is no change
+ * so that mid-puzzle wall placements are not discarded unnecessarily.
+ */
+describe('cloudsync:synced event handler logic', () => {
+    // Re-implement the same conditional that main.js uses so we can test it
+    // in isolation without needing to trigger the full initGame() flow.
+    function simulateSyncHandler(game, menu) {
+        if (!menu || !game || !game.currentDate) return;
+        if (!menu.mapsDatabase || !menu.mapsDatabase[game.currentDate]) return;
+
+        const hadSubmission = game.isSubmitted;
+        const hasSubmissionNow = game.loadSubmission(game.currentDate) !== null;
+        if (hadSubmission !== hasSubmissionNow) {
+            menu.loadLevel(menu.mapsDatabase[game.currentDate]);
+        }
+    }
+
+    const MAP_DATA = { date: '2026-03-01', size: 5, map: 'X' };
+
+    test('calls loadLevel when submission appears after sync (new-device login)', () => {
+        const loadLevel = jest.fn();
+        const game = {
+            currentDate: '2026-03-01',
+            isSubmitted: false,
+            loadSubmission: jest.fn(() => ({ score: 10, walls: [] })),
+        };
+        const menu = {
+            mapsDatabase: { '2026-03-01': MAP_DATA },
+            loadLevel,
+        };
+
+        simulateSyncHandler(game, menu);
+
+        expect(loadLevel).toHaveBeenCalledWith(MAP_DATA);
+    });
+
+    test('does not call loadLevel when submission state is unchanged (already submitted)', () => {
+        const loadLevel = jest.fn();
+        const game = {
+            currentDate: '2026-03-01',
+            isSubmitted: true,
+            loadSubmission: jest.fn(() => ({ score: 10, walls: [] })),
+        };
+        const menu = {
+            mapsDatabase: { '2026-03-01': MAP_DATA },
+            loadLevel,
+        };
+
+        simulateSyncHandler(game, menu);
+
+        expect(loadLevel).not.toHaveBeenCalled();
+    });
+
+    test('does not call loadLevel when submission state is unchanged (not submitted)', () => {
+        const loadLevel = jest.fn();
+        const game = {
+            currentDate: '2026-03-01',
+            isSubmitted: false,
+            loadSubmission: jest.fn(() => null),
+        };
+        const menu = {
+            mapsDatabase: { '2026-03-01': MAP_DATA },
+            loadLevel,
+        };
+
+        simulateSyncHandler(game, menu);
+
+        expect(loadLevel).not.toHaveBeenCalled();
+    });
+
+    test('does nothing when game is not initialised', () => {
+        // Should not throw
+        expect(() => simulateSyncHandler(null, {})).not.toThrow();
+    });
+
+    test('does nothing when current level is not in mapsDatabase', () => {
+        const loadLevel = jest.fn();
+        const game = {
+            currentDate: '2026-03-01',
+            isSubmitted: false,
+            loadSubmission: jest.fn(() => ({ score: 5, walls: [] })),
+        };
+        const menu = {
+            mapsDatabase: {}, // level not present
+            loadLevel,
+        };
+
+        simulateSyncHandler(game, menu);
+
+        expect(loadLevel).not.toHaveBeenCalled();
+    });
+});

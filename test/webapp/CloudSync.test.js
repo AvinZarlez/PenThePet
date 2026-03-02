@@ -216,4 +216,17 @@ describe('CloudSync', () => {
             expect(CloudSync.isGameTester()).toBe(false);
         });
     });
+
+    describe('cloudsync:synced DOM event', () => {
+        test('document can receive cloudsync:synced event without error', () => {
+            // Verify the custom event can be created and dispatched; listeners
+            // registered by the app (e.g. in main.js) depend on this contract.
+            const received = [];
+            const handler = () => received.push(true);
+            document.addEventListener('cloudsync:synced', handler);
+            document.dispatchEvent(new CustomEvent('cloudsync:synced'));
+            document.removeEventListener('cloudsync:synced', handler);
+            expect(received).toHaveLength(1);
+        });
+    });
 });

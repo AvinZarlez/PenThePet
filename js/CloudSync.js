@@ -570,6 +570,12 @@ const CloudSync = (function () {
             await uploadLocalSubmissions();
 
             updateSyncStatus('synced');
+
+            // Notify the rest of the app that cloud data has been applied to
+            // cookies, so the game UI can refresh any stale displayed state.
+            if (typeof document !== 'undefined') {
+                document.dispatchEvent(new CustomEvent('cloudsync:synced'));
+            }
         } catch (e) {
             console.error('CloudSync: Failed to sync from cloud:', e);
             updateSyncStatus('error', getSyncErrorMessage(e));
@@ -672,6 +678,7 @@ const CloudSync = (function () {
 
         unsubscribeListener = collRef.onSnapshot(function (snapshot) {
             if (isSyncing) return; // ignore our own writes
+            let submissionsUpdated = false;
             snapshot.docChanges().forEach(function (change) {
                 if (change.type === 'added' || change.type === 'modified') {
                     if (change.doc.id === SETTINGS_DOC) {
@@ -685,8 +692,13 @@ const CloudSync = (function () {
                     const dateString = change.doc.id;
                     const cookieName = 'submission_' + dateString;
                     CookieUtils.setCookie(cookieName, JSON.stringify(change.doc.data()), 365);
+                    submissionsUpdated = true;
                 }
             });
+            // Notify the app that submission cookies were updated by a remote change.
+            if (submissionsUpdated && typeof document !== 'undefined') {
+                document.dispatchEvent(new CustomEvent('cloudsync:synced'));
+            }
         });
     }
 
