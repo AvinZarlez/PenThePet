@@ -774,3 +774,38 @@
         right: 0;
     }
 }
+
+/* ========== Score Percentage & Share Button ========== */
+.metric-percentage {
+    display: block;
+    color: #ffeb3b;
+    font-size: 1.1em;
+    font-weight: bold;
+    margin-top: 4px;
+    opacity: 0.95;
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+.share-score-btn {
+    padding: 12px 24px;
+    font-size: 1em;
+    border: 2px solid #667eea;
+    border-radius: 10px;
+    cursor: pointer;
+    background: white;
+    color: #667eea;
+    font-weight: bold;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(102, 126, 234, 0.2);
+}
+
+.share-score-btn:hover {
+    background: #667eea;
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}
+
+.share-score-btn:active {
+    transform: translateY(0);
+}
