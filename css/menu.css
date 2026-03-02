@@ -341,30 +341,110 @@
     background: #e0e0e0;
 }
 
-.auth-toggle-hint {
-    margin: 10px 0 0;
-    text-align: center;
+.auth-btn-sm {
+    flex: none;
+    padding: 6px 14px;
     font-size: 0.85em;
 }
 
-.auth-link-btn {
-    background: none;
+.auth-oauth-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    padding: 11px;
     border: none;
-    color: #667eea;
+    border-radius: 8px;
+    font-size: 0.95em;
     cursor: pointer;
-    font-size: inherit;
-    padding: 0;
-    text-decoration: underline;
+    transition: opacity 0.2s;
+    font-weight: 600;
 }
 
-.auth-link-btn:hover {
-    color: #764ba2;
+.auth-oauth-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
 }
 
-.auth-passwordless-hint {
-    margin: 0 0 12px;
+.auth-oauth-google {
+    background: #fff;
+    color: #3c4043;
+    border: 1px solid #dadce0;
+}
+
+.auth-oauth-google:hover:not(:disabled) {
+    background: #f8f9fa;
+}
+
+.auth-oauth-apple {
+    background: #000;
+    color: #fff;
+}
+
+.auth-oauth-apple:hover:not(:disabled) {
+    background: #1a1a1a;
+}
+
+.auth-oauth-icon {
+    font-size: 1.1em;
+    font-weight: 700;
+    line-height: 1;
+}
+
+.auth-divider {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #999;
+    font-size: 0.85em;
+    margin: 4px 0;
+}
+
+.auth-divider::before,
+.auth-divider::after {
+    content: '';
+    flex: 1;
+    border-top: 1px solid #e0e0e0;
+}
+
+.profile-linked-accounts {
+    margin-top: 8px;
+}
+
+.profile-section-label {
+    font-size: 0.85em;
+    color: #777;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin: 0 0 8px;
+}
+
+.linked-account-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 7px 0;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.linked-account-row:last-child {
+    border-bottom: none;
+}
+
+.linked-account-name {
     font-size: 0.9em;
-    color: #555;
+    color: #333;
+}
+
+.linked-account-disconnect {
+    background: #ffebee;
+    color: #c62828;
+}
+
+.linked-account-disconnect:hover:not(:disabled) {
+    background: #ffcdd2;
 }
 
 /* ========== Options Account Section ========== */

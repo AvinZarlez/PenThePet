@@ -77,11 +77,12 @@ describe('CloudSync', () => {
         beforeEach(() => {
             document.body.innerHTML = `
                 <div id="cloudSyncModal" class="modal" style="display: none;">
-                    <input id="authEmail" value="">
-                    <input id="authPassword" value="">
-                    <div id="authError" style="display: none;"></div>
-                    <button id="authSignInBtn"></button>
-                    <button id="authSignUpBtn"></button>
+                    <input id="authEmailLink" value="">
+                    <div id="authLinkError" style="display: none;"></div>
+                    <div id="authLinkSuccess" style="display: none;"></div>
+                    <button id="authSendLinkBtn"></button>
+                    <button id="authGoogleBtn"></button>
+                    <button id="authAppleBtn"></button>
                 </div>
             `;
         });
@@ -97,18 +98,23 @@ describe('CloudSync', () => {
             expect(document.getElementById('cloudSyncModal').style.display).toBe('none');
         });
 
-        test('handleSignIn should show error when fields are empty', async () => {
-            await CloudSync.handleSignIn();
-            const error = document.getElementById('authError');
+        test('handleSendSignInLink should show error when email is empty', async () => {
+            await CloudSync.handleSendSignInLink();
+            const error = document.getElementById('authLinkError');
             expect(error.style.display).toBe('block');
             expect(error.textContent).toContain('email');
         });
 
-        test('handleSignUp should show error when fields are empty', async () => {
-            await CloudSync.handleSignUp();
-            const error = document.getElementById('authError');
+        test('handleSignInWithGoogle should show error when Firebase not initialised', async () => {
+            await CloudSync.handleSignInWithGoogle();
+            const error = document.getElementById('authLinkError');
             expect(error.style.display).toBe('block');
-            expect(error.textContent).toContain('email');
+        });
+
+        test('handleSignInWithApple should show error when Firebase not initialised', async () => {
+            await CloudSync.handleSignInWithApple();
+            const error = document.getElementById('authLinkError');
+            expect(error.style.display).toBe('block');
         });
     });
 
@@ -136,6 +142,18 @@ describe('CloudSync', () => {
         });
     });
 
+    describe('signInWithGoogle()', () => {
+        test('should throw when Firebase is not initialised', async () => {
+            await expect(CloudSync.signInWithGoogle()).rejects.toThrow('Firebase not initialised');
+        });
+    });
+
+    describe('signInWithApple()', () => {
+        test('should throw when Firebase is not initialised', async () => {
+            await expect(CloudSync.signInWithApple()).rejects.toThrow('Firebase not initialised');
+        });
+    });
+
     describe('edit profile modal helpers', () => {
         beforeEach(() => {
             document.body.innerHTML = `
@@ -143,7 +161,10 @@ describe('CloudSync', () => {
                     <input id="profileUsername" value="">
                     <input id="profileEmail" value="">
                     <div id="profileError" style="display: none;"></div>
+                    <div id="profileSuccess" style="display: none;"></div>
                     <button id="profileSaveBtn"></button>
+                    <button id="linkGoogleBtn"></button>
+                    <button id="linkAppleBtn"></button>
                 </div>
             `;
         });
@@ -164,48 +185,13 @@ describe('CloudSync', () => {
             await CloudSync.handleSaveProfile();
             expect(document.getElementById('editProfileModal').style.display).toBe('none');
         });
-    });
 
-    describe('passwordless sign-in modal helpers', () => {
-        beforeEach(() => {
-            document.body.innerHTML = `
-                <div id="cloudSyncModal" class="modal" style="display: none;">
-                    <div id="authPasswordView">
-                        <input id="authEmail" value="">
-                        <input id="authPassword" value="">
-                        <div id="authError" style="display: none;"></div>
-                        <button id="authSignInBtn"></button>
-                        <button id="authSignUpBtn"></button>
-                    </div>
-                    <div id="authPasswordlessView" style="display: none;">
-                        <input id="authEmailLink" value="">
-                        <div id="authLinkError" style="display: none;"></div>
-                        <div id="authLinkSuccess" style="display: none;"></div>
-                        <button id="authSendLinkBtn"></button>
-                    </div>
-                </div>
-            `;
+        test('handleLinkWithGoogle should do nothing when not signed in', async () => {
+            await expect(CloudSync.handleLinkWithGoogle()).resolves.toBeUndefined();
         });
 
-        test('showPasswordlessView should show passwordless view and hide password view', () => {
-            CloudSync.showPasswordlessView();
-            expect(document.getElementById('authPasswordlessView').style.display).toBe('block');
-            expect(document.getElementById('authPasswordView').style.display).toBe('none');
-        });
-
-        test('showPasswordView should show password view and hide passwordless view', () => {
-            CloudSync.showPasswordlessView();
-            CloudSync.showPasswordView();
-            expect(document.getElementById('authPasswordView').style.display).toBe('block');
-            expect(document.getElementById('authPasswordlessView').style.display).toBe('none');
-        });
-
-        test('handleSendSignInLink should show error when email is empty', async () => {
-            CloudSync.showPasswordlessView();
-            await CloudSync.handleSendSignInLink();
-            const error = document.getElementById('authLinkError');
-            expect(error.style.display).toBe('block');
-            expect(error.textContent).toContain('email');
+        test('handleLinkWithApple should do nothing when not signed in', async () => {
+            await expect(CloudSync.handleLinkWithApple()).resolves.toBeUndefined();
         });
     });
 });

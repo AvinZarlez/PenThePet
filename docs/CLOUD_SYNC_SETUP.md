@@ -51,14 +51,57 @@ for normal use.
 
 ### Step 3 — Enable Authentication Sign-In Methods
 
+#### 3a — Email Link (Passwordless)
+
 1. In the Firebase console left sidebar, click **Build → Authentication**.
 2. Click **Get started**.
 3. Under the **Sign-in method** tab, click **Email/Password**.
 4. Toggle **Enable** to on.
-5. Toggle **Email link (passwordless sign-in)** to on as well. This enables
-   the "Sign in without a password" feature and allows Firebase to send
-   verification emails (including the email-change verification email).
+5. Toggle **Email link (passwordless sign-in)** to on. This allows Firebase
+   to send sign-in link emails and email-change verification emails.
 6. Click **Save**.
+
+#### 3b — Google Sign-In
+
+1. Under the **Sign-in method** tab, click **Google**.
+2. Toggle **Enable** to on.
+3. Select a **Project support email** from the dropdown (required by Google).
+4. Click **Save**.
+
+No additional configuration is needed for Google sign-in on the web. Users
+click **Sign in with Google** and are taken through Google's standard OAuth
+popup flow.
+
+#### 3c — Apple Sign-In (optional, requires Apple Developer membership)
+
+Apple Sign-In requires a paid **Apple Developer Program** membership
+($99/year). If you do not have one, skip this step — Google and email link
+will still work.
+
+1. **In the Apple Developer portal** ([developer.apple.com](https://developer.apple.com)):
+   a. Go to **Certificates, Identifiers & Profiles → Identifiers**.
+   b. Register a new **Services ID** (e.g. `com.yourapp.signin`).
+      - Under **Sign In with Apple**, click **Configure** and add your
+        authorised domain (e.g. `your-username.github.io`) and the
+        return URL:
+        `https://your-project.firebaseapp.com/__/auth/handler`
+   c. Create a **Key** with the **Sign In with Apple** capability enabled.
+      Download the `.p8` private key file — you can only download it once.
+   d. Note your **Key ID** and your **Team ID** (shown under your name in
+      the top-right corner).
+
+2. **In the Firebase console** under **Sign-in method → Apple**:
+   a. Toggle **Enable** to on.
+   b. Under **Services ID**, enter the Services ID you created above
+      (e.g. `com.yourapp.signin`).
+   c. Under **Apple team ID**, enter your Team ID.
+   d. Under **Key ID**, enter the Key ID from your `.p8` file.
+   e. Under **Private key**, paste the contents of the `.p8` file.
+   f. Click **Save**.
+
+> **Note:** Apple requires that Sign In with Apple is offered whenever
+> Google Sign-In is offered in an iOS/macOS app. For a web-only app this
+> rule does not apply, but it is good practice to offer both.
 
 ### Step 4 — Create a Firestore Database
 
@@ -179,31 +222,30 @@ automatically enables the cloud sync UI.
 
 1. Open the app (your GitHub Pages URL).
 2. A **"☁️ Sign In to Sync"** button should appear below the menu button.
-3. Click it. You will see the sign-in modal with two options:
-   - **Email + password** — enter your email and a password (min 6 characters)
-     and click **Create Account** to register, or **Sign In** if you already
-     have an account.
-   - **Passwordless** — click "Sign in without a password →", enter your email,
-     and click **Send Sign-In Link**. Firebase will email you a magic link;
-     clicking it in your inbox returns you to the app and signs you in
+3. Click it. The sign-in modal shows three options:
+   - **Sign in with Google** — opens a Google OAuth popup; sign in with any
+     Google account.
+   - **Sign in with Apple** — opens an Apple OAuth popup (requires Step 3c
+     to be configured).
+   - **Email link** — enter your email and click **Send Sign-In Link**;
+     Firebase emails a one-time magic link; clicking it signs you in
      automatically — no password required.
 4. After signing in, you should see your email (or username) and a **☁️ Synced** badge.
 5. Submit a puzzle — it should upload to Firestore automatically.
 6. Open the same URL in a different browser or device, sign in with the
    same account, and verify that the submission appears.
 
-## Passwordless Sign-In (Magic Links)
+## Sign-In Methods
 
-Once **Email link (passwordless sign-in)** is enabled in Step 3, users can
-sign in without ever setting a password:
+### Email Link (Magic Links)
+
+Once **Email link (passwordless sign-in)** is enabled in Step 3a, users can
+sign in without a password:
 
 1. Click **"☁️ Sign In to Sync"** in the app.
-2. Click **"Sign in without a password →"** at the bottom of the modal.
-3. Enter your email address and click **Send Sign-In Link**.
-4. Check your inbox for an email from Firebase — click the link inside.
-5. The app opens and you are signed in automatically.
-
-### How it works
+2. Enter your email and click **Send Sign-In Link**.
+3. Check your inbox for an email from Firebase — click the link inside.
+4. The app opens and you are signed in automatically.
 
 | Step | What happens |
 |---|---|
@@ -212,14 +254,41 @@ sign in without ever setting a password:
 | App loads | `init()` detects the token, reads the saved email, calls `signInWithEmailLink()`, then cleans the URL |
 | Different device | If the link is opened on a different device, the app prompts for the email before completing sign-in |
 
-### Enabling email delivery
+### Google Sign-In
 
-Firebase sends sign-in link emails through its own delivery infrastructure
-when **Email link (passwordless sign-in)** is enabled. The same infrastructure
-also sends the **email-change verification** emails used by the "Edit Profile"
-feature. If you previously saw "Email/password sign-in is not enabled in the
-Firebase console" when attempting to change your email address, enabling this
-setting in Step 3 resolves it.
+Users click **Sign in with Google** in the auth modal. Firebase opens a
+Google OAuth popup, the user selects their Google account, and they are
+signed in. Requires Step 3b to be enabled.
+
+### Apple Sign-In
+
+Users click **Sign in with Apple**. Firebase opens an Apple OAuth popup
+and the user authenticates with Face ID / Touch ID or their Apple ID
+password. Requires Step 3c to be fully configured.
+
+### Linking Multiple Sign-In Methods
+
+A single Firebase account (and thus a single set of puzzle data) can be
+signed in to using multiple methods. For example, a user can sign in via
+email link AND Google — both will map to the same Firebase UID and the
+same Firestore data.
+
+To connect additional sign-in methods to an existing account:
+
+1. Sign in with your existing method.
+2. Go to **Options → ☁️ Account → ✏️ Edit Username / Email**.
+3. Under **Connected accounts**, click **Connect** next to Google or Apple.
+4. Complete the OAuth flow.
+
+Once connected, the user can sign in with either method and always access
+the same data.
+
+> **What if I try to sign in with Google but I already have an email link
+> account with the same email?**
+> Firebase's default "one account per email address" setting will return an
+> error: *"An account already exists with this email using a different
+> sign-in method."* Sign in with your email link first, then connect Google
+> from your profile settings.
 
 ## How Data Is Stored
 
@@ -274,12 +343,31 @@ reads and writes — far below the free limits.
 
 The `apiKey` in `js/firebase-config.js` is empty. Complete Step 8.
 
-### "Email/password sign-in is not enabled" or "This sign-in method is not enabled"
+### "This sign-in method is not enabled in the Firebase console"
 
-Return to Step 3. Make sure **Email/Password** is toggled on, and (for
-passwordless sign-in and email-change verification emails) make sure
-**Email link (passwordless sign-in)** is toggled on too. Click **Save** after
-each change.
+Return to Step 3 and enable the relevant provider:
+- **Email link** — toggle on both **Email/Password** and **Email link
+  (passwordless sign-in)** and click **Save** (Step 3a).
+- **Google** — toggle on **Google** and click **Save** (Step 3b).
+- **Apple** — toggle on **Apple** and complete the Apple Developer
+  configuration (Step 3c).
+
+### "Sign-in cancelled" (popup closed immediately)
+
+The user closed the popup before completing sign-in. This is not an error.
+
+### "The sign-in popup was blocked"
+
+The browser blocked the OAuth popup. Ask the user to allow popups for the
+site and try again, or use the email link method instead.
+
+### "An account already exists with this email using a different sign-in method"
+
+The user tried to sign in with Google/Apple but a Firebase account with the
+same email already exists via email link (or vice versa). Fix:
+1. Sign in with the original method (e.g. email link).
+2. Go to **Options → ☁️ Account → ✏️ Edit Username / Email**.
+3. Connect the new provider (Google or Apple) under **Connected accounts**.
 
 ### "Firestore permission denied" or "⚠️ Sync error"
 
@@ -325,3 +413,5 @@ from, including your custom domain if you use one.
 - [Firebase Firestore Documentation](https://firebase.google.com/docs/firestore)
 - [Firebase Authentication Documentation](https://firebase.google.com/docs/auth)
 - [Firebase Pricing (Spark plan)](https://firebase.google.com/pricing)
+- [Apple Developer Program](https://developer.apple.com/programs/)
+- [Sign In with Apple for Firebase](https://firebase.google.com/docs/auth/web/apple)
