@@ -81,7 +81,6 @@ domain the app is served from is in that list.
    (it is typically named **Web client (auto created by Google Service)**).
 7. Under **Authorized JavaScript origins**, add every domain the app is served
    from. Examples:
-
    - **GitHub Pages (default domain):**
 
      ```text
@@ -152,7 +151,6 @@ fork running on a different domain):
 3. Click the **Browser key** that Firebase created automatically.
 4. Under **Application restrictions**, select **HTTP referrers (web sites)**.
 5. Add every domain the app is served from. Examples:
-
    - **GitHub Pages (default domain):**
 
      ```text
@@ -187,6 +185,7 @@ be on a different domain and Firebase will reject their requests.
 > domains) are completely separate settings in different places. **Updating
 > one does NOT update the others.** Every domain the app is served from must
 > be registered in **all three** places:
+>
 > - **OAuth 2.0 Client ID** (Step 3b) — controls which origins can open the
 >   Google sign-in popup.
 > - **API key HTTP referrers** (Step 6) — controls which sites can call
@@ -205,8 +204,8 @@ appear in this list or sign-in will be blocked.
 3. Under **Authorised domains**, click **Add domain**.
 4. Add every domain the app is served from, for example:
    - `YOUR_USERNAME.github.io`
-   - `YOUR_CUSTOM_DOMAIN` *(e.g. `www.your-domain.com`, if applicable)*
-   - `localhost` *(for local development)*
+   - `YOUR_CUSTOM_DOMAIN` _(e.g. `www.your-domain.com`, if applicable)_
+   - `localhost` _(for local development)_
 5. Click **Add** after each domain.
 
 > **Note:** `firebaseapp.com` and `localhost` are pre-authorised by default.
@@ -222,14 +221,14 @@ This keeps credentials out of the committed codebase.
 2. Click **New repository secret** and add each of the following secrets with
    the corresponding value from the `firebaseConfig` object you copied in Step 2:
 
-   | Repository Secret            | Example value                              |
-   |------------------------------|--------------------------------------------|
-   | `FIREBASE_API_KEY`           | `AIzaSy…`                                  |
-   | `FIREBASE_AUTH_DOMAIN`       | `your-project.firebaseapp.com`             |
-   | `FIREBASE_PROJECT_ID`        | `your-project`                             |
-   | `FIREBASE_STORAGE_BUCKET`    | `your-project.firebasestorage.app`         |
-   | `FIREBASE_MESSAGING_SENDER_ID` | `1234567890`                             |
-   | `FIREBASE_APP_ID`            | `1:1234567890:web:abcdef`                  |
+   | Repository Secret              | Example value                      |
+   | ------------------------------ | ---------------------------------- |
+   | `FIREBASE_API_KEY`             | `AIzaSy…`                          |
+   | `FIREBASE_AUTH_DOMAIN`         | `your-project.firebaseapp.com`     |
+   | `FIREBASE_PROJECT_ID`          | `your-project`                     |
+   | `FIREBASE_STORAGE_BUCKET`      | `your-project.firebasestorage.app` |
+   | `FIREBASE_MESSAGING_SENDER_ID` | `1234567890`                       |
+   | `FIREBASE_APP_ID`              | `1:1234567890:web:abcdef`          |
 
 3. Push any change to `main` (or trigger the **Deploy static content to Pages**
    workflow manually). The workflow will substitute the secrets into
@@ -266,12 +265,12 @@ sign in without a password:
 3. Check your inbox for an email from Firebase — click the link inside.
 4. The app opens and you are signed in automatically.
 
-| Step | What happens |
-|---|---|
+| Step                 | What happens                                                                                                     |
+| -------------------- | ---------------------------------------------------------------------------------------------------------------- |
 | User requests a link | `sendSignInLinkToEmail()` is called; Firebase emails a one-time magic link; the email is saved in `localStorage` |
-| User clicks the link | Browser opens the app URL with a sign-in token in the query string |
-| App loads | `init()` detects the token, reads the saved email, calls `signInWithEmailLink()`, then cleans the URL |
-| Different device | If the link is opened on a different device, the app prompts for the email before completing sign-in |
+| User clicks the link | Browser opens the app URL with a sign-in token in the query string                                               |
+| App loads            | `init()` detects the token, reads the saved email, calls `signInWithEmailLink()`, then cleans the URL            |
+| Different device     | If the link is opened on a different device, the app prompts for the email before completing sign-in             |
 
 ### Google Sign-In
 
@@ -299,8 +298,8 @@ the same data.
 > **What if I try to sign in with Google but I already have an email link
 > account with the same email?**
 > Firebase's default "one account per email address" setting will return an
-> error: *"An account already exists with this email using a different
-> sign-in method."* Sign in with your email link first, then connect Google
+> error: _"An account already exists with this email using a different
+> sign-in method."_ Sign in with your email link first, then connect Google
 > from your profile settings.
 
 ## How Data Is Stored
@@ -328,30 +327,30 @@ users/{userId}/submissions/settings
 
 ## How Sync Works
 
-| Event | What happens |
-|---|---|
-| **Sign in** | Cloud submissions are downloaded and merged into local cookies (cloud wins on conflict). Cloud settings overwrite local settings. Cloud timer states are merged by taking the highest elapsed time. Local-only data is then uploaded. |
-| **Submit a puzzle** | Saved to cookie AND uploaded to Firestore immediately. |
-| **Timer auto-save** | Elapsed seconds saved to cookie AND Firestore every 30 s and on every pause (including tab hide / window close). |
-| **Change pet or hint mode** | Saved to cookie AND uploaded to Firestore immediately. |
-| **Realtime update** | Changes from other signed-in devices are pushed to cookies automatically. |
-| **Sign out** | Realtime listener stops. Local cookies remain untouched. |
+| Event                       | What happens                                                                                                                                                                                                                          |
+| --------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Sign in**                 | Cloud submissions are downloaded and merged into local cookies (cloud wins on conflict). Cloud settings overwrite local settings. Cloud timer states are merged by taking the highest elapsed time. Local-only data is then uploaded. |
+| **Submit a puzzle**         | Saved to cookie AND uploaded to Firestore immediately.                                                                                                                                                                                |
+| **Timer auto-save**         | Elapsed seconds saved to cookie AND Firestore every 30 s and on every pause (including tab hide / window close).                                                                                                                      |
+| **Change pet or hint mode** | Saved to cookie AND uploaded to Firestore immediately.                                                                                                                                                                                |
+| **Realtime update**         | Changes from other signed-in devices are pushed to cookies automatically.                                                                                                                                                             |
+| **Sign out**                | Realtime listener stops. Local cookies remain untouched.                                                                                                                                                                              |
 
 ## Conflict Resolution
 
 When local cookie data and Firestore hold different values for the same key,
 the following rules apply:
 
-| Data type | Rule | Rationale |
-|---|---|---|
-| **Submissions** (`YYYY-MM-DD`) | **Cloud wins** | The cloud is the authoritative record of completed puzzles. If you solved a puzzle offline and then log in, the cloud version is kept. |
-| **Settings** (`selectedPet`, `hintMode`) | **Cloud wins** | The cloud holds the user's most recently saved preference from any signed-in device. |
-| **Timer** (`timer_YYYY-MM-DD`) | **Highest elapsed wins** | The timer should never go backwards. Whichever device has made the most progress keeps that value so no elapsed time is ever lost. |
+| Data type                                | Rule                     | Rationale                                                                                                                              |
+| ---------------------------------------- | ------------------------ | -------------------------------------------------------------------------------------------------------------------------------------- |
+| **Submissions** (`YYYY-MM-DD`)           | **Cloud wins**           | The cloud is the authoritative record of completed puzzles. If you solved a puzzle offline and then log in, the cloud version is kept. |
+| **Settings** (`selectedPet`, `hintMode`) | **Cloud wins**           | The cloud holds the user's most recently saved preference from any signed-in device.                                                   |
+| **Timer** (`timer_YYYY-MM-DD`)           | **Highest elapsed wins** | The timer should never go backwards. Whichever device has made the most progress keeps that value so no elapsed time is ever lost.     |
 
 > **Offline play then sign-in example:** You solve three puzzles while offline.
 > When you sign in, the cloud's submissions for those dates are applied first
-> (cloud wins on conflict).  Any of your offline puzzles for dates that are
-> **not** already in the cloud are then uploaded.  If the cloud already had a
+> (cloud wins on conflict). Any of your offline puzzles for dates that are
+> **not** already in the cloud are then uploaded. If the cloud already had a
 > submission for the same date, the cloud version is kept and your local offline
 > solve for that date is replaced with the cloud version.
 
@@ -366,12 +365,12 @@ stays in local cookies and the cloud sync UI is hidden.
 
 Firebase's Spark (free) plan is sufficient for normal use:
 
-| Resource | Free quota |
-|---|---|
-| Firestore reads | 50,000 / day |
-| Firestore writes | 20,000 / day |
-| Firestore storage | 1 GiB |
-| Authentication users | Unlimited |
+| Resource             | Free quota   |
+| -------------------- | ------------ |
+| Firestore reads      | 50,000 / day |
+| Firestore writes     | 20,000 / day |
+| Firestore storage    | 1 GiB        |
+| Authentication users | Unlimited    |
 
 A typical user saving a few submissions per day will use a handful of
 reads and writes — far below the free limits.
@@ -387,6 +386,7 @@ The `apiKey` was not injected at deploy time. Verify that all six
 ### "This sign-in method is not enabled in the Firebase console"
 
 Return to Step 3 and enable the relevant provider:
+
 - **Email link** — toggle on both **Email/Password** and **Email link
   (passwordless sign-in)** and click **Save** (Step 3a).
 - **Google** — toggle on **Google** and click **Save** (Step 3b).
@@ -404,6 +404,7 @@ site and try again, or use the email link method instead.
 
 The user tried to sign in with Google but a Firebase account with the
 same email already exists via email link (or vice versa). Fix:
+
 1. Sign in with the original method (e.g. email link).
 2. Go to **Options → ☁️ Account → ✏️ Edit Username / Email**.
 3. Connect Google under **Connected accounts**.
