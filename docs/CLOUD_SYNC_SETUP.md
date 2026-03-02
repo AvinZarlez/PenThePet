@@ -192,8 +192,14 @@ Submissions are stored in Firestore at:
 users/{userId}/submissions/{YYYY-MM-DD}
 ```
 
-Each document contains `score`, `walls`, and `timestamp` — the same data
+Each document contains `score`, `walls`, `timestamp`, and `time` — the same data
 that is stored in the local cookie.
+
+In-progress timer state is stored at:
+
+```text
+users/{userId}/submissions/timer_{YYYY-MM-DD}
+```
 
 User settings (pet type, hint mode) are stored at:
 
@@ -205,10 +211,30 @@ users/{userId}/submissions/settings
 
 | Event | What happens |
 |---|---|
-| **Sign in** | Cloud submissions are downloaded and merged into local cookies. Local-only submissions are uploaded to the cloud. |
-| **Submit a puzzle** | Saved to cookie AND uploaded to Firestore. |
+| **Sign in** | Cloud submissions are downloaded and merged into local cookies (cloud wins on conflict). Cloud settings overwrite local settings. Cloud timer states are merged by taking the highest elapsed time. Local-only data is then uploaded. |
+| **Submit a puzzle** | Saved to cookie AND uploaded to Firestore immediately. |
+| **Timer auto-save** | Elapsed seconds saved to cookie AND Firestore every 30 s and on every pause (including tab hide / window close). |
+| **Change pet or hint mode** | Saved to cookie AND uploaded to Firestore immediately. |
 | **Realtime update** | Changes from other signed-in devices are pushed to cookies automatically. |
 | **Sign out** | Realtime listener stops. Local cookies remain untouched. |
+
+## Conflict Resolution
+
+When local cookie data and Firestore hold different values for the same key,
+the following rules apply:
+
+| Data type | Rule | Rationale |
+|---|---|---|
+| **Submissions** (`YYYY-MM-DD`) | **Cloud wins** | The cloud is the authoritative record of completed puzzles. If you solved a puzzle offline and then log in, the cloud version is kept. |
+| **Settings** (`selectedPet`, `hintMode`) | **Cloud wins** | The cloud holds the user's most recently saved preference from any signed-in device. |
+| **Timer** (`timer_YYYY-MM-DD`) | **Highest elapsed wins** | The timer should never go backwards. Whichever device has made the most progress keeps that value so no elapsed time is ever lost. |
+
+> **Offline play then sign-in example:** You solve three puzzles while offline.
+> When you sign in, the cloud's submissions for those dates are applied first
+> (cloud wins on conflict).  Any of your offline puzzles for dates that are
+> **not** already in the cloud are then uploaded.  If the cloud already had a
+> submission for the same date, the cloud version is kept and your local offline
+> solve for that date is replaced with the cloud version.
 
 ## Running Without Cloud Sync
 
