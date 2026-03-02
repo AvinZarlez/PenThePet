@@ -35,21 +35,25 @@
  *
  * ── CONFLICT RESOLUTION ──────────────────────────────────────────────────────
  *
- * When local cookies and Firestore hold different data for the same key:
+ * For each puzzle date, sync applies these rules in priority order:
  *
- *   • submissions (YYYY-MM-DD docs): MOST RECENT WINS.  Whichever record
- *     has the later `timestamp` field is kept.  This ensures that a puzzle
- *     completed offline (with a newer timestamp) is not silently discarded
- *     when the user signs in and the cloud holds an older version from
- *     another device.  If either side lacks a timestamp, the cloud value
- *     is used as a safe default.
+ *   1. ONLY ONE SIDE HAS DATA — copy it to the other so both match.
  *
- *   • settings (selectedPet, hintMode): CLOUD WINS.  The cloud holds the
- *     user's most recently saved preference across all devices.
+ *   2. ONE SIDE IS SUBMITTED, OTHER IS IN-PROGRESS — the submitted result
+ *      always wins.  "Submitted" means a `submission_YYYY-MM-DD` cookie /
+ *      Firestore doc exists.  "In-progress" means only a timer exists (no
+ *      submission).  The winning submission is written to both sides.
  *
- *   • timer (timer_YYYY-MM-DD docs): HIGHEST ELAPSED WINS (max-merge).
- *     The timer should never go backwards; whichever device has made the
- *     most progress keeps that value.
+ *   3. BOTH IN-PROGRESS (timer only, no submission on either side) —
+ *      HIGHEST ELAPSED WINS (max-merge).  The timer should never go
+ *      backwards; both sides are updated to the larger elapsed value.
+ *
+ *   4. BOTH SUBMITTED — EARLIEST TIMESTAMP WINS.  The first completed
+ *      solve is the authentic result.  Whichever submission has the earlier
+ *      `timestamp` field is kept on both sides.  If either side lacks a
+ *      timestamp, the cloud value is used as a safe default.
+ *
+ * Settings (selectedPet, hintMode, username): CLOUD WINS always.
  *
  * ─────────────────────────────────────────────────────────────────────────────
  */
@@ -536,8 +540,13 @@ const CloudSync = (function () {
 
     /**
      * Download all cloud submissions and merge into local cookies.
-     * Conflict resolution: MOST RECENT WINS for submissions (by timestamp),
-     * CLOUD WINS for settings, HIGHEST ELAPSED WINS for timers.
+     *
+     * Conflict resolution per puzzle date (in priority order):
+     *   1. Only one side has data → copy to the other.
+     *   2. One side submitted, other in-progress → submitted wins.
+     *   3. Both in-progress → HIGHEST ELAPSED WINS (max-merge on timers).
+     *   4. Both submitted → EARLIEST TIMESTAMP WINS (first solve is authentic).
+     * Settings always use cloud value.
      */
     async function syncFromCloud() {
         if (!db || !currentUser) return;
@@ -561,9 +570,10 @@ const CloudSync = (function () {
                     applyCloudTimerState(doc.id, doc.data());
                     return;
                 }
-                // Submissions: most recent timestamp wins.
-                // If the local cookie has a newer timestamp, keep it so that
-                // uploadLocalSubmissions() can push it to the cloud.
+                // Submissions: both sides have a submission — earliest timestamp wins.
+                // If the local submission was completed first, keep it and let
+                // uploadLocalSubmissions() push it to the cloud.
+                // If the cloud submission was completed first, apply it to local.
                 // If either side lacks a timestamp, default to the cloud value.
                 const cookieName = 'submission_' + doc.id;
                 const cloudData = doc.data();
@@ -572,8 +582,8 @@ const CloudSync = (function () {
                     try {
                         const localData = JSON.parse(localValue);
                         if (localData.timestamp && cloudData.timestamp &&
-                            new Date(localData.timestamp) > new Date(cloudData.timestamp)) {
-                            return; // local is newer — keep it; upload will follow
+                            new Date(localData.timestamp) < new Date(cloudData.timestamp)) {
+                            return; // local was submitted first — keep it; upload will follow
                         }
                     } catch { /* fall through to use cloud data */ }
                 }
@@ -619,14 +629,16 @@ const CloudSync = (function () {
 
     /**
      * Scan local cookies for submission_*, timer_*, and settings data, then
-     * upload any entries that the cloud does not already have, as well as any
-     * local submissions that won the most-recent-timestamp conflict (i.e. the
-     * local cookie was not overwritten by syncFromCloud()).
+     * upload every entry to Firestore so that the cloud reflects the merged
+     * result produced by syncFromCloud().
      *
-     * Called after syncFromCloud() has already applied cloud data locally,
-     * so a local cookie that survives with its own data is either local-only
-     * (the cloud had no document for that key yet) or locally newer (its
-     * timestamp is more recent than the cloud's).
+     * After syncFromCloud() has run, each local cookie contains the winning
+     * value for that date:
+     *   - Local-only submissions/timers (cloud had nothing) → create cloud doc.
+     *   - Locally-won submissions (local timestamp was earlier) → overwrite cloud.
+     *   - Cloud-won submissions (cloud timestamp was earlier) → already applied
+     *     to local cookie; re-uploading is a safe no-op with merge: true.
+     *   - Timers → local holds max(local, cloud); re-uploading syncs cloud.
      */
     async function uploadLocalSubmissions() {
         if (!db || !currentUser) return;
@@ -707,7 +719,7 @@ const CloudSync = (function () {
                         applyCloudTimerState(change.doc.id, change.doc.data());
                         return;
                     }
-                    // Submissions: most recent timestamp wins (same policy as syncFromCloud).
+                    // Submissions: both submitted — earliest timestamp wins (same policy as syncFromCloud).
                     const dateString = change.doc.id;
                     const cookieName = 'submission_' + dateString;
                     const cloudData = change.doc.data();
@@ -716,8 +728,8 @@ const CloudSync = (function () {
                         try {
                             const localData = JSON.parse(localValue);
                             if (localData.timestamp && cloudData.timestamp &&
-                                new Date(localData.timestamp) > new Date(cloudData.timestamp)) {
-                                return; // local is newer — keep it
+                                new Date(localData.timestamp) < new Date(cloudData.timestamp)) {
+                                return; // local was submitted first — keep it
                             }
                         } catch { /* fall through to use cloud data */ }
                     }
