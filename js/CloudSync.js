@@ -468,12 +468,9 @@ const CloudSync = (function () {
 
     /**
      * Apply a cloud timer state to the local cookie.
-     * Timer conflict resolution: HIGHEST ELAPSED WINS.
-     * The timer should never go backwards; whichever device has progressed
-     * further keeps its value.
+     * Conflict rule 3: BOTH IN-PROGRESS → HIGHEST ELAPSED WINS. See docs/CLOUD_SYNC_SETUP.md.
      * @param {string} docId - Firestore doc ID (e.g. 'timer_2026-01-01')
      * @param {Object} data - {elapsed: number}
-     * @private
      */
     function applyCloudTimerState(docId, data) {
         if (!data || typeof data.elapsed !== 'number') return;
@@ -486,6 +483,29 @@ const CloudSync = (function () {
         }
         const elapsed = Math.max(localElapsed, data.elapsed);
         CookieUtils.setCookie(docId, JSON.stringify({ elapsed: elapsed }), 365);
+    }
+
+    /**
+     * Apply a cloud submission to the local cookie using conflict resolution.
+     * Conflict rule 4: BOTH SUBMITTED → EARLIEST TIMESTAMP WINS. See docs/CLOUD_SYNC_SETUP.md.
+     * @param {string} dateString - Puzzle date (YYYY-MM-DD)
+     * @param {Object} cloudData - Cloud submission data
+     * @returns {boolean} true if the local cookie was updated, false if local was kept
+     */
+    function applyCloudSubmission(dateString, cloudData) {
+        const cookieName = 'submission_' + dateString;
+        const localValue = CookieUtils.getCookie(cookieName);
+        if (localValue) {
+            try {
+                const localData = JSON.parse(localValue);
+                if (localData.timestamp && cloudData.timestamp &&
+                    new Date(localData.timestamp) < new Date(cloudData.timestamp)) {
+                    return false; // local was submitted first — keep it; upload will follow
+                }
+            } catch { /* fall through to use cloud data */ }
+        }
+        CookieUtils.setCookie(cookieName, JSON.stringify(cloudData), 365);
+        return true;
     }
 
     // ----------------------------------------------------------------
@@ -551,13 +571,7 @@ const CloudSync = (function () {
 
     /**
      * Download all cloud submissions and merge into local cookies.
-     *
-     * Conflict resolution per puzzle date (in priority order):
-     *   1. Only one side has data → copy to the other.
-     *   2. One side submitted, other in-progress → submitted wins.
-     *   3. Both in-progress → HIGHEST ELAPSED WINS (max-merge on timers).
-     *   4. Both submitted → EARLIEST TIMESTAMP WINS (first solve is authentic).
-     * Settings always use cloud value.
+     * Conflict resolution rules: see docs/CLOUD_SYNC_SETUP.md.
      */
     async function syncFromCloud() {
         if (!db || !currentUser) return;
@@ -581,24 +595,8 @@ const CloudSync = (function () {
                     applyCloudTimerState(doc.id, doc.data());
                     return;
                 }
-                // Submissions: both sides have a submission — earliest timestamp wins.
-                // If the local submission was completed first, keep it and let
-                // uploadLocalSubmissions() push it to the cloud.
-                // If the cloud submission was completed first, apply it to local.
-                // If either side lacks a timestamp, default to the cloud value.
-                const cookieName = 'submission_' + doc.id;
-                const cloudData = doc.data();
-                const localValue = CookieUtils.getCookie(cookieName);
-                if (localValue) {
-                    try {
-                        const localData = JSON.parse(localValue);
-                        if (localData.timestamp && cloudData.timestamp &&
-                            new Date(localData.timestamp) < new Date(cloudData.timestamp)) {
-                            return; // local was submitted first — keep it; upload will follow
-                        }
-                    } catch { /* fall through to use cloud data */ }
-                }
-                CookieUtils.setCookie(cookieName, JSON.stringify(cloudData), 365);
+                // Submission conflict resolution — see docs/CLOUD_SYNC_SETUP.md
+                applyCloudSubmission(doc.id, doc.data());
             });
 
             // Upload any local-only data that the cloud does not yet have.
@@ -606,8 +604,7 @@ const CloudSync = (function () {
 
             updateSyncStatus('synced');
 
-            // Notify the rest of the app that cloud data has been applied to
-            // cookies, so the game UI can refresh any stale displayed state.
+            // Notify the app that cookies may have changed (see cloudsync:synced in main.js).
             if (typeof document !== 'undefined') {
                 document.dispatchEvent(new CustomEvent('cloudsync:synced'));
             }
@@ -639,22 +636,13 @@ const CloudSync = (function () {
     }
 
     /**
-     * Scan local cookies for submission_*, timer_*, and settings data, then
-     * upload every entry to Firestore so that the cloud reflects the merged
-     * result produced by syncFromCloud().
-     *
-     * After syncFromCloud() has run, each local cookie contains the winning
-     * value for that date:
-     *   - Local-only submissions/timers (cloud had nothing) → create cloud doc.
-     *   - Locally-won submissions (local timestamp was earlier) → overwrite cloud.
-     *   - Cloud-won submissions (cloud timestamp was earlier) → already applied
-     *     to local cookie; re-uploading is a safe no-op with merge: true.
-     *   - Timers → local holds max(local, cloud); re-uploading syncs cloud.
+     * Upload all local submission_*, timer_*, and settings cookies to Firestore.
+     * Called after syncFromCloud() so each cookie already holds the winning value.
+     * Uses { merge: true } to avoid clobbering fields on concurrent devices.
      */
     async function uploadLocalSubmissions() {
         if (!db || !currentUser) return;
 
-        // Scan all cookies and upload submission_* and timer_* entries.
         const cookies = document.cookie.split(';');
         for (const cookie of cookies) {
             const parts = cookie.trim().split('=');
@@ -673,16 +661,12 @@ const CloudSync = (function () {
                     .doc(currentUser.uid)
                     .collection(COLLECTION_NAME)
                     .doc(docId);
-                // Use set with merge so a local-only doc is created without
-                // deleting any extra fields already written by another device,
-                // while still overwriting fields when local data is newer.
                 await docRef.set(data, { merge: true });
             } catch (e) {
                 console.error('CloudSync: Failed to upload local cookie', name, ':', e);
             }
         }
 
-        // Upload settings (selectedPet, hintMode) if they exist locally.
         const selectedPet = CookieUtils.getCookie('selectedPet');
         const hintMode = CookieUtils.getCookie('hintMode');
         if (selectedPet || hintMode) {
@@ -695,7 +679,6 @@ const CloudSync = (function () {
                     .doc(currentUser.uid)
                     .collection(COLLECTION_NAME)
                     .doc(SETTINGS_DOC);
-                // merge: true — only fills in missing fields, never downgrades.
                 await docRef.set(settings, { merge: true });
             } catch (e) {
                 console.error('CloudSync: Failed to upload local settings:', e);
@@ -730,21 +713,8 @@ const CloudSync = (function () {
                         applyCloudTimerState(change.doc.id, change.doc.data());
                         return;
                     }
-                    // Submissions: both submitted — earliest timestamp wins (same policy as syncFromCloud).
-                    const dateString = change.doc.id;
-                    const cookieName = 'submission_' + dateString;
-                    const cloudData = change.doc.data();
-                    const localValue = CookieUtils.getCookie(cookieName);
-                    if (localValue) {
-                        try {
-                            const localData = JSON.parse(localValue);
-                            if (localData.timestamp && cloudData.timestamp &&
-                                new Date(localData.timestamp) < new Date(cloudData.timestamp)) {
-                                return; // local was submitted first — keep it
-                            }
-                        } catch { /* fall through to use cloud data */ }
-                    }
-                    CookieUtils.setCookie(cookieName, JSON.stringify(cloudData), 365);
+                    // Submission conflict resolution — see docs/CLOUD_SYNC_SETUP.md
+                    applyCloudSubmission(change.doc.id, change.doc.data());
                     submissionsUpdated = true;
                 } else if (change.type === 'removed') {
                     // Submission deleted on another device — remove local cookie too.
@@ -1101,7 +1071,10 @@ const CloudSync = (function () {
         handleSignInWithGoogle: handleSignInWithGoogle,
         handleLinkWithGoogle: handleLinkWithGoogle,
         handleSignOut: handleSignOut,
-        handleSaveProfile: handleSaveProfile
+        handleSaveProfile: handleSaveProfile,
+        // Exposed for unit testing of conflict resolution logic.
+        applyCloudTimerState: applyCloudTimerState,
+        applyCloudSubmission: applyCloudSubmission
     };
 })();
 

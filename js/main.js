@@ -212,27 +212,41 @@ async function initGame() {
     if (typeof CloudSync !== 'undefined') {
         CloudSync.init();
 
-        // When cloud sync completes (on login, real-time update, or explicit
-        // syncNow call), reload the currently displayed level if its submission
-        // state or data has changed.  This ensures a device that had no local
-        // cookies (e.g. first login on a new device) shows the correct
-        // completed/trophy state without a manual refresh.
-        // Timer-only syncs (no submission change) are intentionally ignored so
-        // in-progress wall placements are not wiped.
+        // After any sync completes, refresh the displayed level state.
+        // Full reload: submission appeared, disappeared, or data changed.
+        // Timer-only refresh: update the timer display in-place without interrupting
+        //   an in-progress game (avoids wiping wall placements or resetting the overlay).
+        // See docs/CLOUD_SYNC_SETUP.md for the full sync trigger table.
         document.addEventListener('cloudsync:synced', function () {
             if (!menu || !game || !game.currentDate) return;
-            if (!menu.mapsDatabase || !menu.mapsDatabase[game.currentDate]) return;
 
             const currentSubmission = game.loadSubmission(game.currentDate);
             const hasSubmissionNow = currentSubmission !== null;
-
-            // Reload if submission appeared/disappeared, or if submission data changed
             const submissionStateChanged = game.isSubmitted !== hasSubmissionNow;
             const submissionDataChanged = game.isSubmitted && currentSubmission &&
                 currentSubmission.score !== game.submittedScore;
 
             if (submissionStateChanged || submissionDataChanged) {
-                menu.loadLevel(menu.mapsDatabase[game.currentDate]);
+                if (menu.mapsDatabase && menu.mapsDatabase[game.currentDate]) {
+                    menu.loadLevel(menu.mapsDatabase[game.currentDate]);
+                }
+                return;
+            }
+
+            // No submission change — update the timer display if the synced
+            // timer value is higher than the current in-memory value.
+            // (applyCloudTimerState already max-merged the cookie; this syncs the game object.)
+            if (!game.isTimerLocked) {
+                const saved = CookieUtils.getCookie(`timer_${game.currentDate}`);
+                if (saved) {
+                    try {
+                        const syncedElapsed = JSON.parse(saved).elapsed || 0;
+                        if (syncedElapsed > game.elapsedSeconds) {
+                            game.elapsedSeconds = syncedElapsed;
+                            game.updateTimerDisplay();
+                        }
+                    } catch (e) { console.warn('CloudSync: Failed to parse timer cookie:', e); }
+                }
             }
         });
     }
