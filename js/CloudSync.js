@@ -37,9 +37,12 @@
  *
  * When local cookies and Firestore hold different data for the same key:
  *
- *   • submissions (YYYY-MM-DD docs): CLOUD WINS.  The cloud holds the
- *     authoritative record of completed puzzles.  Local offline data is
- *     uploaded only when the cloud does not already have that date.
+ *   • submissions (YYYY-MM-DD docs): MOST RECENT WINS.  Whichever record
+ *     has the later `timestamp` field is kept.  This ensures that a puzzle
+ *     completed offline (with a newer timestamp) is not silently discarded
+ *     when the user signs in and the cloud holds an older version from
+ *     another device.  If either side lacks a timestamp, the cloud value
+ *     is used as a safe default.
  *
  *   • settings (selectedPet, hintMode): CLOUD WINS.  The cloud holds the
  *     user's most recently saved preference across all devices.
@@ -533,8 +536,8 @@ const CloudSync = (function () {
 
     /**
      * Download all cloud submissions and merge into local cookies.
-     * Conflict resolution: CLOUD WINS for submissions and settings.
-     * For timers, the highest elapsed time wins (see applyCloudTimerState).
+     * Conflict resolution: MOST RECENT WINS for submissions (by timestamp),
+     * CLOUD WINS for settings, HIGHEST ELAPSED WINS for timers.
      */
     async function syncFromCloud() {
         if (!db || !currentUser) return;
@@ -558,12 +561,23 @@ const CloudSync = (function () {
                     applyCloudTimerState(doc.id, doc.data());
                     return;
                 }
-                // Submissions: cloud wins on conflict.
-                // If this date also exists locally, the cloud version is authoritative.
-                // Dates that exist only locally are NOT in this snapshot and will be
-                // uploaded by uploadLocalSubmissions() below.
+                // Submissions: most recent timestamp wins.
+                // If the local cookie has a newer timestamp, keep it so that
+                // uploadLocalSubmissions() can push it to the cloud.
+                // If either side lacks a timestamp, default to the cloud value.
                 const cookieName = 'submission_' + doc.id;
-                CookieUtils.setCookie(cookieName, JSON.stringify(doc.data()), 365);
+                const cloudData = doc.data();
+                const localValue = CookieUtils.getCookie(cookieName);
+                if (localValue) {
+                    try {
+                        const localData = JSON.parse(localValue);
+                        if (localData.timestamp && cloudData.timestamp &&
+                            new Date(localData.timestamp) > new Date(cloudData.timestamp)) {
+                            return; // local is newer — keep it; upload will follow
+                        }
+                    } catch { /* fall through to use cloud data */ }
+                }
+                CookieUtils.setCookie(cookieName, JSON.stringify(cloudData), 365);
             });
 
             // Upload any local-only data that the cloud does not yet have.
@@ -605,11 +619,14 @@ const CloudSync = (function () {
 
     /**
      * Scan local cookies for submission_*, timer_*, and settings data, then
-     * upload any entries that the cloud does not already have.
+     * upload any entries that the cloud does not already have, as well as any
+     * local submissions that won the most-recent-timestamp conflict (i.e. the
+     * local cookie was not overwritten by syncFromCloud()).
      *
      * Called after syncFromCloud() has already applied cloud data locally,
-     * so a local cookie that survives with its own data is guaranteed to be
-     * local-only (the cloud had no document for that key yet).
+     * so a local cookie that survives with its own data is either local-only
+     * (the cloud had no document for that key yet) or locally newer (its
+     * timestamp is more recent than the cloud's).
      */
     async function uploadLocalSubmissions() {
         if (!db || !currentUser) return;
@@ -634,10 +651,11 @@ const CloudSync = (function () {
                     .collection(COLLECTION_NAME)
                     .doc(docId);
                 // Use set with merge so a local-only doc is created without
-                // overwriting any fields already written by another device.
+                // deleting any extra fields already written by another device,
+                // while still overwriting fields when local data is newer.
                 await docRef.set(data, { merge: true });
-            } catch {
-                // skip malformed cookies
+            } catch (e) {
+                console.error('CloudSync: Failed to upload local cookie', name, ':', e);
             }
         }
 
@@ -689,9 +707,30 @@ const CloudSync = (function () {
                         applyCloudTimerState(change.doc.id, change.doc.data());
                         return;
                     }
+                    // Submissions: most recent timestamp wins (same policy as syncFromCloud).
                     const dateString = change.doc.id;
                     const cookieName = 'submission_' + dateString;
-                    CookieUtils.setCookie(cookieName, JSON.stringify(change.doc.data()), 365);
+                    const cloudData = change.doc.data();
+                    const localValue = CookieUtils.getCookie(cookieName);
+                    if (localValue) {
+                        try {
+                            const localData = JSON.parse(localValue);
+                            if (localData.timestamp && cloudData.timestamp &&
+                                new Date(localData.timestamp) > new Date(cloudData.timestamp)) {
+                                return; // local is newer — keep it
+                            }
+                        } catch { /* fall through to use cloud data */ }
+                    }
+                    CookieUtils.setCookie(cookieName, JSON.stringify(cloudData), 365);
+                    submissionsUpdated = true;
+                } else if (change.type === 'removed') {
+                    // Submission deleted on another device — remove local cookie too.
+                    if (change.doc.id === SETTINGS_DOC) return;
+                    if (change.doc.id.startsWith(TIMER_DOC_PREFIX)) {
+                        CookieUtils.deleteCookie(change.doc.id);
+                        return;
+                    }
+                    CookieUtils.deleteCookie('submission_' + change.doc.id);
                     submissionsUpdated = true;
                 }
             });
