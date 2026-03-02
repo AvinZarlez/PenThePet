@@ -918,3 +918,68 @@ describe('Game — Paw Animation', () => {
         expect(g._pawAnimationTimeouts).toHaveLength(0);
     });
 });
+
+// ------------------------------------------------------------------
+// handleCellClick — mobile scroll-to-top fix
+// ------------------------------------------------------------------
+describe('Game — handleCellClick focus restoration', () => {
+    /**
+     * Build a 5×5 open grid (no walls) so every grass tile is placeable.
+     *
+     *  g g g g g
+     *  g g g g g
+     *  g g h g g   ← home at (2,2)
+     *  g g g g g
+     *  g g g g g
+     */
+    function createOpenGame5() {
+        setupDOM();
+        const g = new Game(5);
+        const tiles = Array.from({ length: 5 }, () => Array(5).fill('grass'));
+        tiles[2][2] = 'home';
+        g.grid.loadMap(tiles);
+        g.grid.saveInitialState();
+        g.render();
+        return g;
+    }
+
+    test('places a wall and focuses the clicked cell with preventScroll:true', () => {
+        const g = createOpenGame5();
+        const row = 0;
+        const col = 0;
+
+        g.handleCellClick(row, col);
+
+        // The cell element is recreated by render(), so we query after the call
+        const cellAfter = g.gridElement.querySelector(`[data-row="${row}"][data-col="${col}"]`);
+        expect(cellAfter).not.toBeNull();
+        expect(document.activeElement).toBe(cellAfter);
+    });
+
+    test('removes a wall and focuses the cell with preventScroll:true', () => {
+        const g = createOpenGame5();
+        // Pre-place a wall at (0,0) directly
+        g.grid.setTile(0, 0, 'wall');
+        g.wallCount = 1;
+        g.render();
+
+        g.handleCellClick(0, 0);
+
+        const cellAfter = g.gridElement.querySelector('[data-row="0"][data-col="0"]');
+        expect(cellAfter).not.toBeNull();
+        expect(document.activeElement).toBe(cellAfter);
+    });
+
+    test('does not change focus when clicking a non-interactive tile', () => {
+        const g = createOpenGame5();
+        // home tile is not wall-placeable and not a wall
+        const homeCell = g.gridElement.querySelector('[data-row="2"][data-col="2"]');
+        homeCell.focus();
+        expect(document.activeElement).toBe(homeCell);
+
+        g.handleCellClick(2, 2);
+
+        // Focus should remain unchanged (no render was called)
+        expect(document.activeElement).toBe(homeCell);
+    });
+});
