@@ -33,6 +33,17 @@
  *   4. In uploadLocalSubmissions(), include the new cookie in the upload pass
  *      so offline data is pushed when the user next signs in.
  *
+ * ── WHEN SYNC RUNS ───────────────────────────────────────────────────────────
+ *
+ *   • Sign in (auth state change) — full sync of all levels.
+ *   • Realtime listener — continuous push of any remote changes while signed in.
+ *   • Open level selector — explicit syncNow() before calendar is populated,
+ *     so completion checkmarks (✓/🏆) are accurate.
+ *   • Select / load a level — explicit syncNow() before the level is rendered,
+ *     so the loaded submission/timer state is always current.
+ *   • After every sync — the `cloudsync:synced` event fires; main.js reloads
+ *     the currently displayed level if its submission state or data changed.
+ *
  * ── CONFLICT RESOLUTION ──────────────────────────────────────────────────────
  *
  * For each puzzle date, sync applies these rules in priority order:
@@ -1067,6 +1078,7 @@ const CloudSync = (function () {
 
     return {
         init: init,
+        syncNow: syncFromCloud,
         isConfigured: isConfigured,
         isLoggedIn: function () { return currentUser !== null; },
         isGameTester: isGameTester,

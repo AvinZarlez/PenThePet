@@ -205,6 +205,12 @@ class Menu {
             await this.loadMapsDatabase();
         }
 
+        // Sync latest cloud data before showing the level selector so
+        // calendar checkmarks (✓/🏆) reflect the most up-to-date state.
+        if (typeof CloudSync !== 'undefined' && CloudSync.isConfigured() && CloudSync.isLoggedIn()) {
+            await CloudSync.syncNow();
+        }
+
         // Populate level list
         this.populateLevelList();
 
@@ -476,6 +482,11 @@ class Menu {
 
         // Close modal and reload game with selected level
         this.closeAllModals();
+
+        // Sync latest cloud data for this level before loading it.
+        if (typeof CloudSync !== 'undefined' && CloudSync.isConfigured() && CloudSync.isLoggedIn()) {
+            await CloudSync.syncNow();
+        }
 
         // Load the selected level
         const mapData = this.mapsDatabase[date];

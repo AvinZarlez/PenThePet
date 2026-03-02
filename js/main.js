@@ -212,17 +212,26 @@ async function initGame() {
     if (typeof CloudSync !== 'undefined') {
         CloudSync.init();
 
-        // When cloud sync completes (on login or real-time update), reload the
-        // currently displayed level if its submission state has changed.  This
-        // ensures a device that had no local cookies (e.g. first login on a new
-        // device) shows the correct completed/trophy state without a manual refresh.
+        // When cloud sync completes (on login, real-time update, or explicit
+        // syncNow call), reload the currently displayed level if its submission
+        // state or data has changed.  This ensures a device that had no local
+        // cookies (e.g. first login on a new device) shows the correct
+        // completed/trophy state without a manual refresh.
+        // Timer-only syncs (no submission change) are intentionally ignored so
+        // in-progress wall placements are not wiped.
         document.addEventListener('cloudsync:synced', function () {
             if (!menu || !game || !game.currentDate) return;
             if (!menu.mapsDatabase || !menu.mapsDatabase[game.currentDate]) return;
 
-            const hadSubmission = game.isSubmitted;
-            const hasSubmissionNow = game.loadSubmission(game.currentDate) !== null;
-            if (hadSubmission !== hasSubmissionNow) {
+            const currentSubmission = game.loadSubmission(game.currentDate);
+            const hasSubmissionNow = currentSubmission !== null;
+
+            // Reload if submission appeared/disappeared, or if submission data changed
+            const submissionStateChanged = game.isSubmitted !== hasSubmissionNow;
+            const submissionDataChanged = game.isSubmitted && currentSubmission &&
+                currentSubmission.score !== game.submittedScore;
+
+            if (submissionStateChanged || submissionDataChanged) {
                 menu.loadLevel(menu.mapsDatabase[game.currentDate]);
             }
         });

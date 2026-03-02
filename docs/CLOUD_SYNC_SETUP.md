@@ -346,11 +346,13 @@ users/{userId}/submissions/settings
 
 | Event                       | What happens                                                                                                                                                                                                                          |
 | --------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Sign in**                 | All cloud and local data for each puzzle date is merged using the rules below. Settings are applied from cloud. The merged result is written back to both local cookies and Firestore. |
+| **Sign in**                 | Full sync of all levels: every cloud doc is merged against local cookies using the conflict rules below. The merged result is written to both sides. The currently displayed level is reloaded if its submission state changed. |
+| **Open level selector**     | A fresh full sync runs before the calendar is populated, so completion checkmarks (✓/🏆) always reflect the latest cloud state. |
+| **Select / load a level**   | A fresh full sync runs before the level is rendered, so the loaded submission and timer state are always current. |
 | **Submit a puzzle**         | Saved to cookie AND uploaded to Firestore immediately.                                                                                                                                                                                |
 | **Timer auto-save**         | Elapsed seconds saved to cookie AND Firestore every 30 s and on every pause (including tab hide / window close).                                                                                                                      |
 | **Change pet or hint mode** | Saved to cookie AND uploaded to Firestore immediately.                                                                                                                                                                                |
-| **Realtime update**         | Changes from other signed-in devices are pushed to cookies automatically.                                                                                                                                                             |
+| **Realtime update**         | Changes from other signed-in devices are pushed to cookies automatically. The displayed level reloads if its submission state or data changed. |
 | **Sign out**                | Realtime listener stops. Local cookies remain untouched.                                                                                                                                                                              |
 
 ## Conflict Resolution
