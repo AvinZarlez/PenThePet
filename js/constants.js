@@ -54,7 +54,10 @@ const CONSTANTS = {
     
     // Hints
     HINT_MODE_DEFAULT: 'disabled', // Default hint mode: 'disabled', 'checkOptimal', 'revealTarget'
-    
+
+    // UI timings
+    SHARE_BUTTON_FLASH_MS: 2000,   // How long the "Copied!" label shows on the share button (ms)
+
     // Animal options for pet selection
     ANIMAL_OPTIONS: [
         { emoji: '🐶', name: 'Dog' },

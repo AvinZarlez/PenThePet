@@ -20,6 +20,9 @@ function setupDOM() {
         <div class="controls">
             <button id="resetBtn">Reset</button>
         </div>
+        <div class="map-info">
+            <span id="mapDay">42</span>
+        </div>
         <div class="grid-container">
             <div id="grid" class="grid"></div>
         </div>
@@ -44,9 +47,11 @@ function setupDOM() {
                 <section class="metrics-display">
                     <label class="metric-label">Roaming Area Score</label>
                     <output class="metric-value" id="roamAreaMetric">0</output>
+                    <small class="metric-percentage" id="roamAreaPercentage"></small>
                     <small class="metric-helper"></small>
                 </section>
                 <footer class="viewer-footer">
+                    <button id="shareScoreBtn" class="share-score-btn">📋 Copy Score</button>
                     <button id="exitViewer" class="exit-viewer-btn">Back to Game</button>
                 </footer>
             </article>
@@ -578,5 +583,105 @@ describe('Game — Timer', () => {
             // Still visible — locked timer means no pause possible
             expect(document.getElementById('solutionToggleBar').style.display).toBe('flex');
         });
+    });
+});
+
+// ------------------------------------------------------------------
+// updateScoreScreen — percentage display
+// ------------------------------------------------------------------
+describe('updateScoreScreen() — percentage display', () => {
+    let game;
+
+    beforeEach(() => {
+        setupDOM();
+        jest.useFakeTimers();
+        game = createGame();
+    });
+
+    afterEach(() => {
+        jest.useRealTimers();
+    });
+
+    test('shows correct percentage for partial score', () => {
+        game.goalAreaSize = 10;
+        game.updateScoreScreen(5);
+        const el = document.getElementById('roamAreaPercentage');
+        expect(el.textContent).toBe('50% of goal (5/10)');
+    });
+
+    test('shows 100% when score equals goal', () => {
+        game.goalAreaSize = 10;
+        game.updateScoreScreen(10);
+        const el = document.getElementById('roamAreaPercentage');
+        expect(el.textContent).toBe('100% of goal (10/10)');
+    });
+
+    test('shows 0% when score is zero', () => {
+        game.goalAreaSize = 10;
+        game.updateScoreScreen(0);
+        const el = document.getElementById('roamAreaPercentage');
+        expect(el.textContent).toBe('0% of goal (0/10)');
+    });
+
+    test('rounds percentage to nearest integer', () => {
+        game.goalAreaSize = 3;
+        game.updateScoreScreen(1); // 33.33… → 33
+        const el = document.getElementById('roamAreaPercentage');
+        expect(el.textContent).toBe('33% of goal (1/3)');
+    });
+
+    test('does not set percentage text when goal is 0', () => {
+        game.goalAreaSize = 0;
+        game.updateScoreScreen(5);
+        const el = document.getElementById('roamAreaPercentage');
+        expect(el.textContent).toBe(''); // untouched
+    });
+});
+
+// ------------------------------------------------------------------
+// buildShareText
+// ------------------------------------------------------------------
+describe('buildShareText()', () => {
+    let game;
+
+    beforeEach(() => {
+        setupDOM();
+        jest.useFakeTimers();
+        game = createGame();
+        game.isSubmitted = true;
+        game.submittedScore = 8;
+        game.goalAreaSize = 10;
+        game.elapsedSeconds = 93; // 01:33
+        game.currentDate = '2026-03-01';
+        game.petEmoji = '🐶';
+    });
+
+    afterEach(() => {
+        jest.useRealTimers();
+    });
+
+    test('contains the pet emoji', () => {
+        const text = game.buildShareText();
+        expect(text).toContain('🐶');
+    });
+
+    test('contains the day number from the DOM', () => {
+        const text = game.buildShareText();
+        expect(text).toContain('Day 42');
+    });
+
+    test('contains the score percentage', () => {
+        const text = game.buildShareText();
+        expect(text).toContain('80%');
+    });
+
+    test('contains score fraction (score/goal)', () => {
+        const text = game.buildShareText();
+        expect(text).toContain('(8/10)');
+    });
+
+    test('contains formatted time', () => {
+        const text = game.buildShareText();
+        expect(text).toContain('01:33');
     });
 });

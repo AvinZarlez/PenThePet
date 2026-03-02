@@ -589,6 +589,12 @@ class Game {
             solutionToggleBtn.addEventListener('click', () => this.toggleSolution());
         }
 
+        // Share score button
+        const shareScoreBtn = document.getElementById('shareScoreBtn');
+        if (shareScoreBtn) {
+            shareScoreBtn.addEventListener('click', () => this._handleShareScore(shareScoreBtn));
+        }
+
         // Timer button
         const timerBtn = document.getElementById('timerBtn');
         if (timerBtn) {
@@ -733,6 +739,13 @@ class Game {
             : userScoreNum.toString();
         
         metricOutput.innerHTML = displayText;
+
+        // Display score as a percentage of the goal
+        const percentageElement = document.getElementById('roamAreaPercentage');
+        if (percentageElement && goalScoreNum > 0) {
+            const pct = Math.round((userScoreNum / goalScoreNum) * 100);
+            percentageElement.textContent = `${pct}% of goal (${userScoreNum}/${goalScoreNum})`;
+        }
         
         // Update the helper text to show optimal score
         const helperElement = document.querySelector('.metric-helper');
@@ -748,7 +761,88 @@ class Game {
         // Add/update toggle button for optimal solution
         this.addOptimalSolutionToggle();
     }
-    
+
+    /**
+     * Return the display username for sharing.
+     * Uses CloudSync username when logged in, else "Anonymous".
+     * @returns {string}
+     */
+    _getShareUsername() {
+        if (typeof CloudSync !== 'undefined' && CloudSync.isConfigured() && CloudSync.isLoggedIn()) {
+            return CloudSync.getUsername() || 'Anonymous';
+        }
+        return 'Anonymous';
+    }
+
+    /**
+     * Build the shareable score text for the current submission.
+     * @returns {string} Formatted share text
+     */
+    buildShareText() {
+        const score = this.submittedScore ?? 0;
+        const goal = Number(this.goalAreaSize);
+        const pct = goal > 0 ? Math.round((score / goal) * 100) : 0;
+        const timeStr = this._formatTime(this.elapsedSeconds);
+        const username = this._getShareUsername();
+        const date = this.currentDate || '';
+        const displayDate = date ? DateUtils.formatDate(date) : '';
+
+        // Day number from the DOM (set by updateMapInfo)
+        const dayNumEl = document.getElementById('mapDay');
+        const dayNum = dayNumEl ? dayNumEl.textContent : '?';
+
+        return [
+            `Pen The Pet ${this.petEmoji}`,
+            `Day ${dayNum} - ${displayDate}`,
+            `Player: ${username}`,
+            `Score: ${pct}% (${score}/${goal}) Time: ${timeStr}`,
+        ].join('\n');
+    }
+
+    /**
+     * Handle the "Copy Score" button click: build share text, copy to
+     * clipboard, and give the user brief visual feedback on the button.
+     * @param {HTMLElement} btn - The share button element
+     */
+    _handleShareScore(btn) {
+        if (!this.isSubmitted) return;
+
+        const text = this.buildShareText();
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(text).then(() => {
+                this._flashShareButton(btn, '✓ Copied!');
+            }).catch(() => {
+                this._flashShareButton(btn, '✗ Failed');
+            });
+        } else {
+            // Fallback for environments without Clipboard API
+            const ta = document.createElement('textarea');
+            ta.value = text;
+            ta.style.position = 'fixed';
+            ta.style.opacity = '0';
+            document.body.appendChild(ta);
+            ta.select();
+            try {
+                document.execCommand('copy');
+                this._flashShareButton(btn, '✓ Copied!');
+            } catch {
+                this._flashShareButton(btn, '✗ Failed');
+            }
+            document.body.removeChild(ta);
+        }
+    }
+
+    /**
+     * Briefly change the share button label then restore it.
+     * @param {HTMLElement} btn
+     * @param {string} message
+     */
+    _flashShareButton(btn, message) {
+        const original = btn.textContent;
+        btn.textContent = message;
+        setTimeout(() => { btn.textContent = original; }, CONSTANTS.SHARE_BUTTON_FLASH_MS);
+    }
+
     /**
      * Add toggle button to switch between user and optimal solutions
      */
