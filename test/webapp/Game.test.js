@@ -807,3 +807,114 @@ describe('Game — Penned Animation', () => {
         expect(game._pennedAnimationTimeouts).toHaveLength(0);
     });
 });
+
+// ------------------------------------------------------------------
+// Paw-path animation
+// ------------------------------------------------------------------
+describe('Game — Paw Animation', () => {
+    let game;
+
+    /**
+     * Build a 5×5 grid with home at (2,2) and no walls so there is
+     * always an escape path from home to the edge.
+     */
+    function createOpenGame() {
+        setupDOM();
+        const g = new Game(5);
+        const tiles = Array.from({ length: 5 }, () => Array(5).fill('grass'));
+        tiles[2][2] = 'home';
+        g.grid.loadMap(tiles);
+        g.grid.saveInitialState();
+        return g;
+    }
+
+    beforeEach(() => {
+        jest.useFakeTimers();
+    });
+
+    afterEach(() => {
+        jest.useRealTimers();
+    });
+
+    test('paw path timeouts are queued when pet is not penned', () => {
+        game = createOpenGame();
+        game.render();
+        expect(game._pawAnimationTimeouts.length).toBeGreaterThan(0);
+    });
+
+    test('no paw overlays on cells before animation fires', () => {
+        game = createOpenGame();
+        game.render();
+        const pathInfo = game.calculatePath();
+        for (const coordKey of pathInfo.path) {
+            const [row, col] = coordKey.split(',').map(Number);
+            const cell = game.gridElement.querySelector(`[data-row="${row}"][data-col="${col}"]`);
+            expect(cell.querySelectorAll('.paw-overlay, .paw-overlay-emoji')).toHaveLength(0);
+        }
+    });
+
+    test('first grass tile on path gets a paw overlay after its step fires', () => {
+        game = createOpenGame();
+        const pathInfo = game.calculatePath();
+        game.render();
+        // orderedPath[0] is home (no paw), orderedPath[1] is the first grass tile
+        // Step 1 fires at PAW_ANIMATION_DELAY_MS * 1 ms
+        jest.advanceTimersByTime(CONSTANTS.PAW_ANIMATION_DELAY_MS * 2);
+        const [row, col] = pathInfo.orderedPath[1].split(',').map(Number);
+        const cell = game.gridElement.querySelector(`[data-row="${row}"][data-col="${col}"]`);
+        expect(cell.querySelectorAll('.paw-overlay, .paw-overlay-emoji').length).toBeGreaterThan(0);
+    });
+
+    test('all path tiles have paw overlays after animation completes', () => {
+        game = createOpenGame();
+        const pathInfo = game.calculatePath();
+        game.render();
+        jest.runAllTimers();
+        for (const coordKey of pathInfo.path) {
+            const [row, col] = coordKey.split(',').map(Number);
+            const tileType = game.grid.getTile(row, col);
+            const expectedPaws = getPawOverlay(tileType).length;
+            const cell = game.gridElement.querySelector(`[data-row="${row}"][data-col="${col}"]`);
+            // Only check tiles that should have overlays
+            if (expectedPaws > 0) {
+                expect(cell.querySelectorAll('.paw-overlay, .paw-overlay-emoji').length).toBeGreaterThan(0);
+            }
+        }
+    });
+
+    test('_cancelPawAnimation clears all pending timeouts', () => {
+        game = createOpenGame();
+        game.render();
+        expect(game._pawAnimationTimeouts.length).toBeGreaterThan(0);
+        game._cancelPawAnimation();
+        expect(game._pawAnimationTimeouts).toHaveLength(0);
+    });
+
+    test('re-rendering cancels the previous paw animation', () => {
+        game = createOpenGame();
+        game.render();
+        const firstTimeouts = [...game._pawAnimationTimeouts];
+        expect(firstTimeouts.length).toBeGreaterThan(0);
+
+        game.render();
+        const secondTimeouts = game._pawAnimationTimeouts;
+        expect(secondTimeouts.length).toBeGreaterThan(0);
+        for (const id of firstTimeouts) {
+            expect(secondTimeouts).not.toContain(id);
+        }
+    });
+
+    test('no paw animation timeouts when pet is penned', () => {
+        setupDOM();
+        const g = new Game(5);
+        const tiles = Array.from({ length: 5 }, () => Array(5).fill('grass'));
+        tiles[2][2] = 'home';
+        tiles[1][1] = 'wall'; tiles[1][2] = 'wall'; tiles[1][3] = 'wall';
+        tiles[2][1] = 'wall';                         tiles[2][3] = 'wall';
+        tiles[3][1] = 'wall'; tiles[3][2] = 'wall'; tiles[3][3] = 'wall';
+        g.grid.loadMap(tiles);
+        g.grid.saveInitialState();
+        g.render();
+        expect(g._pawAnimationTimeouts).toHaveLength(0);
+    });
+});

@@ -384,6 +384,12 @@
     animation: pennedReveal 0.15s ease-out;
 }
 
+/* Fade-in when a paw is added during the walking animation */
+.cell .paw-overlay,
+.cell .paw-overlay-emoji {
+    animation: pennedReveal 0.15s ease-out;
+}
+
 .cell:hover {
     transform: scale(1.05);
     box-shadow: 0 3px 8px rgba(0, 0, 0, 0.3);

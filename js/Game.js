@@ -41,6 +41,7 @@ class Game {
         
         // Animation state
         this._pennedAnimationTimeouts = [];
+        this._pawAnimationTimeouts = [];
 
         // Timer state
         this.elapsedSeconds = 0;
@@ -62,6 +63,7 @@ class Game {
      */
     render() {
         this._cancelPennedAnimation();
+        this._cancelPawAnimation();
         this.gridElement.innerHTML = '';
         this.gridElement.style.gridTemplateColumns = `repeat(${this.grid.size}, 1fr)`;
         
@@ -77,8 +79,8 @@ class Game {
         
         for (let i = 0; i < this.grid.size; i++) {
             for (let j = 0; j < this.grid.size; j++) {
-                // Render cells without penned state; animation applies it progressively
-                const cellElement = this._createCellElement(i, j, allTiles[i][j], pathInfo.path, new Set(), pathInfo.directions);
+                // Render cells without penned/paw state; animations apply them progressively
+                const cellElement = this._createCellElement(i, j, allTiles[i][j], new Set(), new Set(), pathInfo.directions);
                 this.gridElement.appendChild(cellElement);
             }
         }
@@ -87,9 +89,12 @@ class Game {
         this.updatePennedStatus(isPenned);
         this.updateAreaSizeDisplay();
 
-        // Animate the penned area spreading out from home
         if (isPenned) {
+            // Animate the penned area spreading out from home
             this._animatePennedArea(accessibleTiles);
+        } else if (pathInfo.hasPath) {
+            // Animate paws walking one tile at a time from home to the edge
+            this._animatePawPath(pathInfo.orderedPath, pathInfo.directions);
         }
     }
 
@@ -104,6 +109,34 @@ class Game {
         const assetList = getTileAssets(tileType, isEnclosed);
         if (assetList && assetList.length > 0) {
             cell.style.background = `url('assets/${assetList[0]}') center/cover no-repeat`;
+        }
+    }
+
+    /**
+     * Append paw-overlay DOM elements to a cell for a given tile and rotation angle.
+     * @private
+     * @param {HTMLElement} cell - The cell element to append paw overlays to
+     * @param {string} tileType - The tile type name
+     * @param {number} angle - Rotation angle in degrees
+     */
+    _addPawOverlays(cell, tileType, angle) {
+        const pawAssets = getPawOverlay(tileType);
+        for (const asset of pawAssets) {
+            if (asset.endsWith('.svg')) {
+                const paw = document.createElement('img');
+                paw.src = `assets/${asset}`;
+                paw.alt = '';
+                paw.className = 'paw-overlay';
+                paw.setAttribute('aria-hidden', 'true');
+                paw.style.transform = `translate(-50%, -50%) rotate(${angle}deg)`;
+                cell.appendChild(paw);
+            } else {
+                const emojiSpan = document.createElement('span');
+                emojiSpan.className = 'paw-overlay-emoji';
+                emojiSpan.textContent = asset;
+                emojiSpan.setAttribute('aria-hidden', 'true');
+                cell.appendChild(emojiSpan);
+            }
         }
     }
 
@@ -173,27 +206,8 @@ class Game {
         
         // Add paw overlay if this cell is on the escape path
         if (pathSet && pathSet.has(coordKey)) {
-            const pawAssets = getPawOverlay(tileType);
-            if (pawAssets.length > 0) {
-                const angle = directions && directions.has(coordKey) ? directions.get(coordKey) : 0;
-                for (const asset of pawAssets) {
-                    if (asset.endsWith('.svg')) {
-                        const paw = document.createElement('img');
-                        paw.src = `assets/${asset}`;
-                        paw.alt = '';
-                        paw.className = 'paw-overlay';
-                        paw.setAttribute('aria-hidden', 'true');
-                        paw.style.transform = `translate(-50%, -50%) rotate(${angle}deg)`;
-                        cell.appendChild(paw);
-                    } else {
-                        const emojiSpan = document.createElement('span');
-                        emojiSpan.className = 'paw-overlay-emoji';
-                        emojiSpan.textContent = asset;
-                        emojiSpan.setAttribute('aria-hidden', 'true');
-                        cell.appendChild(emojiSpan);
-                    }
-                }
-            }
+            const angle = directions && directions.has(coordKey) ? directions.get(coordKey) : 0;
+            this._addPawOverlays(cell, tileType, angle);
         }
         
         // Add accessibility attributes
@@ -295,7 +309,7 @@ class Game {
     calculatePath() {
         const homePos = this.grid.getHomePosition();
         if (!homePos) {
-            return { hasPath: false, path: new Set(), directions: new Map() };
+            return { hasPath: false, path: new Set(), directions: new Map(), orderedPath: [] };
         }
 
         const { row: startRow, col: startCol } = homePos;
@@ -324,7 +338,7 @@ class Game {
                 const orderedPath = [`${startRow},${startCol}`, ...path];
                 const directionMap = this._calculatePathDirections(orderedPath);
                 
-                return { hasPath: true, path: pathSet, directions: directionMap };
+                return { hasPath: true, path: pathSet, directions: directionMap, orderedPath };
             }
 
             // Explore neighbors
@@ -357,7 +371,7 @@ class Game {
         }
 
         // No path found
-        return { hasPath: false, path: new Set(), directions: new Map() };
+        return { hasPath: false, path: new Set(), directions: new Map(), orderedPath: [] };
     }
 
     /**
@@ -521,6 +535,39 @@ class Game {
                 }
             }, waveIndex * delay);
             this._pennedAnimationTimeouts.push(timeoutId);
+        });
+    }
+
+    /**
+     * Cancel any in-progress paw-path animation.
+     * Clears all pending timeouts so stale DOM updates are dropped.
+     */
+    _cancelPawAnimation() {
+        for (const id of this._pawAnimationTimeouts) {
+            clearTimeout(id);
+        }
+        this._pawAnimationTimeouts = [];
+    }
+
+    /**
+     * Animate paw prints appearing one step at a time along the escape path.
+     * Each tile in the ordered path (from home to the grid edge) gets its paw
+     * overlay after an incremental delay, creating a "walking" effect.
+     * @param {Array<string>} orderedPath - Ordered array of "row,col" coordinate strings
+     * @param {Map} directions - Map of coordinate strings to rotation angles
+     */
+    _animatePawPath(orderedPath, directions) {
+        const delay = CONSTANTS.PAW_ANIMATION_DELAY_MS;
+        orderedPath.forEach((coordKey, stepIndex) => {
+            const [row, col] = coordKey.split(',').map(Number);
+            const timeoutId = setTimeout(() => {
+                const cell = this.gridElement.querySelector(`[data-row="${row}"][data-col="${col}"]`);
+                if (cell) {
+                    const angle = directions && directions.has(coordKey) ? directions.get(coordKey) : 0;
+                    this._addPawOverlays(cell, this.grid.getTile(row, col), angle);
+                }
+            }, stepIndex * delay);
+            this._pawAnimationTimeouts.push(timeoutId);
         });
     }
 
