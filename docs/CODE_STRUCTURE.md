@@ -1,461 +1,89 @@
-# Pen the Pet - Code Structure Guide
-
-**For comprehensive documentation, see the [docs/](.) directory:**
-
-- **[ARCHITECTURE.md](ARCHITECTURE.md)** - Design decisions and philosophy
-- **[ART_ASSETS.md](ART_ASSETS.md)** - Art asset inventory and guidelines
-- **[TESTING.md](TESTING.md)** - Testing guide and coverage
-- **[DEVELOPMENT.md](DEVELOPMENT.md)** - Developer workflow and setup
-- **[MAP_GENERATION.md](MAP_GENERATION.md)** - Algorithm details
-
----
+# Pen the Pet - Code Structure
 
 ## 📁 Project Structure
 
 ```text
 PenThePet/
-├── index.html              # Main HTML file (minimal, references external files)
-├── assets/                 # Art assets (SVG tile images, paw icon)
-│   ├── grass.svg           # Grass tile texture
-│   ├── water.svg           # Water tile texture
-│   ├── wall.svg            # Wall/fence tile texture
-│   ├── home.svg            # Dog house tile artwork
-│   ├── penned.svg          # Penned area (yellow-tinted grass) texture
-│   ├── star.svg            # Star tile overlay (3 points)
-│   ├── bee.svg             # Bee tile overlay (-3 points)
-│   └── paw.svg             # Paw print path overlay icon
+├── index.html              # Main HTML (structure only — no inline styles/scripts)
+├── assets/                 # SVG tile images and paw icon
 ├── css/
 │   ├── base.css            # Global reset, container, typography, buttons, footer, responsive
 │   ├── game.css            # Game board, controls, grid, cells, sidebar, debug section
 │   ├── modals.css          # Modal overlay, animations, shared modal content styles
 │   └── menu.css            # Menu modal, calendar/level selector, cloud sync UI
 ├── js/
-│   ├── constants.js        # Centralized constants for game parameters
-│   ├── config.js           # Game configuration (references constants)
-│   ├── tileData.js         # Tile data definitions (single source of truth for all tile properties)
-│   ├── tileTypes.js        # Tile type definitions and properties
-│   ├── wordList.js         # Random English words for map naming
-│   ├── CookieUtils.js      # Shared cookie get/set helpers
-│   ├── DateUtils.js        # Shared date formatting helpers
-│   ├── PathfindingUtils.js # Shared pathfinding utilities (BFS, penning, path-to-edge)
-│   ├── MapGenerator.js     # Map generation logic (used by generation scripts only)
-│   ├── MapValidator.js     # Map quality validation (used by generation scripts only)
-│   ├── Grid.js             # Grid state management (load, get/set, reset)
-│   ├── Game.js             # Game controller and checker (checks if pet is penned)
-│   ├── Menu.js             # Menu system (level selector, options, etc.)
-│   ├── firebase-config.js  # Firebase configuration (empty = cloud sync disabled)
-│   ├── CloudSync.js        # Optional cloud sync module (Firebase Auth + Firestore)
-│   └── main.js             # Application entry point and initialization
+│   ├── constants.js        # Centralized constants (MAX_WALLS, MAX_GRID_SIZE, tile distribution)
+│   ├── config.js           # Derived game configuration (references constants)
+│   ├── tileData.js         # Tile definitions — single source of truth for all tile properties
+│   ├── tileTypes.js        # Compatibility wrapper: builds TILE_TYPES from TILE_DATA
+│   ├── wordList.js         # ~150 random words for map naming; exports getRandomWord()
+│   ├── CookieUtils.js      # getCookie(name) / setCookie(name, value, days)
+│   ├── DateUtils.js        # getTodayDate() / formatDate(dateStr)
+│   ├── PathfindingUtils.js # BFS pathfinding: isPenned, calculatePennedArea, hasPathToEdge
+│   ├── MapGenerator.js     # Map generation (Node.js only — NOT loaded in browser)
+│   ├── MapValidator.js     # Map quality validation (Node.js only — NOT loaded in browser)
+│   ├── Grid.js             # Grid state management; parseCompactMap / parseCompactSolution
+│   ├── Game.js             # Game controller: rendering, clicks, wall placement, penning detection
+│   ├── Menu.js             # Menu system: modals, level selector, options, cookie persistence
+│   ├── firebase-config.js  # Firebase config (empty = cloud sync disabled)
+│   ├── CloudSync.js        # Optional cloud sync (Firebase Auth + Firestore)
+│   └── main.js             # Entry point: loads map, initializes Game and Menu
 ├── scripts/
-│   ├── generate-map.js # Map generation entry point (GitHub Actions + local)
-│   ├── audit-maps.js          # Validate all existing maps in maps/ directory
+│   ├── generate-map.js     # CLI entry point: single, batch, or fresh map generation
+│   ├── audit-maps.js       # Validates all maps in maps/ against MapValidator
 │   ├── lib/
-│   │   └── mapUtils.js        # Shared pure utilities (dates, size parsing, DB validation)
-│   └── solver/                # MILP solver pipeline (Node.js + Python)
-│       ├── MILPSolver.js      # Node.js wrapper that calls Python solver
-│       ├── solve.py           # Python MILP solver using PuLP + CBC
-│       └── requirements.txt   # Python dependencies (PuLP)
-├── test/                   # Test suite
-│   └── *.test.js              # Unit tests for each module
-├── docs/                   # 📚 Comprehensive documentation
-│   ├── CODE_STRUCTURE.md   # This file
-│   ├── ARCHITECTURE.md     # Design decisions
-│   ├── TESTING.md          # Testing guide
-│   ├── DEVELOPMENT.md      # Developer guide
-│   ├── MAP_GENERATION.md   # Algorithm details
-│   └── README.md          # Documentation index
-├── maps/                   # Pre-generated map data, one JSON file per year
-│   ├── README.md           # Maps directory documentation
-│   └── YYYY.json           # e.g. 2026.json — all maps for that year
+│   │   └── mapUtils.js     # Shared utilities: dates, size parsing, DB validation/fix
+│   └── solver/
+│       ├── MILPSolver.js   # Node.js wrapper calling Python solver
+│       ├── solve.py        # Python MILP solver (PuLP + CBC)
+│       └── requirements.txt
+├── test/                   # Jest test suite (webapp/ and generation/)
+├── docs/                   # Documentation (see docs/README.md)
+└── maps/                   # Pre-generated maps: maps/YYYY.json (one file per year)
 ```
 
-## 🎯 File Purposes
+**Script loading order** in `index.html` (must not change):
+`constants.js → config.js → tileTypes.js → CookieUtils.js → DateUtils.js → PathfindingUtils.js → Grid.js → Game.js → Menu.js → main.js`
 
-### `index.html`
+## 🎯 Key File Notes
 
-The main entry point for the game. Contains the HTML structure:
+**`js/tileData.js`** — The single source of truth for all tile types. All rendering, generation, scoring, pathfinding, solver, and player instructions derive from it. To add a tile: add one entry here plus an SVG asset. See [TILE_SYSTEM.md](TILE_SYSTEM.md).
 
-- **Header**: Title, subtitle, and menu button (top-right corner)
-- **Map Info Display**: Shows Day number, map name, and date
-- **Legend**: Explains tile types
-- **Controls**: Reset button, wall counter, area size, penned status
-- **Grid**: Main game area
-- **Options**: Pet type and hint mode selectors
-- **Modals**: Menu, level selector, instructions, about, and options popups
+**`js/Grid.js`** — Loads maps from `maps/YYYY.json` only. Exports `parseCompactMap()` and `parseCompactSolution()` for decoding the compact map format.
 
-**Keep this minimal** - structure only, no inline styles or scripts.
+**`js/Game.js`** — Pure checker/renderer. Does NOT generate maps. Access via `window.game` in console.
 
-### `css/base.css`
+**`js/MapGenerator.js` / `js/MapValidator.js`** — Node.js only, not loaded in browser.
 
-Global foundation used across all views:
+**`scripts/generate-map.js`** — Supports `--date YYYY-MM-DD`, `--size N` or `--size N-M`, `--count N`, `--fresh`.
 
-- CSS reset (`*`), body, container
-- Typography (headings, subtitle)
-- Generic button styles
-- Footer and error message
-- Responsive media queries for layout breakpoints
+## 🍪 Cookies
 
-### `css/game.css`
+All cookie operations go through `CookieUtils`. Currently stored:
 
-Styles for the main game view:
+| Cookie | Purpose | Set By |
+|--------|---------|--------|
+| `selectedPet` | Chosen animal emoji | Menu.js / Game.js |
+| `hintMode` | Hint mode setting | Menu.js |
+| `currentLevel` | Selected puzzle date | Menu.js |
+| `debugMode` | Debug tools visibility | Menu.js |
+| `submission_YYYY-MM-DD` | Submitted score | Game.js |
 
-- Menu button (top-right circular button)
-- Map info header (Day, name, date)
-- Controls bar (reset button, wall counter, area size display, penned status)
-- Solution toggle bar
-- Notification toast
-- Grid container and cell styles (tile types, paw overlay)
-- Roaming area viewer sidebar
-- Debug tools section
+All cookies expire after 1 year, path `/`, SameSite `Lax`.
 
-### `css/modals.css`
+## 🔧 How to Extend
 
-Shared modal dialog system used by all popups:
-
-- Modal overlay backdrop with blur
-- Fade-in and slide-in animations
-- Modal content container, close button
-- Shared section typography (description, section, lists, help text)
-
-### `css/menu.css`
-
-Styles for menu-driven content:
-
-- Menu modal layout and option buttons
-- Level selector list and calendar grid (navigation, day cells, status badges)
-- Cloud sync bar, sign-in/sign-out buttons, status indicators
-- Cloud sync auth modal and form (inputs, error, action buttons)
-
-**To customize the look:** Modify colors or sizes in the relevant CSS file.
-
-**To add a new tile CSS class:** Add it to `css/game.css` under "Cell Styles".
-
-### `js/constants.js`
-
-Centralized constants for all game parameters:
-
-- **MAX_WALLS**: Maximum walls allowed (15)
-- **MAX_GRID_SIZE**: Maximum grid size (21)
-- **Tile distribution**: Probability ratios for tile generation
-- **Cell sizing**: Min/max cell sizes
-- **Grid configuration**: Default sizes, padding, etc.
-
-**IMPORTANT**: Always reference these constants instead of hardcoding values!
-
-### `js/config.js`
-
-Game configuration that references constants from constants.js:
-
-- **Grid settings**: Default size, min/max size limits
-- **Tile distribution**: Uses CONSTANTS.TILE_DISTRIBUTION
-- **Cell visuals**: Size in pixels, gap between cells
-- **Gameplay options**: Toggle features like wall removal
-- **Hint modes**: Configuration for hint system
-
-**To change game parameters:** Check constants.js first, then modify CONFIG if needed.
-
-### `js/wordList.js`
-
-Collection of random English words used for map naming:
-
-- Contains ~150 nature, color, and concept words
-- Used by map generation script to give each map a memorable name
-- Exported function `getRandomWord()` for easy access
-
-### `js/CookieUtils.js`
-
-Shared cookie utility functions:
-
-- `getCookie(name)` - Read a cookie value by name
-- `setCookie(name, value, days)` - Set a cookie with expiration
-- Used by Game.js, Menu.js, and main.js
-- Single source of truth for all cookie operations
-
-### `js/DateUtils.js`
-
-Shared date utility functions:
-
-- `getTodayDate()` - Get today's date in YYYY-MM-DD format
-- `formatDate(dateStr)` - Format date string for display (e.g., "Feb 6, 2026")
-- Used by Menu.js and main.js
-- Single source of truth for all date operations
-
-### `js/PathfindingUtils.js`
-
-Shared pathfinding utilities used by game logic, generation scripts, and validation:
-
-- BFS pathfinding algorithms
-- `isPenned(map, homeRow, homeCol)` - Check if pet is penned (numeric map format)
-- `calculatePennedArea(map, homeRow, homeCol)` - Count reachable tiles (numeric map format)
-- `hasPathToEdge(map)` - Check if home can reach edge (string map format)
-- Used by Game.js, MILPSolver.js, MapGenerator.js, and MapValidator.js
-
-### `js/tileTypes.js`
-
-Compatibility wrapper that builds `TILE_TYPES` programmatically from `TILE_DATA`:
-
-- All tile properties live in `js/tileData.js` (single source of truth)
-- Python solver reads tile data via Node.js subprocess
-- `tileTypes.js` is a thin loop that copies `TILE_DATA` entries into `TILE_TYPES`
-
-**To add new tile types:** See [TILE_SYSTEM.md](TILE_SYSTEM.md). Add a single entry to `js/tileData.js`.
-
-### `js/MapGenerator.js`
-
-Handles map generation and validation (used by generation scripts, not browser):
-
-- Generates random maps with tile distribution based on constants
-- Validates maps to ensure there's a path from home to edge
-- Uses MILP solver pipeline to calculate optimal goal and wall count
-- Returns map with metadata (goal, maxWalls)
-
-**Important**: This file is NOT loaded in the browser. It is used only by Node.js generation scripts.
-See MAP_GENERATION.md for complete documentation.
-
-### `js/Grid.js`
-
-Pure state management for the grid:
-
-- Grid initialization and tile storage
-- Loads maps from pre-generated map data (`maps/YYYY.json`)
-- Grid state management (current state, initial state)
-- Tile getter/setter methods (getTile, setTile, getAllTiles)
-- Save/reset functionality (saveInitialState, reset)
-- Home position tracking (getHomePosition)
-
-**Note**: Grid loads maps from `maps/YYYY.json` only. It does not generate maps.
-
-### `js/Game.js`
-
-Game controller that checks if the pet is penned:
-
-- Game rendering and UI updates
-- User interaction handling (clicks, keyboard)
-- DOM manipulation and dynamic cell sizing
-- Penning detection (checks if pet can reach edge)
-- Wall placement and removal
-- Score submission and optimal solution viewing
-- Delegates cookie operations to CookieUtils
-
-**Note**: The Game class is a pure checker/renderer. Maps are loaded from `maps/YYYY.json` via main.js.
-
-**To add gameplay features:** Extend this class with new methods for character movement, scoring, etc.
-
-### `js/Menu.js`
-
-Menu system for navigation and settings:
-
-- **Modal Management**: Opens/closes menu, level selector, instructions, about, and options modals
-- **Level Selector**: Displays available maps from `maps/YYYY.json`, allows switching between different day's puzzles
-- **Level Loading**: Dynamically loads selected map into the game, fully resets game state (grid size, submission, optimal solution)
-- **Options Management**: Syncs pet type and hint mode settings
-- **Cookie Persistence**: Delegates to CookieUtils for all cookie operations
-  - `selectedPet`: User's chosen animal emoji
-  - `hintMode`: Selected hint mode (disabled, checkOptimal, revealTarget)
-  - `currentLevel`: Currently selected level date
-  - `debugMode`: Whether debug tools are visible
-
-**To add new menu options:** Extend the Menu class with new modal types and cookie storage via CookieUtils.
-
-### `js/main.js`
-
-Application entry point:
-
-- Initializes the game when the page loads
-- Loads maps from `maps/YYYY.json` (one file per year)
-- Checks for saved level selection in cookies
-- Displays map information (day, name, date)
-- Initializes Menu system
-- Applies saved settings (hint mode, debug mode)
-- Sets up global event handlers
-- Exports game and menu to window for console debugging
-
-**To customize initialization:** Modify the `initGame()` function.
-
-## Scripts (`scripts/` directory)
-
-### `scripts/generate-map.js`
-
-The single map generation entry point for both GitHub Actions and local use:
-
-- Generates one or more maps and appends them to the `maps/` directory (split by year)
-- Supports `--count N` for batch generation (sequential dates)
-- Supports `--size N` or `--size N-M` (exact size or random range per map)
-- Supports `--fresh` to replace all existing maps
-- Validates each map against MapValidator quality standards
-- Runs database consistency checks (sequential day numbers, unique names) after generation
-
-**Usage:**
-
-```bash
-node scripts/generate-map.js --date 2026-02-15 --size 9
-node scripts/generate-map.js --size 7-13 --count 5
-node scripts/generate-map.js --fresh --count 10 --date 2026-03-01 --size 9
-```
-
-### `scripts/lib/mapUtils.js`
-
-Shared pure utility functions used by generation and audit scripts:
-
-- `parseSizeInput(str)` / `getRandomSize(parsed)` — parse and sample size ranges
-- `incrementDate(str)` / `getNextAvailableDate(mapsDir)` — date helpers
-- `getNextDayNumber(mapsDir)` — sequential day numbering
-- `readAllMaps(mapsDir)` — merge all year files into one maps object
-- `saveMapsToDirectory(mapsDir, maps)` — split maps by year and save
-
-### `scripts/audit-maps.js`
-
-Validates all maps in the `maps/` directory against MapValidator:
-
-- Checks path-to-edge, goal area ≥ 5, wall budget, and strategic wall placement
-- Uses the stored `optimalSolution` for each map (full validation)
-- Useful after changing MapValidator rules, manually editing year files, or importing maps
-- Exits with code 1 if any map fails
-
-**Usage:**
-
-```bash
-node scripts/audit-maps.js
-```
-
-### `maps/YYYY.json`
-
-Generated maps with complete metadata, split one file per calendar year:
-
-- Key: Date string (YYYY-MM-DD)
-- Value: Map object with dayNumber, mapName, size, goal, maxWalls, map, optimalSolution
-- Generated by `scripts/generate-map.js` (writes to `maps/YYYY.json`)
-- See MAP_GENERATION.md for metadata structure
-
-### `MAP_GENERATION.md`
-
-Comprehensive documentation for map generation:
-
-- Algorithm explanation and pseudocode
-- Metadata structure and field descriptions
-- Generation process and requirements
-- Instructions for future agents
-- Testing and validation procedures
-
-**Read this file before modifying map generation!**
-
-## 🔧 How to Extend the Game
-
-### Adding a New Tile Type
-
-See [TILE_SYSTEM.md](TILE_SYSTEM.md) for full details. In short: add a single entry to `js/tileData.js` — all game logic, rendering, generation, scoring, the Python solver, and player instructions are built automatically from this data.
-
-### Adding a Character
-
-1. **Create a new Character class** in `js/Character.js`:
-
-```javascript
-class Character {
-    constructor(row, col) {
-        this.row = row;
-        this.col = col;
-    }
-    
-    move(direction, grid) {
-        // Implement movement logic
-    }
-    
-    render(gridElement) {
-        // Add character to DOM
-    }
-}
-```
-
-1. **Update Game.js** to include the character:
-
-```javascript
-constructor(size) {
-    this.grid = new Grid(size);
-    this.character = new Character(0, 0);  // Start position
-    // ... rest of initialization
-}
-```
-
-1. **Add keyboard controls** in `js/Game.js`:
-
-```javascript
-document.addEventListener('keydown', (e) => {
-    if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.key)) {
-        this.character.move(e.key, this.grid);
-        this.render();
-    }
-});
-```
-
-## 🚀 Development Tips
-
-- **Test locally:** Run a simple HTTP server: `python3 -m http.server 8080`
-- **Browser console:** Access the game object via `window.game` for debugging
-- **Configuration first:** Always check `config.js` before hardcoding values
-- **Keep separation:** HTML for structure, CSS for style, JS for behavior
-- **Comment your code:** Especially when adding new features
-
-## 🍪 User Preferences and Cookies
-
-The game uses browser cookies to remember user preferences across sessions. All cookie operations go through `CookieUtils` in `js/CookieUtils.js`.
-
-### Currently Stored Preferences
-
-| Cookie Name | Purpose | Set By | Format |
-|------------|---------|--------|--------|
-| `selectedPet` | Chosen animal emoji | Menu.js / Game.js | URL-encoded emoji |
-| `hintMode` | Hint mode setting | Menu.js | `disabled`, `checkOptimal`, `revealTarget` |
-| `currentLevel` | Selected puzzle date | Menu.js | `YYYY-MM-DD` |
-| `debugMode` | Debug tools visibility | Menu.js | `true` / `false` |
-| `submission_YYYY-MM-DD` | Submitted score per puzzle | Game.js | JSON `{score, walls, timestamp}` |
-
-All cookies:
-
-- Expire after 1 year
-- Path: `/` (accessible across entire site)
-- SameSite: `Lax` (secure against CSRF)
-- Values are URL-encoded for safety
-
-### How It Works
-
-1. **On Selection**: When user changes a setting, the relevant module calls `CookieUtils.setCookie()`
-2. **On Load**: When game initializes, modules call `CookieUtils.getCookie()` to retrieve saved preferences
-3. **Fallback**: If no cookie exists, defaults are used (e.g., 🐶 Dog for pet)
-
-### Adding New Preferences
-
-To store a new setting, use the shared `CookieUtils`:
-
-```javascript
-// Save a preference
-CookieUtils.setCookie('myPreference', 'value', 365);
-
-// Load a preference
-const saved = CookieUtils.getCookie('myPreference');
-```
-
-### Cookie Compatibility with GitHub Pages
-
-Cookies work seamlessly with GitHub Pages because:
-
-- They are stored in the user's browser (client-side)
-- No server-side processing required
-- Compatible with static hosting
-- Persist across page reloads and browser sessions (until expiration)
+- **New tile type:** See [TILE_SYSTEM.md](TILE_SYSTEM.md) — add one entry to `js/tileData.js`
+- **New menu option:** Extend the `Menu` class with new modal type + cookie storage
+- **New game mode:** Extend the `Game` class
+- **New preference:** `CookieUtils.setCookie('key', value, 365)` / `CookieUtils.getCookie('key')`
+- **New CSS:** tile cursor/hover → `css/game.css`; new modal → `css/modals.css` or `css/menu.css`
+- **Configuration changes:** Edit `js/constants.js` first, then `js/config.js` if needed
 
 ## 📦 Deployment
 
-The game is ready for GitHub Pages! Just push to your repository and enable GitHub Pages in Settings → Pages.
-
-No build step required - everything runs in the browser.
+No build step — push to `main` and GitHub Pages deploys automatically. Use relative paths only (`js/main.js` not `/js/main.js`).
 
 ---
 
-## 📚 Related Documentation
-
-- **[ARCHITECTURE.md](ARCHITECTURE.md)** - Design philosophy and decisions
-- **[ART_ASSETS.md](ART_ASSETS.md)** - Art asset inventory and guidelines
-- **[TESTING.md](TESTING.md)** - Complete testing guide
-- **[DEVELOPMENT.md](DEVELOPMENT.md)** - Development workflow and setup
-- **[MAP_GENERATION.md](MAP_GENERATION.md)** - Algorithm and map generation details
-- **[../README.md](../README.md)** - Project overview and quick start
+**See also:** [docs/README.md](README.md) · [ARCHITECTURE.md](ARCHITECTURE.md) · [TILE_SYSTEM.md](TILE_SYSTEM.md) · [MAP_GENERATION.md](MAP_GENERATION.md) · [TESTING.md](TESTING.md)

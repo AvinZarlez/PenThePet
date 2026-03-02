@@ -106,3 +106,7 @@ Built once at load time from `TILE_DATA`:
 ## Player Instructions
 
 The instructions modal's Gameplay section is **automatically generated** from `TILE_DATA`. Each tile with a `description` property is rendered as a row showing the tile's icon (from `assets`) and its description text. Adding a `description` to a new tile automatically includes it in the player instructions — no HTML changes needed.
+
+---
+
+**See also:** [docs/README.md](README.md) · [ART_ASSETS.md](ART_ASSETS.md) · [MAP_GENERATION.md](MAP_GENERATION.md) · [CODE_STRUCTURE.md](CODE_STRUCTURE.md)

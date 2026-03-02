@@ -480,3 +480,7 @@ domain if you use one.
 - [Firebase Firestore Documentation](https://firebase.google.com/docs/firestore)
 - [Firebase Authentication Documentation](https://firebase.google.com/docs/auth)
 - [Firebase Pricing (Spark plan)](https://firebase.google.com/pricing)
+
+---
+
+**See also:** [docs/README.md](README.md) · [DEVELOPMENT.md](DEVELOPMENT.md)

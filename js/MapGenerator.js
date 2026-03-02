@@ -63,31 +63,21 @@ class MapGenerator {
             while (attempts < this.maxAttempts) {
                 map = this._generateRandomMap();
                 if (this._validateMap(map)) {
-                    // Calculate the goal using exhaustive search (accuracy over speed)
+                    // Calculate optimal goal for this map
                     result = this.calculateGoal(map, maxWalls);
                     
-                    // Check if we got a valid result
                     if (result !== null && result.optimalWallCount <= maxWalls) {
-                        // Rule 1: Set maxWalls to the minimum walls needed
-                        // The solver already minimises wall usage (epsilon tiebreak),
-                        // so optimalWallCount is the true minimum for this score.
+                        // Use the minimum walls actually needed (solver minimises via epsilon tiebreak)
                         const effectiveMaxWalls = result.optimalWallCount;
                         
-                        // Validate the map meets quality standards
                         const validation = MapValidator.validate(map, {
                             ...result,
                             maxWalls: effectiveMaxWalls
                         });
                         
                         if (validation.valid) {
-                            // Rule 3: Wall budget must be a meaningful constraint
-                            // This second solver call only runs for maps that already
-                            // pass all other validation checks, so the performance
-                            // cost is limited to viable candidates only.
-                            // Solve with unlimited walls and verify the unconstrained
-                            // score is strictly higher. If unlimited walls can't improve
-                            // the score, the wall limit is decorative and the level is
-                            // rejected.
+                            // Verify wall budget is a real constraint: unlimited walls must score higher.
+                            // Only runs for maps that pass all other checks, so cost is minimal.
                             const unlimitedResult = this.calculateGoal(map, this.size * this.size);
                             if (unlimitedResult !== null && unlimitedResult.goalArea > result.goalArea) {
                                 return { 
@@ -97,12 +87,11 @@ class MapGenerator {
                                     optimalSolution: result.optimalSolution
                                 };
                             }
-                            // Wall limit doesn't constrain scoring - try another map
+                            // Wall budget doesn't constrain scoring - try another map
                             if (totalAttempts % 10 === 0) {
                                 console.log('Wall budget does not constrain scoring - skipping map');
                             }
                         } else {
-                            // Log validation failures for debugging
                             if (totalAttempts % 10 === 0) {
                                 console.log(`Validation failed: ${validation.errors.join(', ')}`);
                             }
@@ -118,8 +107,7 @@ class MapGenerator {
             }
         }
         
-        // If we reach here, we failed to generate a valid map
-        // Do NOT fall back to any alternative method - throw an error as required
+        // No fallback — throw if all attempts exhausted
         throw new Error(`Failed to generate valid map after ${maxTotalAttempts} attempts. ` +
             'This indicates either the solver is not finding solutions, or the quality ' +
             'constraints are too strict for the given parameters.');
