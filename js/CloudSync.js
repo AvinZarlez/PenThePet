@@ -783,6 +783,11 @@ const CloudSync = (function () {
             const emailInput = document.getElementById('authEmailLink');
             if (emailInput) emailInput.focus();
         }
+        // Pause the game while the auth modal is open (same as opening the menu).
+        // main.js listens for this event and calls game.pauseTimer().
+        if (typeof document !== 'undefined') {
+            document.dispatchEvent(new CustomEvent('cloudsync:openmodal'));
+        }
     }
 
     function closeAuthModal() {

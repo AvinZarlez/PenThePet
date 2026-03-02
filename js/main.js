@@ -252,6 +252,14 @@ async function initGame() {
                 }
             }
         });
+
+        // Pause the game when the auth modal opens (same behaviour as opening the menu).
+        // Does NOT trigger a sync — the timer's cookie save is ignored by the isSyncing guard.
+        document.addEventListener('cloudsync:openmodal', function () {
+            if (game && typeof game.pauseTimer === 'function') {
+                game.pauseTimer();
+            }
+        });
     }
 }
 
