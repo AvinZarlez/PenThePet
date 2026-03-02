@@ -68,9 +68,45 @@ for normal use.
 3. Select a **Project support email** from the dropdown (required by Google).
 4. Click **Save**.
 
-No additional configuration is needed for Google sign-in on the web. Users
-click **Sign in with Google** and are taken through Google's standard OAuth
-popup flow.
+When you enable Google Sign-In, Firebase automatically creates an **OAuth 2.0
+Client ID** in the Google Cloud Console. This Client ID has an **Authorized
+JavaScript origins** list, and the Google popup will be blocked unless every
+domain the app is served from is in that list.
+
+5. Go to the
+   [Google Cloud Console → Credentials](https://console.cloud.google.com/apis/credentials).
+6. Under **OAuth 2.0 Client IDs**, click the entry that Firebase created
+   (it is typically named **Web client (auto created by Google Service)**).
+7. Under **Authorized JavaScript origins**, add every domain the app is served
+   from. Examples:
+
+   - **GitHub Pages (default domain):**
+
+     ```text
+     https://YOUR_USERNAME.github.io
+     ```
+
+   - **Custom domain** (e.g. `www.your-domain.com`):
+
+     ```text
+     https://www.your-domain.com
+     ```
+
+   - **Local development:**
+
+     ```text
+     http://localhost:8080
+     ```
+
+   Click **+ Add URI** for each domain. Origins do not use wildcards — list
+   each domain exactly, without a trailing slash or path.
+
+8. Click **Save**.
+
+> **Note:** This OAuth Client ID is separate from the API key you restrict in
+> Step 6. Both must be configured. If you add a domain to the API key
+> referrers (Step 6) but forget the OAuth Client ID here, the Google popup
+> will show a `redirect_uri_mismatch` or `origin_mismatch` error.
 
 ### Step 4 — Create a Firestore Database
 
@@ -143,13 +179,18 @@ be on a different domain and Firebase will reject their requests.
 > **Important:** After adding or changing referrers, wait up to five minutes
 > for the changes to propagate before testing.
 >
-> ⚠️ **Two separate settings — both are required.**
-> Step 6 (Google Cloud Console) and Step 7 (Firebase console) are completely
-> separate services. **Adding a domain in Firebase Authentication does NOT
-> update Google Cloud Console, and vice versa.** If you only complete one of
-> these steps you will still see the "requests-from-referer-…-are-blocked"
-> error. Every domain the app is served from must be registered in **both**
-> places.
+> ⚠️ **Three separate settings — all are required.**
+> Step 3b (OAuth 2.0 Client ID authorized origins), Step 6 (Google Cloud
+> Console API key referrers), and Step 7 (Firebase Authentication authorized
+> domains) are completely separate settings in different places. **Updating
+> one does NOT update the others.** Every domain the app is served from must
+> be registered in **all three** places:
+> - **OAuth 2.0 Client ID** (Step 3b) — controls which origins can open the
+>   Google sign-in popup.
+> - **API key HTTP referrers** (Step 6) — controls which sites can call
+>   Firebase APIs at all.
+> - **Firebase Authentication authorized domains** (Step 7) — controls which
+>   domains Firebase will redirect sign-in flows back to.
 
 ### Step 7 — Authorise Your Domain in Firebase Authentication
 
@@ -339,12 +380,14 @@ database.
 
 ### "This domain is not authorised to use Firebase" or "requests-from-referer-…-are-blocked"
 
-Two separate settings must both include the domain you are signing in from:
+Three separate settings must all include the domain you are signing in from:
 
-1. **Google Cloud Console API key referrers** (Step 6) — add the URL pattern
+1. **OAuth 2.0 Client ID authorized origins** (Step 3b) — add the bare
+   origin, e.g. `https://www.your-domain.com` and `http://localhost:8080`.
+2. **Google Cloud Console API key referrers** (Step 6) — add the URL pattern
    with a trailing slash and wildcard, e.g. `https://www.your-domain.com/*`
    and `http://localhost:8080/*`.
-2. **Firebase Authentication → Settings → Authorised Domains** (Step 7) —
+3. **Firebase Authentication → Settings → Authorised Domains** (Step 7) —
    add the bare domain, e.g. `www.your-domain.com` and `localhost`.
 
 > **Why the `/*` pattern matters:** Modern browsers send only the bare
@@ -357,14 +400,22 @@ Two separate settings must both include the domain you are signing in from:
 > trailing `/`) is sent, so the `/*` patterns work correctly. If you fork
 > this repository, do not remove that meta tag.
 
-After saving both settings, wait up to five minutes for changes to
+After saving all settings, wait up to five minutes for changes to
 propagate, then try again.
+
+### Google sign-in popup shows "Error 400: redirect_uri_mismatch" or "origin_mismatch"
+
+The OAuth 2.0 Client ID that Firebase created does not have your domain in
+its **Authorized JavaScript origins** list. Return to Step 3b and add the
+exact origin (e.g. `https://YOUR_USERNAME.github.io`) to the Client ID in
+the Google Cloud Console.
 
 ### Firebase works locally but not on GitHub Pages (or custom domain)
 
-Check both the API key referrers (Step 6) and the Firebase Authentication
-authorised domains (Step 7) — both must list every domain the app is served
-from, including your custom domain if you use one.
+Check all three settings — OAuth 2.0 Client ID origins (Step 3b), API key
+referrers (Step 6), and Firebase Authentication authorised domains (Step 7)
+— all must list every domain the app is served from, including your custom
+domain if you use one.
 
 ## Additional Resources
 
