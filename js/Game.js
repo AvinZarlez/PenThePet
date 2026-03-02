@@ -763,18 +763,6 @@ class Game {
     }
 
     /**
-     * Return the display username for sharing.
-     * Uses CloudSync username when logged in, else "Anonymous".
-     * @returns {string}
-     */
-    _getShareUsername() {
-        if (typeof CloudSync !== 'undefined' && CloudSync.isConfigured() && CloudSync.isLoggedIn()) {
-            return CloudSync.getUsername() || 'Anonymous';
-        }
-        return 'Anonymous';
-    }
-
-    /**
      * Build the shareable score text for the current submission.
      * @returns {string} Formatted share text
      */
@@ -783,7 +771,6 @@ class Game {
         const goal = Number(this.goalAreaSize);
         const pct = goal > 0 ? Math.round((score / goal) * 100) : 0;
         const timeStr = this._formatTime(this.elapsedSeconds);
-        const username = this._getShareUsername();
         const date = this.currentDate || '';
         const displayDate = date ? DateUtils.formatDate(date) : '';
 
@@ -794,7 +781,6 @@ class Game {
         return [
             `Pen The Pet ${this.petEmoji}`,
             `Day ${dayNum} - ${displayDate}`,
-            `Player: ${username}`,
             `Score: ${pct}% (${score}/${goal}) Time: ${timeStr}`,
         ].join('\n');
     }
