@@ -96,7 +96,7 @@ const TILE_DATA = {
         assets: ['grass.svg', 'home.svg'],
         enclosedAssets: ['penned.svg', 'home.svg'],
         pawOverlay: [],
-        emoji: '🏠🐾',
+        emoji: true,
         ariaLabel: (row, col) => `Home tile at row ${row + 1}, column ${col + 1}. Pet starting location.`,
     },
     star: {
