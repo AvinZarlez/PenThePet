@@ -1209,7 +1209,7 @@ class Game {
     }
 
     /**
-     * Save the current elapsed time to a cookie.
+     * Save the current elapsed time to a cookie and sync to cloud if logged in.
      * Does nothing if the timer is locked (time is stored in submission).
      * @private
      */
@@ -1220,6 +1220,9 @@ class Game {
             JSON.stringify({ elapsed: this.elapsedSeconds }),
             365
         );
+        if (typeof CloudSync !== 'undefined' && CloudSync.isConfigured() && CloudSync.isLoggedIn()) {
+            CloudSync.saveTimerState(this.currentDate, this.elapsedSeconds);
+        }
     }
 
     /**
