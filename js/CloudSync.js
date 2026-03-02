@@ -22,6 +22,7 @@ const CloudSync = (function () {
 
     const COLLECTION_NAME = 'submissions';
     const SETTINGS_DOC = 'settings';
+    const TIMER_DOC_PREFIX = 'timer_';
 
     // ----------------------------------------------------------------
     // Configuration helpers
@@ -224,6 +225,45 @@ const CloudSync = (function () {
         }
     }
 
+    /**
+     * Upload the current in-progress timer state for a puzzle to Firestore.
+     * Called from Game._saveTimerState() every 30 seconds and on pause.
+     * @param {string} dateString - Puzzle date (YYYY-MM-DD)
+     * @param {number} elapsed - Elapsed seconds
+     */
+    async function saveTimerState(dateString, elapsed) {
+        if (!db || !currentUser) return;
+        try {
+            const docRef = db
+                .collection('users')
+                .doc(currentUser.uid)
+                .collection(COLLECTION_NAME)
+                .doc(TIMER_DOC_PREFIX + dateString);
+            await docRef.set({ elapsed: elapsed }, { merge: true });
+        } catch (e) {
+            console.error('CloudSync: Failed to save timer state:', e);
+        }
+    }
+
+    /**
+     * Apply a cloud timer state to the local cookie, taking the higher elapsed value.
+     * @param {string} docId - Firestore doc ID (e.g. 'timer_2026-01-01')
+     * @param {Object} data - {elapsed: number}
+     * @private
+     */
+    function applyCloudTimerState(docId, data) {
+        if (!data || typeof data.elapsed !== 'number') return;
+        const localValue = CookieUtils.getCookie(docId);
+        let localElapsed = 0;
+        if (localValue) {
+            try {
+                localElapsed = JSON.parse(localValue).elapsed || 0;
+            } catch { /* ignore malformed cookie */ }
+        }
+        const elapsed = Math.max(localElapsed, data.elapsed);
+        CookieUtils.setCookie(docId, JSON.stringify({ elapsed: elapsed }), 365);
+    }
+
     // ----------------------------------------------------------------
     // Data sync — delete
     // ----------------------------------------------------------------
@@ -307,6 +347,10 @@ const CloudSync = (function () {
                     applyCloudSettings(doc.data());
                     return;
                 }
+                if (doc.id.startsWith(TIMER_DOC_PREFIX)) {
+                    applyCloudTimerState(doc.id, doc.data());
+                    return;
+                }
                 const dateString = doc.id;
                 const cookieName = 'submission_' + dateString;
                 // Only import if local cookie is missing
@@ -340,7 +384,7 @@ const CloudSync = (function () {
     }
 
     /**
-     * Scan local submission cookies and upload any missing in Firestore.
+     * Scan local submission and timer cookies and upload any missing in Firestore.
      */
     async function uploadLocalSubmissions() {
         if (!db || !currentUser) return;
@@ -349,18 +393,20 @@ const CloudSync = (function () {
         for (const cookie of cookies) {
             const parts = cookie.trim().split('=');
             const name = parts[0];
-            if (!name.startsWith('submission_')) continue;
-            const dateString = name.replace('submission_', '');
+            if (!name.startsWith('submission_') && !name.startsWith(TIMER_DOC_PREFIX)) continue;
             const value = CookieUtils.getCookie(name);
             if (!value) continue;
 
             try {
                 const data = JSON.parse(value);
+                const docId = name.startsWith('submission_')
+                    ? name.replace('submission_', '')
+                    : name; // timer_YYYY-MM-DD kept as-is
                 const docRef = db
                     .collection('users')
                     .doc(currentUser.uid)
                     .collection(COLLECTION_NAME)
-                    .doc(dateString);
+                    .doc(docId);
                 // Use set with merge to avoid overwriting cloud data
                 await docRef.set(data, { merge: true });
             } catch {
@@ -389,6 +435,10 @@ const CloudSync = (function () {
                 if (change.type === 'added' || change.type === 'modified') {
                     if (change.doc.id === SETTINGS_DOC) {
                         applyCloudSettings(change.doc.data());
+                        return;
+                    }
+                    if (change.doc.id.startsWith(TIMER_DOC_PREFIX)) {
+                        applyCloudTimerState(change.doc.id, change.doc.data());
                         return;
                     }
                     const dateString = change.doc.id;
@@ -551,6 +601,7 @@ const CloudSync = (function () {
         isConfigured: isConfigured,
         isLoggedIn: function () { return currentUser !== null; },
         saveSubmission: saveSubmission,
+        saveTimerState: saveTimerState,
         deleteSubmission: deleteSubmission,
         deleteAllSubmissions: deleteAllSubmissions,
         saveSettings: saveSettings,

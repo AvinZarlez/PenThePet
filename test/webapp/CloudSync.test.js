@@ -49,6 +49,16 @@ describe('CloudSync', () => {
         });
     });
 
+    describe('saveTimerState()', () => {
+        test('should not throw when not logged in', async () => {
+            await expect(CloudSync.saveTimerState('2026-01-01', 65)).resolves.toBeUndefined();
+        });
+
+        test('should be exposed on the public API', () => {
+            expect(typeof CloudSync.saveTimerState).toBe('function');
+        });
+    });
+
     describe('saveSettings()', () => {
         test('should not throw when not logged in', async () => {
             await expect(CloudSync.saveSettings({ selectedPet: '🐶' })).resolves.toBeUndefined();

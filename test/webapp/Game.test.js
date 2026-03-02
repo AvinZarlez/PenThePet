@@ -415,6 +415,40 @@ describe('Game — Timer', () => {
             game.elapsedSeconds = 50;
             expect(() => game._saveTimerState()).not.toThrow();
         });
+
+        test('calls CloudSync.saveTimerState when logged in', () => {
+            const mockSaveTimerState = jest.fn();
+            const origCloudSync = global.CloudSync;
+            global.CloudSync = {
+                isConfigured: () => true,
+                isLoggedIn: () => true,
+                saveTimerState: mockSaveTimerState
+            };
+
+            game.currentDate = '2026-01-01';
+            game.elapsedSeconds = 65;
+            game._saveTimerState();
+
+            expect(mockSaveTimerState).toHaveBeenCalledWith('2026-01-01', 65);
+            global.CloudSync = origCloudSync;
+        });
+
+        test('does not call CloudSync.saveTimerState when not logged in', () => {
+            const mockSaveTimerState = jest.fn();
+            const origCloudSync = global.CloudSync;
+            global.CloudSync = {
+                isConfigured: () => true,
+                isLoggedIn: () => false,
+                saveTimerState: mockSaveTimerState
+            };
+
+            game.currentDate = '2026-01-01';
+            game.elapsedSeconds = 65;
+            game._saveTimerState();
+
+            expect(mockSaveTimerState).not.toHaveBeenCalled();
+            global.CloudSync = origCloudSync;
+        });
     });
 
     // ------------------------------------------------------------------
