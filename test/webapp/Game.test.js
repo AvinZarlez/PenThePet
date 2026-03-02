@@ -163,7 +163,18 @@ describe('Game — Timer', () => {
             const overlay = document.getElementById('pauseOverlay');
             expect(overlay.style.display).toBe('flex');
             expect(document.getElementById('pauseTitle').textContent).toBe('Ready?');
+            // Time is 0 — display is hidden but Begin button shown
+            expect(document.getElementById('pauseTime').style.visibility).toBe('hidden');
             expect(document.getElementById('resumeBtn').textContent).toBe('▶ Begin');
+        });
+
+        test('shows Resume button and visible time when saved time > 0', () => {
+            CookieUtils.setCookie('timer_2026-01-02', JSON.stringify({ elapsed: 60 }), 1);
+            game.isSubmitted = false;
+            game.initTimerForDate('2026-01-02');
+            expect(document.getElementById('resumeBtn').textContent).toBe('▶ Resume');
+            expect(document.getElementById('pauseTime').style.visibility).toBe('visible');
+            expect(document.getElementById('pauseTime').textContent).toBe('01:00');
         });
     });
 
@@ -226,6 +237,7 @@ describe('Game — Timer', () => {
             game.pauseTimer();
             const pauseTime = document.getElementById('pauseTime');
             expect(pauseTime.textContent).toBe('00:03');
+            expect(pauseTime.style.visibility).toBe('visible');
         });
 
         test('hides game content (controls, grid-container) when paused', () => {

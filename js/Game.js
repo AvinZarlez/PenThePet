@@ -1365,9 +1365,12 @@ class Game {
             const pauseTitle = document.getElementById('pauseTitle');
             if (pauseTitle) pauseTitle.textContent = this.isReadyPending ? 'Ready?' : 'Pause';
             const pauseTime = document.getElementById('pauseTime');
-            if (pauseTime) pauseTime.textContent = this._formatTime(this.elapsedSeconds);
+            if (pauseTime) {
+                pauseTime.textContent = this._formatTime(this.elapsedSeconds);
+                pauseTime.style.visibility = this.elapsedSeconds > 0 ? 'visible' : 'hidden';
+            }
             const resumeBtn = document.getElementById('resumeBtn');
-            if (resumeBtn) resumeBtn.textContent = this.isReadyPending ? '▶ Begin' : '▶ Resume';
+            if (resumeBtn) resumeBtn.textContent = this.elapsedSeconds > 0 ? '▶ Resume' : '▶ Begin';
             overlay.style.display = 'flex';
         }
         for (const selector of Game.PAUSE_HIDDEN_SELECTORS) {
