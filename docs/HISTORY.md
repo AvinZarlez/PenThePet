@@ -41,3 +41,7 @@ If I had advice for someone trying something like this: be specific with your pr
 It was a fun experiment. AI is a genuinely useful coding tool. But the interesting parts of building software are still the parts you have to do yourself.
 
 [Play the game](https://avinzarlez.github.io/PenThePet/) · [View the source](https://github.com/AvinZarlez/PenThePet)
+
+---
+
+**See also:** [docs/README.md](README.md) · [ARCHITECTURE.md](ARCHITECTURE.md)

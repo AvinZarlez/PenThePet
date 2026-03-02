@@ -54,3 +54,7 @@ To replace any asset with custom artwork:
 2. Place it in the `assets/` folder with the same filename.
 3. No code changes needed — the JS references files by path from `TILE_DATA` assets lists.
 4. For non-SVG formats, update the file extension in `js/tileData.js`.
+
+---
+
+**See also:** [docs/README.md](README.md) · [TILE_SYSTEM.md](TILE_SYSTEM.md) · [CODE_STRUCTURE.md](CODE_STRUCTURE.md)
