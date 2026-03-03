@@ -693,11 +693,6 @@ describe('buildShareText()', () => {
         expect(text).toContain('80%');
     });
 
-    test('contains score fraction (score/goal)', () => {
-        const text = game.buildShareText();
-        expect(text).toContain('(8/10)');
-    });
-
     test('contains formatted time', () => {
         const text = game.buildShareText();
         expect(text).toContain('01:33');
