@@ -580,7 +580,12 @@ class Game {
                     const cell = this.gridElement.querySelector(`[data-row="${row}"][data-col="${col}"]`);
                     if (cell) {
                         cell.classList.add('penned');
-                        this._setCellBackground(cell, this.grid.getTile(row, col), true);
+                        const tileType = this.grid.getTile(row, col);
+                        this._setCellBackground(cell, tileType, true);
+                        const score = getTileScore(tileType);
+                        if (score !== 0 && score !== 1) {
+                            this._showScorePopup(cell, score);
+                        }
                     }
                 }
             }, waveIndex * delay);
@@ -619,6 +624,30 @@ class Game {
             }, stepIndex * delay);
             this._pawAnimationTimeouts.push(timeoutId);
         });
+    }
+
+    /**
+     * Show a floating score popup on a cell when it becomes penned.
+     * Displays the score value with a "+" prefix for positive values.
+     * The popup fades in, floats up, and disappears automatically.
+     * Only called for tiles with a non-standard score (not 0 or 1).
+     * @private
+     * @param {HTMLElement} cell - The cell element to attach the popup to
+     * @param {number} score - The score value to display
+     */
+    _showScorePopup(cell, score) {
+        const popup = document.createElement('span');
+        popup.className = `score-popup ${score > 0 ? 'positive' : 'negative'}`;
+        popup.textContent = score > 0 ? `+${score}` : `${score}`;
+        popup.setAttribute('aria-hidden', 'true');
+        const durationMs = CONSTANTS.SCORE_POPUP_DURATION_MS;
+        popup.style.setProperty('--score-popup-duration', `${durationMs}ms`);
+        cell.appendChild(popup);
+        setTimeout(() => {
+            if (popup.parentNode) {
+                popup.parentNode.removeChild(popup);
+            }
+        }, durationMs);
     }
 
     /**
