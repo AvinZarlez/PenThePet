@@ -968,7 +968,7 @@ class Game {
         return [
             `Pen The Pet ${this.petEmoji}`,
             dateLine,
-            `Score: ${pct}% (${score}/${goal}) Time: ${timeStr}`,
+            `Score: ${pct}% - Time: ${timeStr}`,
         ].join('\n');
     }
 
