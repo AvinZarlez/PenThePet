@@ -75,7 +75,13 @@
                     data-interactive="false">
                 <span class="submit-label">Unsolved</span><span class="submit-check">✗</span>
             </button>
+            <button id="hintCheckBtn" class="hint-check-btn" style="display: none;" disabled
+                    title="Pen the pet first to check your solution" aria-label="Check if optimal">
+                <span class="hint-check-label">Check if Optimal</span>
+            </button>
         </div>
+
+        <div id="hintUsedDisplay" class="hint-used-display" style="display: none;"></div>
 
         <div id="notification" class="notification"></div>
 
@@ -241,12 +247,16 @@
                     </select>
                 </div>
                 <div class="option-item">
-                    <label for="modalHintMode">Hint:</label>
-                    <select id="modalHintMode">
-                        <option value="disabled">Disabled</option>
-                        <option value="checkOptimal">Check Optimal</option>
-                        <option value="revealTarget">Reveal Target</option>
-                    </select>
+                    <label for="modalHintsDisabled">
+                        <input type="checkbox" id="modalHintsDisabled">
+                        Disable hints
+                    </label>
+                </div>
+                <div class="option-item" id="neverShowTargetOptionItem">
+                    <label for="modalNeverShowTarget">
+                        <input type="checkbox" id="modalNeverShowTarget">
+                        Never show target
+                    </label>
                 </div>
                 <div class="option-item">
                     <label for="modalTimezone">Time Zone:</label>

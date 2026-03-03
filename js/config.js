@@ -39,7 +39,8 @@ const CONFIG = {
 
     // Hint system
     hints: {
-        mode: CONSTANTS.HINT_MODE_DEFAULT,  // Options: 'disabled', 'checkOptimal', 'revealTarget'
+        disabled: CONSTANTS.HINTS_DISABLED_DEFAULT,           // If true, hint button is hidden
+        neverShowTarget: CONSTANTS.HINTS_NEVER_SHOW_TARGET_DEFAULT, // If true, reveal target option is hidden
     }
 };
 

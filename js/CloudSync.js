@@ -17,7 +17,8 @@
  *   submission_YYYY-MM-DD    YYYY-MM-DD          (puzzle result)
  *   timer_YYYY-MM-DD         timer_YYYY-MM-DD    (in-progress elapsed seconds)
  *   selectedPet              settings.selectedPet (part of settings doc)
- *   hintMode                 settings.hintMode    (part of settings doc)
+ *   hintsDisabled            settings.hintsDisabled (part of settings doc)
+ *   neverShowTarget          settings.neverShowTarget (part of settings doc)
  *
  * Cookies NOT synced to cloud (intentional):
  *   currentLevel   — transient UI state (which puzzle is open); device-local
@@ -64,7 +65,7 @@
  *      `timestamp` field is kept on both sides.  If either side lacks a
  *      timestamp, the cloud value is used as a safe default.
  *
- * Settings (selectedPet, hintMode, username): CLOUD WINS always.
+ * Settings (selectedPet, hintsDisabled, neverShowTarget, username): CLOUD WINS always.
  *
  * ─────────────────────────────────────────────────────────────────────────────
  */
@@ -398,10 +399,10 @@ const CloudSync = (function () {
     }
 
     /**
-     * Upload user settings (selectedPet, hintMode) to Firestore.
+     * Upload user settings (selectedPet, hintsDisabled, neverShowTarget) to Firestore.
      * Also write the local cookie before calling this (see Menu._savePetToCookie,
-     * Menu._saveHintModeToCookie).
-     * @param {Object} settings - {selectedPet?, hintMode?}
+     * Menu._saveHintsDisabledToCookie, Menu._saveNeverShowTargetToCookie).
+     * @param {Object} settings - {selectedPet?, hintsDisabled?, neverShowTarget?}
      */
     async function saveSettings(settings) {
         if (!db || !currentUser) return;
@@ -638,8 +639,11 @@ const CloudSync = (function () {
         if (settings.selectedPet) {
             CookieUtils.setCookie('selectedPet', settings.selectedPet, 365);
         }
-        if (settings.hintMode) {
-            CookieUtils.setCookie('hintMode', settings.hintMode, 365);
+        if (settings.hintsDisabled !== undefined) {
+            CookieUtils.setCookie('hintsDisabled', settings.hintsDisabled, 365);
+        }
+        if (settings.neverShowTarget !== undefined) {
+            CookieUtils.setCookie('neverShowTarget', settings.neverShowTarget, 365);
         }
         if (settings.username !== undefined) {
             username = settings.username;
@@ -681,11 +685,13 @@ const CloudSync = (function () {
         }
 
         const selectedPet = CookieUtils.getCookie('selectedPet');
-        const hintMode = CookieUtils.getCookie('hintMode');
-        if (selectedPet || hintMode) {
+        const hintsDisabled = CookieUtils.getCookie('hintsDisabled');
+        const neverShowTarget = CookieUtils.getCookie('neverShowTarget');
+        if (selectedPet || hintsDisabled !== null || neverShowTarget !== null) {
             const settings = {};
             if (selectedPet) settings.selectedPet = selectedPet;
-            if (hintMode) settings.hintMode = hintMode;
+            if (hintsDisabled !== null) settings.hintsDisabled = hintsDisabled;
+            if (neverShowTarget !== null) settings.neverShowTarget = neverShowTarget;
             try {
                 const docRef = db
                     .collection('users')

@@ -121,10 +121,14 @@ async function initGame() {
     // Create game with the map size from database
     game = new Game(mapData.size);
     
-    // Load hint mode from cookie if available
-    const savedHintMode = CookieUtils.getCookie('hintMode');
-    if (savedHintMode) {
-        game.hintMode = savedHintMode;
+    // Load hint settings from cookies if available
+    const savedHintsDisabled = CookieUtils.getCookie('hintsDisabled');
+    if (savedHintsDisabled !== null) {
+        game.hintsDisabled = savedHintsDisabled === 'true';
+    }
+    const savedNeverShowTarget = CookieUtils.getCookie('neverShowTarget');
+    if (savedNeverShowTarget !== null) {
+        game.neverShowTarget = savedNeverShowTarget === 'true';
     }
     
     // Update map info display
@@ -153,6 +157,9 @@ async function initGame() {
     game.currentDate = mapData.date;
     game.optimalSolution = mapData.optimalSolution ?
         parseCompactSolution(mapData.optimalSolution) : null;
+
+    // Load hints used for this level
+    game.hintsUsed = game.loadHintsUsed(mapData.date);
     
     // Check if user has already submitted for this puzzle
     const submission = game.loadSubmission(mapData.date);

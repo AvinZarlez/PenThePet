@@ -81,7 +81,8 @@ class Menu {
      */
     attachOptionsListeners() {
         const modalPetType = document.getElementById('modalPetType');
-        const modalHintMode = document.getElementById('modalHintMode');
+        const modalHintsDisabled = document.getElementById('modalHintsDisabled');
+        const modalNeverShowTarget = document.getElementById('modalNeverShowTarget');
         const modalTimezone = document.getElementById('modalTimezone');
         const debugModeCheckbox = document.getElementById('debugModeCheckbox');
 
@@ -94,11 +95,30 @@ class Menu {
             });
         }
 
-        if (modalHintMode) {
-            modalHintMode.addEventListener('change', (e) => {
-                this.game.hintMode = e.target.value;
-                this._saveHintModeToCookie(this.game.hintMode);
-                this.game.render();
+        if (modalHintsDisabled) {
+            modalHintsDisabled.addEventListener('change', (e) => {
+                this.game.hintsDisabled = e.target.checked;
+                this._saveHintsDisabledToCookie(this.game.hintsDisabled);
+                // When hints are disabled, neverShowTarget checkbox is forced on (visual only)
+                // When hints are re-enabled, restore the actual game preference
+                if (modalNeverShowTarget) {
+                    if (this.game.hintsDisabled) {
+                        modalNeverShowTarget.checked = true;
+                        modalNeverShowTarget.disabled = true;
+                    } else {
+                        modalNeverShowTarget.checked = this.game.neverShowTarget;
+                        modalNeverShowTarget.disabled = false;
+                    }
+                }
+                this.game.updateHintButton();
+            });
+        }
+
+        if (modalNeverShowTarget) {
+            modalNeverShowTarget.addEventListener('change', (e) => {
+                this.game.neverShowTarget = e.target.checked;
+                this._saveNeverShowTargetToCookie(this.game.neverShowTarget);
+                this.game.updateHintButton();
             });
         }
 
@@ -535,6 +555,7 @@ class Menu {
         this.game.submittedScore = null;
         this.game.submittedWalls = null;
         this.game.viewingOptimal = false;
+        this.game.hintsUsed = mapData.date ? this.game.loadHintsUsed(mapData.date) : [];
 
         // Check if user has already submitted for this puzzle
         if (mapData.date) {
@@ -654,15 +675,21 @@ class Menu {
 
         // Set current values
         const modalPetType = document.getElementById('modalPetType');
-        const modalHintMode = document.getElementById('modalHintMode');
+        const modalHintsDisabled = document.getElementById('modalHintsDisabled');
+        const modalNeverShowTarget = document.getElementById('modalNeverShowTarget');
         const modalTimezone = document.getElementById('modalTimezone');
         const debugModeCheckbox = document.getElementById('debugModeCheckbox');
 
         if (modalPetType) {
             modalPetType.value = this.game.petEmoji;
         }
-        if (modalHintMode) {
-            modalHintMode.value = this.game.hintMode;
+        if (modalHintsDisabled) {
+            modalHintsDisabled.checked = this.game.hintsDisabled;
+        }
+        if (modalNeverShowTarget) {
+            modalNeverShowTarget.checked = this.game.neverShowTarget;
+            // Gray out if hints are disabled
+            modalNeverShowTarget.disabled = this.game.hintsDisabled;
         }
         if (modalTimezone) {
             modalTimezone.value = this._loadTimezoneFromCookie();
@@ -796,14 +823,26 @@ class Menu {
     }
 
     /**
-     * Save hint mode to cookie and sync to cloud.
-     * @param {string} hintMode - Hint mode to save
+     * Save hints disabled setting to cookie and sync to cloud.
+     * @param {boolean} disabled - Whether hints are disabled
      */
-    _saveHintModeToCookie(hintMode) {
-        CookieUtils.setCookie('hintMode', hintMode, 365);
+    _saveHintsDisabledToCookie(disabled) {
+        CookieUtils.setCookie('hintsDisabled', disabled ? 'true' : 'false', 365);
         // Sync to cloud so the preference is available on other devices.
         if (this._shouldSyncToCloud()) {
-            CloudSync.saveSettings({ hintMode: hintMode });
+            CloudSync.saveSettings({ hintsDisabled: disabled ? 'true' : 'false' });
+        }
+    }
+
+    /**
+     * Save neverShowTarget setting to cookie and sync to cloud.
+     * @param {boolean} neverShowTarget - Whether target is never shown
+     */
+    _saveNeverShowTargetToCookie(neverShowTarget) {
+        CookieUtils.setCookie('neverShowTarget', neverShowTarget ? 'true' : 'false', 365);
+        // Sync to cloud so the preference is available on other devices.
+        if (this._shouldSyncToCloud()) {
+            CloudSync.saveSettings({ neverShowTarget: neverShowTarget ? 'true' : 'false' });
         }
     }
 

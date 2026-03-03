@@ -22,8 +22,10 @@ class Game {
         // Load pet emoji from cookie, or default to dog
         this.petEmoji = this._loadPetFromCookie() || '🐶';
         
-        this.hintMode = CONFIG.hints.mode;
+        this.hintsDisabled = CONFIG.hints.disabled;
+        this.neverShowTarget = CONFIG.hints.neverShowTarget;
         this.goalAreaSize = CONFIG.gameplay.goalAreaSize;
+        this.hintsUsed = [];
         
         // Grid sizing constants
         this.CELL_GAP = CONSTANTS.CELL.GAP;
@@ -722,33 +724,33 @@ class Game {
             
             if (isPenned) {
                 const areaSize = this.calculateScore();
-                
-                // Display area size based on hint mode
-                if (this.hintMode === 'revealTarget') {
-                    // In reveal mode, show "areaSize / goal"
+                const hasChecked = this.hintsUsed.includes(CONSTANTS.HINT_CHECKED);
+                const hasTarget = this.hintsUsed.includes(CONSTANTS.HINT_TARGET);
+
+                // Display area size based on hints used
+                if (hasTarget) {
+                    // Target revealed: show "areaSize / goal"
                     areaSizeElement.textContent = `${areaSize} / ${this.goalAreaSize}`;
                 } else {
-                    // In disabled and checkOptimal modes, show just the area size
                     areaSizeElement.textContent = areaSize.toString();
                 }
-                
-                // Apply color based on hint mode
+
+                // Apply color if user has checked or revealed target
                 areaSizeDisplay.classList.remove('penned-yellow', 'penned-green');
-                
-                if (this.hintMode === 'checkOptimal' || this.hintMode === 'revealTarget') {
-                    // In checkOptimal and revealTarget modes, show colors
+
+                if (hasChecked || hasTarget) {
                     if (areaSize < this.goalAreaSize) {
                         areaSizeDisplay.classList.add('penned-yellow');
                     } else {
                         areaSizeDisplay.classList.add('penned-green');
                     }
                 }
-                // In disabled mode, no color classes are added
             } else {
                 areaSizeElement.textContent = '∞';
                 areaSizeDisplay.classList.remove('penned-yellow', 'penned-green');
             }
         }
+        this.updateHintButton();
     }
 
     /**
@@ -803,6 +805,12 @@ class Game {
         const shareScoreBtn = document.getElementById('shareScoreBtn');
         if (shareScoreBtn) {
             shareScoreBtn.addEventListener('click', () => this._handleShareScore(shareScoreBtn));
+        }
+
+        // Hint check button
+        const hintCheckBtn = document.getElementById('hintCheckBtn');
+        if (hintCheckBtn) {
+            hintCheckBtn.addEventListener('click', () => this.handleHintCheck());
         }
 
         // Timer button
@@ -994,11 +1002,23 @@ class Game {
             ? `Day ${dayNum} - ${mapName} - ${displayDate}`
             : `Day ${dayNum} - ${displayDate}`;
 
-        return [
+        const lines = [
             `Pen The Pet ${this.petEmoji}`,
             dateLine,
             `Score: ${pct}% - Time: ${timeStr}`,
-        ].join('\n');
+        ];
+
+        // Add hints used line if any hints were used
+        if (this.hintsUsed.length > 0) {
+            const hintLabels = {
+                [CONSTANTS.HINT_CHECKED]: 'checked for optimal',
+                [CONSTANTS.HINT_TARGET]: 'revealed target',
+            };
+            const hintsStr = this.hintsUsed.map(h => hintLabels[h] || h).join(', ');
+            lines.push(`Hints used: ${hintsStr}`);
+        }
+
+        return lines.join('\n');
     }
 
     /**
@@ -1428,6 +1448,163 @@ class Game {
         if (typeof CloudSync !== 'undefined' && CloudSync.isConfigured() && CloudSync.isLoggedIn()) {
             CloudSync.deleteSubmission(dateString);
         }
+    }
+
+    // =====================================================================
+    // Hints Methods
+    // =====================================================================
+
+    /**
+     * Save hints used for a specific puzzle to cookie.
+     * @param {string} dateString - Date of the puzzle
+     */
+    saveHintsUsed(dateString) {
+        const cookieName = `hints_${dateString}`;
+        CookieUtils.setCookie(cookieName, JSON.stringify(this.hintsUsed), 365);
+    }
+
+    /**
+     * Load hints used for a specific puzzle from cookie.
+     * @param {string} dateString - Date of the puzzle
+     * @returns {string[]} Array of hint strings used
+     */
+    loadHintsUsed(dateString) {
+        const cookieName = `hints_${dateString}`;
+        const value = CookieUtils.getCookie(cookieName);
+        if (value) {
+            try {
+                return JSON.parse(value);
+            } catch {
+                return [];
+            }
+        }
+        return [];
+    }
+
+    /**
+     * Update the hint check button visibility and state based on the
+     * current level's hints used data, penned status, and hint settings.
+     */
+    updateHintButton() {
+        const hintBtn = document.getElementById('hintCheckBtn');
+        if (!hintBtn) return;
+
+        // Hide entirely if hints are disabled
+        if (this.hintsDisabled) {
+            hintBtn.style.display = 'none';
+            return;
+        }
+
+        hintBtn.style.display = '';
+
+        const pathInfo = this.calculatePath();
+        const isPenned = !pathInfo.hasPath;
+        const hasChecked = this.hintsUsed.includes(CONSTANTS.HINT_CHECKED);
+        const hasTarget = this.hintsUsed.includes(CONSTANTS.HINT_TARGET);
+
+        if (hasTarget) {
+            // Target already revealed — show disabled button with target score
+            hintBtn.disabled = true;
+            hintBtn.title = 'Target already revealed';
+            hintBtn.querySelector('.hint-check-label').textContent = `Optimal is ${this.goalAreaSize}`;
+        } else if (hasChecked) {
+            // Already checked — offer to reveal target (if allowed) or show disabled label
+            if (this.neverShowTarget) {
+                // Cannot reveal target — show disabled button with optimal/not-optimal text
+                hintBtn.disabled = true;
+                hintBtn.title = 'Target reveal is disabled in options';
+                const areaSize = isPenned ? this.calculateScore() : null;
+                const isOptimal = areaSize !== null && areaSize >= this.goalAreaSize;
+                hintBtn.querySelector('.hint-check-label').textContent = isOptimal ? 'Optimal' : 'Not Optimal';
+            } else {
+                // Can reveal target
+                hintBtn.disabled = !isPenned;
+                hintBtn.title = isPenned ? 'Reveal the target score' : 'Pen the pet first';
+                hintBtn.querySelector('.hint-check-label').textContent = 'Reveal Target';
+            }
+        } else {
+            // First time — show "Check if Optimal"
+            hintBtn.disabled = !isPenned;
+            hintBtn.title = isPenned ? 'Check if your solution is optimal' : 'Pen the pet first to check your solution';
+            hintBtn.querySelector('.hint-check-label').textContent = 'Check if Optimal';
+        }
+
+        this._updateHintUsedDisplay();
+    }
+
+    /**
+     * Update the "Hint used" display below the grid.
+     */
+    _updateHintUsedDisplay() {
+        const display = document.getElementById('hintUsedDisplay');
+        if (!display) return;
+
+        if (this.hintsUsed.length === 0) {
+            display.style.display = 'none';
+            display.textContent = '';
+            return;
+        }
+
+        const parts = [];
+        if (this.hintsUsed.includes(CONSTANTS.HINT_CHECKED)) parts.push('checked for optimal');
+        if (this.hintsUsed.includes(CONSTANTS.HINT_TARGET)) parts.push('revealed target');
+        display.textContent = `Hint used: ${parts.join(', ')}`;
+        display.style.display = '';
+    }
+
+    /**
+     * Handle the hint check button click.
+     * First press: checks if optimal and optionally transitions to reveal state.
+     * Second press (if neverShowTarget is false): reveals target score.
+     */
+    handleHintCheck() {
+        const pathInfo = this.calculatePath();
+        const isPenned = !pathInfo.hasPath;
+        if (!isPenned) return;
+
+        const areaSize = this.calculateScore();
+        const isOptimal = areaSize >= this.goalAreaSize;
+        const hasChecked = this.hintsUsed.includes(CONSTANTS.HINT_CHECKED);
+        const hasTarget = this.hintsUsed.includes(CONSTANTS.HINT_TARGET);
+
+        if (hasTarget) return; // Already at final state
+
+        if (!hasChecked) {
+            // First press: check if optimal
+            this.hintsUsed.push(CONSTANTS.HINT_CHECKED);
+            if (this.currentDate) {
+                this.saveHintsUsed(this.currentDate);
+            }
+            this.updateAreaSizeDisplay();
+
+            const msg = isOptimal
+                ? 'Your solution is optimal! 🎉'
+                : 'A more optimal solution exists.';
+            this._showNotification(msg);
+        } else if (!this.neverShowTarget) {
+            // Second press: reveal target
+            this.hintsUsed.push(CONSTANTS.HINT_TARGET);
+            if (this.currentDate) {
+                this.saveHintsUsed(this.currentDate);
+            }
+            this.updateAreaSizeDisplay();
+
+            this._showNotification(`The optimal solution is ${this.goalAreaSize}.`);
+        }
+
+        this.updateHintButton();
+    }
+
+    /**
+     * Show a temporary notification message.
+     * @param {string} message - The message to display
+     */
+    _showNotification(message) {
+        const notif = document.getElementById('notification');
+        if (!notif) return;
+        notif.textContent = message;
+        notif.classList.add('show');
+        setTimeout(() => notif.classList.remove('show'), 3500);
     }
 
     // =====================================================================

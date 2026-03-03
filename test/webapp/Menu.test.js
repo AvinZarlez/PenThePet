@@ -21,11 +21,8 @@ function setupDOM() {
         <div id="aboutModal" class="modal"></div>
         <div id="optionsModal" class="modal">
             <select id="modalPetType"></select>
-            <select id="modalHintMode">
-                <option value="disabled">Disabled</option>
-                <option value="checkOptimal">Check Optimal</option>
-                <option value="revealTarget">Reveal Target</option>
-            </select>
+            <input type="checkbox" id="modalHintsDisabled">
+            <input type="checkbox" id="modalNeverShowTarget">
             <select id="modalTimezone"></select>
             <input type="checkbox" id="debugModeCheckbox">
         </div>
@@ -35,7 +32,6 @@ function setupDOM() {
         <button id="aboutBtn"></button>
         <button id="optionsBtn"></button>
         <select id="petType"></select>
-        <select id="hintMode"></select>
         <div class="debug-section" style="display: none;">
             <input type="checkbox" id="debugShowAllLevels">
             <button id="debugResetLevel"></button>
@@ -48,7 +44,9 @@ function setupDOM() {
 function createMockGame() {
     return {
         petEmoji: '🐶',
-        hintMode: 'disabled',
+        hintsDisabled: false,
+        neverShowTarget: true,
+        hintsUsed: [],
         render: jest.fn(),
         updateLegend: jest.fn(),
         grid: {
@@ -72,6 +70,8 @@ function createMockGame() {
         updateAreaSizeDisplay: jest.fn(),
         updateResetButton: jest.fn(),
         updateSolutionToggleBar: jest.fn(),
+        updateHintButton: jest.fn(),
+        loadHintsUsed: jest.fn(() => []),
         loadSubmission: jest.fn(() => null),
         deleteSubmission: jest.fn(),
         isValidPosition: jest.fn(() => true)
@@ -236,10 +236,16 @@ describe('Menu', () => {
             expect(loaded).toBe('🐱');
         });
 
-        test('should save and load hint mode', () => {
-            menu._saveHintModeToCookie('checkOptimal');
-            const loaded = CookieUtils.getCookie('hintMode');
-            expect(loaded).toBe('checkOptimal');
+        test('should save and load hints disabled', () => {
+            menu._saveHintsDisabledToCookie(true);
+            const loaded = CookieUtils.getCookie('hintsDisabled');
+            expect(loaded).toBe('true');
+        });
+
+        test('should save and load never show target', () => {
+            menu._saveNeverShowTargetToCookie(false);
+            const loaded = CookieUtils.getCookie('neverShowTarget');
+            expect(loaded).toBe('false');
         });
 
         test('should save and load debug mode', () => {
@@ -290,14 +296,14 @@ describe('Menu', () => {
             expect(game.petEmoji).toBe('🐱');
         });
 
-        test('should sync hint mode between modal and main selector', () => {
-            const modalHintMode = document.getElementById('modalHintMode');
-            
-            // Simulate change
-            modalHintMode.value = 'checkOptimal';
-            modalHintMode.dispatchEvent(new Event('change'));
-            
-            expect(game.hintMode).toBe('checkOptimal');
+        test('should sync hints disabled between modal and game', () => {
+            const modalHintsDisabled = document.getElementById('modalHintsDisabled');
+
+            // Simulate checking "disable hints"
+            modalHintsDisabled.checked = true;
+            modalHintsDisabled.dispatchEvent(new Event('change'));
+
+            expect(game.hintsDisabled).toBe(true);
         });
     });
 

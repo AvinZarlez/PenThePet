@@ -24,7 +24,8 @@ describe('CONSTANTS', () => {
             expect(CONSTANTS).toHaveProperty('GRID_PADDING');
             expect(CONSTANTS).toHaveProperty('ALLOW_WALL_REMOVAL');
             expect(CONSTANTS).toHaveProperty('AUTO_SAVE_STATE');
-            expect(CONSTANTS).toHaveProperty('HINT_MODE_DEFAULT');
+            expect(CONSTANTS).toHaveProperty('HINTS_DISABLED_DEFAULT');
+            expect(CONSTANTS).toHaveProperty('HINTS_NEVER_SHOW_TARGET_DEFAULT');
         });
     });
 
@@ -164,13 +165,12 @@ describe('CONSTANTS', () => {
     });
 
     describe('Hints Configuration', () => {
-        test('HINT_MODE_DEFAULT should be a string', () => {
-            expect(typeof CONSTANTS.HINT_MODE_DEFAULT).toBe('string');
+        test('HINTS_DISABLED_DEFAULT should be a boolean', () => {
+            expect(typeof CONSTANTS.HINTS_DISABLED_DEFAULT).toBe('boolean');
         });
 
-        test('HINT_MODE_DEFAULT should be a valid mode', () => {
-            const validModes = ['disabled', 'checkOptimal', 'revealTarget'];
-            expect(validModes).toContain(CONSTANTS.HINT_MODE_DEFAULT);
+        test('HINTS_NEVER_SHOW_TARGET_DEFAULT should be a boolean', () => {
+            expect(typeof CONSTANTS.HINTS_NEVER_SHOW_TARGET_DEFAULT).toBe('boolean');
         });
     });
 
