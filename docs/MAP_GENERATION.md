@@ -16,7 +16,7 @@ The Python MILP solver (`scripts/solver/solve.py`, powered by PuLP + CBC):
    - Constraints: home in pen, boundary tiles not in pen, walls not in pen, wall budget, vertex-cut (adjacency), flow conservation (pen connectivity)
 4. Returns provably optimal solution (not a heuristic)
 
-**Why MILP?** Provably optimal, solves 21×21 maps in <2 seconds, scales to any grid size.
+**Why MILP?** Provably optimal, solves 17×17 maps in <2 seconds, scales to any grid size.
 
 **Wall budget:** `maxWalls = floor(size × 0.75)`
 
@@ -27,7 +27,7 @@ The Python MILP solver (`scripts/solver/solve.py`, powered by PuLP + CBC):
 | 11×11 | 8       |
 | 13×13 | 9       |
 | 15×15 | 11      |
-| 21×21 | 15      |
+| 17×17 | 12      |
 
 **Retry logic:** Up to 1000 attempts per map. If all fail, throws an error (no fallbacks).
 
@@ -135,7 +135,7 @@ MapGenerator.generate()
 1. Solver algorithm changes require regenerating all existing maps
 2. Accuracy over speed (user requirement)
 3. Update `MapValidator.js` when adding quality rules
-4. Test with maps of different sizes (7×7, 9×9, 11×11, 21×21)
+4. Test with maps of different sizes (7×7, 9×9, 11×11, 17×17)
 5. Run `npm test` after changes
 
 **Key invariants:**
