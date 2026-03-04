@@ -80,16 +80,34 @@ class MapGenerator {
                             // Only runs for maps that pass all other checks, so cost is minimal.
                             const unlimitedResult = this.calculateGoal(map, this.size * this.size);
                             if (unlimitedResult !== null && unlimitedResult.goalArea > result.goalArea) {
-                                return { 
-                                    map, 
-                                    goal: result.goalArea, 
-                                    maxWalls: effectiveMaxWalls,
-                                    optimalSolution: result.optimalSolution
-                                };
-                            }
-                            // Wall budget doesn't constrain scoring - try another map
-                            if (totalAttempts % 10 === 0) {
-                                console.log('Wall budget does not constrain scoring - skipping map');
+                                // Prune unnecessary special tiles before accepting the map
+                                const pruned = this._pruneUnnecessarySpecialTiles(map, effectiveMaxWalls, result);
+                                if (pruned !== null) {
+                                    map = pruned.map;
+                                    result = pruned.solution;
+                                }
+
+                                // Re-validate after pruning (includes star/bee checks)
+                                const finalValidation = MapValidator.validate(map, {
+                                    ...result,
+                                    maxWalls: result.optimalWallCount
+                                });
+                                if (finalValidation.valid) {
+                                    return { 
+                                        map, 
+                                        goal: result.goalArea, 
+                                        maxWalls: result.optimalWallCount,
+                                        optimalSolution: result.optimalSolution
+                                    };
+                                }
+                                if (totalAttempts % 10 === 0) {
+                                    console.log(`Post-prune validation failed: ${finalValidation.errors.join(', ')}`);
+                                }
+                            } else {
+                                // Wall budget doesn't constrain scoring - try another map
+                                if (totalAttempts % 10 === 0) {
+                                    console.log('Wall budget does not constrain scoring - skipping map');
+                                }
                             }
                         } else {
                             if (totalAttempts % 10 === 0) {
@@ -242,6 +260,175 @@ class MapGenerator {
             }
         }
         return coordinates;
+    }
+
+    /**
+     * Build a Set of "row,col" strings from an array of [row,col] coordinate pairs.
+     * @private
+     * @param {Array} coords - Array of [row, col] pairs
+     * @returns {Set<string>}
+     */
+    _wallSet(coords) {
+        return new Set(coords.map(([r, c]) => `${r},${c}`));
+    }
+
+    /**
+     * Find all tile positions in the optimal penned area using BFS from home.
+     * Walls from the solution are treated as blocking.
+     * @private
+     * @param {Array} map - 2D array of tile type strings
+     * @param {Set<string>} wallPositions - Set of "row,col" strings for wall locations
+     * @returns {Array<Array<number>>} Array of [row, col] positions inside the penned area
+     */
+    _getPennedTiles(map, wallPositions) {
+        const size = map.length;
+        let homeRow = -1, homeCol = -1;
+        for (let i = 0; i < size; i++) {
+            for (let j = 0; j < map[i].length; j++) {
+                if (map[i][j] === 'home') { homeRow = i; homeCol = j; }
+            }
+        }
+        if (homeRow < 0) return [];
+
+        const visited = new Set([`${homeRow},${homeCol}`]);
+        const queue = [[homeRow, homeCol]];
+        const dirs = [[-1, 0], [1, 0], [0, -1], [0, 1]];
+
+        while (queue.length > 0) {
+            const [r, c] = queue.shift();
+            for (const [dr, dc] of dirs) {
+                const nr = r + dr, nc = c + dc;
+                const key = `${nr},${nc}`;
+                if (nr < 0 || nr >= size || nc < 0 || nc >= map[nr].length) continue;
+                if (visited.has(key)) continue;
+                if (wallPositions.has(key)) continue;
+                if (map[nr][nc] === 'water') continue;
+                visited.add(key);
+                queue.push([nr, nc]);
+            }
+        }
+
+        return [...visited].map(key => key.split(',').map(Number));
+    }
+
+    /**
+     * Prune unnecessary special tiles from a map.
+     *
+     * For every score-increasing tile (star) inside the optimal penned area:
+     *   Replace with grass, re-solve. If wall positions are unchanged, keep as grass.
+     *   At least one star is always preserved so the level remains engaging.
+     *
+     * For every score-removing tile (bee) anywhere on the map:
+     *   Replace with grass, re-solve. If wall positions are unchanged, keep as grass.
+     *   At least one bee is always preserved so the level remains engaging.
+     *
+     * Uses a fast-path batch test: if removing ALL candidates at once leaves wall
+     * positions unchanged, they are all pruned in a single solver call. Otherwise
+     * each candidate is tested individually (slower fallback).
+     *
+     * Returns the pruned map and its updated solution, or null if re-solving fails.
+     *
+     * @private
+     * @param {Array} map - 2D array of tile type strings
+     * @param {number} maxWalls - Wall budget used for re-solving
+     * @param {Object} solution - Current solution {goalArea, optimalWallCount, optimalSolution}
+     * @returns {{map: Array, solution: Object}|null}
+     */
+    _pruneUnnecessarySpecialTiles(map, maxWalls, solution) {
+        const originalWalls = this._wallSet(solution.optimalSolution);
+        let currentMap = map.map(row => [...row]);
+
+        const pennedTiles = this._getPennedTiles(currentMap, originalWalls);
+        let totalStars = currentMap.reduce((acc, row) => acc + row.filter(t => t === 'star').length, 0);
+        let totalBees  = currentMap.reduce((acc, row) => acc + row.filter(t => t === 'bee').length, 0);
+
+        // Collect candidates: stars inside the penned area, bees anywhere
+        const candidateStars = pennedTiles.filter(([r, c]) => currentMap[r][c] === 'star');
+        const candidateBees  = [];
+        for (let r = 0; r < currentMap.length; r++) {
+            for (let c = 0; c < currentMap[r].length; c++) {
+                if (currentMap[r][c] === 'bee') candidateBees.push([r, c]);
+            }
+        }
+
+        // ── Fast-path: batch test all candidates at once ──────────────────
+        // Build a test map with all candidates removed (respecting "keep 1" rule).
+        // Stars outside the penned area are preserved; for bees they are all candidates.
+        const starsOutsidePen = totalStars - candidateStars.length;
+        const maxStarsToRemove = candidateStars.length - Math.max(0, 1 - starsOutsidePen);
+        const maxBeesToRemove  = candidateBees.length  - (totalBees === candidateBees.length ? 1 : 0);
+        const starsToRemoveBatch = candidateStars.slice(0, maxStarsToRemove);
+        const beesToRemoveBatch  = candidateBees.slice(0, maxBeesToRemove);
+
+        if (starsToRemoveBatch.length > 0 || beesToRemoveBatch.length > 0) {
+            const batchMap = currentMap.map(row => [...row]);
+            starsToRemoveBatch.forEach(([r, c]) => { batchMap[r][c] = 'grass'; });
+            beesToRemoveBatch.forEach( ([r, c]) => { batchMap[r][c] = 'grass'; });
+
+            const batchSolution = this.calculateGoal(batchMap, maxWalls);
+            if (batchSolution !== null) {
+                const batchWalls = this._wallSet(batchSolution.optimalSolution);
+                if (this._wallSetsEqual(originalWalls, batchWalls)) {
+                    // All candidates are unnecessary — apply batch prune and finish
+                    currentMap = batchMap;
+                    const finalSolution = this.calculateGoal(currentMap, maxWalls);
+                    if (finalSolution === null) return null;
+                    return { map: currentMap, solution: finalSolution };
+                }
+            }
+        }
+
+        // ── Slow-path: test each candidate individually ────────────────────
+        for (const [r, c] of candidateStars) {
+            if (currentMap[r][c] !== 'star') continue; // Already pruned in a prior step
+            if (totalStars <= 1) continue;             // Preserve the last star
+            const testMap = currentMap.map(row => [...row]);
+            testMap[r][c] = 'grass';
+            const testSolution = this.calculateGoal(testMap, maxWalls);
+            if (testSolution === null) continue;
+            const testWalls = this._wallSet(testSolution.optimalSolution);
+            if (this._wallSetsEqual(originalWalls, testWalls)) {
+                currentMap[r][c] = 'grass';
+                totalStars--;
+            }
+        }
+
+        for (let r = 0; r < currentMap.length; r++) {
+            for (let c = 0; c < currentMap[r].length; c++) {
+                if (currentMap[r][c] !== 'bee') continue;
+                if (totalBees <= 1) continue; // Preserve the last bee
+                const testMap = currentMap.map(row => [...row]);
+                testMap[r][c] = 'grass';
+                const testSolution = this.calculateGoal(testMap, maxWalls);
+                if (testSolution === null) continue;
+                const testWalls = this._wallSet(testSolution.optimalSolution);
+                if (this._wallSetsEqual(originalWalls, testWalls)) {
+                    currentMap[r][c] = 'grass';
+                    totalBees--;
+                }
+            }
+        }
+
+        // Re-solve the pruned map to get the final goal and solution
+        const finalSolution = this.calculateGoal(currentMap, maxWalls);
+        if (finalSolution === null) return null;
+
+        return { map: currentMap, solution: finalSolution };
+    }
+
+    /**
+     * Check if two wall-position sets contain the same coordinates.
+     * @private
+     * @param {Set<string>} a
+     * @param {Set<string>} b
+     * @returns {boolean}
+     */
+    _wallSetsEqual(a, b) {
+        if (a.size !== b.size) return false;
+        for (const key of a) {
+            if (!b.has(key)) return false;
+        }
+        return true;
     }
 
 }
