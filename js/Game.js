@@ -1,6 +1,6 @@
 /**
  * Game Class
- * 
+ *
  * Main game controller that manages the game state, user interactions,
  * and rendering. This is the primary interface for game logic.
  */
@@ -18,21 +18,21 @@ class Game {
         this.boundHandleArrowKeys = this.handleArrowKeys.bind(this);
         this.boundHandleResize = this.handleResize.bind(this);
         this.lastFocusedCell = null;
-        
+
         // Load pet emoji from cookie, or default to dog
         this.petEmoji = this._loadPetFromCookie() || '🐶';
-        
+
         this.hintsDisabled = CONFIG.hints.disabled;
         this.neverShowTarget = CONFIG.hints.neverShowTarget;
         this.goalAreaSize = CONFIG.gameplay.goalAreaSize;
         this.hintsUsed = [];
-        
+
         // Grid sizing constants
         this.CELL_GAP = CONSTANTS.CELL.GAP;
         this.GRID_PADDING = CONSTANTS.GRID_PADDING;
         this.MIN_CELL_SIZE = CONSTANTS.CELL.MIN_SIZE;
         this.MAX_CELL_SIZE = CONSTANTS.CELL.MAX_SIZE;
-        
+
         // Submission state
         this.currentDate = null;
         this.isSubmitted = false;
@@ -40,7 +40,7 @@ class Game {
         this.submittedWalls = null;
         this.optimalSolution = null;
         this.viewingOptimal = false;  // Track if user is viewing optimal solution
-        
+
         // Animation state
         this._pennedAnimationTimeouts = [];
         this._pawAnimationTimeouts = [];
@@ -51,7 +51,7 @@ class Game {
         this.isTimerLocked = false;
         this.isPaused = false;
         this.isReadyPending = false;
-        
+
         this.attachEventListeners();
         // main.js loads the map from maps/YYYY.json and calls render() directly
     }
@@ -68,17 +68,17 @@ class Game {
         this._cancelPawAnimation();
         this.gridElement.innerHTML = '';
         this.gridElement.style.gridTemplateColumns = `repeat(${this.grid.size}, 1fr)`;
-        
+
         // Set dynamic cell size based on grid size to ensure it always fits
         this.updateCellSizes();
 
         const allTiles = this.grid.getAllTiles();
-        
+
         // Calculate path and penned status
         const pathInfo = this.calculatePath();
         const isPenned = !pathInfo.hasPath;
         const accessibleTiles = isPenned ? this.getAccessibleTiles() : new Set();
-        
+
         for (let i = 0; i < this.grid.size; i++) {
             for (let j = 0; j < this.grid.size; j++) {
                 // Render cells without penned/paw state; animations apply them progressively
@@ -86,7 +86,7 @@ class Game {
                 this.gridElement.appendChild(cellElement);
             }
         }
-        
+
         // Update penned status indicator (logic is immediate, regardless of animation)
         this.updatePennedStatus(isPenned);
         this.updateAreaSizeDisplay();
@@ -187,25 +187,25 @@ class Game {
     _createCellElement(row, col, tileType, pathSet, accessibleTiles, directions) {
         const cell = document.createElement('div');
         const tileInfo = getTileType(tileType);
-        
+
         cell.className = `cell ${tileInfo.cssClass}`;
-        
+
         // Add penned class if this tile is accessible when pet is penned
         const coordKey = `${row},${col}`;
         const isPennedTile = accessibleTiles.has(coordKey);
         if (isPennedTile) {
             cell.classList.add('penned');
         }
-        
+
         cell.dataset.row = row;
         cell.dataset.col = col;
-        
+
         // Set background from first asset via inline style (data-driven, overrides CSS)
         this._setCellBackground(cell, tileType, isPennedTile);
 
         // Choose asset list for overlay rendering (index 1+)
         const assetList = getTileAssets(tileType, isPennedTile);
-        
+
         // Render additional asset overlays from the chosen list (index 1+)
         if (assetList && assetList.length > 1) {
             const isLastFloating = tileInfo.floatAnimation === true;
@@ -229,7 +229,7 @@ class Game {
                 }
             }
         }
-        
+
         // Add pet emoji overlay on top of all other layers
         if (tileInfo.emoji) {
             const petSpan = document.createElement('span');
@@ -238,7 +238,7 @@ class Game {
             petSpan.setAttribute('aria-hidden', 'true');
             cell.appendChild(petSpan);
         }
-        
+
         // Add shore overlays on water tiles (one per non-water neighbour side)
         if (tileType === 'water') {
             this._addShoreOverlays(cell, row, col);
@@ -249,7 +249,7 @@ class Game {
             const angle = directions && directions.has(coordKey) ? directions.get(coordKey) : 0;
             this._addPawOverlays(cell, tileType, angle);
         }
-        
+
         // Add accessibility attributes
         if (tileInfo.clickable) {
             cell.setAttribute('role', 'button');
@@ -257,15 +257,15 @@ class Game {
         // Make all cells focusable for keyboard navigation
         cell.setAttribute('tabindex', '0');
         cell.setAttribute('aria-label', tileInfo.ariaLabel(row, col));
-        
+
         // Add event listeners
         cell.addEventListener('click', () => this.handleCellClick(row, col));
         cell.addEventListener('keydown', (e) => this.handleCellKeydown(e, row, col));
         cell.addEventListener('focus', () => this.lastFocusedCell = { row, col });
-        
+
         return cell;
     }
-    
+
     /**
      * Check if a position is valid on the grid
      * @param {number} row - Row index
@@ -273,7 +273,7 @@ class Game {
      * @returns {boolean} True if position is valid
      */
     isValidPosition(row, col) {
-        return this.grid.tiles[row] !== undefined && 
+        return this.grid.tiles[row] !== undefined &&
                this.grid.tiles[row][col] !== undefined;
     }
 
@@ -287,9 +287,9 @@ class Game {
         if (this.isSubmitted || this.viewingOptimal) {
             return;
         }
-        
+
         const currentTileType = this.grid.getTile(row, col);
-        
+
         // Allow clicking on wall-placeable tiles (convert to wall)
         if (isWallPlaceable(currentTileType)) {
             // Check if wall limit reached
@@ -384,12 +384,12 @@ class Game {
                 // Build path set including current position
                 const pathSet = new Set(path);
                 pathSet.add(`${row},${col}`);
-                
+
                 // Build ordered path array for direction calculation
                 // Note: path already includes the edge position as its last element
                 const orderedPath = [`${startRow},${startCol}`, ...path];
                 const directionMap = this._calculatePathDirections(orderedPath);
-                
+
                 return { hasPath: true, path: pathSet, directions: directionMap, orderedPath };
             }
 
@@ -410,7 +410,7 @@ class Game {
                 }
 
                 const tileType = this.grid.getTile(newRow, newCol);
-                
+
                 // Check if tile blocks path
                 if (this.isBlockingTile(tileType)) {
                     continue;
@@ -435,13 +435,13 @@ class Game {
      */
     _calculatePathDirections(orderedPath) {
         const directionMap = new Map();
-        
+
         for (let i = 0; i < orderedPath.length; i++) {
             const current = orderedPath[i];
             // Use direction toward the next step; for the last step, continue
             // in the same direction as the previous step (forward, not backward)
             let dr, dc;
-            
+
             if (i < orderedPath.length - 1) {
                 // Normal case: face toward next step
                 const [curRow, curCol] = current.split(',').map(Number);
@@ -458,7 +458,7 @@ class Game {
                 directionMap.set(current, 0);
                 continue;
             }
-            
+
             // Map direction deltas to rotation angles
             // Default paw points up (0°), right=90°, down=180°, left=270°
             let angle = 0;
@@ -466,10 +466,10 @@ class Game {
             else if (dr === 0 && dc === 1) angle = 90;    // right
             else if (dr === 1 && dc === 0) angle = 180;   // down
             else if (dr === 0 && dc === -1) angle = 270;  // left
-            
+
             directionMap.set(current, angle);
         }
-        
+
         return directionMap;
     }
 
@@ -514,7 +514,7 @@ class Game {
                 }
 
                 const tileType = this.grid.getTile(newRow, newCol);
-                
+
                 // Check if tile blocks access (same as path blocking)
                 if (this.isBlockingTile(tileType)) {
                     continue;
@@ -676,7 +676,7 @@ class Game {
         const statusElement = document.getElementById('pennedStatus');
         if (statusElement) {
             const yellowTileCount = isPenned ? this.calculateScore() : 0;
-            
+
             if (isPenned) {
                 // Change button text based on submission state
                 if (this.isSubmitted) {
@@ -717,11 +717,11 @@ class Game {
     updateAreaSizeDisplay() {
         const areaSizeElement = document.getElementById('areaSize');
         const areaSizeDisplay = areaSizeElement ? areaSizeElement.parentElement : null;
-        
+
         if (areaSizeElement && areaSizeDisplay) {
             const pathInfo = this.calculatePath();
             const isPenned = !pathInfo.hasPath;
-            
+
             if (isPenned) {
                 const areaSize = this.calculateScore();
                 const hasChecked = this.hintsUsed.includes(CONSTANTS.HINT_CHECKED);
@@ -732,7 +732,13 @@ class Game {
                     // Target revealed: show "areaSize / goal"
                     areaSizeElement.textContent = `${areaSize} / ${this.goalAreaSize}`;
                 } else {
-                    areaSizeElement.textContent = areaSize.toString();
+                    if (hasChecked) {
+                        // Checked: show area size with "?" if not optimal
+                        areaSizeElement.textContent = areaSize < this.goalAreaSize ? `${areaSize} <` : `${areaSize} ✅` ;
+                    }
+                    else {
+                        areaSizeElement.textContent = areaSize.toString();
+                    }
                 }
 
                 // Apply color if user has checked or revealed target
@@ -784,7 +790,7 @@ class Game {
         const statusBtn = document.getElementById('pennedStatus');
         const exitViewerBtn = document.getElementById('exitViewer');
         const solutionToggleBtn = document.getElementById('solutionToggleBtn');
-        
+
         if (resetBtn) {
             resetBtn.addEventListener('click', () => this.reset());
         }
@@ -831,7 +837,7 @@ class Game {
 
         // Add arrow key navigation (using bound function for potential cleanup)
         document.addEventListener('keydown', this.boundHandleArrowKeys);
-        
+
         // Add window resize handler to recalculate cell sizes
         window.addEventListener('resize', this.boundHandleResize);
     }
@@ -856,14 +862,14 @@ class Game {
     calculateCellSize() {
         // Calculate available width (width-only sizing allows vertical scrolling)
         const availableWidth = window.innerWidth * 0.90;
-        
+
         // Calculate total space needed for gaps and padding
         const totalGap = this.CELL_GAP * (this.grid.size - 1);
         const totalPadding = this.GRID_PADDING * 2; // padding on both sides
-        
+
         // Calculate max cell size that fits the available width
         const maxCellSize = Math.floor((availableWidth - totalPadding - totalGap) / this.grid.size);
-        
+
         return Math.max(this.MIN_CELL_SIZE, Math.min(this.MAX_CELL_SIZE, maxCellSize));
     }
 
@@ -884,21 +890,21 @@ class Game {
         if (statusBtn && statusBtn.dataset.interactive === 'true') {
             const areaCount = parseInt(statusBtn.dataset.areaSize || '0');
             const viewerPanel = document.getElementById('roamSpaceViewer');
-            
+
             // If not yet submitted, save the submission
             if (!this.isSubmitted) {
                 this.handleSubmission(areaCount);
             }
-            
+
             // Update the score screen display
             this.updateScoreScreen(areaCount);
-            
+
             if (viewerPanel) {
                 viewerPanel.classList.add('active');
             }
         }
     }
-    
+
     /**
      * Handle score submission (first time only)
      * @param {number} score - The user's score
@@ -907,10 +913,10 @@ class Game {
         if (this.isSubmitted || !this.currentDate) {
             return;
         }
-        
+
         // Lock the timer before saving (so the locked time is included in submission)
         this.lockTimer();
-        
+
         // Get current wall positions
         const wallPositions = [];
         for (let i = 0; i < this.grid.size; i++) {
@@ -920,22 +926,22 @@ class Game {
                 }
             }
         }
-        
+
         // Save to cookie
         this.saveSubmission(this.currentDate, score, wallPositions);
         this.isSubmitted = true;
         this.submittedScore = score;
         this.submittedWalls = wallPositions;
-        
+
         // Update the submit button text
         this.updatePennedStatus(true);
         // Disable the reset button after submission
         this.updateResetButton();
-        
+
         // Show solution toggle bar if optimal solution is available
         this.updateSolutionToggleBar();
     }
-    
+
     /**
      * Update the score screen with user's score and optimal comparison
      * @param {number} userScore - The user's score
@@ -943,19 +949,19 @@ class Game {
     updateScoreScreen(userScore) {
         const metricOutput = document.getElementById('roamAreaMetric');
         if (!metricOutput) return;
-        
+
         // Ensure both values are numbers for comparison
         const userScoreNum = Number(userScore);
         const goalScoreNum = Number(this.goalAreaSize);
-        
+
         // Check if perfect score
         const isPerfect = userScoreNum === goalScoreNum;
-        
+
         // Build the display text
-        const displayText = isPerfect 
+        const displayText = isPerfect
             ? `🎉 ${userScoreNum} 🎉`
             : userScoreNum.toString();
-        
+
         metricOutput.innerHTML = displayText;
 
         // Display score as a percentage of the goal
@@ -964,7 +970,7 @@ class Game {
             const pct = Math.round((userScoreNum / goalScoreNum) * 100);
             percentageElement.textContent = `${pct}% of goal (${userScoreNum}/${goalScoreNum})`;
         }
-        
+
         // Update the helper text to show optimal score
         const helperElement = document.querySelector('.metric-helper');
         if (helperElement) {
@@ -975,7 +981,7 @@ class Game {
                 helperElement.innerHTML = `Your score<br>Optimal: ${goalScoreNum} tiles<br>Time: ${timeStr}`;
             }
         }
-        
+
         // Add/update toggle button for optimal solution
         this.addOptimalSolutionToggle();
     }
@@ -1072,17 +1078,17 @@ class Game {
         if (!this.optimalSolution || !this.isSubmitted) {
             return;
         }
-        
+
         const footer = document.querySelector('#roamSpaceViewer .viewer-footer');
         if (!footer) return;
-        
+
         // Check if toggle button already exists
         let toggleBtn = document.getElementById('toggleSolutionBtn');
         if (!toggleBtn) {
             toggleBtn = document.createElement('button');
             toggleBtn.id = 'toggleSolutionBtn';
             toggleBtn.className = 'toggle-solution-btn';
-            
+
             // Insert before the exit button
             const exitBtn = document.getElementById('exitViewer');
             if (exitBtn) {
@@ -1090,7 +1096,7 @@ class Game {
             } else {
                 footer.appendChild(toggleBtn);
             }
-            
+
             // Add event listener - toggle solution and close sidebar so the board is visible
             toggleBtn.addEventListener('click', () => {
                 this.toggleSolution();
@@ -1100,17 +1106,17 @@ class Game {
                 }
             });
         }
-        
+
         // Update button text based on current state
         toggleBtn.textContent = this.viewingOptimal ? 'View Your Solution' : 'View Optimal Result';
-        
+
         // Update the metric label to show which solution is being viewed
         const metricLabel = document.querySelector('.metric-label');
         if (metricLabel) {
             metricLabel.textContent = this.viewingOptimal ? 'Optimal Result Score' : 'Your Solution Score';
         }
     }
-    
+
     /**
      * Toggle between user's solution and optimal solution
      */
@@ -1118,7 +1124,7 @@ class Game {
         if (!this.optimalSolution || !this.submittedWalls) {
             return;
         }
-        
+
         if (this.viewingOptimal) {
             // Switch to user's solution
             this.loadWallPositions(this.submittedWalls);
@@ -1128,17 +1134,17 @@ class Game {
             this.loadWallPositions(this.optimalSolution);
             this.viewingOptimal = true;
         }
-        
+
         // Update sidebar button text
         this.addOptimalSolutionToggle();
-        
+
         // Update main toggle bar
         this.updateSolutionToggleBar();
-        
+
         // Re-render
         this.render();
     }
-    
+
     /**
      * Update the solution toggle bar on the main screen
      * Shows after submission when optimal solution is available
@@ -1147,17 +1153,17 @@ class Game {
         const toggleBar = document.getElementById('solutionToggleBar');
         const viewLabel = document.getElementById('solutionViewLabel');
         const toggleBtn = document.getElementById('solutionToggleBtn');
-        
+
         if (!toggleBar || !viewLabel || !toggleBtn) return;
-        
+
         // Only show if submitted and optimal solution exists
         if (!this.isSubmitted || !this.optimalSolution) {
             toggleBar.style.display = 'none';
             return;
         }
-        
+
         toggleBar.style.display = 'flex';
-        
+
         if (this.viewingOptimal) {
             viewLabel.textContent = 'Viewing: Optimal Result';
             toggleBtn.textContent = 'View Your Solution';
@@ -1168,7 +1174,7 @@ class Game {
             toggleBar.classList.remove('viewing-optimal');
         }
     }
-    
+
     /**
      * Load wall positions onto the grid
      * Note: Uses clear-and-rebuild approach for simplicity and clarity.
@@ -1185,7 +1191,7 @@ class Game {
                 }
             }
         }
-        
+
         // Place new walls (on wall-placeable tiles)
         this.wallCount = 0;
         for (const [row, col] of wallPositions) {
@@ -1195,7 +1201,7 @@ class Game {
                 this.wallCount++;
             }
         }
-        
+
         this.updateWallCounter();
     }
 
@@ -1207,7 +1213,7 @@ class Game {
         if (viewerPanel) {
             viewerPanel.classList.remove('active');
         }
-        
+
         // If viewing optimal, switch back to user's solution
         if (this.viewingOptimal && this.submittedWalls) {
             this.loadWallPositions(this.submittedWalls);
@@ -1228,7 +1234,7 @@ class Game {
         }
 
         const activeElement = document.activeElement;
-        
+
         // Check if the focused element is a grid cell
         if (!activeElement || !activeElement.classList.contains('cell')) {
             // Nothing is highlighted, highlight an edge piece based on arrow key
@@ -1336,7 +1342,7 @@ class Game {
         if (notificationElement) {
             notificationElement.textContent = message;
             notificationElement.classList.add('show');
-            
+
             // Hide notification after 2 seconds
             setTimeout(() => {
                 notificationElement.classList.remove('show');
@@ -1361,7 +1367,7 @@ class Game {
     _savePetToCookie(petEmoji) {
         CookieUtils.setCookie('selectedPet', petEmoji, 365);
     }
-    
+
     /**
      * Helper method to get a cookie value.
      * Delegates to CookieUtils for shared implementation.
@@ -1372,7 +1378,7 @@ class Game {
     _getCookie(name) {
         return CookieUtils.getCookie(name);
     }
-    
+
     /**
      * Helper method to set a cookie.
      * Delegates to CookieUtils for shared implementation.
@@ -1384,7 +1390,7 @@ class Game {
     _setCookie(name, value, days) {
         CookieUtils.setCookie(name, value, days);
     }
-    
+
     /**
      * Save submitted score and wall positions to cookie
      * Cookie name format: submission_YYYY-MM-DD
@@ -1409,7 +1415,7 @@ class Game {
             CloudSync.saveSubmission(dateString, submissionData);
         }
     }
-    
+
     /**
      * Load submitted score data from cookie
      * @param {string} dateString - Date of the puzzle
@@ -1431,7 +1437,7 @@ class Game {
         }
         return null;
     }
-    
+
     /**
      * Check if user has submitted score for this puzzle
      * @param {string} dateString - Date of the puzzle

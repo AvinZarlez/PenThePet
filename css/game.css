@@ -900,10 +900,10 @@
     align-items: center;
     justify-content: center;
     padding: 10px 20px;
-    background: linear-gradient(135deg, #fff9c4 0%, #fff176 100%);
+    background: linear-gradient(135deg, #f0f0f0 0%, #e0e0e0 100%);
     border-radius: 8px;
     font-weight: bold;
-    border: 2px solid #f9a825;
+    border: 2px solid #333;
     font-size: 0.9em;
     min-width: 100px;
     transition: all 0.3s ease;
