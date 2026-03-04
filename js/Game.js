@@ -1395,10 +1395,12 @@ class Game {
     saveSubmission(dateString, score, wallPositions) {
         const cookieName = `submission_${dateString}`;
         const submissionData = {
+            __version: CloudMigration.CURRENT_VERSION,
             score: score,
             walls: wallPositions,
             timestamp: new Date().toISOString(),
-            time: this.elapsedSeconds
+            time: this.elapsedSeconds,
+            hintsUsed: [...this.hintsUsed],
         };
         this._setCookie(cookieName, JSON.stringify(submissionData), 365);
 
@@ -1418,7 +1420,7 @@ class Game {
         const value = this._getCookie(cookieName);
         if (value) {
             try {
-                return JSON.parse(value);
+                return CloudMigration.migrateSubmission(JSON.parse(value));
             } catch (e) {
                 console.error('Failed to parse submission cookie:', e);
                 return null;
@@ -1443,6 +1445,8 @@ class Game {
     deleteSubmission(dateString) {
         const cookieName = `submission_${dateString}`;
         CookieUtils.deleteCookie(cookieName);
+        // Also delete per-level hints data
+        CookieUtils.deleteCookie(`hints_${dateString}`);
 
         // Delete from cloud if available
         if (typeof CloudSync !== 'undefined' && CloudSync.isConfigured() && CloudSync.isLoggedIn()) {
@@ -1455,30 +1459,64 @@ class Game {
     // =====================================================================
 
     /**
-     * Save hints used for a specific puzzle to cookie.
+     * Save hints used for a specific puzzle.
+     * Persists to the hints_ cookie, updates the submission cookie (if already
+     * submitted), and triggers an immediate cloud sync so hint usage is
+     * recorded across all devices without delay.
      * @param {string} dateString - Date of the puzzle
      */
     saveHintsUsed(dateString) {
-        const cookieName = `hints_${dateString}`;
-        CookieUtils.setCookie(cookieName, JSON.stringify(this.hintsUsed), 365);
+        // 1. Save to local hints_ cookie
+        const hintsCookieName = `hints_${dateString}`;
+        CookieUtils.setCookie(hintsCookieName, JSON.stringify(this.hintsUsed), 365);
+
+        // 2. If already submitted, update submission cookie to include latest hintsUsed
+        const submission = this.loadSubmission(dateString);
+        if (submission) {
+            submission.hintsUsed = [...this.hintsUsed];
+            this._setCookie(`submission_${dateString}`, JSON.stringify(submission), 365);
+            if (typeof CloudSync !== 'undefined' && CloudSync.isConfigured() && CloudSync.isLoggedIn()) {
+                CloudSync.saveSubmission(dateString, submission);
+            }
+        }
+
+        // 3. Cloud sync the hints_ doc (handles pre-submission hint state)
+        if (typeof CloudSync !== 'undefined' && CloudSync.isConfigured() && CloudSync.isLoggedIn()) {
+            CloudSync.saveHintsUsed(dateString, this.hintsUsed);
+        }
     }
 
     /**
-     * Load hints used for a specific puzzle from cookie.
+     * Load hints used for a specific puzzle.
+     * Merges data from the hints_ cookie and from the submission cookie's
+     * hintsUsed field (which may have been populated by a cloud sync).
+     * Returns the union so hints can never be "un-used".
      * @param {string} dateString - Date of the puzzle
      * @returns {string[]} Array of hint strings used
      */
     loadHintsUsed(dateString) {
-        const cookieName = `hints_${dateString}`;
-        const value = CookieUtils.getCookie(cookieName);
-        if (value) {
+        const hintsSet = new Set();
+
+        // Load from hints_ cookie
+        const hintsCookie = CookieUtils.getCookie(`hints_${dateString}`);
+        if (hintsCookie) {
             try {
-                return JSON.parse(value);
-            } catch {
-                return [];
-            }
+                JSON.parse(hintsCookie).forEach(h => hintsSet.add(h));
+            } catch { /* ignore malformed cookie */ }
         }
-        return [];
+
+        // Also merge from submission cookie's hintsUsed (populated by cloud sync)
+        const submissionCookie = CookieUtils.getCookie(`submission_${dateString}`);
+        if (submissionCookie) {
+            try {
+                const sub = JSON.parse(submissionCookie);
+                if (Array.isArray(sub.hintsUsed)) {
+                    sub.hintsUsed.forEach(h => hintsSet.add(h));
+                }
+            } catch { /* ignore malformed cookie */ }
+        }
+
+        return Array.from(hintsSet);
     }
 
     /**

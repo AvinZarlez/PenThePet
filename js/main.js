@@ -158,9 +158,6 @@ async function initGame() {
     game.optimalSolution = mapData.optimalSolution ?
         parseCompactSolution(mapData.optimalSolution) : null;
 
-    // Load hints used for this level
-    game.hintsUsed = game.loadHintsUsed(mapData.date);
-    
     // Check if user has already submitted for this puzzle
     const submission = game.loadSubmission(mapData.date);
     if (submission) {
@@ -177,6 +174,10 @@ async function initGame() {
             }
         }
     }
+
+    // Load hints AFTER submission so the merge includes any hintsUsed
+    // that arrived via cloud sync as part of the submission document.
+    game.hintsUsed = game.loadHintsUsed(mapData.date);
     
     game.render();
     game.updateWallCounter();

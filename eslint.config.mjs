@@ -38,6 +38,7 @@ export default [
                 Grid: 'readonly',
                 Game: 'readonly',
                 CloudSync: 'readonly',
+                CloudMigration: 'readonly',
                 FIREBASE_CONFIG: 'readonly',
                 firebase: 'readonly',
                 MapGenerator: 'readonly',

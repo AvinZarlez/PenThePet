@@ -555,7 +555,6 @@ class Menu {
         this.game.submittedScore = null;
         this.game.submittedWalls = null;
         this.game.viewingOptimal = false;
-        this.game.hintsUsed = mapData.date ? this.game.loadHintsUsed(mapData.date) : [];
 
         // Check if user has already submitted for this puzzle
         if (mapData.date) {
@@ -574,6 +573,10 @@ class Menu {
                 }
             }
         }
+
+        // Load hints AFTER submission so the merge includes any hintsUsed
+        // that arrived via cloud sync as part of the submission document.
+        this.game.hintsUsed = mapData.date ? this.game.loadHintsUsed(mapData.date) : [];
 
         // Render the game
         this.game.render();

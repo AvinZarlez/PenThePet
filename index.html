@@ -190,14 +190,16 @@
             <div class="modal-section">
                 <h3>Hint System</h3>
                 <ul>
-                    <li><strong>Disabled:</strong> No hints, full challenge mode</li>
-                    <li><strong>Check Optimal:</strong> Area size turns yellow/green based on goal</li>
-                    <li><strong>Reveal Target:</strong> Shows your current area vs. goal (e.g., "8 / 11")</li>
+                    <li>A <strong>Check if Optimal</strong> button appears to the left of the submit button when your pet is penned.</li>
+                    <li>Pressing <strong>Check if Optimal</strong> tells you whether your current score equals or beats the goal, and enables score coloring (🟡 below goal, 🟢 at goal).</li>
+                    <li>After checking, a <strong>Reveal Target</strong> button may appear (if you have not disabled it in Options). Pressing it shows the exact goal score alongside your current score.</li>
+                    <li>⚠️ <strong>Hint usage is saved</strong> and shown in the "Hint used" line below the grid and in the share message. Hints are a permanent part of your level record.</li>
+                    <li>You can disable hints entirely from the <strong>Options</strong> menu.</li>
                 </ul>
             </div>
             <div class="modal-section">
                 <h3>Options</h3>
-                <p>You can customize your pet type and hint level in the Options menu. Your preferences are saved automatically.</p>
+                <p>You can customize your pet type and hint preferences in the Options menu. Your preferences are saved automatically.</p>
             </div>
         </div>
     </div>
@@ -342,7 +344,7 @@
     <script src="https://www.gstatic.com/firebasejs/11.7.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/11.7.1/firebase-firestore-compat.js"></script>
 
-    <!-- Game Scripts (Load in order: constants -> config -> types -> utils -> pathfinding -> grid -> game -> cloud -> menu -> main) -->
+    <!-- Game Scripts (Load in order: constants -> config -> types -> utils -> pathfinding -> grid -> firebase-config -> migration -> cloud -> game -> menu -> main) -->
     <script src="js/constants.js"></script>
     <script src="js/config.js"></script>
     <script src="js/tileData.js"></script>
@@ -352,6 +354,7 @@
     <script src="js/PathfindingUtils.js"></script>
     <script src="js/Grid.js"></script>
     <script src="js/firebase-config.js"></script>
+    <script src="js/CloudMigration.js"></script>
     <script src="js/CloudSync.js"></script>
     <script src="js/Game.js"></script>
     <script src="js/Menu.js"></script>

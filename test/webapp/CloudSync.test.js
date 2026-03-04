@@ -317,6 +317,69 @@ describe('CloudSync', () => {
                 CloudSync.applyCloudSubmission(DATE, { score: 5, timestamp: earlier });
                 expect(JSON.parse(CookieUtils.getCookie(submissionCookie)).score).toBe(5);
             });
+
+            test('migrates v1.0 cloud data to v1.1 when writing to cookie', () => {
+                // v1.0 cloud data has no __version or hintsUsed
+                CloudSync.applyCloudSubmission(DATE, { score: 8, timestamp: later, walls: [], time: 10 });
+                const saved = JSON.parse(CookieUtils.getCookie(submissionCookie));
+                expect(saved.__version).toBe('1.1');
+                expect(saved.hintsUsed).toEqual([]);
+            });
+
+            test('migrates v1.0 local data when local wins', () => {
+                // Local data is v1.0 (no __version), cloud score is lower
+                CookieUtils.setCookie(submissionCookie, JSON.stringify({ score: 9, timestamp: earlier, walls: [], time: 5 }), 1);
+                CloudSync.applyCloudSubmission(DATE, { score: 3, timestamp: later });
+                const saved = JSON.parse(CookieUtils.getCookie(submissionCookie));
+                expect(saved.score).toBe(9);
+                expect(saved.__version).toBe('1.1');
+                expect(saved.hintsUsed).toEqual([]);
+            });
+
+            test('populates hints_ cookie from cloud submission hintsUsed', () => {
+                const hintsCookie = `hints_${DATE}`;
+                CookieUtils.deleteCookie(hintsCookie);
+                CloudSync.applyCloudSubmission(DATE, {
+                    __version: '1.1', score: 5, timestamp: later, walls: [], time: 10,
+                    hintsUsed: ['checked'],
+                });
+                const hints = JSON.parse(CookieUtils.getCookie(hintsCookie));
+                expect(hints).toContain('checked');
+            });
+        });
+
+        describe('applyCloudHints', () => {
+            const hintsDocId = `hints_${DATE}`;
+
+            beforeEach(() => {
+                CookieUtils.deleteCookie(hintsDocId);
+            });
+
+            test('writes hints when no local hints_ cookie exists', () => {
+                CloudSync.applyCloudHints(hintsDocId, { hintsUsed: ['checked'] });
+                const saved = JSON.parse(CookieUtils.getCookie(hintsDocId));
+                expect(saved).toContain('checked');
+            });
+
+            test('merges cloud hints with existing local hints', () => {
+                CookieUtils.setCookie(hintsDocId, JSON.stringify(['checked']), 1);
+                CloudSync.applyCloudHints(hintsDocId, { hintsUsed: ['target'] });
+                const saved = JSON.parse(CookieUtils.getCookie(hintsDocId));
+                expect(saved).toContain('checked');
+                expect(saved).toContain('target');
+            });
+
+            test('does not duplicate hints', () => {
+                CookieUtils.setCookie(hintsDocId, JSON.stringify(['checked']), 1);
+                CloudSync.applyCloudHints(hintsDocId, { hintsUsed: ['checked'] });
+                const saved = JSON.parse(CookieUtils.getCookie(hintsDocId));
+                expect(saved.filter(h => h === 'checked').length).toBe(1);
+            });
+
+            test('does nothing when hintsUsed is missing or not an array', () => {
+                CloudSync.applyCloudHints(hintsDocId, {});
+                expect(CookieUtils.getCookie(hintsDocId)).toBeNull();
+            });
         });
     });
 });
