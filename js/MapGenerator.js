@@ -273,45 +273,6 @@ class MapGenerator {
     }
 
     /**
-     * Find all tile positions in the optimal penned area using BFS from home.
-     * Walls from the solution are treated as blocking.
-     * @private
-     * @param {Array} map - 2D array of tile type strings
-     * @param {Set<string>} wallPositions - Set of "row,col" strings for wall locations
-     * @returns {Array<Array<number>>} Array of [row, col] positions inside the penned area
-     */
-    _getPennedTiles(map, wallPositions) {
-        const size = map.length;
-        let homeRow = -1, homeCol = -1;
-        for (let i = 0; i < size; i++) {
-            for (let j = 0; j < map[i].length; j++) {
-                if (map[i][j] === 'home') { homeRow = i; homeCol = j; }
-            }
-        }
-        if (homeRow < 0) return [];
-
-        const visited = new Set([`${homeRow},${homeCol}`]);
-        const queue = [[homeRow, homeCol]];
-        const dirs = [[-1, 0], [1, 0], [0, -1], [0, 1]];
-
-        while (queue.length > 0) {
-            const [r, c] = queue.shift();
-            for (const [dr, dc] of dirs) {
-                const nr = r + dr, nc = c + dc;
-                const key = `${nr},${nc}`;
-                if (nr < 0 || nr >= size || nc < 0 || nc >= map[nr].length) continue;
-                if (visited.has(key)) continue;
-                if (wallPositions.has(key)) continue;
-                if (map[nr][nc] === 'water') continue;
-                visited.add(key);
-                queue.push([nr, nc]);
-            }
-        }
-
-        return [...visited].map(key => key.split(',').map(Number));
-    }
-
-    /**
      * Prune unnecessary special tiles from a map.
      *
      * For every score-increasing tile (star) inside the optimal penned area:
@@ -334,7 +295,7 @@ class MapGenerator {
         const originalWalls = this._wallSet(solution.optimalSolution);
         let currentMap = map.map(row => [...row]);
 
-        const pennedTiles = this._getPennedTiles(currentMap, originalWalls);
+        const pennedTiles = PathfindingUtils.getPennedTiles(currentMap, originalWalls);
         let totalStars = currentMap.reduce((acc, row) => acc + row.filter(t => t === 'star').length, 0);
         let totalBees  = currentMap.reduce((acc, row) => acc + row.filter(t => t === 'bee').length, 0);
 
