@@ -767,8 +767,9 @@ describe('Game — Penned Animation', () => {
         game = createPennedGame();
         const accessibleTiles = game.getAccessibleTiles();
         game.render();
-        // Run all timers
-        jest.runAllTimers();
+        // Advance enough time to run all penned-area wave timeouts without
+        // triggering the infinite pet-wander loop (runAllTimers would loop forever)
+        jest.advanceTimersByTime(CONSTANTS.PENNED_ANIMATION_DELAY_MS * 20);
         for (const coordKey of accessibleTiles) {
             const [row, col] = coordKey.split(',').map(Number);
             const cell = game.gridElement.querySelector(`[data-row="${row}"][data-col="${col}"]`);
@@ -1201,5 +1202,237 @@ describe('Game — Score Modifier Popups', () => {
         expect(popup).not.toBeNull();
         expect(popup.textContent).toBe('-3');
         expect(popup.classList.contains('negative')).toBe(true);
+    });
+});
+
+// ------------------------------------------------------------------
+// Pet Wander & Return Animation
+// ------------------------------------------------------------------
+describe('Game — Pet Wander & Return', () => {
+    let game;
+
+    /**
+     * 5×5 grid with home at (2,2) completely surrounded by walls so the
+     * pet is penned in the single home tile only.
+     */
+    function createPennedGame() {
+        setupDOM();
+        const g = new Game(5);
+        const tiles = Array.from({ length: 5 }, () => Array(5).fill('grass'));
+        tiles[2][2] = 'home';
+        tiles[1][1] = 'wall'; tiles[1][2] = 'wall'; tiles[1][3] = 'wall';
+        tiles[2][1] = 'wall';                         tiles[2][3] = 'wall';
+        tiles[3][1] = 'wall'; tiles[3][2] = 'wall'; tiles[3][3] = 'wall';
+        g.grid.loadMap(tiles);
+        g.grid.saveInitialState();
+        g.wallCount = 8;
+        return g;
+    }
+
+    /**
+     * 5×5 grid with home at (2,2) and no walls so the pet can escape.
+     */
+    function createOpenGame() {
+        setupDOM();
+        const g = new Game(5);
+        const tiles = Array.from({ length: 5 }, () => Array(5).fill('grass'));
+        tiles[2][2] = 'home';
+        g.grid.loadMap(tiles);
+        g.grid.saveInitialState();
+        return g;
+    }
+
+    beforeEach(() => {
+        jest.useFakeTimers();
+    });
+
+    afterEach(() => {
+        jest.useRealTimers();
+    });
+
+    test('_cancelPetWander clears all pending timeouts', () => {
+        game = createPennedGame();
+        game.render();
+        // Trigger the wander by advancing past the penned animation
+        jest.advanceTimersByTime(CONSTANTS.PENNED_ANIMATION_DELAY_MS * 5 + CONSTANTS.PET_WANDER_STEP_MS);
+        expect(game._petWanderTimeouts.length).toBeGreaterThan(0);
+        game._cancelPetWander();
+        expect(game._petWanderTimeouts).toHaveLength(0);
+    });
+
+    test('_cancelPetReturn clears all pending timeouts', () => {
+        game = createPennedGame();
+        game.render();
+        // Manually set pet pos and start a return
+        game._petPos = { row: 2, col: 2 };
+        game._startPetReturn();
+        game._cancelPetReturn();
+        expect(game._petReturnTimeouts).toHaveLength(0);
+    });
+
+    test('_petPos starts as null', () => {
+        game = createPennedGame();
+        expect(game._petPos).toBeNull();
+    });
+
+    test('pet emoji appears on home tile when _petPos is null', () => {
+        game = createPennedGame();
+        game.render();
+        const homeCell = game.gridElement.querySelector('[data-row="2"][data-col="2"]');
+        expect(homeCell.querySelector('.pet-emoji')).not.toBeNull();
+    });
+
+    test('pet emoji is NOT on home tile when _petPos is non-null during render', () => {
+        game = createPennedGame();
+        game._petPos = { row: 2, col: 2 };
+        game.render();
+        // _createCellElement suppresses the static emoji; _attachPetAtPosition adds it back
+        const petEmojis = game.gridElement.querySelectorAll('.pet-emoji');
+        // There should be exactly one (the one attached by _attachPetAtPosition)
+        expect(petEmojis).toHaveLength(1);
+    });
+
+    test('_attachPetAtPosition moves the pet emoji to the target cell', () => {
+        game = createPennedGame();
+        game._petPos = { row: 2, col: 2 };
+        game.render();
+        game._attachPetAtPosition(1, 1);
+        expect(game.gridElement.querySelector('[data-row="1"][data-col="1"] .pet-emoji')).not.toBeNull();
+        expect(game.gridElement.querySelector('[data-row="2"][data-col="2"] .pet-emoji')).toBeNull();
+    });
+
+    test('_attachPetAtPosition removes any existing pet-emoji before adding new one', () => {
+        game = createPennedGame();
+        game._petPos = { row: 2, col: 2 };
+        game.render();
+        game._attachPetAtPosition(1, 1);
+        game._attachPetAtPosition(1, 2);
+        const petEmojis = game.gridElement.querySelectorAll('.pet-emoji');
+        expect(petEmojis).toHaveLength(1);
+    });
+
+    test('wander timeouts are queued after penned animation completes', () => {
+        game = createPennedGame();
+        game.render();
+        // No wander timeouts immediately after render
+        expect(game._petWanderTimeouts).toHaveLength(0);
+        // Advance past all penned waves + completion callback
+        jest.advanceTimersByTime(CONSTANTS.PENNED_ANIMATION_DELAY_MS * 5);
+        expect(game._petWanderTimeouts.length).toBeGreaterThan(0);
+    });
+
+    test('_petPos is set after wander step fires', () => {
+        game = createPennedGame();
+        game.render();
+        // Pet is only in home so it stays at home, but _petPos is set
+        jest.advanceTimersByTime(
+            CONSTANTS.PENNED_ANIMATION_DELAY_MS * 5 + CONSTANTS.PET_WANDER_STEP_MS
+        );
+        expect(game._petPos).not.toBeNull();
+    });
+
+    test('no wander timeouts queued when pet is not penned', () => {
+        game = createOpenGame();
+        game.render();
+        jest.advanceTimersByTime(CONSTANTS.PENNED_ANIMATION_DELAY_MS * 5);
+        expect(game._petWanderTimeouts).toHaveLength(0);
+    });
+
+    test('_startPetReturn resolves immediately when _petPos is null', () => {
+        game = createOpenGame();
+        game.render();
+        let called = false;
+        game._startPetReturn(() => { called = true; });
+        expect(called).toBe(true);
+    });
+
+    test('_startPetReturn resolves immediately when _petPos equals home', () => {
+        game = createOpenGame();
+        game.render();
+        const homePos = game.grid.getHomePosition();
+        game._petPos = { row: homePos.row, col: homePos.col };
+        let called = false;
+        game._startPetReturn(() => { called = true; });
+        expect(called).toBe(true);
+        expect(game._petPos).toBeNull();
+    });
+
+    test('_startPetReturn queues return timeouts when pet is away', () => {
+        game = createOpenGame();
+        game.render();
+        game._petPos = { row: 0, col: 0 };
+        game._startPetReturn();
+        expect(game._petReturnTimeouts.length).toBeGreaterThan(0);
+    });
+
+    test('_startPetReturn sets _petPos to null on arrival', () => {
+        game = createOpenGame();
+        game.render();
+        game._petPos = { row: 2, col: 1 }; // one step from home at (2,2)
+        game._attachPetAtPosition(2, 1);
+        game._startPetReturn();
+        jest.advanceTimersByTime(CONSTANTS.PET_RETURN_STEP_MS * 5);
+        expect(game._petPos).toBeNull();
+    });
+
+    test('_findReturnPath returns empty array when already at home', () => {
+        game = createOpenGame();
+        game.render();
+        const homePos = game.grid.getHomePosition();
+        const path = game._findReturnPath(homePos, homePos);
+        expect(path).toEqual([]);
+    });
+
+    test('_findReturnPath finds a path of correct length', () => {
+        game = createOpenGame();
+        game.render();
+        const homePos = game.grid.getHomePosition(); // (2,2)
+        const from = { row: 2, col: 0 };
+        const path = game._findReturnPath(from, homePos);
+        expect(path).not.toBeNull();
+        // Shortest path from (2,0) to (2,2) is 2 steps
+        expect(path.length).toBe(2);
+        expect(path[path.length - 1]).toEqual(homePos);
+    });
+
+    test('_findReturnPath traverses through walls', () => {
+        setupDOM();
+        const g = new Game(5);
+        const tiles = Array.from({ length: 5 }, () => Array(5).fill('grass'));
+        tiles[2][2] = 'home';
+        // Place a wall between (2,0) and (2,2)
+        tiles[2][1] = 'wall';
+        g.grid.loadMap(tiles);
+        g.render();
+        const path = g._findReturnPath({ row: 2, col: 0 }, { row: 2, col: 2 });
+        // Must find a path even through the wall
+        expect(path).not.toBeNull();
+        expect(path.length).toBeGreaterThan(0);
+        expect(path[path.length - 1]).toEqual({ row: 2, col: 2 });
+    });
+
+    test('render() cancels wander and return animations', () => {
+        game = createPennedGame();
+        game.render();
+        jest.advanceTimersByTime(CONSTANTS.PENNED_ANIMATION_DELAY_MS * 5 + CONSTANTS.PET_WANDER_STEP_MS);
+        expect(game._petWanderTimeouts.length).toBeGreaterThan(0);
+        game.render();
+        // After re-render, previous wander timeouts are cancelled and replaced
+        expect(game._petWanderTimeouts).toHaveLength(0);
+    });
+
+    test('re-render while penned re-attaches pet at current _petPos', () => {
+        game = createPennedGame();
+        game._petPos = { row: 2, col: 2 };
+        game.render();
+        const pet = game.gridElement.querySelector('[data-row="2"][data-col="2"] .pet-emoji');
+        expect(pet).not.toBeNull();
+    });
+
+    test('return animation starts when re-rendered while unpenned with _petPos set', () => {
+        game = createOpenGame();
+        game._petPos = { row: 2, col: 1 };
+        game.render();
+        expect(game._petReturnTimeouts.length).toBeGreaterThan(0);
     });
 });

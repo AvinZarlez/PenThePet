@@ -65,6 +65,8 @@ const CONSTANTS = {
     PENNED_ANIMATION_DELAY_MS: 50,    // Delay between BFS wave steps in the penned-area animation (ms)
     PAW_ANIMATION_DELAY_MS: 80,       // Delay between each paw step in the escape-path animation (ms)
     SCORE_POPUP_DURATION_MS: 1800,    // Duration of score modifier popup float animation (ms)
+    PET_WANDER_STEP_MS: 600,          // Delay between each pet wander step when penned (ms)
+    PET_RETURN_STEP_MS: 150,          // Delay between each step when pet walks home (ms)
 
     // Timezone
     DEFAULT_TIMEZONE: 'America/Los_Angeles',    // Default timezone (Pacific / California)

@@ -45,6 +45,11 @@ class Game {
         this._pennedAnimationTimeouts = [];
         this._pawAnimationTimeouts = [];
 
+        // Pet wander/return state
+        this._petPos = null;          // {row, col} when pet is away from home, null when at home
+        this._petWanderTimeouts = [];
+        this._petReturnTimeouts = [];
+
         // Timer state
         this.elapsedSeconds = 0;
         this._timerInterval = null;
@@ -66,6 +71,8 @@ class Game {
     render() {
         this._cancelPennedAnimation();
         this._cancelPawAnimation();
+        this._cancelPetWander();
+        this._cancelPetReturn();
         this.gridElement.innerHTML = '';
         this.gridElement.style.gridTemplateColumns = `repeat(${this.grid.size}, 1fr)`;
 
@@ -87,16 +94,32 @@ class Game {
             }
         }
 
+        // Re-attach pet element at its current position when pet is away from home
+        if (this._petPos !== null) {
+            this._attachPetAtPosition(this._petPos.row, this._petPos.col);
+        }
+
         // Update penned status indicator (logic is immediate, regardless of animation)
         this.updatePennedStatus(isPenned);
         this.updateAreaSizeDisplay();
 
         if (isPenned) {
             // Animate the penned area spreading out from home
-            this._animatePennedArea(accessibleTiles);
+            this._animatePennedArea(accessibleTiles, () => {
+                if (this._petPos !== null) {
+                    // Pet is away from home; return home first, then start wandering
+                    this._startPetReturn(() => this._startPetWander(accessibleTiles));
+                } else {
+                    this._startPetWander(accessibleTiles);
+                }
+            });
         } else if (pathInfo.hasPath) {
             // Animate paws walking one tile at a time from home to the edge
             this._animatePawPath(pathInfo.orderedPath, pathInfo.directions);
+            if (this._petPos !== null) {
+                // Pet was wandering; walk it back home
+                this._startPetReturn();
+            }
         }
     }
 
@@ -230,8 +253,10 @@ class Game {
             }
         }
 
-        // Add pet emoji overlay on top of all other layers
-        if (tileInfo.emoji) {
+        // Add pet emoji overlay on top of all other layers.
+        // Suppressed when pet is wandering (_petPos !== null); the wander
+        // animation manages a separate element via _attachPetAtPosition().
+        if (tileInfo.emoji && this._petPos === null) {
             const petSpan = document.createElement('span');
             petSpan.className = 'pet-emoji';
             petSpan.textContent = this.petEmoji;
@@ -545,8 +570,9 @@ class Game {
      * incremental delay so the enclosed area appears to "fill in" rather
      * than appearing all at once.
      * @param {Set} accessibleTiles - Set of coordinate strings in the penned area
+     * @param {Function} [onComplete] - Optional callback fired after the last wave
      */
-    _animatePennedArea(accessibleTiles) {
+    _animatePennedArea(accessibleTiles, onComplete) {
         const homePos = this.grid.getHomePosition();
         if (!homePos) return;
 
@@ -593,6 +619,11 @@ class Game {
             }, waveIndex * delay);
             this._pennedAnimationTimeouts.push(timeoutId);
         });
+
+        if (onComplete) {
+            const completionId = setTimeout(onComplete, waves.length * delay);
+            this._pennedAnimationTimeouts.push(completionId);
+        }
     }
 
     /**
@@ -626,6 +657,201 @@ class Game {
             }, stepIndex * delay);
             this._pawAnimationTimeouts.push(timeoutId);
         });
+    }
+
+    /**
+     * Cancel any in-progress pet-wander animation.
+     * Clears all pending timeouts; _petPos is preserved so the pet stays
+     * at its current position until explicitly moved or reset.
+     */
+    _cancelPetWander() {
+        for (const id of this._petWanderTimeouts) {
+            clearTimeout(id);
+        }
+        this._petWanderTimeouts = [];
+    }
+
+    /**
+     * Cancel any in-progress pet-return animation.
+     * Clears all pending timeouts; _petPos is preserved.
+     */
+    _cancelPetReturn() {
+        for (const id of this._petReturnTimeouts) {
+            clearTimeout(id);
+        }
+        this._petReturnTimeouts = [];
+    }
+
+    /**
+     * Move the pet emoji element to a specific cell in the grid.
+     * Removes any existing pet emoji element first, then appends a new one
+     * to the target cell. Used during wander and return animations.
+     * @private
+     * @param {number} row - Target row index
+     * @param {number} col - Target column index
+     */
+    _attachPetAtPosition(row, col) {
+        const existing = this.gridElement.querySelector('.pet-emoji');
+        if (existing) {
+            existing.remove();
+        }
+        const cell = this.gridElement.querySelector(`[data-row="${row}"][data-col="${col}"]`);
+        if (cell) {
+            const petSpan = document.createElement('span');
+            petSpan.className = 'pet-emoji';
+            petSpan.textContent = this.petEmoji;
+            petSpan.setAttribute('aria-hidden', 'true');
+            cell.appendChild(petSpan);
+        }
+    }
+
+    /**
+     * Begin the pet wandering animation within the penned area.
+     * The pet steps one tile at a time to a random accessible neighbor,
+     * repeating indefinitely until cancelled.
+     * @param {Set} accessibleTiles - Set of "row,col" strings the pet may visit
+     */
+    _startPetWander(accessibleTiles) {
+        if (this._petPos === null) {
+            const homePos = this.grid.getHomePosition();
+            if (!homePos) return;
+            this._petPos = { row: homePos.row, col: homePos.col };
+            this._attachPetAtPosition(homePos.row, homePos.col);
+        }
+        this._scheduleWanderStep(accessibleTiles);
+    }
+
+    /**
+     * Schedule one wander step, then recursively schedule the next.
+     * @private
+     * @param {Set} accessibleTiles - Set of "row,col" strings the pet may visit
+     */
+    _scheduleWanderStep(accessibleTiles) {
+        const timeoutId = setTimeout(() => {
+            if (this._petPos === null) return;
+
+            // Collect accessible cardinal neighbors
+            const dirs = [[-1, 0], [1, 0], [0, -1], [0, 1]];
+            const neighbors = [];
+            for (const [dr, dc] of dirs) {
+                const nr = this._petPos.row + dr;
+                const nc = this._petPos.col + dc;
+                if (accessibleTiles.has(`${nr},${nc}`)) {
+                    neighbors.push({ row: nr, col: nc });
+                }
+            }
+
+            if (neighbors.length > 0) {
+                const next = neighbors[Math.floor(Math.random() * neighbors.length)];
+                this._petPos = next;
+                this._attachPetAtPosition(next.row, next.col);
+            }
+
+            this._scheduleWanderStep(accessibleTiles);
+        }, CONSTANTS.PET_WANDER_STEP_MS);
+        this._petWanderTimeouts.push(timeoutId);
+    }
+
+    /**
+     * Walk the pet back to the home tile one step at a time.
+     * Walls are treated as passable so the pet can never be stranded.
+     * When the pet reaches home, _petPos is set to null and onComplete is called.
+     * @param {Function} [onComplete] - Optional callback fired once the pet is home
+     */
+    _startPetReturn(onComplete) {
+        if (this._petPos === null) {
+            if (onComplete) onComplete();
+            return;
+        }
+
+        const homePos = this.grid.getHomePosition();
+        if (!homePos) {
+            this._petPos = null;
+            if (onComplete) onComplete();
+            return;
+        }
+
+        // Already home
+        if (this._petPos.row === homePos.row && this._petPos.col === homePos.col) {
+            this._petPos = null;
+            if (onComplete) onComplete();
+            return;
+        }
+
+        const path = this._findReturnPath(this._petPos, homePos);
+        if (!path || path.length === 0) {
+            this._petPos = null;
+            if (onComplete) onComplete();
+            return;
+        }
+
+        path.forEach((pos, index) => {
+            const timeoutId = setTimeout(() => {
+                this._petPos = pos;
+                this._attachPetAtPosition(pos.row, pos.col);
+
+                if (index === path.length - 1) {
+                    // Arrived home
+                    this._petPos = null;
+                    if (onComplete) onComplete();
+                }
+            }, (index + 1) * CONSTANTS.PET_RETURN_STEP_MS);
+            this._petReturnTimeouts.push(timeoutId);
+        });
+    }
+
+    /**
+     * BFS from fromPos to toPos, treating only water tiles as blocking.
+     * Walls are passable so the pet can always reach home.
+     * @private
+     * @param {{row:number,col:number}} fromPos - Starting position
+     * @param {{row:number,col:number}} toPos   - Target position (home)
+     * @returns {Array<{row:number,col:number}>|null} Ordered steps from fromPos to toPos
+     *   (excluding fromPos, including toPos), or null if no path exists.
+     */
+    _findReturnPath(fromPos, toPos) {
+        const startKey = `${fromPos.row},${fromPos.col}`;
+        const goalKey = `${toPos.row},${toPos.col}`;
+        if (startKey === goalKey) return [];
+
+        const parent = new Map([[startKey, null]]);
+        const queue = [startKey];
+        const dirs = [[-1, 0], [1, 0], [0, -1], [0, 1]];
+
+        while (queue.length > 0) {
+            const key = queue.shift();
+            const [r, c] = key.split(',').map(Number);
+
+            for (const [dr, dc] of dirs) {
+                const nr = r + dr;
+                const nc = c + dc;
+                const nKey = `${nr},${nc}`;
+
+                if (nr < 0 || nr >= this.grid.size || nc < 0 || nc >= this.grid.size) continue;
+                if (parent.has(nKey)) continue;
+
+                // Only water blocks the return path; walls are passable
+                if (this.grid.getTile(nr, nc) === 'water') continue;
+
+                parent.set(nKey, key);
+
+                if (nKey === goalKey) {
+                    // Reconstruct path
+                    const path = [];
+                    let cur = nKey;
+                    while (cur && cur !== startKey) {
+                        const [pr, pc] = cur.split(',').map(Number);
+                        path.unshift({ row: pr, col: pc });
+                        cur = parent.get(cur);
+                    }
+                    return path;
+                }
+
+                queue.push(nKey);
+            }
+        }
+
+        return null;
     }
 
     /**
