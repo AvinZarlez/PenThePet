@@ -113,12 +113,15 @@ async function main() {
     const args = process.argv.slice(2);
     let cutoffDate = CUTOFF_DATE;
     let dryRun = false;
+    let maxSize = Infinity;
 
     for (let i = 0; i < args.length; i++) {
         if (args[i] === '--date' && i + 1 < args.length) {
             cutoffDate = args[i + 1];
         } else if (args[i] === '--dry-run') {
             dryRun = true;
+        } else if (args[i] === '--max-size' && i + 1 < args.length) {
+            maxSize = parseInt(args[i + 1]);
         }
     }
 
@@ -126,12 +129,12 @@ async function main() {
     const maps = readAllMaps(mapsDir);
 
     const dates = Object.keys(maps)
-        .filter(d => d > cutoffDate)
+        .filter(d => d > cutoffDate && maps[d].size <= maxSize)
         .sort();
 
     console.log('='.repeat(60));
     console.log(`Fix Maps — pruning unnecessary special tiles`);
-    console.log(`Processing ${dates.length} maps after ${cutoffDate}`);
+    console.log(`Processing ${dates.length} maps after ${cutoffDate}${maxSize < Infinity ? ` (size ≤ ${maxSize})` : ''}`);
     if (dryRun) console.log('DRY RUN — no files will be written');
     console.log('='.repeat(60));
 

@@ -322,10 +322,6 @@ class MapGenerator {
      *   Replace with grass, re-solve. If wall positions are unchanged, keep as grass.
      *   At least one bee is always preserved so the level remains engaging.
      *
-     * Uses a fast-path batch test: if removing ALL candidates at once leaves wall
-     * positions unchanged, they are all pruned in a single solver call. Otherwise
-     * each candidate is tested individually (slower fallback).
-     *
      * Returns the pruned map and its updated solution, or null if re-solving fails.
      *
      * @private
@@ -342,46 +338,11 @@ class MapGenerator {
         let totalStars = currentMap.reduce((acc, row) => acc + row.filter(t => t === 'star').length, 0);
         let totalBees  = currentMap.reduce((acc, row) => acc + row.filter(t => t === 'bee').length, 0);
 
-        // Collect candidates: stars inside the penned area, bees anywhere
-        const candidateStars = pennedTiles.filter(([r, c]) => currentMap[r][c] === 'star');
-        const candidateBees  = [];
-        for (let r = 0; r < currentMap.length; r++) {
-            for (let c = 0; c < currentMap[r].length; c++) {
-                if (currentMap[r][c] === 'bee') candidateBees.push([r, c]);
-            }
-        }
-
-        // ── Fast-path: batch test all candidates at once ──────────────────
-        // Build a test map with all candidates removed (respecting "keep 1" rule).
-        // Stars outside the penned area are preserved; for bees they are all candidates.
-        const starsOutsidePen = totalStars - candidateStars.length;
-        const maxStarsToRemove = candidateStars.length - Math.max(0, 1 - starsOutsidePen);
-        const maxBeesToRemove  = candidateBees.length  - (totalBees === candidateBees.length ? 1 : 0);
-        const starsToRemoveBatch = candidateStars.slice(0, maxStarsToRemove);
-        const beesToRemoveBatch  = candidateBees.slice(0, maxBeesToRemove);
-
-        if (starsToRemoveBatch.length > 0 || beesToRemoveBatch.length > 0) {
-            const batchMap = currentMap.map(row => [...row]);
-            starsToRemoveBatch.forEach(([r, c]) => { batchMap[r][c] = 'grass'; });
-            beesToRemoveBatch.forEach( ([r, c]) => { batchMap[r][c] = 'grass'; });
-
-            const batchSolution = this.calculateGoal(batchMap, maxWalls);
-            if (batchSolution !== null) {
-                const batchWalls = this._wallSet(batchSolution.optimalSolution);
-                if (this._wallSetsEqual(originalWalls, batchWalls)) {
-                    // All candidates are unnecessary — apply batch prune and finish
-                    currentMap = batchMap;
-                    const finalSolution = this.calculateGoal(currentMap, maxWalls);
-                    if (finalSolution === null) return null;
-                    return { map: currentMap, solution: finalSolution };
-                }
-            }
-        }
-
-        // ── Slow-path: test each candidate individually ────────────────────
-        for (const [r, c] of candidateStars) {
-            if (currentMap[r][c] !== 'star') continue; // Already pruned in a prior step
-            if (totalStars <= 1) continue;             // Preserve the last star
+        // Step 1: Prune unnecessary stars inside the penned area.
+        // Always keep at least one star on the map.
+        for (const [r, c] of pennedTiles) {
+            if (currentMap[r][c] !== 'star') continue;
+            if (totalStars <= 1) continue; // Preserve the last star
             const testMap = currentMap.map(row => [...row]);
             testMap[r][c] = 'grass';
             const testSolution = this.calculateGoal(testMap, maxWalls);
@@ -393,6 +354,8 @@ class MapGenerator {
             }
         }
 
+        // Step 2: Prune unnecessary bees anywhere on the map.
+        // Always keep at least one bee on the map.
         for (let r = 0; r < currentMap.length; r++) {
             for (let c = 0; c < currentMap[r].length; c++) {
                 if (currentMap[r][c] !== 'bee') continue;
