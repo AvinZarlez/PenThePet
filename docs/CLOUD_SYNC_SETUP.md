@@ -341,7 +341,7 @@ Submissions are stored in Firestore at:
 users/{userId}/submissions/{YYYY-MM-DD}
 ```
 
-Each document contains:
+Each document contains all level data — score, hints, walls, and timing — in one place:
 
 | Field | Type | Description |
 |-------|------|-------------|
@@ -352,15 +352,9 @@ Each document contains:
 | `time` | number | Elapsed solve time (seconds) |
 | `hintsUsed` | string[] | Hint actions taken (`"checked"`, `"target"`) |
 
-Per-level hint state is stored at:
-
-```text
-users/{userId}/submissions/hints_{YYYY-MM-DD}
-```
-
-Each document contains `{ __version, hintsUsed: string[] }`.  This document
-is created when the user first presses **Check if Optimal** or **Reveal Target**
-and is synced immediately — independent of whether the puzzle has been submitted.
+> **Note:** Before formal submission, the `submission_YYYY-MM-DD` local cookie may
+> exist with only `hintsUsed` (no `score`).  Such pre-submission cookies are never
+> uploaded to Firestore — only fully submitted records (with a `score`) are synced.
 
 In-progress timer state is stored at:
 
@@ -383,8 +377,9 @@ Settings include `selectedPet`, `hintsDisabled`, `neverShowTarget`, and `usernam
 | **Sign in**                   | Full sync of all levels: every cloud doc is merged against local cookies using the conflict rules below. The merged result is written to both sides. The currently displayed level is reloaded if its submission state changed. |
 | **Open level selector**       | A fresh full sync runs before the calendar is populated, so completion checkmarks (✓/🏆) always reflect the latest cloud state. |
 | **Select / load a level**     | A fresh full sync runs before the level is rendered, so the loaded submission and timer state are always current. |
-| **Submit a puzzle**           | Saved to cookie AND uploaded to Firestore immediately. `hintsUsed` is included in the submission document. |
-| **Use a hint**                | Hint data saved to `hints_` cookie AND uploaded to the `hints_YYYY-MM-DD` Firestore doc immediately. If the puzzle is already submitted, the submission document is also updated. |
+| **Submit a puzzle**           | Saved to cookie AND uploaded to Firestore immediately. `hintsUsed` is included in the same submission document. |
+| **Use a hint (post-submit)**  | `hintsUsed` updated in the submission cookie AND the Firestore submission doc is re-uploaded immediately. |
+| **Use a hint (pre-submit)**   | `hintsUsed` stored in the local submission cookie only; synced to cloud as part of the full submission when the puzzle is submitted. |
 | **Timer auto-save**           | Elapsed seconds saved to cookie AND Firestore every 30 s and on every pause (including tab hide / window close). |
 | **Change hint preferences**   | `hintsDisabled` / `neverShowTarget` saved to cookie AND uploaded to Firestore immediately. |
 | **Realtime update**           | Changes from other signed-in devices are pushed to cookies automatically. The displayed level reloads if its submission state or data changed. |
@@ -400,15 +395,14 @@ For each puzzle date, when local cookie data and Firestore hold different values
 
 3. **Both in-progress (timer only)** — take the **higher elapsed time**. Both sides are updated to that value so no progress is lost.
 
-4. **Both submitted** — the **higher score wins** (higher score = better result). Both sides are updated to that version's data (score, wall placements, solve time, and submission timestamp). If scores are equal, the **earlier submission timestamp** breaks the tie (first completed solve is kept).
+4. **Both submitted** — the **higher score wins** (higher score = better result). Both sides are updated to that version's data (score, wall placements, solve time, submission timestamp, and `hintsUsed`). If scores are equal, the **earlier submission timestamp** breaks the tie (first completed solve is kept).
 
    > **Note on field names:** `timestamp` = when the puzzle was submitted (wall-clock time the entry was saved). `time` = how many seconds the user spent solving the puzzle. Only `timestamp` is used for tiebreaking.
 
 | Data type                                | Rule                                | Rationale                                                                                                                          |
 | ---------------------------------------- | ----------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
-| **Submissions** (`YYYY-MM-DD`)           | **See rules 1–4 above**             | Submitted result always beats in-progress; when both are submitted, higher score wins; same score → first submitted is kept.       |
+| **Submissions** (`YYYY-MM-DD`)           | **See rules 1–4 above**             | Submitted result always beats in-progress; when both are submitted, higher score wins; same score → first submitted is kept. `hintsUsed` travels with the winning submission. |
 | **Settings** (`selectedPet`, `hintsDisabled`, `neverShowTarget`) | **Cloud wins** | The cloud holds the user's most recently saved preference from any signed-in device. |
-| **Hints** (`hints_YYYY-MM-DD`) | **Union (add-only)** | Hints can only be added, never removed. Both local and cloud hints are merged. |
 | **Timer** (`timer_YYYY-MM-DD`)           | **Highest elapsed wins**            | The timer should never go backwards. Whichever device has made the most progress keeps that value.                                |
 
 > **Offline play then sign-in example:** You submit three puzzles while offline.

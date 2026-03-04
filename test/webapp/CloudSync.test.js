@@ -336,49 +336,70 @@ describe('CloudSync', () => {
                 expect(saved.hintsUsed).toEqual([]);
             });
 
-            test('populates hints_ cookie from cloud submission hintsUsed', () => {
-                const hintsCookie = `hints_${DATE}`;
-                CookieUtils.deleteCookie(hintsCookie);
+            test('populates submission cookie hintsUsed from cloud submission hintsUsed', () => {
+                CookieUtils.deleteCookie(submissionCookie);
                 CloudSync.applyCloudSubmission(DATE, {
                     __version: '1.1', score: 5, timestamp: later, walls: [], time: 10,
                     hintsUsed: ['checked'],
                 });
-                const hints = JSON.parse(CookieUtils.getCookie(hintsCookie));
-                expect(hints).toContain('checked');
+                const saved = JSON.parse(CookieUtils.getCookie(submissionCookie));
+                expect(saved.hintsUsed).toContain('checked');
+            });
+
+            test('skips pre-submission cloud data (no score)', () => {
+                // Pre-submission data has hints but no score — should be skipped
+                const updated = CloudSync.applyCloudSubmission(DATE, {
+                    __version: '1.1', hintsUsed: ['checked'],
+                });
+                expect(updated).toBe(false);
+                expect(CookieUtils.getCookie(submissionCookie)).toBeNull();
             });
         });
 
-        describe('applyCloudHints', () => {
+        describe('applyCloudHints (backward compat for legacy hints_ Firestore docs)', () => {
             const hintsDocId = `hints_${DATE}`;
 
             beforeEach(() => {
-                CookieUtils.deleteCookie(hintsDocId);
+                CookieUtils.deleteCookie(submissionCookie);
             });
 
-            test('writes hints when no local hints_ cookie exists', () => {
+            test('merges hints into submission cookie when no submission exists', () => {
                 CloudSync.applyCloudHints(hintsDocId, { hintsUsed: ['checked'] });
-                const saved = JSON.parse(CookieUtils.getCookie(hintsDocId));
-                expect(saved).toContain('checked');
+                const saved = JSON.parse(CookieUtils.getCookie(submissionCookie));
+                expect(saved.hintsUsed).toContain('checked');
             });
 
-            test('merges cloud hints with existing local hints', () => {
-                CookieUtils.setCookie(hintsDocId, JSON.stringify(['checked']), 1);
+            test('merges cloud hints with existing submission cookie hints', () => {
+                CookieUtils.setCookie(submissionCookie, JSON.stringify({
+                    __version: '1.1', score: 5, walls: [], timestamp: later, time: 10,
+                    hintsUsed: ['checked'],
+                }), 1);
                 CloudSync.applyCloudHints(hintsDocId, { hintsUsed: ['target'] });
-                const saved = JSON.parse(CookieUtils.getCookie(hintsDocId));
-                expect(saved).toContain('checked');
-                expect(saved).toContain('target');
+                const saved = JSON.parse(CookieUtils.getCookie(submissionCookie));
+                expect(saved.hintsUsed).toContain('checked');
+                expect(saved.hintsUsed).toContain('target');
             });
 
             test('does not duplicate hints', () => {
-                CookieUtils.setCookie(hintsDocId, JSON.stringify(['checked']), 1);
+                CookieUtils.setCookie(submissionCookie, JSON.stringify({
+                    __version: '1.1', hintsUsed: ['checked'],
+                }), 1);
                 CloudSync.applyCloudHints(hintsDocId, { hintsUsed: ['checked'] });
-                const saved = JSON.parse(CookieUtils.getCookie(hintsDocId));
-                expect(saved.filter(h => h === 'checked').length).toBe(1);
+                const saved = JSON.parse(CookieUtils.getCookie(submissionCookie));
+                expect(saved.hintsUsed.filter(h => h === 'checked').length).toBe(1);
             });
 
             test('does nothing when hintsUsed is missing or not an array', () => {
                 CloudSync.applyCloudHints(hintsDocId, {});
-                expect(CookieUtils.getCookie(hintsDocId)).toBeNull();
+                expect(CookieUtils.getCookie(submissionCookie)).toBeNull();
+            });
+
+            test('initializes submission cookie hintsUsed when hints array is empty', () => {
+                // An empty hintsUsed array from a legacy doc should still initialize the field
+                CloudSync.applyCloudHints(hintsDocId, { hintsUsed: [] });
+                const saved = JSON.parse(CookieUtils.getCookie(submissionCookie));
+                expect(Array.isArray(saved.hintsUsed)).toBe(true);
+                expect(saved.hintsUsed).toHaveLength(0);
             });
         });
     });

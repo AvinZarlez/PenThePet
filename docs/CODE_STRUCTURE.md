@@ -69,8 +69,7 @@ All cookie operations go through `CookieUtils`. Currently stored:
 | `neverShowTarget` | Whether target score is never revealed | Menu.js |
 | `currentLevel` | Selected puzzle date | Menu.js |
 | `debugMode` | Debug tools visibility | Menu.js |
-| `submission_YYYY-MM-DD` | Submitted score (v1.1: includes `hintsUsed`) | Game.js |
-| `hints_YYYY-MM-DD` | Per-level hint usage (before/after submission) | Game.js |
+| `submission_YYYY-MM-DD` | All level data: score, walls, time, and `hintsUsed` (v1.1+). May exist before formal submission with hints only (no score). | Game.js |
 
 All cookies expire after 1 year, path `/`, SameSite `Lax`.
 

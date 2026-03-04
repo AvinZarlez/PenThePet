@@ -474,36 +474,6 @@ const CloudSync = (function () {
     }
 
     /**
-     * Upload hint usage for a specific puzzle to Firestore.
-     * Called automatically from Game.saveHintsUsed() when a hint is used.
-     * Uses { merge: true } so partial hint data is never lost.
-     * @param {string} dateString - Puzzle date (YYYY-MM-DD)
-     * @param {string[]} hintsUsed - Array of hint type strings
-     */
-    async function saveHintsUsed(dateString, hintsUsed) {
-        if (!db || !currentUser) return;
-        try {
-            isSyncing = true;
-            updateSyncStatus('syncing');
-            const docRef = db
-                .collection('users')
-                .doc(currentUser.uid)
-                .collection(COLLECTION_NAME)
-                .doc(HINTS_DOC_PREFIX + dateString);
-            await docRef.set({
-                __version: CloudMigration.CURRENT_VERSION,
-                hintsUsed: hintsUsed,
-            });
-            updateSyncStatus('synced');
-        } catch (e) {
-            console.error('CloudSync: Failed to save hints:', e);
-            updateSyncStatus('error', getSyncErrorMessage(e));
-        } finally {
-            isSyncing = false;
-        }
-    }
-
-    /**
      * Apply a cloud timer state to the local cookie.
      * Conflict rule 3: BOTH IN-PROGRESS → HIGHEST ELAPSED WINS. See docs/CLOUD_SYNC_SETUP.md.
      * @param {string} docId - Firestore doc ID (e.g. 'timer_2026-01-01')
@@ -523,28 +493,38 @@ const CloudSync = (function () {
     }
 
     /**
-     * Apply cloud hints to the local hints_ cookie.
-     * Merges cloud and local hint arrays so hints can never be "un-used".
+     * Apply a legacy hints_ cloud doc to local cookies.
+     * Backward compat: merges hint data from old hints_YYYY-MM-DD Firestore docs
+     * into the submission cookie so hints are kept in a single place per level.
      * @param {string} docId - Firestore doc ID (e.g. 'hints_2026-01-01')
      * @param {Object} data - { hintsUsed: string[] }
      */
     function applyCloudHints(docId, data) {
         if (!data || !Array.isArray(data.hintsUsed)) return;
-        const hintsSet = new Set(data.hintsUsed);
-        // Union with local hints (hints can only be added, never removed)
-        const localValue = CookieUtils.getCookie(docId);
-        if (localValue) {
+        const dateString = docId.replace(HINTS_DOC_PREFIX, '');
+        const cookieName = 'submission_' + dateString;
+
+        // Merge hints into the submission cookie (may be pre-submission or submitted)
+        let submissionData = {};
+        const existing = CookieUtils.getCookie(cookieName);
+        if (existing) {
             try {
-                JSON.parse(localValue).forEach(h => hintsSet.add(h));
+                submissionData = CloudMigration.migrateSubmission(JSON.parse(existing));
             } catch { /* ignore malformed cookie */ }
         }
-        CookieUtils.setCookie(docId, JSON.stringify(Array.from(hintsSet)), 365);
+
+        const hintsSet = new Set(Array.isArray(submissionData.hintsUsed) ? submissionData.hintsUsed : []);
+        data.hintsUsed.forEach(h => hintsSet.add(h));
+        submissionData.hintsUsed = Array.from(hintsSet);
+        if (!submissionData.__version) submissionData.__version = CloudMigration.CURRENT_VERSION;
+
+        CookieUtils.setCookie(cookieName, JSON.stringify(submissionData), 365);
     }
 
     /**
      * Apply a cloud submission to the local cookie using conflict resolution.
-     * Applies schema migration, extracts hintsUsed to the hints_ cookie, then
-     * resolves the conflict.
+     * Applies schema migration then resolves the conflict.
+     * Hints are part of the submission document — no separate hints cookie is needed.
      * Conflict rule 4: BOTH SUBMITTED → HIGHER SCORE WINS; TIEBREAK BY EARLIEST SUBMISSION TIMESTAMP.
      * "score" = penned-area value (higher is better). "timestamp" = when the puzzle was submitted
      * (NOT how long it took the user to solve it — that is the separate `time` field).
@@ -557,11 +537,8 @@ const CloudSync = (function () {
         // Migrate incoming cloud data to the current schema version
         const migratedCloud = CloudMigration.migrateSubmission(cloudData);
 
-        // Sync hintsUsed from cloud submission to local hints_ cookie
-        const hintsCookieName = HINTS_DOC_PREFIX + dateString;
-        if (Array.isArray(migratedCloud.hintsUsed) && migratedCloud.hintsUsed.length > 0) {
-            applyCloudHints(hintsCookieName, { hintsUsed: migratedCloud.hintsUsed });
-        }
+        // Skip pre-submission cloud data (hints only, no score) — not a real submission
+        if (typeof migratedCloud.score !== 'number') return false;
 
         const cookieName = 'submission_' + dateString;
         const localValue = CookieUtils.getCookie(cookieName);
@@ -727,9 +704,10 @@ const CloudSync = (function () {
     }
 
     /**
-     * Upload all local submission_*, timer_*, hints_*, and settings cookies to Firestore.
+     * Upload all local submission_*, timer_*, and settings cookies to Firestore.
      * Called after syncFromCloud() so each cookie already holds the winning value.
      * Uses { merge: true } to avoid clobbering fields on concurrent devices.
+     * Note: hints are embedded in the submission document — no separate hints_ upload needed.
      */
     async function uploadLocalSubmissions() {
         if (!db || !currentUser) return;
@@ -740,8 +718,8 @@ const CloudSync = (function () {
             const name = parts[0];
             const isSubmission = name.startsWith('submission_');
             const isTimer = name.startsWith(TIMER_DOC_PREFIX);
-            const isHints = name.startsWith(HINTS_DOC_PREFIX);
-            if (!isSubmission && !isTimer && !isHints) continue;
+            // Skip legacy hints_ cookies — their data migrates into the submission cookie
+            if (!isSubmission && !isTimer) continue;
             const value = CookieUtils.getCookie(name);
             if (!value) continue;
 
@@ -752,14 +730,10 @@ const CloudSync = (function () {
                     docId = name.replace('submission_', '');
                     // Migrate to current schema before uploading
                     data = CloudMigration.migrateSubmission(data);
+                    // Only upload fully submitted records (with a score)
+                    if (typeof data.score !== 'number') continue;
                 } else {
-                    docId = name; // timer_YYYY-MM-DD or hints_YYYY-MM-DD kept as-is
-                }
-                if (isHints) {
-                    // hints_ cookies store a plain array; wrap for Firestore
-                    data = Array.isArray(data)
-                        ? { __version: CloudMigration.CURRENT_VERSION, hintsUsed: data }
-                        : data;
+                    docId = name; // timer_YYYY-MM-DD kept as-is
                 }
                 const docRef = db
                     .collection('users')
@@ -846,8 +820,8 @@ const CloudSync = (function () {
                         return;
                     }
                     if (change.doc.id.startsWith(HINTS_DOC_PREFIX)) {
-                        CookieUtils.deleteCookie(change.doc.id);
-                        submissionsUpdated = true;
+                        // Legacy hints_ docs: ignore removal — hints are add-only and
+                        // are now embedded in the submission cookie, not a separate cookie.
                         return;
                     }
                     CookieUtils.deleteCookie('submission_' + change.doc.id);
@@ -1203,7 +1177,6 @@ const CloudSync = (function () {
         getUsername: function () { return username; },
         saveSubmission: saveSubmission,
         saveTimerState: saveTimerState,
-        saveHintsUsed: saveHintsUsed,
         deleteSubmission: deleteSubmission,
         deleteAllSubmissions: deleteAllSubmissions,
         saveSettings: saveSettings,
