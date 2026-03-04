@@ -40,7 +40,7 @@ describe('Grid', () => {
         });
 
         test('should accept various valid sizes', () => {
-            const sizes = [7, 9, 11, 13, 15, 21];
+            const sizes = [7, 9, 11, 13, 15, 17];
             sizes.forEach(size => {
                 const grid = new Grid(size);
                 expect(grid.size).toBe(size);
