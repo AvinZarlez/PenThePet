@@ -53,7 +53,12 @@ const CONSTANTS = {
     AUTO_SAVE_STATE: false,     // Auto-save game state to localStorage
     
     // Hints
-    HINT_MODE_DEFAULT: 'disabled', // Default hint mode: 'disabled', 'checkOptimal', 'revealTarget'
+    HINTS_DISABLED_DEFAULT: false,          // Default: hints are enabled
+    HINTS_NEVER_SHOW_TARGET_DEFAULT: true,  // Default: target score is not revealed
+
+    // Hint type identifiers (stored in the hintsUsed array per level)
+    HINT_CHECKED: 'checked',       // User pressed "Check if Optimal"
+    HINT_TARGET: 'target',         // User pressed "Reveal Target"
 
     // UI timings
     SHARE_BUTTON_FLASH_MS: 2000,      // How long the "Copied!" label shows on the share button (ms)

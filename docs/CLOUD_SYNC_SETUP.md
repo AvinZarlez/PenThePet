@@ -11,7 +11,7 @@ Once enabled:
 
 - Submissions you make on one device automatically appear on all your
   other signed-in devices.
-- Settings (pet type, hint mode) are synced when you sign in on a new device.
+- Settings (pet type, hint preferences) are synced when you sign in on a new device.
 - Each user's data is stored privately; no one else can read or write it.
 
 Cloud sync is powered by **Firebase** — Google's free serverless backend.
@@ -321,14 +321,40 @@ the same data.
 
 ## How Data Is Stored
 
+### Schema Versioning
+
+All submission documents carry a `__version` field so older data can be
+automatically migrated when it is loaded. The current version is **1.1**.
+Migration is handled by `js/CloudMigration.js` — see
+[Adding a new schema version](#adding-a-new-schema-version) below.
+
+| Version | Changes                                                                     |
+| ------- | --------------------------------------------------------------------------- |
+| 1.0     | Original format: `{ score, walls, timestamp, time }` — no `__version` field |
+| 1.1     | Added `hintsUsed: string[]` to submission data                              |
+
+### Firestore Document Layout
+
 Submissions are stored in Firestore at:
 
 ```text
 users/{userId}/submissions/{YYYY-MM-DD}
 ```
 
-Each document contains `score`, `walls`, `timestamp`, and `time` — the same data
-that is stored in the local cookie.
+Each document contains all level data — score, hints, walls, and timing — in one place:
+
+| Field       | Type     | Description                                  |
+| ----------- | -------- | -------------------------------------------- |
+| `__version` | string   | Schema version (e.g. `"1.1"`)                |
+| `score`     | number   | Penned-area score                            |
+| `walls`     | array    | `[[row, col], …]` wall positions             |
+| `timestamp` | string   | ISO 8601 submission time                     |
+| `time`      | number   | Elapsed solve time (seconds)                 |
+| `hintsUsed` | string[] | Hint actions taken (`"checked"`, `"target"`) |
+
+> **Note:** Before formal submission, the `submission_YYYY-MM-DD` local cookie may
+> exist with only `hintsUsed` (no `score`). Such pre-submission cookies are never
+> uploaded to Firestore — only fully submitted records (with a `score`) are synced.
 
 In-progress timer state is stored at:
 
@@ -336,24 +362,28 @@ In-progress timer state is stored at:
 users/{userId}/submissions/timer_{YYYY-MM-DD}
 ```
 
-User settings (pet type, hint mode) are stored at:
+User settings are stored at:
 
 ```text
 users/{userId}/submissions/settings
 ```
 
+Settings include `selectedPet`, `hintsDisabled`, `neverShowTarget`, and `username`.
+
 ## How Sync Works
 
-| Event                       | What happens                                                                                                                                                                                                                          |
-| --------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Sign in**                 | Full sync of all levels: every cloud doc is merged against local cookies using the conflict rules below. The merged result is written to both sides. The currently displayed level is reloaded if its submission state changed. |
-| **Open level selector**     | A fresh full sync runs before the calendar is populated, so completion checkmarks (✓/🏆) always reflect the latest cloud state. |
-| **Select / load a level**   | A fresh full sync runs before the level is rendered, so the loaded submission and timer state are always current. |
-| **Submit a puzzle**         | Saved to cookie AND uploaded to Firestore immediately.                                                                                                                                                                                |
-| **Timer auto-save**         | Elapsed seconds saved to cookie AND Firestore every 30 s and on every pause (including tab hide / window close).                                                                                                                      |
-| **Change pet or hint mode** | Saved to cookie AND uploaded to Firestore immediately.                                                                                                                                                                                |
-| **Realtime update**         | Changes from other signed-in devices are pushed to cookies automatically. The displayed level reloads if its submission state or data changed. |
-| **Sign out**                | Realtime listener stops. Local cookies remain untouched.                                                                                                                                                                              |
+| Event                        | What happens                                                                                                                                                                                                                    |
+| ---------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Sign in**                  | Full sync of all levels: every cloud doc is merged against local cookies using the conflict rules below. The merged result is written to both sides. The currently displayed level is reloaded if its submission state changed. |
+| **Open level selector**      | A fresh full sync runs before the calendar is populated, so completion checkmarks (✓/🏆) always reflect the latest cloud state.                                                                                                 |
+| **Select / load a level**    | A fresh full sync runs before the level is rendered, so the loaded submission and timer state are always current.                                                                                                               |
+| **Submit a puzzle**          | Saved to cookie AND uploaded to Firestore immediately. `hintsUsed` is included in the same submission document.                                                                                                                 |
+| **Use a hint (post-submit)** | `hintsUsed` updated in the submission cookie AND the Firestore submission doc is re-uploaded immediately.                                                                                                                       |
+| **Use a hint (pre-submit)**  | `hintsUsed` stored in the local submission cookie only; synced to cloud as part of the full submission when the puzzle is submitted.                                                                                            |
+| **Timer auto-save**          | Elapsed seconds saved to cookie AND Firestore every 30 s and on every pause (including tab hide / window close).                                                                                                                |
+| **Change hint preferences**  | `hintsDisabled` / `neverShowTarget` saved to cookie AND uploaded to Firestore immediately.                                                                                                                                      |
+| **Realtime update**          | Changes from other signed-in devices are pushed to cookies automatically. The displayed level reloads if its submission state or data changed.                                                                                  |
+| **Sign out**                 | Realtime listener stops. Local cookies remain untouched.                                                                                                                                                                        |
 
 ## Conflict Resolution
 
@@ -365,15 +395,15 @@ For each puzzle date, when local cookie data and Firestore hold different values
 
 3. **Both in-progress (timer only)** — take the **higher elapsed time**. Both sides are updated to that value so no progress is lost.
 
-4. **Both submitted** — the **higher score wins** (higher score = better result). Both sides are updated to that version's data (score, wall placements, solve time, and submission timestamp). If scores are equal, the **earlier submission timestamp** breaks the tie (first completed solve is kept).
+4. **Both submitted** — the **higher score wins** (higher score = better result). Both sides are updated to that version's data (score, wall placements, solve time, submission timestamp, and `hintsUsed`). If scores are equal, the **earlier submission timestamp** breaks the tie (first completed solve is kept).
 
    > **Note on field names:** `timestamp` = when the puzzle was submitted (wall-clock time the entry was saved). `time` = how many seconds the user spent solving the puzzle. Only `timestamp` is used for tiebreaking.
 
-| Data type                                | Rule                                | Rationale                                                                                                                          |
-| ---------------------------------------- | ----------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
-| **Submissions** (`YYYY-MM-DD`)           | **See rules 1–4 above**             | Submitted result always beats in-progress; when both are submitted, higher score wins; same score → first submitted is kept.       |
-| **Settings** (`selectedPet`, `hintMode`) | **Cloud wins**                      | The cloud holds the user's most recently saved preference from any signed-in device.                                              |
-| **Timer** (`timer_YYYY-MM-DD`)           | **Highest elapsed wins**            | The timer should never go backwards. Whichever device has made the most progress keeps that value.                                |
+| Data type                                                        | Rule                     | Rationale                                                                                                                                                                     |
+| ---------------------------------------------------------------- | ------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Submissions** (`YYYY-MM-DD`)                                   | **See rules 1–4 above**  | Submitted result always beats in-progress; when both are submitted, higher score wins; same score → first submitted is kept. `hintsUsed` travels with the winning submission. |
+| **Settings** (`selectedPet`, `hintsDisabled`, `neverShowTarget`) | **Cloud wins**           | The cloud holds the user's most recently saved preference from any signed-in device.                                                                                          |
+| **Timer** (`timer_YYYY-MM-DD`)                                   | **Highest elapsed wins** | The timer should never go backwards. Whichever device has made the most progress keeps that value.                                                                            |
 
 > **Offline play then sign-in example:** You submit three puzzles while offline.
 > When you sign in, each date is merged against the cloud:
@@ -382,6 +412,33 @@ For each puzzle date, when local cookie data and Firestore hold different values
 >   If both scores are equal, whichever submission was made **first** is kept.
 > - If the cloud only has an in-progress timer, your offline submission wins.
 > - If the cloud has nothing, your offline submission is uploaded.
+
+## Adding a New Schema Version
+
+Schema versioning is handled by `js/CloudMigration.js`. To add a new version:
+
+1. Bump `CURRENT_VERSION` in `CloudMigration.js` (e.g. `'1.2'`).
+2. Add a migration function for the previous version:
+
+   ```js
+   submissionMigrations["1.1"] = function (data) {
+     return Object.assign({}, data, {
+       myNewField: data.myNewField || defaultValue,
+       __version: "1.2",
+     });
+   };
+   ```
+
+3. `migrateSubmission()` will run the chain automatically — no other code
+   changes are needed for migration.
+4. Update the version history table at the top of `CloudMigration.js`.
+5. Add tests in `test/webapp/CloudMigration.test.js`.
+
+Migration runs automatically when:
+
+- `Game.loadSubmission()` parses a local cookie.
+- `CloudSync.applyCloudSubmission()` receives data from Firestore.
+- `CloudSync.uploadLocalSubmissions()` writes data back to Firestore.
 
 ## Running Without Cloud Sync
 

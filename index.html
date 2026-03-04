@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="referrer" content="no-referrer-when-downgrade">
     <title>Pen the Pet - A Logic Puzzle Game</title>
-    
+
     <!-- Stylesheets -->
     <link rel="stylesheet" href="css/base.css">
     <link rel="stylesheet" href="css/game.css">
@@ -16,7 +16,7 @@
     <div class="container">
         <!-- Menu Button -->
         <button id="menuBtn" class="menu-btn" aria-label="Open menu">☰</button>
-        
+
         <!-- Cloud Sync UI (hidden until Firebase is configured) -->
         <div id="cloudSyncBar" class="cloud-sync-bar">
             <button id="cloudSyncLoginBtn" class="cloud-sync-login-btn" style="display: none;"
@@ -30,7 +30,7 @@
 
         <h1><span aria-hidden="true">🐾</span> Pen the Pet</h1>
         <p class="subtitle">A Logic Puzzle Game About Fencing</p>
-        
+
         <div class="map-info">
             <div class="map-info-item">
                 <span class="map-info-label">Day:</span>
@@ -70,8 +70,12 @@
                 <span id="timerValue" class="timer-value">00:00</span>
                 <span id="timerIcon" class="timer-icon" aria-hidden="true">⏸</span>
             </button>
-            <button class="penned-status not-penned" id="pennedStatus" 
-                    title="Pet can still escape - keep building walls!" 
+            <button id="hintCheckBtn" class="hint-check-btn" style="display: none;" disabled
+                    title="Pen the pet first to check your solution" aria-label="Check if optimal">
+                <span class="hint-check-label">Check if Optimal</span>
+            </button>
+            <button class="penned-status not-penned" id="pennedStatus"
+                    title="Pet can still escape - keep building walls!"
                     data-interactive="false">
                 <span class="submit-label">Unsolved</span><span class="submit-check">✗</span>
             </button>
@@ -105,6 +109,8 @@
         <div class="grid-container">
             <div id="grid" class="grid"></div>
         </div>
+
+        <div id="hintUsedDisplay" class="hint-used-display" style="display: none;"></div>
 
         <div class="debug-section" style="display: none;">
             <h3>🛠️ Debug Tools</h3>
@@ -184,14 +190,15 @@
             <div class="modal-section">
                 <h3>Hint System</h3>
                 <ul>
-                    <li><strong>Disabled:</strong> No hints, full challenge mode</li>
-                    <li><strong>Check Optimal:</strong> Area size turns yellow/green based on goal</li>
-                    <li><strong>Reveal Target:</strong> Shows your current area vs. goal (e.g., "8 / 11")</li>
+                    <li>When a pet is penned, you can press the <strong>Check if Optimal</strong> button to tell you whether your current score is the optimal solution.</li>
+                    <li>The score display will be yellow 🟡 if below `<` the optimal score. It will turn green 🟢 when the correct answer is found `✅`.</li>
+                    <li>If enabled, after checking the first hint, you can get further help by pressing <strong>Reveal Target</strong> to see the optiminal solution alongside your current score.</li>
+                    <li>You can disable hints entirely from the <strong>Options</strong> menu.</li>
                 </ul>
             </div>
             <div class="modal-section">
                 <h3>Options</h3>
-                <p>You can customize your pet type and hint level in the Options menu. Your preferences are saved automatically.</p>
+                <p>You can customize your pet type and hint preferences in the Options menu. Your preferences are saved automatically.</p>
             </div>
         </div>
     </div>
@@ -241,12 +248,16 @@
                     </select>
                 </div>
                 <div class="option-item">
-                    <label for="modalHintMode">Hint:</label>
-                    <select id="modalHintMode">
-                        <option value="disabled">Disabled</option>
-                        <option value="checkOptimal">Check Optimal</option>
-                        <option value="revealTarget">Reveal Target</option>
-                    </select>
+                    <label for="modalHintsDisabled">
+                        <input type="checkbox" id="modalHintsDisabled">
+                        Disable hints
+                    </label>
+                </div>
+                <div class="option-item" id="neverShowTargetOptionItem">
+                    <label for="modalNeverShowTarget">
+                        <input type="checkbox" id="modalNeverShowTarget">
+                        Never show target
+                    </label>
                 </div>
                 <div class="option-item">
                     <label for="modalTimezone">Time Zone:</label>
@@ -332,7 +343,7 @@
     <script src="https://www.gstatic.com/firebasejs/11.7.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/11.7.1/firebase-firestore-compat.js"></script>
 
-    <!-- Game Scripts (Load in order: constants -> config -> types -> utils -> pathfinding -> grid -> game -> cloud -> menu -> main) -->
+    <!-- Game Scripts (Load in order: constants -> config -> types -> utils -> pathfinding -> grid -> firebase-config -> migration -> cloud -> game -> menu -> main) -->
     <script src="js/constants.js"></script>
     <script src="js/config.js"></script>
     <script src="js/tileData.js"></script>
@@ -342,6 +353,7 @@
     <script src="js/PathfindingUtils.js"></script>
     <script src="js/Grid.js"></script>
     <script src="js/firebase-config.js"></script>
+    <script src="js/CloudMigration.js"></script>
     <script src="js/CloudSync.js"></script>
     <script src="js/Game.js"></script>
     <script src="js/Menu.js"></script>

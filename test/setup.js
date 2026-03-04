@@ -43,6 +43,7 @@ global.getPawOverlay = tileDataModule.getPawOverlay;
 global.CONSTANTS = require('../js/constants.js');
 global.CONFIG = require('../js/config.js');
 global.CookieUtils = require('../js/CookieUtils.js');
+global.CloudMigration = require('../js/CloudMigration.js');
 global.FIREBASE_CONFIG = require('../js/firebase-config.js');
 global.CloudSync = require('../js/CloudSync.js');
 global.DateUtils = require('../js/DateUtils.js');

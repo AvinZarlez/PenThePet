@@ -17,7 +17,8 @@
  *   submission_YYYY-MM-DD    YYYY-MM-DD          (puzzle result)
  *   timer_YYYY-MM-DD         timer_YYYY-MM-DD    (in-progress elapsed seconds)
  *   selectedPet              settings.selectedPet (part of settings doc)
- *   hintMode                 settings.hintMode    (part of settings doc)
+ *   hintsDisabled            settings.hintsDisabled (part of settings doc)
+ *   neverShowTarget          settings.neverShowTarget (part of settings doc)
  *
  * Cookies NOT synced to cloud (intentional):
  *   currentLevel   — transient UI state (which puzzle is open); device-local
@@ -64,7 +65,7 @@
  *      `timestamp` field is kept on both sides.  If either side lacks a
  *      timestamp, the cloud value is used as a safe default.
  *
- * Settings (selectedPet, hintMode, username): CLOUD WINS always.
+ * Settings (selectedPet, hintsDisabled, neverShowTarget, username): CLOUD WINS always.
  *
  * ─────────────────────────────────────────────────────────────────────────────
  */
@@ -72,6 +73,11 @@
 // Import FIREBASE_CONFIG if in Node.js environment
 if (typeof FIREBASE_CONFIG === 'undefined' && typeof require !== 'undefined') {
     global.FIREBASE_CONFIG = require('./firebase-config.js');
+}
+
+// Import CloudMigration if in Node.js environment
+if (typeof CloudMigration === 'undefined' && typeof require !== 'undefined') {
+    global.CloudMigration = require('./CloudMigration.js');
 }
 
 const CloudSync = (function () {
@@ -86,6 +92,7 @@ const CloudSync = (function () {
     const COLLECTION_NAME = 'submissions';
     const SETTINGS_DOC = 'settings';
     const TIMER_DOC_PREFIX = 'timer_';
+    const HINTS_DOC_PREFIX = 'hints_';
 
     // ----------------------------------------------------------------
     // Configuration helpers
@@ -398,10 +405,10 @@ const CloudSync = (function () {
     }
 
     /**
-     * Upload user settings (selectedPet, hintMode) to Firestore.
+     * Upload user settings (selectedPet, hintsDisabled, neverShowTarget) to Firestore.
      * Also write the local cookie before calling this (see Menu._savePetToCookie,
-     * Menu._saveHintModeToCookie).
-     * @param {Object} settings - {selectedPet?, hintMode?}
+     * Menu._saveHintsDisabledToCookie, Menu._saveNeverShowTargetToCookie).
+     * @param {Object} settings - {selectedPet?, hintsDisabled?, neverShowTarget?}
      */
     async function saveSettings(settings) {
         if (!db || !currentUser) return;
@@ -486,34 +493,75 @@ const CloudSync = (function () {
     }
 
     /**
+     * Apply a legacy hints_ cloud doc to local cookies.
+     * Backward compat: merges hint data from old hints_YYYY-MM-DD Firestore docs
+     * into the submission cookie so hints are kept in a single place per level.
+     * @param {string} docId - Firestore doc ID (e.g. 'hints_2026-01-01')
+     * @param {Object} data - { hintsUsed: string[] }
+     */
+    function applyCloudHints(docId, data) {
+        if (!data || !Array.isArray(data.hintsUsed)) return;
+        const dateString = docId.replace(HINTS_DOC_PREFIX, '');
+        const cookieName = 'submission_' + dateString;
+
+        // Merge hints into the submission cookie (may be pre-submission or submitted)
+        let submissionData = {};
+        const existing = CookieUtils.getCookie(cookieName);
+        if (existing) {
+            try {
+                submissionData = CloudMigration.migrateSubmission(JSON.parse(existing));
+            } catch { /* ignore malformed cookie */ }
+        }
+
+        const hintsSet = new Set(Array.isArray(submissionData.hintsUsed) ? submissionData.hintsUsed : []);
+        data.hintsUsed.forEach(h => hintsSet.add(h));
+        submissionData.hintsUsed = Array.from(hintsSet);
+        if (!submissionData.__version) submissionData.__version = CloudMigration.CURRENT_VERSION;
+
+        CookieUtils.setCookie(cookieName, JSON.stringify(submissionData), 365);
+    }
+
+    /**
      * Apply a cloud submission to the local cookie using conflict resolution.
+     * Applies schema migration then resolves the conflict.
+     * Hints are part of the submission document — no separate hints cookie is needed.
      * Conflict rule 4: BOTH SUBMITTED → HIGHER SCORE WINS; TIEBREAK BY EARLIEST SUBMISSION TIMESTAMP.
      * "score" = penned-area value (higher is better). "timestamp" = when the puzzle was submitted
      * (NOT how long it took the user to solve it — that is the separate `time` field).
      * See docs/CLOUD_SYNC_SETUP.md for the full rule table.
      * @param {string} dateString - Puzzle date (YYYY-MM-DD)
-     * @param {Object} cloudData - Cloud submission data
+     * @param {Object} cloudData - Cloud submission data (any schema version)
      * @returns {boolean} true if the local cookie was updated, false if local was kept
      */
     function applyCloudSubmission(dateString, cloudData) {
+        // Migrate incoming cloud data to the current schema version
+        const migratedCloud = CloudMigration.migrateSubmission(cloudData);
+
+        // Skip pre-submission cloud data (hints only, no score) — not a real submission
+        if (typeof migratedCloud.score !== 'number') return false;
+
         const cookieName = 'submission_' + dateString;
         const localValue = CookieUtils.getCookie(cookieName);
         if (localValue) {
             try {
-                const localData = JSON.parse(localValue);
+                const localData = CloudMigration.migrateSubmission(JSON.parse(localValue));
                 const localScore = typeof localData.score === 'number' ? localData.score : -Infinity;
-                const cloudScore = typeof cloudData.score === 'number' ? cloudData.score : -Infinity;
+                const cloudScore = typeof migratedCloud.score === 'number' ? migratedCloud.score : -Infinity;
                 if (localScore > cloudScore) {
-                    return false; // local score is better (higher) — keep it
+                    // Local score is better — keep local but ensure it's in current schema
+                    CookieUtils.setCookie(cookieName, JSON.stringify(localData), 365);
+                    return false;
                 }
                 if (localScore === cloudScore &&
-                    localData.timestamp && cloudData.timestamp &&
-                    new Date(localData.timestamp) < new Date(cloudData.timestamp)) {
-                    return false; // same score; local was submitted first — keep it
+                    localData.timestamp && migratedCloud.timestamp &&
+                    new Date(localData.timestamp) < new Date(migratedCloud.timestamp)) {
+                    // Same score; local was submitted first — keep local (migrated)
+                    CookieUtils.setCookie(cookieName, JSON.stringify(localData), 365);
+                    return false;
                 }
             } catch { /* fall through to use cloud data */ }
         }
-        CookieUtils.setCookie(cookieName, JSON.stringify(cloudData), 365);
+        CookieUtils.setCookie(cookieName, JSON.stringify(migratedCloud), 365);
         return true;
     }
 
@@ -606,6 +654,10 @@ const CloudSync = (function () {
                     applyCloudTimerState(doc.id, doc.data());
                     return;
                 }
+                if (doc.id.startsWith(HINTS_DOC_PREFIX)) {
+                    applyCloudHints(doc.id, doc.data());
+                    return;
+                }
                 // Submission conflict resolution — see docs/CLOUD_SYNC_SETUP.md
                 applyCloudSubmission(doc.id, doc.data());
             });
@@ -638,8 +690,11 @@ const CloudSync = (function () {
         if (settings.selectedPet) {
             CookieUtils.setCookie('selectedPet', settings.selectedPet, 365);
         }
-        if (settings.hintMode) {
-            CookieUtils.setCookie('hintMode', settings.hintMode, 365);
+        if (settings.hintsDisabled !== undefined) {
+            CookieUtils.setCookie('hintsDisabled', settings.hintsDisabled, 365);
+        }
+        if (settings.neverShowTarget !== undefined) {
+            CookieUtils.setCookie('neverShowTarget', settings.neverShowTarget, 365);
         }
         if (settings.username !== undefined) {
             username = settings.username;
@@ -652,6 +707,7 @@ const CloudSync = (function () {
      * Upload all local submission_*, timer_*, and settings cookies to Firestore.
      * Called after syncFromCloud() so each cookie already holds the winning value.
      * Uses { merge: true } to avoid clobbering fields on concurrent devices.
+     * Note: hints are embedded in the submission document — no separate hints_ upload needed.
      */
     async function uploadLocalSubmissions() {
         if (!db || !currentUser) return;
@@ -660,15 +716,25 @@ const CloudSync = (function () {
         for (const cookie of cookies) {
             const parts = cookie.trim().split('=');
             const name = parts[0];
-            if (!name.startsWith('submission_') && !name.startsWith(TIMER_DOC_PREFIX)) continue;
+            const isSubmission = name.startsWith('submission_');
+            const isTimer = name.startsWith(TIMER_DOC_PREFIX);
+            // Skip legacy hints_ cookies — their data migrates into the submission cookie
+            if (!isSubmission && !isTimer) continue;
             const value = CookieUtils.getCookie(name);
             if (!value) continue;
 
             try {
-                const data = JSON.parse(value);
-                const docId = name.startsWith('submission_')
-                    ? name.replace('submission_', '')
-                    : name; // timer_YYYY-MM-DD kept as-is
+                let data = JSON.parse(value);
+                let docId;
+                if (isSubmission) {
+                    docId = name.replace('submission_', '');
+                    // Migrate to current schema before uploading
+                    data = CloudMigration.migrateSubmission(data);
+                    // Only upload fully submitted records (with a score)
+                    if (typeof data.score !== 'number') continue;
+                } else {
+                    docId = name; // timer_YYYY-MM-DD kept as-is
+                }
                 const docRef = db
                     .collection('users')
                     .doc(currentUser.uid)
@@ -681,11 +747,13 @@ const CloudSync = (function () {
         }
 
         const selectedPet = CookieUtils.getCookie('selectedPet');
-        const hintMode = CookieUtils.getCookie('hintMode');
-        if (selectedPet || hintMode) {
+        const hintsDisabled = CookieUtils.getCookie('hintsDisabled');
+        const neverShowTarget = CookieUtils.getCookie('neverShowTarget');
+        if (selectedPet || hintsDisabled !== null || neverShowTarget !== null) {
             const settings = {};
             if (selectedPet) settings.selectedPet = selectedPet;
-            if (hintMode) settings.hintMode = hintMode;
+            if (hintsDisabled !== null) settings.hintsDisabled = hintsDisabled;
+            if (neverShowTarget !== null) settings.neverShowTarget = neverShowTarget;
             try {
                 const docRef = db
                     .collection('users')
@@ -731,6 +799,11 @@ const CloudSync = (function () {
                         timerUpdated = true;
                         return;
                     }
+                    if (change.doc.id.startsWith(HINTS_DOC_PREFIX)) {
+                        applyCloudHints(change.doc.id, change.doc.data());
+                        submissionsUpdated = true;
+                        return;
+                    }
                     // Submission conflict resolution — see docs/CLOUD_SYNC_SETUP.md.
                     // Returns true if cloud was applied; false if local submission was kept.
                     const cloudApplied = applyCloudSubmission(change.doc.id, change.doc.data());
@@ -746,6 +819,11 @@ const CloudSync = (function () {
                         CookieUtils.deleteCookie(change.doc.id);
                         return;
                     }
+                    if (change.doc.id.startsWith(HINTS_DOC_PREFIX)) {
+                        // Legacy hints_ docs: ignore removal — hints are add-only and
+                        // are now embedded in the submission cookie, not a separate cookie.
+                        return;
+                    }
                     CookieUtils.deleteCookie('submission_' + change.doc.id);
                     submissionsUpdated = true;
                 }
@@ -758,7 +836,9 @@ const CloudSync = (function () {
                 const cookieValue = CookieUtils.getCookie('submission_' + docId);
                 if (!cookieValue) return;
                 try {
-                    collRef.doc(docId).set(JSON.parse(cookieValue)).catch(function (e) {
+                    // Migrate before writing back so other devices receive current schema
+                    const migratedData = CloudMigration.migrateSubmission(JSON.parse(cookieValue));
+                    collRef.doc(docId).set(migratedData).catch(function (e) {
                         console.error('CloudSync: Failed to push local win to Firestore:', e);
                     });
                 } catch { /* malformed cookie — defer to next full sync */ }
@@ -1116,6 +1196,7 @@ const CloudSync = (function () {
         handleSaveProfile: handleSaveProfile,
         // Exposed for unit testing of conflict resolution logic.
         applyCloudTimerState: applyCloudTimerState,
+        applyCloudHints: applyCloudHints,
         applyCloudSubmission: applyCloudSubmission
     };
 })();

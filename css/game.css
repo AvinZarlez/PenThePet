@@ -892,3 +892,43 @@
 .share-score-btn:active {
     transform: translateY(0);
 }
+
+/* ========== Hint Check Button ========== */
+.hint-check-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 20px;
+    background: linear-gradient(135deg, #f0f0f0 0%, #e0e0e0 100%);
+    border-radius: 8px;
+    font-weight: bold;
+    border: 2px solid #333;
+    font-size: 0.9em;
+    min-width: 100px;
+    transition: all 0.3s ease;
+    color: #333;
+    cursor: pointer;
+}
+
+.hint-check-btn:not(:disabled):hover {
+    background: linear-gradient(135deg, #fff176 0%, #ffee58 100%);
+    transform: scale(1.05);
+    box-shadow: 0 4px 12px rgba(249, 168, 37, 0.4);
+}
+
+.hint-check-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+/* ========== Hint Used Display ========== */
+.hint-used-display {
+    text-align: center;
+    font-size: 0.85em;
+    color: #666;
+    margin-top: 4px;
+    margin-bottom: 4px;
+}

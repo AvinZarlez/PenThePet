@@ -26,6 +26,7 @@ PenThePet/
 │   ├── Game.js             # Game controller: rendering, clicks, wall placement, penning detection
 │   ├── Menu.js             # Menu system: modals, level selector, options, cookie persistence
 │   ├── firebase-config.js  # Firebase config (empty = cloud sync disabled)
+│   ├── CloudMigration.js   # Versioned schema migration for cloud submission data
 │   ├── CloudSync.js        # Optional cloud sync (Firebase Auth + Firestore)
 │   └── main.js             # Entry point: loads map, initializes Game and Menu
 ├── scripts/
@@ -43,7 +44,7 @@ PenThePet/
 ```
 
 **Script loading order** in `index.html` (must not change):
-`constants.js → config.js → tileTypes.js → CookieUtils.js → DateUtils.js → PathfindingUtils.js → Grid.js → Game.js → Menu.js → main.js`
+`constants.js → config.js → tileTypes.js → CookieUtils.js → DateUtils.js → PathfindingUtils.js → Grid.js → firebase-config.js → CloudMigration.js → CloudSync.js → Game.js → Menu.js → main.js`
 
 ## 🎯 Key File Notes
 
@@ -63,13 +64,16 @@ All cookie operations go through `CookieUtils`. Currently stored:
 
 | Cookie | Purpose | Set By |
 |--------|---------|--------|
-| `selectedPet` | Chosen animal emoji | Menu.js / Game.js |
-| `hintMode` | Hint mode setting | Menu.js |
+| `selectedPet` | Chosen animal emoji | Menu.js |
+| `hintsDisabled` | Whether hints are disabled | Menu.js |
+| `neverShowTarget` | Whether target score is never revealed | Menu.js |
 | `currentLevel` | Selected puzzle date | Menu.js |
 | `debugMode` | Debug tools visibility | Menu.js |
-| `submission_YYYY-MM-DD` | Submitted score | Game.js |
+| `submission_YYYY-MM-DD` | All level data: score, walls, time, and `hintsUsed` (v1.1+). May exist before formal submission with hints only (no score). | Game.js |
 
 All cookies expire after 1 year, path `/`, SameSite `Lax`.
+
+See [CLOUD_SYNC_SETUP.md](CLOUD_SYNC_SETUP.md) for the Firestore mapping and schema versioning details.
 
 ## 🔧 How to Extend
 
