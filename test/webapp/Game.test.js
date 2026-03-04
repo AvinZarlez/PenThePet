@@ -585,6 +585,82 @@ describe('Game — Timer', () => {
             expect(document.getElementById('solutionToggleBar').style.display).toBe('flex');
         });
     });
+
+    // ------------------------------------------------------------------
+    // isSolutionOptimal — checks whether submitted walls match optimal
+    // ------------------------------------------------------------------
+    describe('isSolutionOptimal()', () => {
+        test('returns false when submittedWalls is null', () => {
+            game.submittedWalls = null;
+            game.optimalSolution = [[1, 1]];
+            expect(game.isSolutionOptimal()).toBe(false);
+        });
+
+        test('returns false when optimalSolution is null', () => {
+            game.submittedWalls = [[1, 1]];
+            game.optimalSolution = null;
+            expect(game.isSolutionOptimal()).toBe(false);
+        });
+
+        test('returns false when wall counts differ', () => {
+            game.submittedWalls = [[1, 1]];
+            game.optimalSolution = [[1, 1], [2, 2]];
+            expect(game.isSolutionOptimal()).toBe(false);
+        });
+
+        test('returns false when walls differ', () => {
+            game.submittedWalls = [[1, 1], [2, 2]];
+            game.optimalSolution = [[1, 1], [3, 3]];
+            expect(game.isSolutionOptimal()).toBe(false);
+        });
+
+        test('returns true when walls match exactly (same order)', () => {
+            game.submittedWalls = [[1, 1], [2, 2]];
+            game.optimalSolution = [[1, 1], [2, 2]];
+            expect(game.isSolutionOptimal()).toBe(true);
+        });
+
+        test('returns true when walls match in different order', () => {
+            game.submittedWalls = [[2, 2], [1, 1]];
+            game.optimalSolution = [[1, 1], [2, 2]];
+            expect(game.isSolutionOptimal()).toBe(true);
+        });
+
+        test('returns true when both are empty', () => {
+            game.submittedWalls = [];
+            game.optimalSolution = [];
+            expect(game.isSolutionOptimal()).toBe(true);
+        });
+    });
+
+    // ------------------------------------------------------------------
+    // updateSolutionToggleBar — optimal solution message
+    // ------------------------------------------------------------------
+    describe('updateSolutionToggleBar() — optimal solution', () => {
+        test('hides toggle button and shows optimal message when solution is optimal', () => {
+            game.isSubmitted = true;
+            game.submittedWalls = [[1, 1]];
+            game.optimalSolution = [[1, 1]];
+            game.updateSolutionToggleBar();
+
+            const toggleBtn = document.getElementById('solutionToggleBtn');
+            const viewLabel = document.getElementById('solutionViewLabel');
+            expect(document.getElementById('solutionToggleBar').style.display).toBe('flex');
+            expect(toggleBtn.style.display).toBe('none');
+            expect(viewLabel.textContent).toBe('⭐ Your solution is optimal!');
+        });
+
+        test('shows toggle button when solution is not optimal', () => {
+            game.isSubmitted = true;
+            game.submittedWalls = [[1, 1]];
+            game.optimalSolution = [[2, 2]];
+            game.updateSolutionToggleBar();
+
+            const toggleBtn = document.getElementById('solutionToggleBtn');
+            expect(document.getElementById('solutionToggleBar').style.display).toBe('flex');
+            expect(toggleBtn.style.display).not.toBe('none');
+        });
+    });
 });
 
 // ------------------------------------------------------------------

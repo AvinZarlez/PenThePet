@@ -1082,8 +1082,45 @@ class Game {
         const footer = document.querySelector('#roamSpaceViewer .viewer-footer');
         if (!footer) return;
 
+        // If the submitted solution matches the optimal, show a text message instead of a toggle button
+        if (this.isSolutionOptimal()) {
+            // Remove toggle button if it was previously created
+            const existingBtn = document.getElementById('toggleSolutionBtn');
+            if (existingBtn) {
+                existingBtn.remove();
+            }
+
+            // Add optimal message if not already present
+            if (!document.getElementById('optimalSolutionMsg')) {
+                const msg = document.createElement('span');
+                msg.id = 'optimalSolutionMsg';
+                msg.className = 'optimal-solution-msg';
+                msg.textContent = '⭐ Your solution is optimal!';
+                const exitBtn = document.getElementById('exitViewer');
+                if (exitBtn) {
+                    footer.insertBefore(msg, exitBtn);
+                } else {
+                    footer.appendChild(msg);
+                }
+            }
+
+            // Update the metric label
+            const metricLabel = document.querySelector('.metric-label');
+            if (metricLabel) {
+                metricLabel.textContent = 'Your Solution Score';
+            }
+            return;
+        }
+
         // Check if toggle button already exists
         let toggleBtn = document.getElementById('toggleSolutionBtn');
+
+        // Remove stale optimal message if present
+        const existingMsg = document.getElementById('optimalSolutionMsg');
+        if (existingMsg) {
+            existingMsg.remove();
+        }
+
         if (!toggleBtn) {
             toggleBtn = document.createElement('button');
             toggleBtn.id = 'toggleSolutionBtn';
@@ -1115,6 +1152,21 @@ class Game {
         if (metricLabel) {
             metricLabel.textContent = this.viewingOptimal ? 'Optimal Result Score' : 'Your Solution Score';
         }
+    }
+
+    /**
+     * Check if the user's submitted solution matches the optimal solution exactly
+     * @returns {boolean} True if submitted walls match optimal solution
+     */
+    isSolutionOptimal() {
+        if (!this.submittedWalls || !this.optimalSolution) {
+            return false;
+        }
+        if (this.submittedWalls.length !== this.optimalSolution.length) {
+            return false;
+        }
+        const submittedSet = new Set(this.submittedWalls.map(([r, c]) => `${r},${c}`));
+        return this.optimalSolution.every(([r, c]) => submittedSet.has(`${r},${c}`));
     }
 
     /**
@@ -1164,6 +1216,15 @@ class Game {
 
         toggleBar.style.display = 'flex';
 
+        // If the submitted solution matches the optimal, just show a confirmation message
+        if (this.isSolutionOptimal()) {
+            viewLabel.textContent = '⭐ Your solution is optimal!';
+            toggleBtn.style.display = 'none';
+            toggleBar.classList.remove('viewing-optimal');
+            return;
+        }
+
+        toggleBtn.style.display = 'inline-block';
         if (this.viewingOptimal) {
             viewLabel.textContent = 'Viewing: Optimal Result';
             toggleBtn.textContent = 'View Your Solution';
