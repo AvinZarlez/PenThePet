@@ -94,9 +94,13 @@ class Game {
             }
         }
 
-        // Re-attach pet element at its current position when pet is away from home
-        if (this._petPos !== null) {
-            this._attachPetAtPosition(this._petPos.row, this._petPos.col);
+        // Create the pet walker overlay at the correct position.
+        // The walker is a single element positioned over the whole grid so it
+        // can smoothly transition between tiles using a CSS transform.
+        const homePos = this.grid.getHomePosition();
+        if (homePos) {
+            const displayPos = this._petPos !== null ? this._petPos : homePos;
+            this._createPetWalker(displayPos.row, displayPos.col);
         }
 
         // Update penned status indicator (logic is immediate, regardless of animation)
@@ -251,17 +255,6 @@ class Game {
                     cell.appendChild(emojiSpan);
                 }
             }
-        }
-
-        // Add pet emoji overlay on top of all other layers.
-        // Suppressed when pet is wandering (_petPos !== null); the wander
-        // animation manages a separate element via _attachPetAtPosition().
-        if (tileInfo.emoji && this._petPos === null) {
-            const petSpan = document.createElement('span');
-            petSpan.className = 'pet-emoji';
-            petSpan.textContent = this.petEmoji;
-            petSpan.setAttribute('aria-hidden', 'true');
-            cell.appendChild(petSpan);
         }
 
         // Add shore overlays on water tiles (one per non-water neighbour side)
@@ -683,25 +676,39 @@ class Game {
     }
 
     /**
-     * Move the pet emoji element to a specific cell in the grid.
-     * Removes any existing pet emoji element first, then appends a new one
-     * to the target cell. Used during wander and return animations.
+     * Create the pet walker overlay element on the grid at the given position.
+     * The walker is positioned absolutely over the entire grid using a CSS
+     * transform driven by --pet-row and --pet-col custom properties.
+     * It transitions smoothly between positions via CSS transition.
+     * Any previously existing walker is replaced.
+     * @private
+     * @param {number} row - Initial row index
+     * @param {number} col - Initial column index
+     */
+    _createPetWalker(row, col) {
+        const existing = this.gridElement.querySelector('.pet-walker');
+        if (existing) existing.remove();
+        const walker = document.createElement('span');
+        walker.className = 'pet-walker';
+        walker.textContent = this.petEmoji;
+        walker.setAttribute('aria-hidden', 'true');
+        walker.style.setProperty('--pet-row', row);
+        walker.style.setProperty('--pet-col', col);
+        this.gridElement.appendChild(walker);
+    }
+
+    /**
+     * Move the pet walker to a specific cell by updating its CSS custom
+     * properties. The CSS transition animates the resulting transform change.
      * @private
      * @param {number} row - Target row index
      * @param {number} col - Target column index
      */
     _attachPetAtPosition(row, col) {
-        const existing = this.gridElement.querySelector('.pet-emoji');
-        if (existing) {
-            existing.remove();
-        }
-        const cell = this.gridElement.querySelector(`[data-row="${row}"][data-col="${col}"]`);
-        if (cell) {
-            const petSpan = document.createElement('span');
-            petSpan.className = 'pet-emoji';
-            petSpan.textContent = this.petEmoji;
-            petSpan.setAttribute('aria-hidden', 'true');
-            cell.appendChild(petSpan);
+        const walker = this.gridElement.querySelector('.pet-walker');
+        if (walker) {
+            walker.style.setProperty('--pet-row', row);
+            walker.style.setProperty('--pet-col', col);
         }
     }
 
@@ -716,8 +723,10 @@ class Game {
             const homePos = this.grid.getHomePosition();
             if (!homePos) return;
             this._petPos = { row: homePos.row, col: homePos.col };
-            this._attachPetAtPosition(homePos.row, homePos.col);
         }
+        // Remove return-speed class so wander transitions use the slower CSS default
+        const walker = this.gridElement.querySelector('.pet-walker');
+        if (walker) walker.classList.remove('pet-returning');
         this._scheduleWanderStep(accessibleTiles);
     }
 
@@ -784,6 +793,10 @@ class Game {
             if (onComplete) onComplete();
             return;
         }
+
+        // Speed up the CSS transition for each return step
+        const walker = this.gridElement.querySelector('.pet-walker');
+        if (walker) walker.classList.add('pet-returning');
 
         path.forEach((pos, index) => {
             const timeoutId = setTimeout(() => {
@@ -1105,6 +1118,8 @@ class Game {
     updateCellSizes() {
         const cellSize = this.calculateCellSize();
         this.gridElement.style.setProperty('--cell-size', `${cellSize}px`);
+        this.gridElement.style.setProperty('--grid-gap', `${this.CELL_GAP}px`);
+        this.gridElement.style.setProperty('--grid-padding', '3px');
         this.gridElement.style.gap = `${this.CELL_GAP}px`;
     }
 

@@ -1278,37 +1278,44 @@ describe('Game — Pet Wander & Return', () => {
     test('pet emoji appears on home tile when _petPos is null', () => {
         game = createPennedGame();
         game.render();
-        const homeCell = game.gridElement.querySelector('[data-row="2"][data-col="2"]');
-        expect(homeCell.querySelector('.pet-emoji')).not.toBeNull();
+        // Pet walker is on the grid (not inside a cell) centred at home (2,2)
+        const walker = game.gridElement.querySelector('.pet-walker');
+        expect(walker).not.toBeNull();
+        expect(walker.style.getPropertyValue('--pet-row')).toBe('2');
+        expect(walker.style.getPropertyValue('--pet-col')).toBe('2');
     });
 
     test('pet emoji is NOT on home tile when _petPos is non-null during render', () => {
         game = createPennedGame();
         game._petPos = { row: 2, col: 2 };
         game.render();
-        // _createCellElement suppresses the static emoji; _attachPetAtPosition adds it back
-        const petEmojis = game.gridElement.querySelectorAll('.pet-emoji');
-        // There should be exactly one (the one attached by _attachPetAtPosition)
-        expect(petEmojis).toHaveLength(1);
+        // There should be exactly one pet-walker on the grid
+        const walkers = game.gridElement.querySelectorAll('.pet-walker');
+        expect(walkers).toHaveLength(1);
+        // It is positioned at the _petPos coordinates
+        expect(walkers[0].style.getPropertyValue('--pet-row')).toBe('2');
+        expect(walkers[0].style.getPropertyValue('--pet-col')).toBe('2');
     });
 
-    test('_attachPetAtPosition moves the pet emoji to the target cell', () => {
+    test('_attachPetAtPosition updates the walker CSS properties to target position', () => {
         game = createPennedGame();
         game._petPos = { row: 2, col: 2 };
         game.render();
         game._attachPetAtPosition(1, 1);
-        expect(game.gridElement.querySelector('[data-row="1"][data-col="1"] .pet-emoji')).not.toBeNull();
-        expect(game.gridElement.querySelector('[data-row="2"][data-col="2"] .pet-emoji')).toBeNull();
+        const walker = game.gridElement.querySelector('.pet-walker');
+        expect(walker).not.toBeNull();
+        expect(walker.style.getPropertyValue('--pet-row')).toBe('1');
+        expect(walker.style.getPropertyValue('--pet-col')).toBe('1');
     });
 
-    test('_attachPetAtPosition removes any existing pet-emoji before adding new one', () => {
+    test('_attachPetAtPosition only ever has one pet-walker on the grid', () => {
         game = createPennedGame();
         game._petPos = { row: 2, col: 2 };
         game.render();
         game._attachPetAtPosition(1, 1);
         game._attachPetAtPosition(1, 2);
-        const petEmojis = game.gridElement.querySelectorAll('.pet-emoji');
-        expect(petEmojis).toHaveLength(1);
+        const walkers = game.gridElement.querySelectorAll('.pet-walker');
+        expect(walkers).toHaveLength(1);
     });
 
     test('wander timeouts are queued after penned animation completes', () => {
@@ -1425,8 +1432,10 @@ describe('Game — Pet Wander & Return', () => {
         game = createPennedGame();
         game._petPos = { row: 2, col: 2 };
         game.render();
-        const pet = game.gridElement.querySelector('[data-row="2"][data-col="2"] .pet-emoji');
-        expect(pet).not.toBeNull();
+        const walker = game.gridElement.querySelector('.pet-walker');
+        expect(walker).not.toBeNull();
+        expect(walker.style.getPropertyValue('--pet-row')).toBe('2');
+        expect(walker.style.getPropertyValue('--pet-col')).toBe('2');
     });
 
     test('return animation starts when re-rendered while unpenned with _petPos set', () => {
