@@ -220,11 +220,13 @@ class MapGenerator {
     }
     
     /**
-     * Calculate the maximum achievable area (goal) for a given map
-     * Uses the MILP solver to find the optimal wall placements
+     * Calculate the maximum achievable area (goal) for a given map.
+     * Uses the MILP solver to find the optimal wall placements, then runs BFS
+     * to determine the resulting penned area.
      * @param {Array} map - 2D array of tile types (strings)
      * @param {number} maxWalls - Maximum number of walls that can be placed
-     * @returns {Object|null} Object with {goalArea, optimalWallCount, optimalSolution}, or null if pet cannot be penned
+     * @returns {Object|null} Object with {goalArea, optimalWallCount, optimalSolution, wallPositions, pennedTiles},
+     *   or null if pet cannot be penned
      */
     calculateGoal(map, maxWalls) {
         // Convert map from tile type strings to numbers for the solver
@@ -236,11 +238,17 @@ class MapGenerator {
         if (solution === null) {
             return null;
         }
-        
+
+        const optimalSolution = solution.walls ? this._convertWallsToCoordinates(solution.walls) : [];
+        const wallPositions = new Set(optimalSolution.map(([r, c]) => `${r},${c}`));
+        const pennedTiles = PathfindingUtils.getPennedTiles(map, wallPositions);
+
         return {
             goalArea: solution.goalArea,
             optimalWallCount: solution.optimalWallCount || 0,
-            optimalSolution: solution.walls ? this._convertWallsToCoordinates(solution.walls) : []
+            optimalSolution,
+            wallPositions,
+            pennedTiles
         };
     }
 
@@ -263,16 +271,6 @@ class MapGenerator {
     }
 
     /**
-     * Build a Set of "row,col" strings from an array of [row,col] coordinate pairs.
-     * @private
-     * @param {Array} coords - Array of [row, col] pairs
-     * @returns {Set<string>}
-     */
-    _wallSet(coords) {
-        return new Set(coords.map(([r, c]) => `${r},${c}`));
-    }
-
-    /**
      * Prune unnecessary special tiles from a map.
      *
      * For every score-increasing tile (star) inside the optimal penned area:
@@ -288,28 +286,25 @@ class MapGenerator {
      * @private
      * @param {Array} map - 2D array of tile type strings
      * @param {number} maxWalls - Wall budget used for re-solving
-     * @param {Object} solution - Current solution {goalArea, optimalWallCount, optimalSolution}
+     * @param {Object} solution - Current solution from calculateGoal
      * @returns {{map: Array, solution: Object}|null}
      */
     _pruneUnnecessarySpecialTiles(map, maxWalls, solution) {
-        const originalWalls = this._wallSet(solution.optimalSolution);
+        const originalWalls = solution.wallPositions;
         let currentMap = map.map(row => [...row]);
-
-        const pennedTiles = PathfindingUtils.getPennedTiles(currentMap, originalWalls);
         let totalStars = currentMap.reduce((acc, row) => acc + row.filter(t => t === 'star').length, 0);
         let totalBees  = currentMap.reduce((acc, row) => acc + row.filter(t => t === 'bee').length, 0);
 
         // Step 1: Prune unnecessary stars inside the penned area.
         // Always keep at least one star on the map.
-        for (const [r, c] of pennedTiles) {
+        for (const [r, c] of solution.pennedTiles) {
             if (currentMap[r][c] !== 'star') continue;
             if (totalStars <= 1) continue; // Preserve the last star
             const testMap = currentMap.map(row => [...row]);
             testMap[r][c] = 'grass';
             const testSolution = this.calculateGoal(testMap, maxWalls);
             if (testSolution === null) continue;
-            const testWalls = this._wallSet(testSolution.optimalSolution);
-            if (this._wallSetsEqual(originalWalls, testWalls)) {
+            if (this._wallSetsEqual(originalWalls, testSolution.wallPositions)) {
                 currentMap[r][c] = 'grass';
                 totalStars--;
             }
@@ -325,8 +320,7 @@ class MapGenerator {
                 testMap[r][c] = 'grass';
                 const testSolution = this.calculateGoal(testMap, maxWalls);
                 if (testSolution === null) continue;
-                const testWalls = this._wallSet(testSolution.optimalSolution);
-                if (this._wallSetsEqual(originalWalls, testWalls)) {
+                if (this._wallSetsEqual(originalWalls, testSolution.wallPositions)) {
                     currentMap[r][c] = 'grass';
                     totalBees--;
                 }

@@ -491,11 +491,13 @@ describe('MapGenerator', () => {
 
             const result = generator.calculateGoal(map, 10);
             
-            expect(result).toEqual({
+            expect(result).toMatchObject({
                 goalArea: 12,
                 optimalWallCount: 6,
                 optimalSolution: []
             });
+            expect(result.wallPositions).toBeInstanceOf(Set);
+            expect(Array.isArray(result.pennedTiles)).toBe(true);
             
             MILPSolver.solveMap.mockRestore();
         });
