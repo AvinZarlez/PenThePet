@@ -721,6 +721,13 @@
     transform: translateY(0);
 }
 
+.optimal-solution-msg {
+    font-size: 1em;
+    font-weight: bold;
+    color: #2e7d32;
+    text-align: center;
+}
+
 .exit-viewer-btn {
     padding: 14px 32px;
     font-size: 1.1em;
