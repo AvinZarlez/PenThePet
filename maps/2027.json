@@ -483,9 +483,9 @@
     "date": "2027-01-17",
     "mapName": "Mesa",
     "size": 20,
-    "goal": 136,
+    "goal": 154,
     "maxWalls": 15,
-    "map": "wwggwwwgggggwgggbggwggwgwwgggggggggggwswggggsgwwwgwwwggwggwgggwgggwggwgggggsgggggwgwggggwwgggbwgwgswgggwwggwgggwwggggbgwggggggwgwbggggggggggggggwwgggggwgggwgwggwwswgswwggggwgbwwggggggggggggwggggwgwggggwggggwwgwhwsgggggbgswgwgwwggggwwggwgsgbwggggwggwgwggggwgwsggggggsgwwbgwgwgbgggwgwgwggggsggwsgggwsgggwgggwbwwggwggwwgwsgggggwggwwwgggggwgwwgwwgwgwgwwgwggwgwgggbwwgwgsgwggsggggwgbwswwwggggggggggggwswbg",
+    "map": "wwggwwwgggggwggggggwggwgwwgggggggggggwswggggsgwwwgwwwggwggwgggwgggwggwgggggggggggwgwggggwwggggwgwgswgggwwggwgggwwggggggwggggggwgwgggggggggggggggwwgggggwgggwgwggwwswggwwggggwggwwggggggggggggwggggwgwggggwggggwwgwhwggggggggswgwgwwggggwwggwgsggwggggwggwgwggggwgwsggggggggwwggwgwgggggwgwgwgggggggwsgggwsgggwgggwgwwggwggwwgwsgggggwggwwwgggggwgwwgwwgwgwgwwgwggwgwggggwwgwgsgwggsggggwggwswwwggggggggggggwswbg",
     "optimalSolution": [
       1,
       13,
@@ -784,9 +784,9 @@
     "date": "2027-01-26",
     "mapName": "River",
     "size": 20,
-    "goal": 171,
+    "goal": 153,
     "maxWalls": 15,
-    "map": "ggggsbwggggwgggwgbsggggwgbwwwgsswgbggwgggwggggggggbwwgwgggggggsggwwgwggwwwgggbwwgwwgggwwbggggwwwgwgwgggwwsgggwgggwgggggggwgwgggggwggwsswwgggggwwgggwwgwgggwbgggggbwggwggwggwggggwgggsggwwgwggggggwwwggggggwggsgggghgggggwgbwgwgggggggwwggwggwwgggggwwggwswggsgwggwggwwwgwwgggggwggwgsgwgsbggggwgwsggggwggwggggwwgwwgggwgwwgwgwggggwgggwswggwwggwgswggggggwggwggggggggggwggbwwggwswwgggggwwsgwwggbgggggggwwggwggw",
+    "map": "ggggsgwggggwgggwggsggggwgbwwwgggwggggwgggwgggggggggwwgwggggggggggwwgwggwwwggggwwgwwgggwwgggggwwwgwgwgggwwggggwgggwgggggggwgwgggggwggwggwwgggggwwgggwwgwgggwbggggggwggwggwggwggggwgggsggwwgwggggggwwwggggggwggggggghgggggwggwgwgggggggwwggwggwwgggggwwggwgwggggwggwggwwwgwwgggggwggwgggwgsgggggwgwgggggwggwggggwwgwwgggwgwwgwgwggggwgggwgwggwwggwggwggggggwggwggggggggggwgggwwggwswwgggggwwsgwwggggggggggwwggwggw",
     "optimalSolution": [
       0,
       9,
