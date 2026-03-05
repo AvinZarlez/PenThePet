@@ -241,37 +241,7 @@ class MapGenerator {
 
         const optimalSolution = solution.walls ? this._convertWallsToCoordinates(solution.walls) : [];
         const wallPositions = new Set(optimalSolution.map(([r, c]) => `${r},${c}`));
-
-        // BFS from home to find all tiles inside the penned area
-        const size = map.length;
-        let homeRow = -1, homeCol = -1;
-        for (let i = 0; i < size && homeRow < 0; i++) {
-            for (let j = 0; j < map[i].length; j++) {
-                if (map[i][j] === 'home') { homeRow = i; homeCol = j; break; }
-            }
-        }
-        const pennedTiles = [];
-        if (homeRow >= 0) {
-            const visited = new Set([`${homeRow},${homeCol}`]);
-            const queue = [[homeRow, homeCol]];
-            const dirs = [[-1, 0], [1, 0], [0, -1], [0, 1]];
-            while (queue.length > 0) {
-                const [row, col] = queue.shift();
-                for (const [dr, dc] of dirs) {
-                    const nr = row + dr, nc = col + dc;
-                    const key = `${nr},${nc}`;
-                    if (nr < 0 || nr >= size || nc < 0 || nc >= map[nr].length) continue;
-                    if (visited.has(key) || wallPositions.has(key)) continue;
-                    if (isBlockingTile(map[nr][nc])) continue;
-                    visited.add(key);
-                    queue.push([nr, nc]);
-                }
-            }
-            for (const key of visited) {
-                const [r, c] = key.split(',').map(Number);
-                pennedTiles.push([r, c]);
-            }
-        }
+        const pennedTiles = PathfindingUtils.getPennedTiles(map, wallPositions);
 
         return {
             goalArea: solution.goalArea,
