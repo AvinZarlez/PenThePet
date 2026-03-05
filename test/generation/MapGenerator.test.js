@@ -546,6 +546,62 @@ describe('MapGenerator', () => {
             
             spy.mockRestore();
         });
+
+        test('should extract wall coordinates from solver walls matrix', () => {
+            // Solver returns a walls matrix with actual 1s — _convertWallsToCoordinates must find them
+            const walls = [
+                [0, 1, 0],
+                [0, 0, 0],
+                [0, 0, 1]
+            ];
+            jest.spyOn(MILPSolver, 'solveMap').mockReturnValue({
+                walls,
+                goalArea: 4,
+                optimalWallCount: 2
+            });
+
+            const generator = new MapGenerator(3);
+            const map = [
+                ['grass', 'grass', 'grass'],
+                ['grass', 'home', 'grass'],
+                ['grass', 'grass', 'grass']
+            ];
+
+            const result = generator.calculateGoal(map, 5);
+            expect(result.optimalSolution).toContainEqual([0, 1]);
+            expect(result.optimalSolution).toContainEqual([2, 2]);
+            expect(result.optimalSolution).toHaveLength(2);
+
+            MILPSolver.solveMap.mockRestore();
+        });
+    });
+
+    describe('_wallSetsEqual()', () => {
+        test('should return true when both sets are empty', () => {
+            const generator = new MapGenerator(5);
+            expect(generator._wallSetsEqual(new Set(), new Set())).toBe(true);
+        });
+
+        test('should return true when both sets have the same keys', () => {
+            const generator = new MapGenerator(5);
+            const a = new Set(['1,2', '3,4']);
+            const b = new Set(['1,2', '3,4']);
+            expect(generator._wallSetsEqual(a, b)).toBe(true);
+        });
+
+        test('should return false when sets have different sizes', () => {
+            const generator = new MapGenerator(5);
+            const a = new Set(['1,2', '3,4']);
+            const b = new Set(['1,2']);
+            expect(generator._wallSetsEqual(a, b)).toBe(false);
+        });
+
+        test('should return false when sets have same size but different keys', () => {
+            const generator = new MapGenerator(5);
+            const a = new Set(['1,2', '3,4']);
+            const b = new Set(['1,2', '5,6']);
+            expect(generator._wallSetsEqual(a, b)).toBe(false);
+        });
     });
 
     describe('Edge Cases', () => {

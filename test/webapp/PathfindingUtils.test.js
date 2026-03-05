@@ -436,6 +436,18 @@ describe('PathfindingUtils', () => {
             const score = PathfindingUtils.calculatePennedScore(map, 2, 2);
             expect(score).toBe(12);
         });
+
+        test('should fall back to 1 for tile IDs not in the score map', () => {
+            // Tile ID 99 is not in the default score map — should count as 1
+            const map = [
+                [5, 5, 5],
+                [5, 2, 99],
+                [5, 5, 5]
+            ];
+            const score = PathfindingUtils.calculatePennedScore(map, 1, 1);
+            // home(1) + unknown tile(1) = 2
+            expect(score).toBe(2);
+        });
     });
 
     describe('allWalkableTilesReachable()', () => {
@@ -531,6 +543,91 @@ describe('PathfindingUtils', () => {
             ];
             // Left and right regions are disconnected from home
             expect(PathfindingUtils.allWalkableTilesReachable(map)).toBe(false);
+        });
+    });
+
+    describe('hasPathToEdge()', () => {
+        test('should return true when home has a clear path to edge', () => {
+            const map = [
+                ['grass', 'grass', 'grass'],
+                ['grass', 'home', 'grass'],
+                ['grass', 'grass', 'grass']
+            ];
+            expect(PathfindingUtils.hasPathToEdge(map)).toBe(true);
+        });
+
+        test('should return false when home is completely surrounded by water', () => {
+            const map = [
+                ['water', 'water', 'water'],
+                ['water', 'home', 'water'],
+                ['water', 'water', 'water']
+            ];
+            expect(PathfindingUtils.hasPathToEdge(map)).toBe(false);
+        });
+
+        test('should return true when home is on the map edge', () => {
+            const map = [
+                ['home', 'grass', 'grass'],
+                ['grass', 'grass', 'grass'],
+                ['grass', 'grass', 'grass']
+            ];
+            expect(PathfindingUtils.hasPathToEdge(map)).toBe(true);
+        });
+
+        test('should return false when no home tile exists', () => {
+            const map = [
+                ['grass', 'grass', 'grass'],
+                ['grass', 'grass', 'grass'],
+                ['grass', 'grass', 'grass']
+            ];
+            expect(PathfindingUtils.hasPathToEdge(map)).toBe(false);
+        });
+    });
+
+    describe('getPennedTiles()', () => {
+        test('should return all reachable tiles from home when no walls', () => {
+            const map = [
+                ['water', 'water', 'water'],
+                ['water', 'home', 'water'],
+                ['water', 'water', 'water']
+            ];
+            const tiles = PathfindingUtils.getPennedTiles(map, new Set());
+            expect(tiles).toHaveLength(1);
+            expect(tiles[0]).toEqual([1, 1]);
+        });
+
+        test('should return empty array when no home tile exists', () => {
+            const map = [
+                ['grass', 'grass', 'grass'],
+                ['grass', 'grass', 'grass'],
+                ['grass', 'grass', 'grass']
+            ];
+            const tiles = PathfindingUtils.getPennedTiles(map, new Set());
+            expect(tiles).toEqual([]);
+        });
+
+        test('should use empty Set when wallPositions not provided', () => {
+            const map = [
+                ['water', 'water', 'water'],
+                ['water', 'home', 'water'],
+                ['water', 'water', 'water']
+            ];
+            // No wallPositions argument — should default to empty Set
+            const tiles = PathfindingUtils.getPennedTiles(map);
+            expect(tiles).toHaveLength(1);
+        });
+
+        test('should exclude wall positions from reachable area', () => {
+            const map = [
+                ['grass', 'grass', 'grass'],
+                ['grass', 'home', 'grass'],
+                ['grass', 'grass', 'grass']
+            ];
+            // Block all exits with a wall set
+            const walls = new Set(['0,0','0,1','0,2','1,0','1,2','2,0','2,1','2,2']);
+            const tiles = PathfindingUtils.getPennedTiles(map, walls);
+            expect(tiles).toHaveLength(1);
+            expect(tiles[0]).toEqual([1, 1]);
         });
     });
 });
