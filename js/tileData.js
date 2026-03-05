@@ -36,7 +36,6 @@
  *   description   - Human-readable description for player instructions.
  *                   Rendered in the instructions modal so designers can
  *                   document a tile in one place and have it show to players.
- *   emoji         - Optional emoji shown inside the tile (e.g. home pet)
  *   ariaLabel     - Function (row, col) => string for screen reader label
  */
 
@@ -96,7 +95,6 @@ const TILE_DATA = {
         assets: ['grass.svg', 'home.svg'],
         enclosedAssets: ['penned.svg', 'home.svg'],
         pawOverlay: [],
-        emoji: true,
         ariaLabel: (row, col) => `Home tile at row ${row + 1}, column ${col + 1}. Pet starting location.`,
     },
     star: {

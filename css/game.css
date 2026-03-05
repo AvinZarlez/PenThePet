@@ -361,6 +361,7 @@
     max-width: 90vw;
     width: fit-content;
     margin: 0 auto;
+    position: relative;
 }
 
 /* ========== Cell Styles ========== */
@@ -560,7 +561,7 @@
         calc(var(--grid-padding, 3px) + var(--pet-col, 0) * (var(--cell-size, 50px) + var(--grid-gap, 3px)) + var(--cell-size, 50px) / 2 - 50%),
         calc(var(--grid-padding, 3px) + var(--pet-row, 0) * (var(--cell-size, 50px) + var(--grid-gap, 3px)) + var(--cell-size, 50px) / 2 - 50%)
     );
-    font-size: clamp(1.2em, calc(var(--cell-size, 50px) / 18), 2.2em);
+    font-size: clamp(8px, calc(var(--cell-size, 50px) * 0.65), 36px);
     line-height: 1;
     pointer-events: none;
     z-index: 10;
