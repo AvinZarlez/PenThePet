@@ -567,11 +567,11 @@ describe('MapGenerator', () => {
             MILPSolver.solveMap.mockRestore();
         });
 
-        test('should handle large size (21x21)', () => {
-            const size = 21;
+        test('should handle large size (17x17)', () => {
+            const size = 17;
             jest.spyOn(MILPSolver, 'solveMap').mockImplementation((_map, maxWalls) => {
                 if (maxWalls >= size * size) {
-                    return { walls: Array(size).fill(null).map(() => Array(size).fill(0)), goalArea: 100, optimalWallCount: 15 };
+                    return { walls: Array(size).fill(null).map(() => Array(size).fill(0)), goalArea: 100, optimalWallCount: 12 };
                 }
                 return { walls: Array(size).fill(null).map(() => Array(size).fill(0)), goalArea: 50, optimalWallCount: 10 };
             });

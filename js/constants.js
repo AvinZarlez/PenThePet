@@ -7,13 +7,13 @@
 
 const CONSTANTS = {
     // Wall configuration
-    MAX_WALLS: 15,              // Absolute maximum walls (for largest grid sizes)
+    MAX_WALLS: 12,              // Absolute maximum walls (for largest grid sizes)
     
     /**
      * Calculate max walls for a given grid size.
      * Uses 75% of grid size as the wall budget - this provides a good balance
      * between challenge and solvability across different grid sizes.
-     * Examples: 7x7→5, 9x9→6, 10x10→7, 11x11→8, 16x16→12, 21x21→15
+     * Examples: 7x7→5, 9x9→6, 10x10→7, 11x11→8, 16x16→12, 17x17→12
      * @param {number} size - Grid size (one dimension)
      * @returns {number} Maximum walls allowed
      */
@@ -22,7 +22,7 @@ const CONSTANTS = {
     },
     
     // Grid configuration
-    MAX_GRID_SIZE: 21,          // Maximum grid size (21x21)
+    MAX_GRID_SIZE: 17,          // Maximum grid size (17x17)
     MIN_GRID_SIZE: 7,           // Minimum grid size (7x7)
     DEFAULT_GRID_SIZE: 9,       // Default grid size (9x9)
     
@@ -65,6 +65,8 @@ const CONSTANTS = {
     PENNED_ANIMATION_DELAY_MS: 50,    // Delay between BFS wave steps in the penned-area animation (ms)
     PAW_ANIMATION_DELAY_MS: 80,       // Delay between each paw step in the escape-path animation (ms)
     SCORE_POPUP_DURATION_MS: 1800,    // Duration of score modifier popup float animation (ms)
+    PET_WANDER_STEP_MS: 600,          // Delay between each pet wander step when penned (ms)
+    PET_RETURN_STEP_MS: 150,          // Delay between each step when pet walks home (ms)
 
     // Timezone
     DEFAULT_TIMEZONE: 'America/Los_Angeles',    // Default timezone (Pacific / California)

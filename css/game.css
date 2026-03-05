@@ -361,6 +361,7 @@
     max-width: 90vw;
     width: fit-content;
     margin: 0 auto;
+    position: relative;
 }
 
 /* ========== Cell Styles ========== */
@@ -549,11 +550,28 @@
     pointer-events: none;
 }
 
-/* Pet emoji overlay — rendered above all tile-overlay layers */
-.cell .pet-emoji {
-    position: relative;
-    z-index: 2;
+/* Pet walker overlay — a single element positioned over the whole grid.
+ * --pet-row and --pet-col drive a CSS transform so the pet can slide
+ * smoothly between tiles without being moved between DOM cells. */
+.pet-walker {
+    position: absolute;
+    top: 0;
+    left: 0;
+    transform: translate(
+        calc(var(--grid-padding, 3px) + var(--pet-col, 0) * (var(--cell-size, 50px) + var(--grid-gap, 3px)) + var(--cell-size, 50px) / 2 - 50%),
+        calc(var(--grid-padding, 3px) + var(--pet-row, 0) * (var(--cell-size, 50px) + var(--grid-gap, 3px)) + var(--cell-size, 50px) / 2 - 50%)
+    );
+    font-size: clamp(8px, calc(var(--cell-size, 50px) * 0.65), 36px);
+    line-height: 1;
     pointer-events: none;
+    z-index: 10;
+    /* Wander speed: transition takes most of PET_WANDER_STEP_MS */
+    transition: transform 420ms ease-in-out;
+}
+
+/* Faster transition used during the return-home walk */
+.pet-walker.pet-returning {
+    transition: transform 100ms ease-in-out;
 }
 
 /* Path overlay using data-overlay attribute */
@@ -719,6 +737,13 @@
 
 .toggle-solution-btn:active {
     transform: translateY(0);
+}
+
+.optimal-solution-msg {
+    font-size: 1em;
+    font-weight: bold;
+    color: #2e7d32;
+    text-align: center;
 }
 
 .exit-viewer-btn {
