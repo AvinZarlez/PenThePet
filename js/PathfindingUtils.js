@@ -317,50 +317,6 @@ class PathfindingUtils {
         return true;
     }
 
-    /**
-     * Find all tile positions inside the penned area (reachable from home without
-     * crossing blocking tiles or additional wall positions).
-     * Uses BFS on a string map, treating water and any extra wall positions as blocking.
-     *
-     * @param {Array} map - 2D array of tile type strings ('grass', 'water', 'home', etc.)
-     * @param {Set<string>} [wallPositions] - Optional set of "row,col" strings for placed walls
-     * @returns {Array<Array<number>>} Array of [row, col] positions inside the penned area
-     */
-    static getPennedTiles(map, wallPositions) {
-        const blocked = wallPositions || new Set();
-        const size = map.length;
-
-        // Find home position
-        let homeRow = -1, homeCol = -1;
-        for (let i = 0; i < size; i++) {
-            for (let j = 0; j < map[i].length; j++) {
-                if (map[i][j] === 'home') { homeRow = i; homeCol = j; break; }
-            }
-            if (homeRow >= 0) break;
-        }
-        if (homeRow < 0) return [];
-
-        const visited = new Set([`${homeRow},${homeCol}`]);
-        const queue = [[homeRow, homeCol]];
-        const directions = [[-1, 0], [1, 0], [0, -1], [0, 1]];
-
-        while (queue.length > 0) {
-            const [row, col] = queue.shift();
-            for (const [dr, dc] of directions) {
-                const newRow = row + dr;
-                const newCol = col + dc;
-                const key = `${newRow},${newCol}`;
-                if (newRow < 0 || newRow >= size || newCol < 0 || newCol >= map[newRow].length) continue;
-                if (visited.has(key)) continue;
-                if (blocked.has(key)) continue;
-                if (isBlockingTile(map[newRow][newCol])) continue;
-                visited.add(key);
-                queue.push([newRow, newCol]);
-            }
-        }
-
-        return [...visited].map(key => key.split(',').map(Number));
-    }
 }
 
 // Export for use in Node.js and browser
