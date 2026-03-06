@@ -6,6 +6,9 @@
  */
 
 const CONSTANTS = {
+    // Repository URL — update here if the repo ever moves
+    REPO_URL: 'https://github.com/AvinZarlez/penthepet',
+
     // Wall configuration
     MAX_WALLS: 12,              // Absolute maximum walls (for largest grid sizes)
     

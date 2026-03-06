@@ -216,6 +216,20 @@ async function initGame() {
         window.menu = menu;
     }
 
+    // Update all GitHub links in the page from the canonical REPO_URL constant
+    // so there is a single place to change the URL if the repo ever moves.
+    const repoUrl = (typeof CONSTANTS !== 'undefined' && CONSTANTS.REPO_URL) || '';
+    if (repoUrl) {
+        const footerLink = document.getElementById('githubFooterLink');
+        if (footerLink) footerLink.href = repoUrl;
+        const projectLink = document.getElementById('githubProjectLink');
+        if (projectLink) projectLink.href = repoUrl;
+        const issuesLink = document.getElementById('githubIssuesLink');
+        if (issuesLink) issuesLink.href = repoUrl + '/issues';
+        const syncErrorIssueLink = document.getElementById('syncErrorIssueLink');
+        if (syncErrorIssueLink) syncErrorIssueLink.href = repoUrl + '/issues';
+    }
+
     // Initialise cloud sync (no-ops if Firebase is not configured)
     if (typeof CloudSync !== 'undefined') {
         CloudSync.init();
@@ -225,13 +239,18 @@ async function initGame() {
         // Timer-only refresh: update the timer display in-place without interrupting
         //   an in-progress game (avoids wiping wall placements or resetting the overlay).
         // See docs/CLOUD_SYNC_SETUP.md for the full sync trigger table.
-        document.addEventListener('cloudsync:synced', function () {
+        document.addEventListener('cloudsync:synced', async function () {
             if (!menu || !game || !game.currentDate) return;
+
+            // Collect dates overwritten by cloud data so we can notify the user.
+            const cloudOverwrites = typeof CloudSync !== 'undefined'
+                ? CloudSync.getAndClearCloudOverwrites()
+                : new Set();
 
             const currentSubmission = game.loadSubmission(game.currentDate);
             const hasSubmissionNow = currentSubmission !== null;
             const submissionStateChanged = game.isSubmitted !== hasSubmissionNow;
-            // Reload if score or time differs — catches earliest-wins merges changing either field.
+            // Reload if score or time differs — catches score-wins merges changing either field.
             const submissionDataChanged = game.isSubmitted && currentSubmission && (
                 currentSubmission.score !== game.submittedScore ||
                 (typeof currentSubmission.time === 'number' && typeof game.elapsedSeconds === 'number' &&
@@ -239,7 +258,12 @@ async function initGame() {
 
             if (submissionStateChanged || submissionDataChanged) {
                 if (menu.mapsDatabase && menu.mapsDatabase[game.currentDate]) {
-                    menu.loadLevel(menu.mapsDatabase[game.currentDate]);
+                    await menu.loadLevel(menu.mapsDatabase[game.currentDate]);
+                }
+                // Notify the user when cloud data overwrote the current level's local data.
+                if (cloudOverwrites.has(game.currentDate) &&
+                    game && typeof game.showNotification === 'function') {
+                    game.showNotification('☁️ Updated level data loaded from cloud');
                 }
                 return;
             }
