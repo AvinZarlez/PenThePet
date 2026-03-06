@@ -77,6 +77,7 @@ const TILE_DATA = {
         compactChar: 'W',
         numericId: 5,
         cssClass: 'wall',
+        wallState: true,
         description: 'Walls block pet movement. Click on a wall to remove it. You have a limited number of walls to place.',
         assets: ['wall.svg'],
         pawOverlay: [],
@@ -126,6 +127,36 @@ const TILE_DATA = {
         assets: ['grass.svg', 'bee-outline.svg', 'bee.svg'],
         enclosedAssets: ['penned.svg', 'bee-outline.svg', 'bee.svg'],
         ariaLabel: (row, col) => `Bee tile at row ${row + 1}, column ${col + 1}. Costs 3 points. Cannot place a wall here.`,
+    },
+    hole: {
+        score: 0,
+        wallPlaceable: true,
+        clickable: true,
+        blocksMovement: true,
+        chance: 0.03,
+        compactChar: 'o',
+        numericId: 6,
+        cssClass: 'hole',
+        wallTransformsTo: 'filledHole',
+        description: 'Holes block movement like water, but you can fill them by placing a wall. A filled hole acts as grass and scores 1 point.',
+        assets: ['hole.svg'],
+        pawOverlay: [],
+        ariaLabel: (row, col) => `Hole at row ${row + 1}, column ${col + 1}. Click to fill with a wall.`,
+    },
+    filledHole: {
+        score: 1,
+        wallPlaceable: false,
+        clickable: true,
+        blocksMovement: false,
+        chance: 0,
+        compactChar: 'O',
+        numericId: 7,
+        cssClass: 'filled-hole',
+        wallState: true,
+        description: 'A filled hole acts as grass, scoring 1 point when inside your penned area. Click to remove the fill.',
+        assets: ['filled-hole.svg'],
+        enclosedAssets: ['filled-hole-penned.svg'],
+        ariaLabel: (row, col) => `Filled hole at row ${row + 1}, column ${col + 1}. Acts as grass. Click to remove fill.`,
     },
 };
 
@@ -208,6 +239,44 @@ for (const [name, data] of Object.entries(TILE_DATA)) {
 }
 
 /**
+ * Set of tile name strings that are fillable (blocksMovement AND wallPlaceable).
+ * These tiles become passable when a wall is placed on them.
+ * Used by PathfindingUtils and the solver to handle tiles that transform
+ * from blocking to passable when a wall is placed.
+ * @type {Set<string>}
+ */
+const FILLABLE_TILES = new Set();
+for (const [name, data] of Object.entries(TILE_DATA)) {
+    if (data.blocksMovement && data.wallPlaceable) {
+        FILLABLE_TILES.add(name);
+    }
+}
+
+/**
+ * Set of numericIds for fillable tiles.
+ * @type {Set<number>}
+ */
+const FILLABLE_NUMERIC_IDS = new Set();
+for (const data of Object.values(TILE_DATA)) {
+    if (data.blocksMovement && data.wallPlaceable) {
+        FILLABLE_NUMERIC_IDS.add(data.numericId);
+    }
+}
+
+/**
+ * Map from numericId → filled score for fillable tiles.
+ * When a fillable tile is filled (wall placed), it uses the wallTransformsTo tile's score.
+ * @type {Object<number, number>}
+ */
+const FILLED_SCORE_MAP = {};
+for (const data of Object.values(TILE_DATA)) {
+    if (data.blocksMovement && data.wallPlaceable && data.wallTransformsTo) {
+        const filledData = TILE_DATA[data.wallTransformsTo];
+        FILLED_SCORE_MAP[data.numericId] = filledData ? filledData.score : 1;
+    }
+}
+
+/**
  * Check if a tile name represents a wall-placeable tile.
  * @param {string} tileName - Tile type name
  * @returns {boolean}
@@ -252,6 +321,47 @@ function isBlockingNumericId(numericId) {
  */
 function isBlockingTile(tileName) {
     return BLOCKING_TILES.has(tileName);
+}
+
+/**
+ * Check if a tile name is fillable (blocks movement but can have wall placed).
+ * Fillable tiles become passable when a wall is placed on them.
+ * @param {string} tileName - Tile type name
+ * @returns {boolean}
+ */
+function isFillableTile(tileName) {
+    return FILLABLE_TILES.has(tileName);
+}
+
+/**
+ * Check if a numeric tile ID is fillable.
+ * @param {number} numericId - Numeric tile ID
+ * @returns {boolean}
+ */
+function isFillableNumericId(numericId) {
+    return FILLABLE_NUMERIC_IDS.has(numericId);
+}
+
+/**
+ * Check if a tile represents a "wall placed" state (wall or filled hole).
+ * Used to determine if clicking should remove a wall.
+ * @param {string} tileName - Tile type name
+ * @returns {boolean}
+ */
+function isWallState(tileName) {
+    const data = TILE_DATA[tileName];
+    return data ? !!data.wallState : false;
+}
+
+/**
+ * Get the tile name that a wall-placeable tile transforms into when a wall is placed.
+ * Returns 'wall' if no wallTransformsTo is defined.
+ * @param {string} tileName - Tile type name
+ * @returns {string} The transformed tile name
+ */
+function getWallTransform(tileName) {
+    const data = TILE_DATA[tileName];
+    return (data && data.wallTransformsTo) ? data.wallTransformsTo : 'wall';
 }
 
 /**
@@ -329,11 +439,18 @@ if (typeof module !== 'undefined' && module.exports) {
         NUMERIC_TO_TILE,
         BLOCKING_NUMERIC_IDS,
         BLOCKING_TILES,
+        FILLABLE_TILES,
+        FILLABLE_NUMERIC_IDS,
+        FILLED_SCORE_MAP,
         isWallPlaceable,
         getTileScore,
         getNumericTileScore,
         isBlockingNumericId,
         isBlockingTile,
+        isFillableTile,
+        isFillableNumericId,
+        isWallState,
+        getWallTransform,
         getEligibleTileTypes,
         getTileType,
         isTileClickable,

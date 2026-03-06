@@ -22,6 +22,18 @@ if (typeof BLOCKING_NUMERIC_IDS === 'undefined' && typeof require !== 'undefined
     if (typeof global.isBlockingTile === 'undefined') {
         global.isBlockingTile = _td.isBlockingTile;
     }
+    if (typeof global.FILLABLE_TILES === 'undefined') {
+        global.FILLABLE_TILES = _td.FILLABLE_TILES;
+    }
+    if (typeof global.isFillableTile === 'undefined') {
+        global.isFillableTile = _td.isFillableTile;
+    }
+    if (typeof global.FILLABLE_NUMERIC_IDS === 'undefined') {
+        global.FILLABLE_NUMERIC_IDS = _td.FILLABLE_NUMERIC_IDS;
+    }
+    if (typeof global.FILLED_SCORE_MAP === 'undefined') {
+        global.FILLED_SCORE_MAP = _td.FILLED_SCORE_MAP;
+    }
 }
 
 class PathfindingUtils {
@@ -208,6 +220,9 @@ class PathfindingUtils {
      * crossing blocking tiles or the given wall positions).
      * Called by calculateGoal in MapGenerator to determine the penned area after solving.
      *
+     * For fillable tiles (e.g. holes) that have a wall placed on them, the tile
+     * becomes passable rather than blocked — the wall "fills" the tile.
+     *
      * @param {Array} map - 2D array of tile type strings ('grass', 'water', 'home', etc.)
      * @param {Set<string>} [wallPositions] - Optional set of "row,col" strings for placed walls
      * @returns {Array<Array<number>>} Array of [row, col] positions inside the penned area
@@ -217,9 +232,17 @@ class PathfindingUtils {
         if (homeRow < 0) return [];
 
         const blocked = wallPositions || new Set();
+        const _isFillable = typeof isFillableTile === 'function' ? isFillableTile : () => false;
         const visited = PathfindingUtils._bfsReachable(
             map, homeRow, homeCol,
-            (tile, r, c) => isBlockingTile(tile) || blocked.has(`${r},${c}`)
+            (tile, r, c) => {
+                const key = `${r},${c}`;
+                if (blocked.has(key)) {
+                    // Wall placed here: fillable tiles become passable, others become walls
+                    return !_isFillable(tile);
+                }
+                return isBlockingTile(tile);
+            }
         );
         return [...visited].map(key => key.split(',').map(Number));
     }

@@ -15,6 +15,8 @@
             const td = require('./tileData.js');
             global.TILE_DATA = td.TILE_DATA;
             global.TILE_TO_NUMERIC = td.TILE_TO_NUMERIC;
+            global.isFillableTile = td.isFillableTile;
+            global.getTileScore = td.getTileScore;
         }
         if (typeof global.PathfindingUtils === 'undefined') {
             global.PathfindingUtils = require('./PathfindingUtils.js');
@@ -223,6 +225,10 @@ class MapGenerator {
      * Calculate the maximum achievable area (goal) for a given map.
      * Uses the MILP solver to find the optimal wall placements, then runs BFS
      * to determine the resulting penned area.
+     *
+     * For fillable tiles (e.g. holes), a wall placed on them "fills" them,
+     * making them passable and scoring like their transformed tile type.
+     *
      * @param {Array} map - 2D array of tile types (strings)
      * @param {number} maxWalls - Maximum number of walls that can be placed
      * @returns {Object|null} Object with {goalArea, optimalWallCount, optimalSolution, wallPositions, pennedTiles},
@@ -243,8 +249,25 @@ class MapGenerator {
         const wallPositions = new Set(optimalSolution.map(([r, c]) => `${r},${c}`));
         const pennedTiles = PathfindingUtils.getPennedTiles(map, wallPositions);
 
+        // Calculate goal area as the score sum of penned tiles.
+        // For fillable tiles that have a wall placed (filled), use the
+        // transformed tile's score instead of the original tile's score.
+        let goalArea = 0;
+        const _isFillable = typeof isFillableTile === 'function' ? isFillableTile : () => false;
+        const _getScore = typeof getTileScore === 'function' ? getTileScore : () => 1;
+        for (const [r, c] of pennedTiles) {
+            const tile = map[r][c];
+            if (wallPositions.has(`${r},${c}`) && _isFillable(tile)) {
+                // Filled tile: use the wallTransformsTo tile's score
+                const transformedTile = TILE_DATA[tile] && TILE_DATA[tile].wallTransformsTo;
+                goalArea += transformedTile ? _getScore(transformedTile) : 1;
+            } else {
+                goalArea += _getScore(tile);
+            }
+        }
+
         return {
-            goalArea: solution.goalArea,
+            goalArea,
             optimalWallCount: solution.optimalWallCount || 0,
             optimalSolution,
             wallPositions,
