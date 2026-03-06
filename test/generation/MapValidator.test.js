@@ -308,5 +308,118 @@ describe('MapValidator', () => {
             expect(result.errors).toContain('Map has no star tiles - at least one star is required');
             expect(result.errors).toContain('Map has no bee tiles - at least one bee is required');
         });
+
+        test('should fail validation when map has adjacent hole tiles', () => {
+            const map = [
+                ['grass', 'grass', 'grass', 'grass', 'grass', 'grass', 'grass'],
+                ['grass', 'water', 'grass', 'water', 'grass', 'water', 'grass'],
+                ['grass', 'grass', 'grass', 'grass', 'grass', 'grass', 'grass'],
+                ['grass', 'water', 'star',  'home',  'bee',   'water', 'grass'],
+                ['grass', 'hole',  'hole',  'grass', 'grass', 'grass', 'grass'],
+                ['grass', 'water', 'grass', 'water', 'grass', 'water', 'grass'],
+                ['grass', 'grass', 'grass', 'grass', 'grass', 'grass', 'grass']
+            ];
+
+            const solution = {
+                goalArea: 8,
+                optimalWallCount: 4,
+                optimalSolution: [[1, 2], [2, 1], [3, 2], [4, 3]]
+            };
+
+            const result = MapValidator.validate(map, solution);
+            expect(result.valid).toBe(false);
+            expect(result.errors).toContain('Map has adjacent hole tiles - holes must not be next to each other');
+        });
+
+        test('should fail validation when map has vertically adjacent hole tiles', () => {
+            const map = [
+                ['grass', 'grass', 'grass', 'grass', 'grass', 'grass', 'grass'],
+                ['grass', 'water', 'grass', 'water', 'grass', 'water', 'grass'],
+                ['grass', 'grass', 'grass', 'grass', 'hole',  'grass', 'grass'],
+                ['grass', 'water', 'star',  'home',  'hole',  'water', 'grass'],
+                ['grass', 'grass', 'grass', 'grass', 'bee',   'grass', 'grass'],
+                ['grass', 'water', 'grass', 'water', 'grass', 'water', 'grass'],
+                ['grass', 'grass', 'grass', 'grass', 'grass', 'grass', 'grass']
+            ];
+
+            const solution = {
+                goalArea: 8,
+                optimalWallCount: 4,
+                optimalSolution: [[1, 2], [2, 1], [3, 2], [4, 3]]
+            };
+
+            const result = MapValidator.validate(map, solution);
+            expect(result.valid).toBe(false);
+            expect(result.errors).toContain('Map has adjacent hole tiles - holes must not be next to each other');
+        });
+
+        test('should pass validation when holes are not adjacent', () => {
+            const map = [
+                ['grass', 'grass', 'grass', 'grass', 'grass', 'grass', 'grass'],
+                ['grass', 'water', 'grass', 'water', 'grass', 'water', 'grass'],
+                ['grass', 'hole',  'grass', 'grass', 'grass', 'grass', 'grass'],
+                ['grass', 'water', 'star',  'home',  'bee',   'water', 'grass'],
+                ['grass', 'grass', 'grass', 'grass', 'grass', 'hole',  'grass'],
+                ['grass', 'water', 'grass', 'water', 'grass', 'water', 'grass'],
+                ['grass', 'grass', 'grass', 'grass', 'grass', 'grass', 'grass']
+            ];
+
+            const solution = {
+                goalArea: 8,
+                optimalWallCount: 4,
+                optimalSolution: [[1, 2], [2, 3], [3, 2], [4, 1]]
+            };
+
+            const result = MapValidator.validate(map, solution);
+            expect(result.errors).not.toContain('Map has adjacent hole tiles - holes must not be next to each other');
+        });
+
+        test('should fail validation when hole can be bypassed with 5 or fewer extra steps', () => {
+            // Hole at (3,1) — pet can go around it via row 2 or row 4 easily
+            const map = [
+                ['grass', 'grass', 'grass', 'grass', 'grass', 'grass', 'grass'],
+                ['grass', 'grass', 'grass', 'water', 'grass', 'water', 'grass'],
+                ['grass', 'grass', 'grass', 'grass', 'grass', 'grass', 'grass'],
+                ['grass', 'hole',  'star',  'home',  'bee',   'water', 'grass'],
+                ['grass', 'grass', 'grass', 'grass', 'grass', 'grass', 'grass'],
+                ['grass', 'water', 'grass', 'water', 'grass', 'water', 'grass'],
+                ['grass', 'grass', 'grass', 'grass', 'grass', 'grass', 'grass']
+            ];
+
+            const solution = {
+                goalArea: 8,
+                optimalWallCount: 4,
+                optimalSolution: [[1, 2], [2, 1], [4, 1], [4, 3]]
+            };
+
+            const result = MapValidator.validate(map, solution);
+            expect(result.valid).toBe(false);
+            expect(result.errors.some(e => e.includes('hole(s) that can be bypassed'))).toBe(true);
+        });
+
+        test('should pass validation when hole requires more than 5 extra steps to bypass', () => {
+            // Hole at (6,3) — only alternative path winds through a long corridor
+            // Baseline (hole blocking): 8 steps via col 6 and row 0
+            // Filled (hole passable): 1 step south to edge row 6
+            // Extra steps: 7 > 5 threshold
+            const map = [
+                ['grass', 'grass', 'grass', 'grass', 'grass', 'grass', 'grass'],
+                ['grass', 'grass', 'water', 'water', 'water', 'water', 'grass'],
+                ['grass', 'grass', 'grass', 'grass', 'grass', 'water', 'grass'],
+                ['water', 'water', 'water', 'water', 'grass', 'water', 'grass'],
+                ['water', 'water', 'grass', 'water', 'grass', 'water', 'grass'],
+                ['water', 'water', 'star',  'home',  'bee',   'water', 'grass'],
+                ['water', 'water', 'water', 'hole',  'water', 'water', 'grass']
+            ];
+
+            const solution = {
+                goalArea: 8,
+                optimalWallCount: 4,
+                optimalSolution: [[2, 3], [3, 4], [4, 4], [5, 4]]
+            };
+
+            const result = MapValidator.validate(map, solution);
+            expect(result.errors.some(e => e.includes('hole(s) that can be bypassed'))).toBe(false);
+        });
     });
 });

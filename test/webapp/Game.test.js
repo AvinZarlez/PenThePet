@@ -1054,6 +1054,32 @@ describe('Game — handleCellClick focus restoration', () => {
         // Focus should remain unchanged (no render was called)
         expect(document.activeElement).toBe(homeCell);
     });
+
+    test('places a wall on a hole tile and transforms it to filledHole', () => {
+        const g = createOpenGame5();
+        g.grid.setTile(1, 1, 'hole');
+        g.grid.saveInitialState();
+        g.render();
+
+        g.handleCellClick(1, 1);
+
+        expect(g.grid.getTile(1, 1)).toBe('filledHole');
+        expect(g.wallCount).toBe(1);
+    });
+
+    test('clicking a filledHole tile reverts it to hole', () => {
+        const g = createOpenGame5();
+        g.grid.setTile(1, 1, 'hole');
+        g.grid.saveInitialState();
+        g.grid.setTile(1, 1, 'filledHole');
+        g.wallCount = 1;
+        g.render();
+
+        g.handleCellClick(1, 1);
+
+        expect(g.grid.getTile(1, 1)).toBe('hole');
+        expect(g.wallCount).toBe(0);
+    });
 });
 
 // ------------------------------------------------------------------

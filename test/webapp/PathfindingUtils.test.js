@@ -630,4 +630,52 @@ describe('PathfindingUtils', () => {
             expect(tiles[0]).toEqual([1, 1]);
         });
     });
+
+    describe('shortestPathToEdge()', () => {
+        test('should return 0 when home is on the edge', () => {
+            const map = [
+                ['home',  'grass', 'grass'],
+                ['grass', 'grass', 'grass'],
+                ['grass', 'grass', 'grass']
+            ];
+            expect(PathfindingUtils.shortestPathToEdge(map)).toBe(0);
+        });
+
+        test('should return correct distance for simple path', () => {
+            const map = [
+                ['grass', 'grass', 'grass', 'grass', 'grass'],
+                ['grass', 'grass', 'grass', 'grass', 'grass'],
+                ['grass', 'grass', 'home',  'grass', 'grass'],
+                ['grass', 'grass', 'grass', 'grass', 'grass'],
+                ['grass', 'grass', 'grass', 'grass', 'grass']
+            ];
+            expect(PathfindingUtils.shortestPathToEdge(map)).toBe(2);
+        });
+
+        test('should return Infinity when no path exists (home surrounded by water)', () => {
+            const map = [
+                ['grass', 'grass', 'grass', 'grass', 'grass'],
+                ['grass', 'water', 'water', 'water', 'grass'],
+                ['grass', 'water', 'home',  'water', 'grass'],
+                ['grass', 'water', 'water', 'water', 'grass'],
+                ['grass', 'grass', 'grass', 'grass', 'grass']
+            ];
+            expect(PathfindingUtils.shortestPathToEdge(map)).toBe(Infinity);
+        });
+
+        test('should accept custom blocking function', () => {
+            const map = [
+                ['grass', 'grass', 'grass', 'grass', 'grass'],
+                ['grass', 'hole',  'hole',  'hole',  'grass'],
+                ['grass', 'hole',  'home',  'hole',  'grass'],
+                ['grass', 'hole',  'hole',  'hole',  'grass'],
+                ['grass', 'grass', 'grass', 'grass', 'grass']
+            ];
+            // Default: holes block movement → Infinity
+            expect(PathfindingUtils.shortestPathToEdge(map)).toBe(Infinity);
+            // Custom: treat holes as passable → 2
+            const passAll = () => false;
+            expect(PathfindingUtils.shortestPathToEdge(map, passAll)).toBe(2);
+        });
+    });
 });
