@@ -482,3 +482,18 @@
     background: #ccc;
     color: #333;
 }
+
+/* Sync error modal */
+.sync-error-details {
+    background: #fff8f8;
+    border: 1px solid #e57373;
+    border-radius: 6px;
+    padding: 12px;
+    font-size: 0.85em;
+    white-space: pre-wrap;
+    word-break: break-word;
+    max-height: 200px;
+    overflow-y: auto;
+    margin: 8px 0;
+    color: #c62828;
+}

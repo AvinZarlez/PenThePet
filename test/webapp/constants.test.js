@@ -265,4 +265,19 @@ describe('CONSTANTS', () => {
             expect(Number.isNaN(CONSTANTS.MAX_GENERATION_ATTEMPTS)).toBe(false);
         });
     });
+
+    describe('REPO_URL', () => {
+        test('should be defined', () => {
+            expect(CONSTANTS).toHaveProperty('REPO_URL');
+        });
+
+        test('should be a non-empty string', () => {
+            expect(typeof CONSTANTS.REPO_URL).toBe('string');
+            expect(CONSTANTS.REPO_URL.length).toBeGreaterThan(0);
+        });
+
+        test('should be a valid GitHub repository URL', () => {
+            expect(CONSTANTS.REPO_URL).toMatch(/^https:\/\/github\.com\//);
+        });
+    });
 });

@@ -49,23 +49,34 @@
  *
  * For each puzzle date, sync applies these rules in priority order:
  *
- *   1. ONLY ONE SIDE HAS DATA — copy it to the other so both match.
+ *   A. LOCAL ONLY (no cloud data) — copy local to cloud.
  *
- *   2. ONE SIDE IS SUBMITTED, OTHER IS IN-PROGRESS — the submitted result
- *      always wins.  "Submitted" means a `submission_YYYY-MM-DD` cookie /
- *      Firestore doc exists.  "In-progress" means only a timer exists (no
- *      submission).  The winning submission is written to both sides.
- *
- *   3. BOTH IN-PROGRESS (timer only, no submission on either side) —
- *      HIGHEST ELAPSED WINS (max-merge).  The timer should never go
+ *   B. BOTH IN-PROGRESS (timer only, no submission on either side) —
+ *      HIGHEST ELAPSED TIME WINS (max-merge).  The timer should never go
  *      backwards; both sides are updated to the larger elapsed value.
  *
- *   4. BOTH SUBMITTED — EARLIEST TIMESTAMP WINS.  The first completed
- *      solve is the authentic result.  Whichever submission has the earlier
- *      `timestamp` field is kept on both sides.  If either side lacks a
- *      timestamp, the cloud value is used as a safe default.
+ *   C. LOCAL IN-PROGRESS, CLOUD SUBMITTED — the cloud submission always
+ *      wins.  The submitted result is written to the local cookie and the
+ *      local timer is kept as-is.
+ *
+ *   D. LOCAL SUBMITTED, CLOUD IN-PROGRESS — the local submission wins.
+ *      The submission is uploaded to cloud; the cloud timer is ignored.
+ *
+ *   E. BOTH SUBMITTED — HIGHER SCORE WINS; TIEBREAK BY EARLIEST SUBMISSION
+ *      TIMESTAMP.  "score" = penned-area value (higher is better).
+ *      "timestamp" = when the puzzle was submitted (NOT how long it took to
+ *      solve — that is the separate `time` field).  The winning data is
+ *      written to both local cookie and cloud.  If either side lacks a
+ *      timestamp (tiebreak needed but unavailable), cloud is used as a safe
+ *      default.
  *
  * Settings (selectedPet, hintsDisabled, neverShowTarget, username): CLOUD WINS always.
+ *
+ * When cloud data overwrites local data (rules C and E-cloud-wins), the
+ * `applyCloudDataToLocal()` helper writes the winning data to the local
+ * cookie and records the date in `_pendingCloudOverwrites`.  After each
+ * sync the `cloudsync:synced` event carries those dates so main.js can
+ * show the user a "cloud data loaded" notification.
  *
  * ─────────────────────────────────────────────────────────────────────────────
  */
@@ -88,6 +99,9 @@ const CloudSync = (function () {
     let isSyncing = false;
     let username = null;
     let gameTesters = [];
+
+    /** Dates whose local cookie was overwritten by cloud data since the last sync event. */
+    const _pendingCloudOverwrites = new Set();
 
     const COLLECTION_NAME = 'submissions';
     const SETTINGS_DOC = 'settings';
@@ -281,6 +295,29 @@ const CloudSync = (function () {
             el.textContent = '⚠️ Sync error';
             el.title = errorMsg || 'Sync failed';
             el.className = 'cloud-sync-status error';
+            if (errorMsg) {
+                showSyncErrorPopup(errorMsg);
+            }
+        }
+    }
+
+    /**
+     * Show a popup modal with the full sync error message and a link to the
+     * GitHub issues page so the user can report it.
+     * @param {string} errorMsg - Human-readable error message to display
+     */
+    function showSyncErrorPopup(errorMsg) {
+        const modal = document.getElementById('syncErrorModal');
+        const msgEl = document.getElementById('syncErrorMessage');
+        const issueLink = document.getElementById('syncErrorIssueLink');
+        if (msgEl) {
+            msgEl.textContent = errorMsg;
+        }
+        if (issueLink && typeof CONSTANTS !== 'undefined' && CONSTANTS.REPO_URL) {
+            issueLink.href = CONSTANTS.REPO_URL + '/issues';
+        }
+        if (modal) {
+            modal.classList.add('show');
         }
     }
 
@@ -475,7 +512,7 @@ const CloudSync = (function () {
 
     /**
      * Apply a cloud timer state to the local cookie.
-     * Conflict rule 3: BOTH IN-PROGRESS → HIGHEST ELAPSED WINS. See docs/CLOUD_SYNC_SETUP.md.
+     * Conflict rule B: BOTH IN-PROGRESS → HIGHEST ELAPSED WINS. See docs/CLOUD_SYNC_SETUP.md.
      * @param {string} docId - Firestore doc ID (e.g. 'timer_2026-01-01')
      * @param {Object} data - {elapsed: number}
      */
@@ -525,13 +562,17 @@ const CloudSync = (function () {
      * Apply a cloud submission to the local cookie using conflict resolution.
      * Applies schema migration then resolves the conflict.
      * Hints are part of the submission document — no separate hints cookie is needed.
-     * Conflict rule 4: BOTH SUBMITTED → HIGHER SCORE WINS; TIEBREAK BY EARLIEST SUBMISSION TIMESTAMP.
-     * "score" = penned-area value (higher is better). "timestamp" = when the puzzle was submitted
-     * (NOT how long it took the user to solve it — that is the separate `time` field).
-     * See docs/CLOUD_SYNC_SETUP.md for the full rule table.
+     *
+     * Conflict rules (see docs/CLOUD_SYNC_SETUP.md for the full rule table):
+     *   C. LOCAL IN-PROGRESS, CLOUD SUBMITTED → cloud submission always wins.
+     *   D. LOCAL SUBMITTED, CLOUD IN-PROGRESS → local keeps; local uploaded to cloud.
+     *   E. BOTH SUBMITTED → HIGHER SCORE WINS; TIEBREAK BY EARLIEST SUBMISSION TIMESTAMP.
+     *      "score" = penned-area value (higher is better).
+     *      "timestamp" = when the puzzle was submitted (NOT elapsed solve time).
+     *
      * @param {string} dateString - Puzzle date (YYYY-MM-DD)
      * @param {Object} cloudData - Cloud submission data (any schema version)
-     * @returns {boolean} true if the local cookie was updated, false if local was kept
+     * @returns {boolean} true if the local cookie was updated with cloud data, false if local was kept
      */
     function applyCloudSubmission(dateString, cloudData) {
         // Migrate incoming cloud data to the current schema version
@@ -548,21 +589,53 @@ const CloudSync = (function () {
                 const localScore = typeof localData.score === 'number' ? localData.score : -Infinity;
                 const cloudScore = typeof migratedCloud.score === 'number' ? migratedCloud.score : -Infinity;
                 if (localScore > cloudScore) {
-                    // Local score is better — keep local but ensure it's in current schema
+                    // Rule E: local score is better — keep local but ensure it's in current schema
                     CookieUtils.setCookie(cookieName, JSON.stringify(localData), 365);
                     return false;
                 }
                 if (localScore === cloudScore &&
                     localData.timestamp && migratedCloud.timestamp &&
                     new Date(localData.timestamp) < new Date(migratedCloud.timestamp)) {
-                    // Same score; local was submitted first — keep local (migrated)
+                    // Rule E tiebreak: same score; local was submitted first — keep local (migrated)
                     CookieUtils.setCookie(cookieName, JSON.stringify(localData), 365);
                     return false;
                 }
             } catch { /* fall through to use cloud data */ }
         }
-        CookieUtils.setCookie(cookieName, JSON.stringify(migratedCloud), 365);
+        // Cloud wins (rules C, E-cloud-wins) — write all cloud fields to local cookie
+        applyCloudDataToLocal(dateString, migratedCloud);
         return true;
+    }
+
+    /**
+     * Write all cloud submission fields to the local cookie and record the date
+     * so the `cloudsync:synced` event can notify the user.
+     *
+     * Use this whenever cloud data wins the conflict resolution so that:
+     *   • every field (score, walls, time, timestamp, hintsUsed, __version, etc.) is
+     *     kept in sync — not just the fields that were compared during resolution.
+     *   • main.js can show the user a "☁️ Updated level data loaded from cloud"
+     *     notification for the affected level.
+     *
+     * @param {string} dateString - Puzzle date (YYYY-MM-DD)
+     * @param {Object} migratedCloudData - Cloud data already migrated to the current schema
+     */
+    function applyCloudDataToLocal(dateString, migratedCloudData) {
+        const cookieName = 'submission_' + dateString;
+        CookieUtils.setCookie(cookieName, JSON.stringify(migratedCloudData), 365);
+        _pendingCloudOverwrites.add(dateString);
+    }
+
+    /**
+     * Return and clear the set of dates whose local data was overwritten by cloud
+     * data since the last call.  Called by the `cloudsync:synced` handler in main.js
+     * to decide whether to show a "cloud data loaded" notification.
+     * @returns {Set<string>}
+     */
+    function getAndClearCloudOverwrites() {
+        const dates = new Set(_pendingCloudOverwrites);
+        _pendingCloudOverwrites.clear();
+        return dates;
     }
 
     // ----------------------------------------------------------------
@@ -1194,10 +1267,14 @@ const CloudSync = (function () {
         handleLinkWithGoogle: handleLinkWithGoogle,
         handleSignOut: handleSignOut,
         handleSaveProfile: handleSaveProfile,
+        // Returns (and clears) the set of dates overwritten by cloud data since the
+        // last call.  Used by main.js to show the "cloud data loaded" notification.
+        getAndClearCloudOverwrites: getAndClearCloudOverwrites,
         // Exposed for unit testing of conflict resolution logic.
         applyCloudTimerState: applyCloudTimerState,
         applyCloudHints: applyCloudHints,
-        applyCloudSubmission: applyCloudSubmission
+        applyCloudSubmission: applyCloudSubmission,
+        applyCloudDataToLocal: applyCloudDataToLocal
     };
 })();
 

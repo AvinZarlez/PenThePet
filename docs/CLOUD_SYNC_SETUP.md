@@ -389,20 +389,27 @@ Settings include `selectedPet`, `hintsDisabled`, `neverShowTarget`, and `usernam
 
 For each puzzle date, when local cookie data and Firestore hold different values, the following rules are applied **in order**:
 
-1. **Only one side has data** — copy it to the other so both match.
+A. **Only local has data (no cloud data)** — copy local data to cloud so both match.
 
-2. **One side is submitted, other is in-progress** — the submitted result wins and is written to both sides. "Submitted" = a completed puzzle result exists. "In-progress" = only an elapsed-time timer exists (no submission yet).
+B. **Both in-progress (timer only, no submission on either side)** — take the **higher elapsed time**. Both sides are updated to that value so no progress is lost.
 
-3. **Both in-progress (timer only)** — take the **higher elapsed time**. Both sides are updated to that value so no progress is lost.
+C. **Local in-progress, cloud has a submission** — the cloud submission wins. The submitted result is written to the local cookie; the local timer is kept as-is.
 
-4. **Both submitted** — the **higher score wins** (higher score = better result). Both sides are updated to that version's data (score, wall placements, solve time, submission timestamp, and `hintsUsed`). If scores are equal, the **earlier submission timestamp** breaks the tie (first completed solve is kept).
+D. **Local has a submission, cloud is in-progress** — the local submission wins. The submission is uploaded to cloud; the cloud timer is ignored.
+
+E. **Both submitted** — the **higher score wins** (higher score = better result). Both sides are updated to that version's data (score, wall placements, solve time, submission timestamp, and `hintsUsed`). If scores are equal, the **earlier submission timestamp** breaks the tie (first completed solve is kept).
 
    > **Note on field names:** `timestamp` = when the puzzle was submitted (wall-clock time the entry was saved). `time` = how many seconds the user spent solving the puzzle. Only `timestamp` is used for tiebreaking.
 
-| Data type                                                        | Rule                     | Rationale                                                                                                                                                                     |
-| ---------------------------------------------------------------- | ------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Submissions** (`YYYY-MM-DD`)                                   | **See rules 1–4 above**  | Submitted result always beats in-progress; when both are submitted, higher score wins; same score → first submitted is kept. `hintsUsed` travels with the winning submission. |
-| **Settings** (`selectedPet`, `hintsDisabled`, `neverShowTarget`) | **Cloud wins**           | The cloud holds the user's most recently saved preference from any signed-in device.                                                                                          |
+When cloud data wins the conflict and overwrites local data (rules C and E-cloud-wins), the
+`applyCloudDataToLocal()` function ensures **all fields** from the cloud document are copied to
+the local cookie — not just the fields that were compared — so nothing is lost.  A
+"☁️ Updated level data loaded from cloud" notification is shown for the currently displayed level.
+
+| Data type                                                        | Rule                    | Rationale                                                                                                                                                                     |
+| ---------------------------------------------------------------- | ----------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Submissions** (`YYYY-MM-DD`)                                   | **See rules A–E above** | Submitted result always beats in-progress; when both are submitted, higher score wins; same score → first submitted is kept. `hintsUsed` travels with the winning submission. |
+| **Settings** (`selectedPet`, `hintsDisabled`, `neverShowTarget`) | **Cloud wins**          | The cloud holds the user's most recently saved preference from any signed-in device.                                                                                          |
 | **Timer** (`timer_YYYY-MM-DD`)                                   | **Highest elapsed wins** | The timer should never go backwards. Whichever device has made the most progress keeps that value.                                                                            |
 
 > **Offline play then sign-in example:** You submit three puzzles while offline.

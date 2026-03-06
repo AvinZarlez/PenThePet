@@ -133,7 +133,7 @@
 
         <footer>
             <p>Made by <a href="https://www.AvinZarlez.com" target="_blank" rel="noopener noreferrer">Avin Zarlez</a></p>
-            <p><a href="https://github.com/AvinZarlez/penthepet" target="_blank" rel="noopener noreferrer">View on GitHub</a></p>
+            <p><a id="githubFooterLink" href="https://github.com/AvinZarlez/penthepet" target="_blank" rel="noopener noreferrer">View on GitHub</a></p>
         </footer>
     </div>
 
@@ -224,12 +224,12 @@
             </div>
             <div class="modal-section">
                 <h3>Feedback</h3>
-                <p>Found a bug or have a feature idea? <a href="https://github.com/AvinZarlez/penthepet/issues" target="_blank" rel="noopener noreferrer">Open an issue on GitHub</a> — all feedback is welcome!</p>
+                <p>Found a bug or have a feature idea? <a id="githubIssuesLink" href="https://github.com/AvinZarlez/penthepet/issues" target="_blank" rel="noopener noreferrer">Open an issue on GitHub</a> — all feedback is welcome!</p>
             </div>
             <div class="modal-section">
                 <h3>Credits</h3>
                 <p>Made by <a href="https://www.AvinZarlez.com" target="_blank" rel="noopener noreferrer">Avin Zarlez</a></p>
-                <p><a href="https://github.com/AvinZarlez/penthepet" target="_blank" rel="noopener noreferrer">View this project on GitHub</a></p>
+                <p><a id="githubProjectLink" href="https://github.com/AvinZarlez/penthepet" target="_blank" rel="noopener noreferrer">View this project on GitHub</a></p>
                 <p>© 2026 Pen the Pet</p>
             </div>
         </div>
@@ -335,6 +335,17 @@
                 <div id="authLinkSuccess" class="profile-success" style="display: none;"></div>
                 <button id="authSendLinkBtn" class="auth-btn auth-btn-primary" onclick="CloudSync.handleSendSignInLink()">Send Sign-In Link</button>
             </div>
+        </div>
+    </div>
+
+    <!-- Sync Error Modal -->
+    <div id="syncErrorModal" class="modal">
+        <div class="modal-content">
+            <button class="modal-close" aria-label="Close sync error">&times;</button>
+            <h2>⚠️ Sync Error</h2>
+            <p>There was an error syncing your data with the cloud:</p>
+            <pre id="syncErrorMessage" class="sync-error-details"></pre>
+            <p>Please <a id="syncErrorIssueLink" href="https://github.com/AvinZarlez/penthepet/issues" target="_blank" rel="noopener noreferrer">submit an issue on GitHub</a> with the error details above to help us fix it.</p>
         </div>
     </div>
 
