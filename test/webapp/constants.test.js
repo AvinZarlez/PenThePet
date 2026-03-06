@@ -280,4 +280,83 @@ describe('CONSTANTS', () => {
             expect(CONSTANTS.REPO_URL).toMatch(/^https:\/\/github\.com\//);
         });
     });
+
+    describe('Tile Data Helper Functions', () => {
+        test('isFillableTile should return true for hole', () => {
+            expect(isFillableTile('hole')).toBe(true);
+        });
+
+        test('isFillableTile should return false for grass', () => {
+            expect(isFillableTile('grass')).toBe(false);
+        });
+
+        test('isFillableTile should return false for water (blocks but not wall-placeable)', () => {
+            expect(isFillableTile('water')).toBe(false);
+        });
+
+        test('isFillableNumericId should return true for hole numericId', () => {
+            expect(isFillableNumericId(TILE_DATA.hole.numericId)).toBe(true);
+        });
+
+        test('isFillableNumericId should return false for grass numericId', () => {
+            expect(isFillableNumericId(TILE_DATA.grass.numericId)).toBe(false);
+        });
+
+        test('isWallState should return true for wall', () => {
+            expect(isWallState('wall')).toBe(true);
+        });
+
+        test('isWallState should return true for filledHole', () => {
+            expect(isWallState('filledHole')).toBe(true);
+        });
+
+        test('isWallState should return false for grass', () => {
+            expect(isWallState('grass')).toBe(false);
+        });
+
+        test('isWallState should return false for unknown tile', () => {
+            expect(isWallState('unknown')).toBe(false);
+        });
+
+        test('getWallTransform should return filledHole for hole', () => {
+            expect(getWallTransform('hole')).toBe('filledHole');
+        });
+
+        test('getWallTransform should return wall for grass', () => {
+            expect(getWallTransform('grass')).toBe('wall');
+        });
+
+        test('getWallTransform should return wall for unknown tile', () => {
+            expect(getWallTransform('unknown')).toBe('wall');
+        });
+
+        test('FILLABLE_TILES should contain hole', () => {
+            expect(FILLABLE_TILES.has('hole')).toBe(true);
+        });
+
+        test('FILLABLE_TILES should not contain grass or water', () => {
+            expect(FILLABLE_TILES.has('grass')).toBe(false);
+            expect(FILLABLE_TILES.has('water')).toBe(false);
+        });
+
+        test('FILLED_SCORE_MAP should map hole numericId to filledHole score', () => {
+            expect(FILLED_SCORE_MAP[TILE_DATA.hole.numericId]).toBe(TILE_DATA.filledHole.score);
+        });
+
+        test('hole tile should have correct properties', () => {
+            expect(TILE_DATA.hole.score).toBe(0);
+            expect(TILE_DATA.hole.wallPlaceable).toBe(true);
+            expect(TILE_DATA.hole.blocksMovement).toBe(true);
+            expect(TILE_DATA.hole.chance).toBe(0.03);
+            expect(TILE_DATA.hole.wallTransformsTo).toBe('filledHole');
+        });
+
+        test('filledHole tile should have correct properties', () => {
+            expect(TILE_DATA.filledHole.score).toBe(1);
+            expect(TILE_DATA.filledHole.wallPlaceable).toBe(false);
+            expect(TILE_DATA.filledHole.blocksMovement).toBe(false);
+            expect(TILE_DATA.filledHole.wallState).toBe(true);
+            expect(TILE_DATA.filledHole.chance).toBe(0);
+        });
+    });
 });
