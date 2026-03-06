@@ -91,13 +91,15 @@ def load_tile_properties():
     Load tile properties from js/tileData.js (single source of truth).
 
     Returns:
-        dict mapping tile name (str) → dict with blocksMovement, wallPlaceable
+        dict mapping tile name (str) → dict with blocksMovement, wallPlaceable,
+        wallTransformsTo (optional)
     """
     tile_data = load_tile_data()
     return {
         name: {
             'blocksMovement': data['blocksMovement'],
             'wallPlaceable': data['wallPlaceable'],
+            'wallTransformsTo': data.get('wallTransformsTo'),
         }
         for name, data in tile_data.items()
     }
@@ -107,8 +109,12 @@ def solve_map(map_data, max_walls):
     """
     Solve for optimal wall placement using MILP.
 
+    Supports fillable tiles (blocksMovement=True AND wallPlaceable=True, e.g. holes).
+    When a wall is placed on a fillable tile, it becomes passable and scores like
+    its wallTransformsTo tile (e.g. hole → filledHole with score=1).
+
     Args:
-        map_data: 2D list of tile type strings ("grass", "water", "home", "star", etc.)
+        map_data: 2D list of tile type strings ("grass", "water", "home", "star", "hole", etc.)
         max_walls: Maximum number of walls allowed
 
     Returns:
@@ -119,30 +125,44 @@ def solve_map(map_data, max_walls):
     rows = len(map_data)
     cols = len(map_data[0])
 
-    # Identify tile positions by iterating all tiles programmatically
-    non_water = []         # All passable tile positions (r, c)
-    wall_placeable = []    # Tiles where walls can be placed
+    # Classify tile positions.
+    # "graph_tiles" includes all non-blocking tiles PLUS fillable tiles (which
+    # block when empty but become passable when filled).
+    graph_tiles = []       # All tiles that participate in the MILP graph
+    wall_placeable = []    # Tiles where walls can be placed (includes fillable)
+    fillable_set = set()   # Fillable tile positions (blocksMovement AND wallPlaceable)
     home = None
-    boundary = set()       # Boundary tile positions
-    tile_score_map = {}    # Map (r,c) → score value for objective
+    boundary = set()
+    tile_score_map = {}    # (r,c) → score when in pen
 
     tile_set = set()
     for r in range(rows):
         for c in range(cols):
             tile = map_data[r][c]
-            # Skip tiles that block movement (e.g. water)
             props = tile_props.get(tile, {})
-            if props.get('blocksMovement', False):
+            blocks = props.get('blocksMovement', False)
+            placeable = props.get('wallPlaceable', False)
+            is_fillable = blocks and placeable
+
+            # Skip purely blocking tiles (water) that can't be filled
+            if blocks and not placeable:
                 continue
-            non_water.append((r, c))
+
+            graph_tiles.append((r, c))
             tile_set.add((r, c))
-            tile_score_map[(r, c)] = tile_scores.get(tile, 1)
-            # Wall-placeable tiles from tile data
-            if props.get('wallPlaceable', False):
+
+            if is_fillable:
+                fillable_set.add((r, c))
+                # Score when filled: use wallTransformsTo tile's score
+                transformed = props.get('wallTransformsTo')
+                tile_score_map[(r, c)] = tile_scores.get(transformed, 1) if transformed else 1
+            else:
+                tile_score_map[(r, c)] = tile_scores.get(tile, 1)
+
+            if placeable:
                 wall_placeable.append((r, c))
             if tile == 'home':
                 home = (r, c)
-            # Boundary = edge of grid
             if r == 0 or r == rows - 1 or c == 0 or c == cols - 1:
                 boundary.add((r, c))
 
@@ -150,18 +170,17 @@ def solve_map(map_data, max_walls):
         return {"goalArea": 0, "optimalWallCount": 0, "optimalSolution": [], "feasible": False,
                 "error": "No home tile found"}
 
-    # Check if home is on boundary (unsolvable)
     if home in boundary:
         return {"goalArea": 0, "optimalWallCount": 0, "optimalSolution": [], "feasible": False,
                 "error": "Home is on boundary - cannot pen"}
 
-    # Build directed edges between adjacent non-water tiles
+    # Build directed edges between adjacent graph tiles
     directions = [(-1, 0), (1, 0), (0, -1), (0, 1)]
     edges = []
-    out_edges = {t: [] for t in non_water}
-    in_edges = {t: [] for t in non_water}
+    out_edges = {t: [] for t in graph_tiles}
+    in_edges = {t: [] for t in graph_tiles}
 
-    for (r, c) in non_water:
+    for (r, c) in graph_tiles:
         for dr, dc in directions:
             nr, nc = r + dr, c + dc
             if (nr, nc) in tile_set:
@@ -169,15 +188,15 @@ def solve_map(map_data, max_walls):
                 out_edges[(r, c)].append((nr, nc))
                 in_edges[(nr, nc)].append((r, c))
 
-    n = len(non_water)
+    n = len(graph_tiles)
     placeable_set = set(wall_placeable)
 
     # Create MILP problem
     prob = LpProblem("PenThePet", LpMaximize)
 
-    # Variables: s[i] = 1 if tile i is in the pen (home-side)
+    # Variables: s[i] = 1 if tile i is in the pen
     s = {}
-    for tile in non_water:
+    for tile in graph_tiles:
         s[tile] = LpVariable(f"s_{tile[0]}_{tile[1]}", cat='Binary')
 
     # Variables: w[i] = 1 if wall placed on a wall-placeable tile i
@@ -190,64 +209,71 @@ def solve_map(map_data, max_walls):
     for (i, j) in edges:
         f[(i, j)] = LpVariable(f"f_{i[0]}_{i[1]}_{j[0]}_{j[1]}", lowBound=0)
 
-    # Objective: maximize enclosed area using per-tile score values from tileData.
-    # The tiny wall penalty (0.0001 per wall) acts as a tiebreaker so the solver
-    # naturally uses the *minimum* number of walls needed for the maximum score.
-    # For a 21×21 grid (MAX_GRID_SIZE) the maximum wall-placeable tiles is about
-    # 440, giving a worst-case penalty of ~0.044 — well under 0.5, so integer
-    # rounding of goalArea is never affected.
+    # Objective: maximize enclosed area using per-tile score values.
+    # Tiny wall penalty as tiebreaker for minimum wall count.
     prob += lpSum(
         tile_score_map.get(tile, 1) * s[tile]
-        for tile in non_water
+        for tile in graph_tiles
     ) - 0.0001 * lpSum(w[tile] for tile in wall_placeable)
 
     # Constraint 1: home is in the pen
     prob += s[home] == 1
 
     # Constraint 2: boundary tiles are NOT in the pen
-    for tile in non_water:
+    for tile in graph_tiles:
         if tile in boundary:
             prob += s[tile] == 0
 
-    # Constraint 3: walled tiles are NOT in the pen
+    # Constraint 3a: Normal wall-placeable tiles — walled tiles are NOT in pen
     for tile in wall_placeable:
-        prob += s[tile] <= 1 - w[tile]
+        if tile not in fillable_set:
+            prob += s[tile] <= 1 - w[tile]
+
+    # Constraint 3b: Fillable tiles — can only be in pen when filled (wall placed)
+    # When w[tile]=0 (unfilled), s[tile]=0 (blocks movement, not in pen)
+    # When w[tile]=1 (filled), s[tile] can be 0 or 1 (passable, may be in pen)
+    for tile in fillable_set:
+        prob += s[tile] <= w[tile]
 
     # Constraint 4: wall budget
     prob += lpSum(w[tile] for tile in wall_placeable) <= max_walls
 
-    # Constraint 5: vertex cut - adjacent tiles on different sides need a wall
-    # For each edge (i,j): s[i] - s[j] <= w_i + w_j
+    # Constraint 5: vertex cut — adjacent tiles on different sides need a barrier.
+    # For normal tiles: barrier = w[tile] (wall placed = barrier)
+    # For fillable tiles: barrier = 1 - w[tile] (unfilled = barrier, filled = passable)
     for (i, j) in edges:
-        w_i = w[i] if i in placeable_set else 0  # home has no wall variable
-        w_j = w[j] if j in placeable_set else 0
-        prob += s[i] - s[j] <= w_i + w_j
+        if i in placeable_set:
+            barrier_i = (1 - w[i]) if i in fillable_set else w[i]
+        else:
+            barrier_i = 0
+        if j in placeable_set:
+            barrier_j = (1 - w[j]) if j in fillable_set else w[j]
+        else:
+            barrier_j = 0
+        prob += s[i] - s[j] <= barrier_i + barrier_j
 
-    # Constraint 6: flow conservation (ensures connectivity of pen to home)
-    # At home: net outflow = total pen tiles minus home
+    # Constraint 6: flow conservation (pen connectivity via home)
     prob += (
         lpSum(f[(home, j)] for j in out_edges[home] if (home, j) in f) -
         lpSum(f[(j, home)] for j in in_edges[home] if (j, home) in f)
-    ) == lpSum(s[tile] for tile in non_water if tile != home)
+    ) == lpSum(s[tile] for tile in graph_tiles if tile != home)
 
-    # At other tiles: net inflow = s[tile]
-    for tile in non_water:
+    for tile in graph_tiles:
         if tile == home:
             continue
         inflow = lpSum(f[(j, tile)] for j in in_edges[tile] if (j, tile) in f)
         outflow = lpSum(f[(tile, j)] for j in out_edges[tile] if (tile, j) in f)
         prob += inflow - outflow == s[tile]
 
-    # Constraint 7: flow capacity - flow only through pen tiles
+    # Constraint 7: flow capacity — flow only through pen tiles
     for (i, j) in edges:
         prob += f[(i, j)] <= n * s[i]
         prob += f[(i, j)] <= n * s[j]
 
-    # Solve with CBC (bundled with PuLP)
+    # Solve with CBC
     solver = PULP_CBC_CMD(msg=0, timeLimit=120)
     prob.solve(solver)
 
-    # Check solution status
     if prob.status != 1:
         return {"goalArea": 0, "optimalWallCount": 0, "optimalSolution": [], "feasible": False,
                 "error": f"Solver status: {prob.status}"}

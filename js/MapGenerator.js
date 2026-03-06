@@ -228,6 +228,7 @@ class MapGenerator {
      *
      * For fillable tiles (e.g. holes), a wall placed on them "fills" them,
      * making them passable and scoring like their transformed tile type.
+     * The solver handles this correctly in its objective function.
      *
      * @param {Array} map - 2D array of tile types (strings)
      * @param {number} maxWalls - Maximum number of walls that can be placed
@@ -249,25 +250,8 @@ class MapGenerator {
         const wallPositions = new Set(optimalSolution.map(([r, c]) => `${r},${c}`));
         const pennedTiles = PathfindingUtils.getPennedTiles(map, wallPositions);
 
-        // Calculate goal area as the score sum of penned tiles.
-        // For fillable tiles that have a wall placed (filled), use the
-        // transformed tile's score instead of the original tile's score.
-        let goalArea = 0;
-        const _isFillable = typeof isFillableTile === 'function' ? isFillableTile : () => false;
-        const _getScore = typeof getTileScore === 'function' ? getTileScore : () => 1;
-        for (const [r, c] of pennedTiles) {
-            const tile = map[r][c];
-            if (wallPositions.has(`${r},${c}`) && _isFillable(tile)) {
-                // Filled tile: use the wallTransformsTo tile's score
-                const transformedTile = TILE_DATA[tile] && TILE_DATA[tile].wallTransformsTo;
-                goalArea += transformedTile ? _getScore(transformedTile) : 1;
-            } else {
-                goalArea += _getScore(tile);
-            }
-        }
-
         return {
-            goalArea,
+            goalArea: solution.goalArea,
             optimalWallCount: solution.optimalWallCount || 0,
             optimalSolution,
             wallPositions,

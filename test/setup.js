@@ -36,6 +36,13 @@ global.getTileType = tileDataModule.getTileType;
 global.isTileClickable = tileDataModule.isTileClickable;
 global.getTileAssets = tileDataModule.getTileAssets;
 global.getPawOverlay = tileDataModule.getPawOverlay;
+global.isWallState = tileDataModule.isWallState;
+global.getWallTransform = tileDataModule.getWallTransform;
+global.isFillableTile = tileDataModule.isFillableTile;
+global.isFillableNumericId = tileDataModule.isFillableNumericId;
+global.FILLABLE_TILES = tileDataModule.FILLABLE_TILES;
+global.FILLABLE_NUMERIC_IDS = tileDataModule.FILLABLE_NUMERIC_IDS;
+global.FILLED_SCORE_MAP = tileDataModule.FILLED_SCORE_MAP;
 
 // Load game modules in the correct order for Node.js environment
 // Note: MILPSolver is loaded for generation pipeline tests (MapGenerator.test.js).
