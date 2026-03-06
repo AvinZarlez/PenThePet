@@ -134,7 +134,7 @@ const TILE_DATA = {
         wallPlaceable: true,
         clickable: true,
         blocksMovement: true,
-        chance: 0.15,
+        chance: 0,
         maxPerLevel: 3,
         compactChar: 'o',
         numericId: 6,

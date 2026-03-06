@@ -347,7 +347,7 @@ describe('CONSTANTS', () => {
             expect(TILE_DATA.hole.score).toBe(0);
             expect(TILE_DATA.hole.wallPlaceable).toBe(true);
             expect(TILE_DATA.hole.blocksMovement).toBe(true);
-            expect(TILE_DATA.hole.chance).toBe(0.15);
+            expect(TILE_DATA.hole.chance).toBe(0);
             expect(TILE_DATA.hole.wallTransformsTo).toBe('filledHole');
         });
 
