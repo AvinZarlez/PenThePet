@@ -43,7 +43,9 @@ const CONSTANTS = {
     
     // Cell visual settings
     CELL: {
-        GAP: 3,                 // Gap between cells in pixels
+        GAP: 3,                 // Gap between cells in pixels (normal screens)
+        GAP_SMALL: 1,           // Gap between cells in pixels (small screens)
+        GAP_BREAKPOINT: 480,    // Screen width in pixels below which the small gap is used
         MIN_SIZE: 6,            // Minimum cell size in pixels (for very large grids on mobile)
         MAX_SIZE: 50,           // Maximum cell size in pixels (desktop)
     },
