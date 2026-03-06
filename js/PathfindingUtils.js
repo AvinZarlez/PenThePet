@@ -113,6 +113,44 @@ class PathfindingUtils {
     // -------------------------------------------------------------------------
 
     /**
+     * Compute the shortest path distance (BFS) from home to any edge tile.
+     * Used by hole placement validation to compare path lengths.
+     *
+     * @param {Array} map - 2D array of tile type strings
+     * @param {Function} [isBlocking] - Optional custom blocking function (tile, row, col) => boolean.
+     *   Defaults to isBlockingTile(tile).
+     * @returns {number} Shortest distance in steps from home to an edge, or Infinity if unreachable
+     */
+    static shortestPathToEdge(map, isBlocking) {
+        const [homeRow, homeCol] = PathfindingUtils._findHome(map);
+        if (homeRow < 0) return Infinity;
+
+        const rows = map.length, cols = map[0].length;
+        if (homeRow === 0 || homeRow === rows - 1 || homeCol === 0 || homeCol === cols - 1) return 0;
+
+        const blockFn = isBlocking || (tile => isBlockingTile(tile));
+        const visited = new Set([`${homeRow},${homeCol}`]);
+        const queue = [[homeRow, homeCol, 0]];
+        const directions = [[-1, 0], [1, 0], [0, -1], [0, 1]];
+
+        while (queue.length > 0) {
+            const [row, col, dist] = queue.shift();
+            for (const [dr, dc] of directions) {
+                const nr = row + dr;
+                const nc = col + dc;
+                if (nr < 0 || nr >= rows || nc < 0 || nc >= cols) continue;
+                const key = `${nr},${nc}`;
+                if (visited.has(key)) continue;
+                if (blockFn(map[nr][nc], nr, nc)) continue;
+                if (nr === 0 || nr === rows - 1 || nc === 0 || nc === cols - 1) return dist + 1;
+                visited.add(key);
+                queue.push([nr, nc, dist + 1]);
+            }
+        }
+        return Infinity;
+    }
+
+    /**
      * Check if home is penned in (cannot reach any edge).
      *
      * @param {Array} map - 2D array where 0=water, 1=grass, 2=home, 5=wall

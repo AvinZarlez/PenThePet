@@ -72,6 +72,17 @@ class MapValidator {
             errors.push('Map has no bee tiles - at least one bee is required');
         }
         
+        // 9. No adjacent holes (fillable tiles that block movement)
+        if (this._hasAdjacentHoles(map)) {
+            errors.push('Map has adjacent hole tiles - holes must not be next to each other');
+        }
+        
+        // 10. Holes must be strategically significant (>5 extra steps to get around)
+        const weakHoles = this._findWeakHoles(map);
+        if (weakHoles.length > 0) {
+            errors.push(`Map has ${weakHoles.length} hole(s) that can be bypassed with 5 or fewer extra steps`);
+        }
+        
         return {
             valid: errors.length === 0,
             errors: errors
@@ -145,6 +156,81 @@ class MapValidator {
             }
         }
         return false;
+    }
+
+    /**
+     * Check if any two fillable tiles (e.g. holes) are adjacent to each other.
+     * Fillable tiles are identified generically by blocksMovement AND wallPlaceable.
+     * @private
+     * @param {Array} map - 2D array of tile type strings
+     * @returns {boolean} True if any adjacent holes are found
+     */
+    static _hasAdjacentHoles(map) {
+        const _isFillable = typeof isFillableTile === 'function' ? isFillableTile : (t) => {
+            const d = typeof TILE_DATA !== 'undefined' ? TILE_DATA[t] : null;
+            return d ? (d.blocksMovement && d.wallPlaceable) : false;
+        };
+        const rows = map.length;
+        const cols = map[0].length;
+        for (let r = 0; r < rows; r++) {
+            for (let c = 0; c < cols; c++) {
+                if (!_isFillable(map[r][c])) continue;
+                // Check right and down neighbors (avoids double-counting)
+                if (c + 1 < cols && _isFillable(map[r][c + 1])) return true;
+                if (r + 1 < rows && _isFillable(map[r + 1][c])) return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Find holes (fillable tiles) that can be bypassed with 5 or fewer extra steps.
+     *
+     * For each fillable tile, computes the shortest path from home to any edge
+     * with the hole empty (blocking) vs. filled (passable). If the difference
+     * is ≤ 5 steps, the hole is "weak" — it doesn't create a meaningful obstacle.
+     *
+     * @private
+     * @param {Array} map - 2D array of tile type strings
+     * @returns {Array<Array<number>>} Array of [row, col] positions of weak holes
+     */
+    static _findWeakHoles(map) {
+        const _isFillable = typeof isFillableTile === 'function' ? isFillableTile : (t) => {
+            const d = typeof TILE_DATA !== 'undefined' ? TILE_DATA[t] : null;
+            return d ? (d.blocksMovement && d.wallPlaceable) : false;
+        };
+        const _isBlocking = typeof isBlockingTile === 'function' ? isBlockingTile : () => false;
+        const rows = map.length;
+        const cols = map[0].length;
+
+        // Collect all fillable tile positions
+        const holes = [];
+        for (let r = 0; r < rows; r++) {
+            for (let c = 0; c < cols; c++) {
+                if (_isFillable(map[r][c])) holes.push([r, c]);
+            }
+        }
+        if (holes.length === 0) return [];
+
+        // Baseline: shortest path with all holes empty (blocking)
+        const baselineDist = PathfindingUtils.shortestPathToEdge(map, (tile) => _isBlocking(tile));
+
+        const weakHoles = [];
+        for (const [hr, hc] of holes) {
+            // Temporarily make this hole passable (as if filled)
+            const filledDist = PathfindingUtils.shortestPathToEdge(map, (tile, r, c) => {
+                if (r === hr && c === hc) return false; // treat this hole as passable
+                return _isBlocking(tile);
+            });
+
+            // If the detour around the hole is ≤ 5 extra steps, it's weak
+            const extraSteps = baselineDist - filledDist;
+            if (extraSteps <= 5 && filledDist < Infinity) {
+                weakHoles.push([hr, hc]);
+            }
+        }
+
+        return weakHoles;
     }
 }
 

@@ -64,6 +64,8 @@ class MapGenerator {
             // Try to generate a valid random map
             while (attempts < this.maxAttempts) {
                 map = this._generateRandomMap();
+                this._fixAdjacentHoles(map);
+                this._fixWeakHoles(map);
                 if (this._validateMap(map)) {
                     // Calculate optimal goal for this map
                     result = this.calculateGoal(map, maxWalls);
@@ -354,6 +356,80 @@ class MapGenerator {
             if (!b.has(key)) return false;
         }
         return true;
+    }
+
+    /**
+     * Fix adjacent fillable tiles (holes) by replacing one of each pair with grass.
+     * Scans in row-major order; when two adjacent fillable tiles are found,
+     * the second one is replaced with grass.
+     * @private
+     * @param {Array} map - 2D array of tile types (modified in place)
+     */
+    _fixAdjacentHoles(map) {
+        const _isFillable = typeof isFillableTile === 'function' ? isFillableTile : (t) => {
+            const d = typeof TILE_DATA !== 'undefined' ? TILE_DATA[t] : null;
+            return d ? (d.blocksMovement && d.wallPlaceable) : false;
+        };
+        const rows = map.length;
+        const cols = map[0].length;
+        for (let r = 0; r < rows; r++) {
+            for (let c = 0; c < cols; c++) {
+                if (!_isFillable(map[r][c])) continue;
+                // Check right neighbor
+                if (c + 1 < cols && _isFillable(map[r][c + 1])) {
+                    map[r][c + 1] = 'grass';
+                }
+                // Check down neighbor
+                if (r + 1 < rows && _isFillable(map[r + 1][c])) {
+                    map[r + 1][c] = 'grass';
+                }
+            }
+        }
+    }
+
+    /**
+     * Replace fillable tiles (holes) that can be easily bypassed with water.
+     *
+     * For each fillable tile, computes the shortest path from home to any edge
+     * with the hole empty vs. filled. If the detour is ≤ 5 extra steps, the
+     * hole is not strategically significant — replace it with water.
+     *
+     * @private
+     * @param {Array} map - 2D array of tile types (modified in place)
+     */
+    _fixWeakHoles(map) {
+        const _isFillable = typeof isFillableTile === 'function' ? isFillableTile : (t) => {
+            const d = typeof TILE_DATA !== 'undefined' ? TILE_DATA[t] : null;
+            return d ? (d.blocksMovement && d.wallPlaceable) : false;
+        };
+        const _isBlocking = typeof isBlockingTile === 'function' ? isBlockingTile : () => false;
+        const rows = map.length;
+        const cols = map[0].length;
+
+        // Collect fillable tile positions
+        const holes = [];
+        for (let r = 0; r < rows; r++) {
+            for (let c = 0; c < cols; c++) {
+                if (_isFillable(map[r][c])) holes.push([r, c]);
+            }
+        }
+        if (holes.length === 0) return;
+
+        // Baseline: shortest path with all holes as-is (blocking)
+        const baselineDist = PathfindingUtils.shortestPathToEdge(map, (tile) => _isBlocking(tile));
+
+        for (const [hr, hc] of holes) {
+            // Path length if this hole were passable (filled)
+            const filledDist = PathfindingUtils.shortestPathToEdge(map, (tile, r, c) => {
+                if (r === hr && c === hc) return false;
+                return _isBlocking(tile);
+            });
+
+            const extraSteps = baselineDist - filledDist;
+            if (extraSteps <= 5 && filledDist < Infinity) {
+                map[hr][hc] = 'water';
+            }
+        }
     }
 
 }
