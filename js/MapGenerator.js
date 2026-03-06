@@ -65,7 +65,6 @@ class MapGenerator {
             while (attempts < this.maxAttempts) {
                 map = this._generateRandomMap();
                 this._fixAdjacentHoles(map);
-                this._fixWeakHoles(map);
                 this._enforceMaxPerLevel(map);
                 if (this._validateMap(map)) {
                     // Calculate optimal goal for this map
@@ -138,61 +137,44 @@ class MapGenerator {
 
     /**
      * Generate a random map without validation.
-     * Uses chance values from TILE_DATA to determine tile counts,
-     * builds an exact-size tile list, then shuffles to randomise placement.
+     * Uses chance values from TILE_DATA to determine tile types per-tile
+     * via random rolls against a cumulative probability distribution.
      * @private
      * @returns {Array} 2D array of tile types
      */
     _generateRandomMap() {
-        const totalTiles = this.size * this.size;
-        const reservedTiles = 1; // home tile placed separately
-        const fillCount = totalTiles - reservedTiles;
+        const center = Math.floor(this.size / 2);
         
-        // Build a list of eligible tile types and their chances from TILE_DATA
-        const eligibleTiles = [];
+        // Build cumulative probability distribution from TILE_DATA
+        const cdf = [];
         let totalChance = 0;
         for (const [name, data] of Object.entries(TILE_DATA)) {
             if (data.chance > 0) {
-                eligibleTiles.push({ name, chance: data.chance });
                 totalChance += data.chance;
+                cdf.push({ name, cumulative: totalChance });
             }
         }
+        // Normalise to [0, 1]
+        for (const entry of cdf) entry.cumulative /= totalChance;
         
-        // Compute how many of each tile type based on chance proportions
-        const tileList = [];
-        let placed = 0;
-        for (let i = 0; i < eligibleTiles.length; i++) {
-            const t = eligibleTiles[i];
-            let count;
-            if (i === eligibleTiles.length - 1) {
-                // Last tile type gets the remainder to ensure exact total
-                count = fillCount - placed;
-            } else {
-                count = Math.floor((t.chance / totalChance) * fillCount);
-            }
-            for (let j = 0; j < count; j++) {
-                tileList.push(t.name);
-            }
-            placed += count;
-        }
-        
-        // Shuffle the tile list (Fisher-Yates)
-        for (let i = tileList.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [tileList[i], tileList[j]] = [tileList[j], tileList[i]];
-        }
-        
-        // Insert home at center position so every slot is accounted for
-        const centerIndex = Math.floor(this.size / 2) * this.size + Math.floor(this.size / 2);
-        tileList.splice(centerIndex, 0, 'home');
-        
-        // Build the 2D map
+        // Build the 2D map with per-tile random rolls
         const map = [];
-        let idx = 0;
         for (let i = 0; i < this.size; i++) {
             const row = [];
             for (let j = 0; j < this.size; j++) {
-                row.push(tileList[idx++]);
+                if (i === center && j === center) {
+                    row.push('home');
+                } else {
+                    const r = Math.random();
+                    let tileName = cdf[cdf.length - 1].name;
+                    for (const entry of cdf) {
+                        if (r < entry.cumulative) {
+                            tileName = entry.name;
+                            break;
+                        }
+                    }
+                    row.push(tileName);
+                }
             }
             map.push(row);
         }
