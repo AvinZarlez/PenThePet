@@ -66,6 +66,7 @@ class MapGenerator {
                 map = this._generateRandomMap();
                 this._fixAdjacentHoles(map);
                 this._fixWeakHoles(map);
+                this._enforceMaxPerLevel(map);
                 if (this._validateMap(map)) {
                     // Calculate optimal goal for this map
                     result = this.calculateGoal(map, maxWalls);
@@ -428,6 +429,43 @@ class MapGenerator {
             const extraSteps = baselineDist - filledDist;
             if (extraSteps <= 5 && filledDist < Infinity) {
                 map[hr][hc] = 'water';
+            }
+        }
+    }
+
+    /**
+     * Enforce maxPerLevel limits from TILE_DATA.
+     * For each tile type that has a maxPerLevel property, if the count exceeds
+     * the limit, excess tiles are replaced with 'grass' (or 'water' for
+     * blocking tiles). Replaces in reverse row-major order to keep earlier tiles.
+     * @private
+     * @param {Array} map - 2D array of tile types (modified in place)
+     */
+    _enforceMaxPerLevel(map) {
+        const _tileData = typeof TILE_DATA !== 'undefined' ? TILE_DATA : {};
+        // Build limits map: tileName -> maxPerLevel
+        const limits = {};
+        for (const [name, data] of Object.entries(_tileData)) {
+            if (data.maxPerLevel !== undefined) {
+                limits[name] = data.maxPerLevel;
+            }
+        }
+        if (Object.keys(limits).length === 0) return;
+
+        // Count occurrences and collect positions (first N are kept)
+        const counts = {};
+        const rows = map.length;
+        const cols = map[0].length;
+        for (let r = 0; r < rows; r++) {
+            for (let c = 0; c < cols; c++) {
+                const tile = map[r][c];
+                if (limits[tile] === undefined) continue;
+                counts[tile] = (counts[tile] || 0) + 1;
+                if (counts[tile] > limits[tile]) {
+                    // Excess tile: replace with grass for passable tiles, water for blocking
+                    const data = _tileData[tile];
+                    map[r][c] = (data && data.blocksMovement) ? 'water' : 'grass';
+                }
             }
         }
     }

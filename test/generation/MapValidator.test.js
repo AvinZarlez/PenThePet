@@ -421,5 +421,43 @@ describe('MapValidator', () => {
             const result = MapValidator.validate(map, solution);
             expect(result.errors.some(e => e.includes('hole(s) that can be bypassed'))).toBe(false);
         });
+
+        test('should fail validation when too many holes (maxPerLevel exceeded)', () => {
+            const map = [
+                ['grass', 'grass', 'grass', 'grass', 'grass', 'grass', 'grass'],
+                ['grass', 'water', 'grass', 'hole',  'grass', 'water', 'grass'],
+                ['grass', 'grass', 'grass', 'grass', 'grass', 'grass', 'grass'],
+                ['grass', 'hole',  'star',  'home',  'bee',   'hole',  'grass'],
+                ['grass', 'grass', 'grass', 'grass', 'grass', 'grass', 'grass'],
+                ['grass', 'water', 'grass', 'hole',  'grass', 'water', 'grass'],
+                ['grass', 'grass', 'grass', 'grass', 'grass', 'grass', 'grass']
+            ];
+            const solution = {
+                goalArea: 8,
+                optimalWallCount: 4,
+                optimalSolution: [[2, 1], [2, 5], [4, 1], [4, 5]]
+            };
+            const result = MapValidator.validate(map, solution);
+            expect(result.errors.some(e => e.includes('Too many hole tiles'))).toBe(true);
+        });
+
+        test('should pass validation when holes are within maxPerLevel limit', () => {
+            const map = [
+                ['grass', 'grass', 'grass', 'grass', 'grass', 'grass', 'grass'],
+                ['grass', 'water', 'grass', 'water', 'grass', 'water', 'grass'],
+                ['grass', 'grass', 'grass', 'grass', 'grass', 'grass', 'grass'],
+                ['grass', 'water', 'star',  'home',  'bee',   'water', 'grass'],
+                ['grass', 'grass', 'grass', 'grass', 'grass', 'grass', 'grass'],
+                ['grass', 'water', 'grass', 'water', 'grass', 'water', 'grass'],
+                ['grass', 'grass', 'grass', 'grass', 'grass', 'grass', 'grass']
+            ];
+            const solution = {
+                goalArea: 8,
+                optimalWallCount: 4,
+                optimalSolution: [[2, 1], [2, 5], [4, 1], [4, 5]]
+            };
+            const result = MapValidator.validate(map, solution);
+            expect(result.errors.some(e => e.includes('Too many'))).toBe(false);
+        });
     });
 });

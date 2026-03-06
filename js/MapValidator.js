@@ -83,6 +83,12 @@ class MapValidator {
             errors.push(`Map has ${weakHoles.length} hole(s) that can be bypassed with 5 or fewer extra steps`);
         }
         
+        // 11. Tiles with maxPerLevel must not exceed their limit
+        const maxPerLevelErrors = this._checkMaxPerLevel(map);
+        for (const err of maxPerLevelErrors) {
+            errors.push(err);
+        }
+        
         return {
             valid: errors.length === 0,
             errors: errors
@@ -231,6 +237,30 @@ class MapValidator {
         }
 
         return weakHoles;
+    }
+
+    /**
+     * Check that no tile exceeds its maxPerLevel limit.
+     * Reads the maxPerLevel property from TILE_DATA for each tile type.
+     * @private
+     * @param {Array} map - 2D array of tile type strings
+     * @returns {Array<string>} Array of error messages (empty if all OK)
+     */
+    static _checkMaxPerLevel(map) {
+        const _tileData = typeof TILE_DATA !== 'undefined' ? TILE_DATA : {};
+        const counts = {};
+        for (const row of map) {
+            for (const tile of row) {
+                counts[tile] = (counts[tile] || 0) + 1;
+            }
+        }
+        const errors = [];
+        for (const [name, data] of Object.entries(_tileData)) {
+            if (data.maxPerLevel !== undefined && counts[name] > data.maxPerLevel) {
+                errors.push(`Too many ${name} tiles (${counts[name]} > max ${data.maxPerLevel})`);
+            }
+        }
+        return errors;
     }
 }
 
