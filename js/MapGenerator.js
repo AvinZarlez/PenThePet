@@ -66,8 +66,7 @@ class MapGenerator {
                 map = this._generateRandomMap();
                 this._fixAdjacentHoles(map);
                 this._enforceMaxPerLevel(map);
-                this._removeWeakHoles(map);
-                this._placeStrategicHoles(map);
+                this._reinforceHoles(map);
                 if (this._validateMap(map)) {
                     // Calculate optimal goal for this map
                     result = this.calculateGoal(map, maxWalls);
@@ -455,12 +454,22 @@ class MapGenerator {
     }
 
     /**
-     * Remove any randomly-placed weak holes by converting them to grass.
-     * A hole is "weak" if filling it saves ≤ 5 steps on the path to the edge.
+     * Reinforce weak holes by adding water tiles nearby to create bottlenecks,
+     * or place holes at interior positions that naturally create detours.
+     *
+     * Two-phase approach:
+     * Phase 1: Remove any randomly-placed holes that are on edges or weak.
+     * Phase 2: Place holes at interior positions where they create a meaningful
+     *          detour (extra > WEAK_HOLE_THRESHOLD), using water reinforcement
+     *          to strengthen borderline positions.
+     *
+     * Only attempts hole placement ~65% of the time so that some maps remain
+     * hole-free (satisfying the ≥ 20% no-hole requirement).
+     *
      * @private
      * @param {Array} map - 2D array of tile types (modified in place)
      */
-    _removeWeakHoles(map) {
+    _reinforceHoles(map) {
         const _isFillable = typeof isFillableTile === 'function' ? isFillableTile : (t) => {
             const d = typeof TILE_DATA !== 'undefined' ? TILE_DATA[t] : null;
             return d ? (d.blocksMovement && d.wallPlaceable) : false;
@@ -469,30 +478,262 @@ class MapGenerator {
             const d = typeof TILE_DATA !== 'undefined' ? TILE_DATA[t] : null;
             return d ? d.blocksMovement : false;
         };
+        const _tileData = typeof TILE_DATA !== 'undefined' ? TILE_DATA : {};
+        const threshold = typeof CONSTANTS !== 'undefined' ? CONSTANTS.WEAK_HOLE_THRESHOLD : 0;
+        const maxHoles = (_tileData.hole && _tileData.hole.maxPerLevel) || 3;
         const rows = map.length;
         const cols = map[0].length;
 
-        const holes = [];
+        // Phase 1: Remove all randomly placed holes — we'll place them strategically
         for (let r = 0; r < rows; r++) {
             for (let c = 0; c < cols; c++) {
-                if (_isFillable(map[r][c])) holes.push([r, c]);
+                if (_isFillable(map[r][c])) {
+                    map[r][c] = 'grass';
+                }
             }
         }
-        if (holes.length === 0) return;
 
+        // Only attempt hole placement some of the time (25% chance of no holes)
+        if (Math.random() > 0.75) return;
+
+        // Find home position
+        let homeR = Math.floor(rows / 2), homeC = Math.floor(cols / 2);
+        for (let r = 0; r < rows; r++) {
+            for (let c = 0; c < cols; c++) {
+                if (map[r][c] === 'home') { homeR = r; homeC = c; }
+            }
+        }
+
+        // Phase 2: Find interior grass tiles that create a detour when blocked.
+        // Score each candidate by its natural impact, then try reinforcement.
+        const candidates = [];
+        for (let r = 1; r < rows - 1; r++) {
+            for (let c = 1; c < cols - 1; c++) {
+                if (map[r][c] !== 'grass') continue;
+                if (Math.abs(r - homeR) <= 1 && Math.abs(c - homeC) <= 1) continue;
+
+                // Temporarily place hole and measure impact
+                map[r][c] = 'hole';
+                const strong = this._isHoleStrong(map, r, c, threshold, _isBlocking);
+                map[r][c] = 'grass';
+
+                if (strong) {
+                    candidates.push({ r, c, natural: true });
+                } else {
+                    // Still a candidate for reinforcement
+                    candidates.push({ r, c, natural: false });
+                }
+            }
+        }
+
+        // Sort: natural strong candidates first, then reinforcement candidates
+        // Shuffle within each group for variety
+        const naturals = candidates.filter(c => c.natural);
+        const reinforceable = candidates.filter(c => !c.natural);
+        for (const arr of [naturals, reinforceable]) {
+            for (let i = arr.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [arr[i], arr[j]] = [arr[j], arr[i]];
+            }
+        }
+        const sortedCandidates = [...naturals, ...reinforceable];
+
+        // Place holes
+        let holeCount = 0;
+        for (const { r, c, natural } of sortedCandidates) {
+            if (holeCount >= maxHoles) break;
+            if (map[r][c] !== 'grass') continue;
+
+            // Check adjacency to existing holes
+            let adjToHole = false;
+            const dirs = [[-1, 0], [1, 0], [0, -1], [0, 1]];
+            for (const [dr, dc] of dirs) {
+                const nr = r + dr, nc = c + dc;
+                if (nr >= 0 && nr < rows && nc >= 0 && nc < cols && _isFillable(map[nr][nc])) {
+                    adjToHole = true;
+                    break;
+                }
+            }
+            if (adjToHole) continue;
+
+            map[r][c] = 'hole';
+
+            if (!PathfindingUtils.hasPathToEdge(map) || !PathfindingUtils.allWalkableTilesReachable(map)) {
+                map[r][c] = 'grass';
+                continue;
+            }
+
+            if (natural) {
+                // Naturally strong — just verify
+                if (this._isHoleStrong(map, r, c, threshold, _isBlocking)) {
+                    holeCount++;
+                    continue;
+                }
+            }
+
+            // Try water reinforcement
+            const reinforced = this._reinforceWithWater(map, r, c, threshold, _isBlocking);
+            if (reinforced && PathfindingUtils.allWalkableTilesReachable(map)) {
+                holeCount++;
+            } else {
+                map[r][c] = 'grass';
+            }
+        }
+    }
+
+    /**
+     * Find the shortest escape path from home to edge using BFS with parent tracking.
+     * @private
+     * @param {Array} map - 2D map
+     * @param {Function} _isBlocking - Blocking tile checker
+     * @returns {Array<Array<number>>|null} Array of [r,c] positions from home to edge, or null
+     */
+    _findEscapePath(map, _isBlocking) {
+        const rows = map.length;
+        const cols = map[0].length;
+        let homeR = -1, homeC = -1;
+        for (let r = 0; r < rows; r++) {
+            for (let c = 0; c < cols; c++) {
+                if (map[r][c] === 'home') { homeR = r; homeC = c; }
+            }
+        }
+        if (homeR < 0) return null;
+
+        const visited = new Set([`${homeR},${homeC}`]);
+        const parent = {};
+        const queue = [[homeR, homeC]];
+        const directions = [[-1, 0], [1, 0], [0, -1], [0, 1]];
+        let endR = -1, endC = -1;
+
+        while (queue.length > 0) {
+            const [r, c] = queue.shift();
+            // Check if at edge
+            if (r === 0 || r === rows - 1 || c === 0 || c === cols - 1) {
+                endR = r;
+                endC = c;
+                break;
+            }
+            for (const [dr, dc] of directions) {
+                const nr = r + dr;
+                const nc = c + dc;
+                if (nr < 0 || nr >= rows || nc < 0 || nc >= cols) continue;
+                const key = `${nr},${nc}`;
+                if (visited.has(key)) continue;
+                if (_isBlocking(map[nr][nc])) continue;
+                visited.add(key);
+                parent[key] = [r, c];
+                queue.push([nr, nc]);
+            }
+        }
+
+        if (endR < 0) return null;
+
+        // Reconstruct path
+        const path = [];
+        let cr = endR, cc = endC;
+        while (cr !== homeR || cc !== homeC) {
+            path.unshift([cr, cc]);
+            const p = parent[`${cr},${cc}`];
+            if (!p) break;
+            cr = p[0];
+            cc = p[1];
+        }
+        path.unshift([homeR, homeC]);
+        return path;
+    }
+
+    /**
+     * Try to reinforce a hole at (hr,hc) by creating a water barrier line
+     * through or near the hole. The barrier extends perpendicular to the escape
+     * path direction, creating a "dam" that the pet must go around.
+     *
+     * The barrier must have at least 1 water tile on each side of the hole
+     * to force a detour > 2 steps.
+     *
+     * @private
+     * @param {Array} map - 2D map (modified in place; caller reverts if returns false)
+     * @param {number} hr - Hole row
+     * @param {number} hc - Hole column
+     * @param {number} threshold - Minimum detour steps
+     * @param {Function} _isBlocking - Blocking tile checker
+     * @returns {boolean} True if hole was successfully reinforced
+     */
+    _reinforceWithWater(map, hr, hc, threshold, _isBlocking) {
+        const rows = map.length;
+        const cols = map[0].length;
+
+        // Try creating a barrier in each orientation: horizontal row, vertical column
+        const orientations = [
+            // Horizontal barrier: convert tiles along row hr (extend left/right)
+            { steps: [[0, -1], [0, 1]] },
+            // Vertical barrier: convert tiles along column hc (extend up/down)
+            { steps: [[-1, 0], [1, 0]] },
+        ];
+
+        for (const config of orientations) {
+            const waterAdded = [];
+
+            // Extend barrier in both directions from the hole
+            for (const [dr, dc] of config.steps) {
+                for (let dist = 1; dist <= Math.max(rows, cols); dist++) {
+                    const nr = hr + dr * dist;
+                    const nc = hc + dc * dist;
+                    if (nr < 0 || nr >= rows || nc < 0 || nc >= cols) break;
+                    if (map[nr][nc] !== 'grass') break;
+                    waterAdded.push([nr, nc]);
+                }
+            }
+
+            if (waterAdded.length < 2) continue; // Need at least 1 on each side
+
+            // Place all water tiles
+            for (const [wr, wc] of waterAdded) {
+                map[wr][wc] = 'water';
+            }
+
+            // Verify connectivity — shorten barrier if needed
+            while (waterAdded.length > 0) {
+                if (PathfindingUtils.hasPathToEdge(map) && PathfindingUtils.allWalkableTilesReachable(map)) {
+                    break;
+                }
+                // Remove last water tile
+                const [wr, wc] = waterAdded.pop();
+                map[wr][wc] = 'grass';
+            }
+
+            // Check hole strength
+            if (waterAdded.length >= 2 && this._isHoleStrong(map, hr, hc, threshold, _isBlocking)) {
+                return true;
+            }
+
+            // Revert
+            for (const [wr, wc] of waterAdded) {
+                map[wr][wc] = 'grass';
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Check if a hole is strategically significant (detour > threshold).
+     * @private
+     * @param {Array} map - 2D map
+     * @param {number} hr - Hole row
+     * @param {number} hc - Hole column
+     * @param {number} threshold - Minimum detour steps
+     * @param {Function} _isBlocking - Blocking tile checker
+     * @returns {boolean}
+     */
+    _isHoleStrong(map, hr, hc, threshold, _isBlocking) {
         const baselineDist = PathfindingUtils.shortestPathToEdge(map, (tile) => _isBlocking(tile));
-
-        for (const [hr, hc] of holes) {
-            const filledDist = PathfindingUtils.shortestPathToEdge(map, (tile, r, c) => {
-                if (r === hr && c === hc) return false;
-                return _isBlocking(tile);
-            });
-            const extraSteps = baselineDist - filledDist;
-            const threshold = typeof CONSTANTS !== 'undefined' ? CONSTANTS.WEAK_HOLE_THRESHOLD : 2;
-            if (extraSteps <= threshold || filledDist === Infinity) {
-                map[hr][hc] = 'grass';
-            }
-        }
+        if (baselineDist === Infinity) return false;
+        const filledDist = PathfindingUtils.shortestPathToEdge(map, (tile, r, c) => {
+            if (r === hr && c === hc) return false;
+            return _isBlocking(tile);
+        });
+        if (filledDist === Infinity) return false;
+        return (baselineDist - filledDist) > threshold;
     }
 
     /**
