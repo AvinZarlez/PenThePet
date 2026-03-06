@@ -80,16 +80,34 @@ class MapGenerator {
                             // Only runs for maps that pass all other checks, so cost is minimal.
                             const unlimitedResult = this.calculateGoal(map, this.size * this.size);
                             if (unlimitedResult !== null && unlimitedResult.goalArea > result.goalArea) {
-                                return { 
-                                    map, 
-                                    goal: result.goalArea, 
-                                    maxWalls: effectiveMaxWalls,
-                                    optimalSolution: result.optimalSolution
-                                };
-                            }
-                            // Wall budget doesn't constrain scoring - try another map
-                            if (totalAttempts % 10 === 0) {
-                                console.log('Wall budget does not constrain scoring - skipping map');
+                                // Prune unnecessary special tiles before accepting the map
+                                const pruned = this._pruneUnnecessarySpecialTiles(map, effectiveMaxWalls, result);
+                                if (pruned !== null) {
+                                    map = pruned.map;
+                                    result = pruned.solution;
+                                }
+
+                                // Re-validate after pruning (includes star/bee checks)
+                                const finalValidation = MapValidator.validate(map, {
+                                    ...result,
+                                    maxWalls: result.optimalWallCount
+                                });
+                                if (finalValidation.valid) {
+                                    return { 
+                                        map, 
+                                        goal: result.goalArea, 
+                                        maxWalls: result.optimalWallCount,
+                                        optimalSolution: result.optimalSolution
+                                    };
+                                }
+                                if (totalAttempts % 10 === 0) {
+                                    console.log(`Post-prune validation failed: ${finalValidation.errors.join(', ')}`);
+                                }
+                            } else {
+                                // Wall budget doesn't constrain scoring - try another map
+                                if (totalAttempts % 10 === 0) {
+                                    console.log('Wall budget does not constrain scoring - skipping map');
+                                }
                             }
                         } else {
                             if (totalAttempts % 10 === 0) {
@@ -202,11 +220,13 @@ class MapGenerator {
     }
     
     /**
-     * Calculate the maximum achievable area (goal) for a given map
-     * Uses the MILP solver to find the optimal wall placements
+     * Calculate the maximum achievable area (goal) for a given map.
+     * Uses the MILP solver to find the optimal wall placements, then runs BFS
+     * to determine the resulting penned area.
      * @param {Array} map - 2D array of tile types (strings)
      * @param {number} maxWalls - Maximum number of walls that can be placed
-     * @returns {Object|null} Object with {goalArea, optimalWallCount, optimalSolution}, or null if pet cannot be penned
+     * @returns {Object|null} Object with {goalArea, optimalWallCount, optimalSolution, wallPositions, pennedTiles},
+     *   or null if pet cannot be penned
      */
     calculateGoal(map, maxWalls) {
         // Convert map from tile type strings to numbers for the solver
@@ -218,11 +238,17 @@ class MapGenerator {
         if (solution === null) {
             return null;
         }
-        
+
+        const optimalSolution = solution.walls ? this._convertWallsToCoordinates(solution.walls) : [];
+        const wallPositions = new Set(optimalSolution.map(([r, c]) => `${r},${c}`));
+        const pennedTiles = PathfindingUtils.getPennedTiles(map, wallPositions);
+
         return {
             goalArea: solution.goalArea,
             optimalWallCount: solution.optimalWallCount || 0,
-            optimalSolution: solution.walls ? this._convertWallsToCoordinates(solution.walls) : []
+            optimalSolution,
+            wallPositions,
+            pennedTiles
         };
     }
 
@@ -242,6 +268,85 @@ class MapGenerator {
             }
         }
         return coordinates;
+    }
+
+    /**
+     * Prune unnecessary special tiles from a map.
+     *
+     * For every score-increasing tile (star) inside the optimal penned area:
+     *   Replace with grass, re-solve. If wall positions are unchanged, keep as grass.
+     *   At least one star is always preserved so the level remains engaging.
+     *
+     * For every score-removing tile (bee) anywhere on the map:
+     *   Replace with grass, re-solve. If wall positions are unchanged, keep as grass.
+     *   At least one bee is always preserved so the level remains engaging.
+     *
+     * Returns the pruned map and its updated solution, or null if re-solving fails.
+     *
+     * @private
+     * @param {Array} map - 2D array of tile type strings
+     * @param {number} maxWalls - Wall budget used for re-solving
+     * @param {Object} solution - Current solution from calculateGoal
+     * @returns {{map: Array, solution: Object}|null}
+     */
+    _pruneUnnecessarySpecialTiles(map, maxWalls, solution) {
+        const originalWalls = solution.wallPositions;
+        let currentMap = map.map(row => [...row]);
+        let totalStars = currentMap.reduce((acc, row) => acc + row.filter(t => t === 'star').length, 0);
+        let totalBees  = currentMap.reduce((acc, row) => acc + row.filter(t => t === 'bee').length, 0);
+
+        // Step 1: Prune unnecessary stars inside the penned area.
+        // Always keep at least one star on the map.
+        for (const [r, c] of solution.pennedTiles) {
+            if (currentMap[r][c] !== 'star') continue;
+            if (totalStars <= 1) continue; // Preserve the last star
+            const testMap = currentMap.map(row => [...row]);
+            testMap[r][c] = 'grass';
+            const testSolution = this.calculateGoal(testMap, maxWalls);
+            if (testSolution === null) continue;
+            if (this._wallSetsEqual(originalWalls, testSolution.wallPositions)) {
+                currentMap[r][c] = 'grass';
+                totalStars--;
+            }
+        }
+
+        // Step 2: Prune unnecessary bees anywhere on the map.
+        // Always keep at least one bee on the map.
+        for (let r = 0; r < currentMap.length; r++) {
+            for (let c = 0; c < currentMap[r].length; c++) {
+                if (currentMap[r][c] !== 'bee') continue;
+                if (totalBees <= 1) continue; // Preserve the last bee
+                const testMap = currentMap.map(row => [...row]);
+                testMap[r][c] = 'grass';
+                const testSolution = this.calculateGoal(testMap, maxWalls);
+                if (testSolution === null) continue;
+                if (this._wallSetsEqual(originalWalls, testSolution.wallPositions)) {
+                    currentMap[r][c] = 'grass';
+                    totalBees--;
+                }
+            }
+        }
+
+        // Re-solve the pruned map to get the final goal and solution
+        const finalSolution = this.calculateGoal(currentMap, maxWalls);
+        if (finalSolution === null) return null;
+
+        return { map: currentMap, solution: finalSolution };
+    }
+
+    /**
+     * Check if two wall-position sets contain the same coordinates.
+     * @private
+     * @param {Set<string>} a
+     * @param {Set<string>} b
+     * @returns {boolean}
+     */
+    _wallSetsEqual(a, b) {
+        if (a.size !== b.size) return false;
+        for (const key of a) {
+            if (!b.has(key)) return false;
+        }
+        return true;
     }
 
 }

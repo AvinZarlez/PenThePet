@@ -25,296 +25,203 @@ if (typeof BLOCKING_NUMERIC_IDS === 'undefined' && typeof require !== 'undefined
 }
 
 class PathfindingUtils {
+
+    // -------------------------------------------------------------------------
+    // Private shared helpers
+    // -------------------------------------------------------------------------
+
+    /**
+     * Find the home tile position in a string map.
+     * @private
+     * @param {Array} map - 2D array of tile type strings
+     * @returns {[number, number]} [homeRow, homeCol], or [-1, -1] if not found
+     */
+    static _findHome(map) {
+        for (let i = 0; i < map.length; i++) {
+            for (let j = 0; j < map[i].length; j++) {
+                if (map[i][j] === 'home') return [i, j];
+            }
+        }
+        return [-1, -1];
+    }
+
+    /**
+     * BFS from a start position, collecting every reachable cell key.
+     * Stops at cells where isBlocking returns true.
+     *
+     * @private
+     * @param {Array} map - 2D map array (numeric or string)
+     * @param {number} startRow
+     * @param {number} startCol
+     * @param {Function} isBlocking - (tileValue, row, col) => boolean
+     * @returns {Set<string>} Set of "row,col" keys reachable from start (inclusive)
+     */
+    static _bfsReachable(map, startRow, startCol, isBlocking) {
+        const rows = map.length;
+        const cols = map[0].length;
+        const visited = new Set([`${startRow},${startCol}`]);
+        const queue = [[startRow, startCol]];
+        const directions = [[-1, 0], [1, 0], [0, -1], [0, 1]];
+
+        while (queue.length > 0) {
+            const [row, col] = queue.shift();
+            for (const [dr, dc] of directions) {
+                const newRow = row + dr;
+                const newCol = col + dc;
+                const key = `${newRow},${newCol}`;
+                if (newRow < 0 || newRow >= rows || newCol < 0 || newCol >= cols) continue;
+                if (visited.has(key)) continue;
+                if (isBlocking(map[newRow][newCol], newRow, newCol)) continue;
+                visited.add(key);
+                queue.push([newRow, newCol]);
+            }
+        }
+
+        return visited;
+    }
+
+    /**
+     * Return true if any key in visited sits on the map edge.
+     * @private
+     * @param {Set<string>} visited
+     * @param {number} rows
+     * @param {number} cols
+     * @returns {boolean}
+     */
+    static _reachesEdge(visited, rows, cols) {
+        for (const key of visited) {
+            const [r, c] = key.split(',').map(Number);
+            if (r === 0 || r === rows - 1 || c === 0 || c === cols - 1) return true;
+        }
+        return false;
+    }
+
+    // -------------------------------------------------------------------------
+    // Public API — numeric map (used by game runtime and solver)
+    // -------------------------------------------------------------------------
+
     /**
      * Check if home is penned in (cannot reach any edge).
-     * Uses BFS to explore all reachable tiles from home.
-     * If any edge tile is reached, the pet can escape.
-     * 
+     *
      * @param {Array} map - 2D array where 0=water, 1=grass, 2=home, 5=wall
      * @param {number} homeRow - Row index of home tile
      * @param {number} homeCol - Column index of home tile
      * @returns {boolean} True if penned (cannot reach edge), false otherwise
      */
     static isPenned(map, homeRow, homeCol) {
-        const verticalTiles = map.length;
-        const horizontalTiles = map[0].length;
-        
-        const visited = new Set([`${homeRow},${homeCol}`]);
-        const queue = [[homeRow, homeCol]];
-        const directions = [[-1, 0], [1, 0], [0, -1], [0, 1]];
-        
-        while (queue.length > 0) {
-            const [row, col] = queue.shift();
-            
-            // Check if reached edge
-            if (row === 0 || row === verticalTiles - 1 || col === 0 || col === horizontalTiles - 1) {
-                return false; // Can escape
-            }
-            
-            // Explore neighbors
-            for (const [dr, dc] of directions) {
-                const newRow = row + dr;
-                const newCol = col + dc;
-                const key = `${newRow},${newCol}`;
-                
-                if (newRow < 0 || newRow >= verticalTiles || newCol < 0 || newCol >= horizontalTiles) {
-                    continue;
-                }
-                
-                if (visited.has(key)) {
-                    continue;
-                }
-                
-                const tileType = map[newRow][newCol];
-                if (BLOCKING_NUMERIC_IDS.has(tileType)) {
-                    continue;
-                }
-                
-                visited.add(key);
-                queue.push([newRow, newCol]);
-            }
-        }
-        
-        return true; // Penned
+        const visited = PathfindingUtils._bfsReachable(
+            map, homeRow, homeCol,
+            tile => BLOCKING_NUMERIC_IDS.has(tile)
+        );
+        return !PathfindingUtils._reachesEdge(visited, map.length, map[0].length);
     }
-    
+
     /**
      * Calculate the penned area size (number of tiles reachable from home).
-     * Uses BFS to count all tiles reachable from home without crossing water or walls.
-     * 
+     *
      * @param {Array} map - 2D array where 0=water, 1=grass, 2=home, 5=wall
      * @param {number} homeRow - Row index of home tile
      * @param {number} homeCol - Column index of home tile
      * @returns {number} Number of tiles in the penned area (including home)
      */
     static calculatePennedArea(map, homeRow, homeCol) {
-        const verticalTiles = map.length;
-        const horizontalTiles = map[0].length;
-        
-        const visited = new Set([`${homeRow},${homeCol}`]);
-        const queue = [[homeRow, homeCol]];
-        const directions = [[-1, 0], [1, 0], [0, -1], [0, 1]];
-        
-        while (queue.length > 0) {
-            const [row, col] = queue.shift();
-            
-            // Explore neighbors
-            for (const [dr, dc] of directions) {
-                const newRow = row + dr;
-                const newCol = col + dc;
-                const key = `${newRow},${newCol}`;
-                
-                if (newRow < 0 || newRow >= verticalTiles || newCol < 0 || newCol >= horizontalTiles) {
-                    continue;
-                }
-                
-                if (visited.has(key)) {
-                    continue;
-                }
-                
-                const tileType = map[newRow][newCol];
-                if (BLOCKING_NUMERIC_IDS.has(tileType)) {
-                    continue;
-                }
-                
-                visited.add(key);
-                queue.push([newRow, newCol]);
-            }
-        }
-        
-        return visited.size;
+        return PathfindingUtils._bfsReachable(
+            map, homeRow, homeCol,
+            tile => BLOCKING_NUMERIC_IDS.has(tile)
+        ).size;
     }
 
     /**
      * Calculate the penned score (weighted sum of tiles reachable from home).
      * Uses score values from TILE_DATA (via NUMERIC_ID_TO_SCORE lookup).
-     * Uses BFS to find all tiles reachable from home without crossing blocking tiles.
-     * 
+     *
      * @param {Array} map - 2D array of numeric tile IDs (see tileData.js numericId)
      * @param {number} homeRow - Row index of home tile
      * @param {number} homeCol - Column index of home tile
-     * @param {Object} scoreMap - Optional map of numericId→score (default: NUMERIC_ID_TO_SCORE from tileData)
+     * @param {Object} scoreMap - Optional map of numericId to score (default: NUMERIC_ID_TO_SCORE from tileData)
      * @returns {number} Weighted score of the penned area
      */
     static calculatePennedScore(map, homeRow, homeCol, scoreMap) {
-        // Use provided score map or fall back to the global NUMERIC_ID_TO_SCORE
         const scores = scoreMap || (typeof NUMERIC_ID_TO_SCORE !== 'undefined' ? NUMERIC_ID_TO_SCORE : {0:0, 1:1, 2:1, 3:3, 5:0});
-        const verticalTiles = map.length;
-        const horizontalTiles = map[0].length;
-        
-        const visited = new Set([`${homeRow},${homeCol}`]);
-        const queue = [[homeRow, homeCol]];
-        const directions = [[-1, 0], [1, 0], [0, -1], [0, 1]];
-        let score = scores[map[homeRow][homeCol]] !== undefined ? scores[map[homeRow][homeCol]] : 1;
-        
-        while (queue.length > 0) {
-            const [row, col] = queue.shift();
-            
-            // Explore neighbors
-            for (const [dr, dc] of directions) {
-                const newRow = row + dr;
-                const newCol = col + dc;
-                const key = `${newRow},${newCol}`;
-                
-                if (newRow < 0 || newRow >= verticalTiles || newCol < 0 || newCol >= horizontalTiles) {
-                    continue;
-                }
-                
-                if (visited.has(key)) {
-                    continue;
-                }
-                
-                const tileType = map[newRow][newCol];
-                if (BLOCKING_NUMERIC_IDS.has(tileType)) {
-                    continue;
-                }
-                
-                visited.add(key);
-                queue.push([newRow, newCol]);
-                score += scores[tileType] !== undefined ? scores[tileType] : 1;
-            }
+        const visited = PathfindingUtils._bfsReachable(
+            map, homeRow, homeCol,
+            tile => BLOCKING_NUMERIC_IDS.has(tile)
+        );
+        let score = 0;
+        for (const key of visited) {
+            const [r, c] = key.split(',').map(Number);
+            const t = map[r][c];
+            score += scores[t] !== undefined ? scores[t] : 1;
         }
-        
         return score;
     }
 
+    // -------------------------------------------------------------------------
+    // Public API — string map (used by MapGenerator and MapValidator)
+    // -------------------------------------------------------------------------
+
     /**
+     * Check if home can reach a map edge (no walls placed).
      * Used by MapGenerator and MapValidator to verify map connectivity.
-     * Water tiles block movement; grass and home tiles are passable.
-     * 
+     *
      * @param {Array} map - 2D array of tile type strings ('grass', 'water', 'home')
      * @returns {boolean} True if home can reach an edge, false otherwise
      */
     static hasPathToEdge(map) {
-        const size = map.length;
+        const [homeRow, homeCol] = PathfindingUtils._findHome(map);
+        if (homeRow < 0) return false;
 
-        // Find home position
-        let homeRow = -1, homeCol = -1;
-        for (let i = 0; i < size; i++) {
-            for (let j = 0; j < map[i].length; j++) {
-                if (map[i][j] === 'home') {
-                    homeRow = i;
-                    homeCol = j;
-                    break;
-                }
-            }
-            if (homeRow >= 0) break;
-        }
+        const rows = map.length, cols = map[0].length;
+        if (homeRow === 0 || homeRow === rows - 1 || homeCol === 0 || homeCol === cols - 1) return true;
 
-        if (homeRow < 0) {
-            return false; // No home found
-        }
-
-        // If home is already on the edge, it can escape
-        if (homeRow === 0 || homeRow === size - 1 || homeCol === 0 || homeCol === map[0].length - 1) {
-            return true;
-        }
-
-        const visited = new Set([`${homeRow},${homeCol}`]);
-        const queue = [[homeRow, homeCol]];
-        const directions = [[-1, 0], [1, 0], [0, -1], [0, 1]];
-
-        while (queue.length > 0) {
-            const [row, col] = queue.shift();
-
-            // Check if reached edge
-            if (row === 0 || row === size - 1 || col === 0 || col === map[0].length - 1) {
-                return true;
-            }
-
-            // Explore neighbors
-            for (const [dr, dc] of directions) {
-                const newRow = row + dr;
-                const newCol = col + dc;
-                const coordKey = `${newRow},${newCol}`;
-
-                if (newRow < 0 || newRow >= size || newCol < 0 || newCol >= map[0].length) {
-                    continue;
-                }
-
-                if (visited.has(coordKey)) {
-                    continue;
-                }
-
-                if (isBlockingTile(map[newRow][newCol])) {
-                    continue;
-                }
-
-                visited.add(coordKey);
-                queue.push([newRow, newCol]);
-            }
-        }
-
-        return false;
+        const visited = PathfindingUtils._bfsReachable(
+            map, homeRow, homeCol,
+            tile => isBlockingTile(tile)
+        );
+        return PathfindingUtils._reachesEdge(visited, rows, cols);
     }
 
     /**
      * Check that every non-blocking tile on the map is reachable from home.
-     * Uses BFS from home, then verifies every walkable tile was visited.
-     * 
+     *
      * @param {Array} map - 2D array of tile type strings ('grass', 'water', 'home', 'star', 'bee')
      * @returns {boolean} True if all walkable tiles are reachable from home
      */
     static allWalkableTilesReachable(map) {
-        const size = map.length;
+        const [homeRow, homeCol] = PathfindingUtils._findHome(map);
+        if (homeRow < 0) return false;
 
-        // Find home position
-        let homeRow = -1, homeCol = -1;
-        for (let i = 0; i < size; i++) {
+        const visited = PathfindingUtils._bfsReachable(
+            map, homeRow, homeCol,
+            tile => isBlockingTile(tile)
+        );
+        for (let i = 0; i < map.length; i++) {
             for (let j = 0; j < map[i].length; j++) {
-                if (map[i][j] === 'home') {
-                    homeRow = i;
-                    homeCol = j;
-                    break;
-                }
-            }
-            if (homeRow >= 0) break;
-        }
-
-        if (homeRow < 0) {
-            return false; // No home found
-        }
-
-        // BFS from home to find all reachable tiles
-        const visited = new Set([`${homeRow},${homeCol}`]);
-        const queue = [[homeRow, homeCol]];
-        const directions = [[-1, 0], [1, 0], [0, -1], [0, 1]];
-
-        while (queue.length > 0) {
-            const [row, col] = queue.shift();
-
-            for (const [dr, dc] of directions) {
-                const newRow = row + dr;
-                const newCol = col + dc;
-                const key = `${newRow},${newCol}`;
-
-                if (newRow < 0 || newRow >= size || newCol < 0 || newCol >= map[0].length) {
-                    continue;
-                }
-
-                if (visited.has(key)) {
-                    continue;
-                }
-
-                if (isBlockingTile(map[newRow][newCol])) {
-                    continue;
-                }
-
-                visited.add(key);
-                queue.push([newRow, newCol]);
+                if (!isBlockingTile(map[i][j]) && !visited.has(`${i},${j}`)) return false;
             }
         }
-
-        // Verify every non-blocking tile was visited
-        for (let i = 0; i < size; i++) {
-            for (let j = 0; j < map[i].length; j++) {
-                if (!isBlockingTile(map[i][j]) && !visited.has(`${i},${j}`)) {
-                    return false;
-                }
-            }
-        }
-
         return true;
+    }
+
+    /**
+     * Find all tile positions inside the penned area (reachable from home without
+     * crossing blocking tiles or the given wall positions).
+     * Called by calculateGoal in MapGenerator to determine the penned area after solving.
+     *
+     * @param {Array} map - 2D array of tile type strings ('grass', 'water', 'home', etc.)
+     * @param {Set<string>} [wallPositions] - Optional set of "row,col" strings for placed walls
+     * @returns {Array<Array<number>>} Array of [row, col] positions inside the penned area
+     */
+    static getPennedTiles(map, wallPositions) {
+        const [homeRow, homeCol] = PathfindingUtils._findHome(map);
+        if (homeRow < 0) return [];
+
+        const blocked = wallPositions || new Set();
+        const visited = PathfindingUtils._bfsReachable(
+            map, homeRow, homeCol,
+            (tile, r, c) => isBlockingTile(tile) || blocked.has(`${r},${c}`)
+        );
+        return [...visited].map(key => key.split(',').map(Number));
     }
 }
 

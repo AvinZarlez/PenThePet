@@ -62,6 +62,16 @@ class MapValidator {
             }
         }
         
+        // 7. At least one star tile must exist in the map
+        if (!this._hasAtLeastOneStar(map)) {
+            errors.push('Map has no star tiles - at least one star is required');
+        }
+        
+        // 8. At least one bee tile must exist in the map
+        if (!this._hasAtLeastOneBee(map)) {
+            errors.push('Map has no bee tiles - at least one bee is required');
+        }
+        
         return {
             valid: errors.length === 0,
             errors: errors
@@ -105,6 +115,36 @@ class MapValidator {
      */
     static _allWalkableTilesReachable(map) {
         return PathfindingUtils.allWalkableTilesReachable(map);
+    }
+
+    /**
+     * Check if at least one star tile exists in the map.
+     * @private
+     * @param {Array} map - 2D array of tile type strings
+     * @returns {boolean} True if at least one star tile exists
+     */
+    static _hasAtLeastOneStar(map) {
+        for (const row of map) {
+            for (const tile of row) {
+                if (tile === 'star') return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Check if at least one bee tile exists in the map.
+     * @private
+     * @param {Array} map - 2D array of tile type strings
+     * @returns {boolean} True if at least one bee tile exists
+     */
+    static _hasAtLeastOneBee(map) {
+        for (const row of map) {
+            for (const tile of row) {
+                if (tile === 'bee') return true;
+            }
+        }
+        return false;
     }
 }
 

@@ -12,7 +12,7 @@ describe('MapValidator', () => {
                 ['grass', 'grass', 'grass', 'grass', 'grass', 'grass', 'grass'],
                 ['grass', 'water', 'grass', 'water', 'grass', 'water', 'grass'],
                 ['grass', 'grass', 'grass', 'grass', 'grass', 'grass', 'grass'],
-                ['grass', 'water', 'grass', 'home', 'grass', 'water', 'grass'],
+                ['grass', 'water', 'star',  'home',  'bee',   'water', 'grass'],
                 ['grass', 'grass', 'grass', 'grass', 'grass', 'grass', 'grass'],
                 ['grass', 'water', 'grass', 'water', 'grass', 'water', 'grass'],
                 ['grass', 'grass', 'grass', 'grass', 'grass', 'grass', 'grass']
@@ -99,7 +99,7 @@ describe('MapValidator', () => {
                 ['grass', 'grass', 'grass', 'grass', 'grass', 'grass', 'grass'],
                 ['grass', 'water', 'grass', 'water', 'grass', 'water', 'grass'],
                 ['grass', 'grass', 'grass', 'grass', 'grass', 'grass', 'grass'],
-                ['grass', 'water', 'grass', 'home', 'grass', 'water', 'grass'],
+                ['grass', 'water', 'star',  'home',  'bee',   'water', 'grass'],
                 ['grass', 'grass', 'grass', 'grass', 'grass', 'grass', 'grass'],
                 ['grass', 'water', 'grass', 'water', 'grass', 'water', 'grass'],
                 ['grass', 'grass', 'grass', 'grass', 'grass', 'grass', 'grass']
@@ -202,7 +202,7 @@ describe('MapValidator', () => {
                 ['grass', 'grass', 'grass', 'grass', 'grass', 'grass', 'grass'],
                 ['grass', 'water', 'grass', 'water', 'grass', 'water', 'grass'],
                 ['grass', 'grass', 'grass', 'grass', 'grass', 'grass', 'grass'],
-                ['grass', 'water', 'grass', 'home', 'grass', 'water', 'grass'],
+                ['grass', 'water', 'star',  'home',  'bee',   'water', 'grass'],
                 ['grass', 'grass', 'grass', 'grass', 'grass', 'grass', 'grass'],
                 ['grass', 'water', 'grass', 'water', 'grass', 'water', 'grass'],
                 ['grass', 'grass', 'grass', 'grass', 'grass', 'grass', 'grass']
@@ -225,7 +225,7 @@ describe('MapValidator', () => {
                 ['grass', 'grass', 'grass', 'grass', 'grass', 'grass', 'grass'],
                 ['grass', 'water', 'grass', 'water', 'grass', 'water', 'grass'],
                 ['grass', 'grass', 'grass', 'grass', 'grass', 'grass', 'grass'],
-                ['grass', 'water', 'grass', 'home', 'grass', 'water', 'grass'],
+                ['grass', 'water', 'star',  'home',  'bee',   'water', 'grass'],
                 ['grass', 'grass', 'grass', 'grass', 'grass', 'grass', 'grass'],
                 ['grass', 'water', 'grass', 'water', 'grass', 'water', 'grass'],
                 ['grass', 'grass', 'grass', 'grass', 'grass', 'grass', 'grass']
@@ -240,6 +240,73 @@ describe('MapValidator', () => {
             
             const result = MapValidator.validate(map, solution);
             expect(result.valid).toBe(true);
+        });
+
+        test('should fail validation when map has no star tiles', () => {
+            const map = [
+                ['grass', 'grass', 'grass', 'grass', 'grass', 'grass', 'grass'],
+                ['grass', 'water', 'grass', 'water', 'grass', 'water', 'grass'],
+                ['grass', 'grass', 'grass', 'grass', 'grass', 'grass', 'grass'],
+                ['grass', 'water', 'grass', 'home',  'bee',   'water', 'grass'],
+                ['grass', 'grass', 'grass', 'grass', 'grass', 'grass', 'grass'],
+                ['grass', 'water', 'grass', 'water', 'grass', 'water', 'grass'],
+                ['grass', 'grass', 'grass', 'grass', 'grass', 'grass', 'grass']
+            ];
+
+            const solution = {
+                goalArea: 8,
+                optimalWallCount: 4,
+                optimalSolution: [[1, 2], [2, 1], [3, 2], [4, 1]]
+            };
+
+            const result = MapValidator.validate(map, solution);
+            expect(result.valid).toBe(false);
+            expect(result.errors).toContain('Map has no star tiles - at least one star is required');
+        });
+
+        test('should fail validation when map has no bee tiles', () => {
+            const map = [
+                ['grass', 'grass', 'grass', 'grass', 'grass', 'grass', 'grass'],
+                ['grass', 'water', 'grass', 'water', 'grass', 'water', 'grass'],
+                ['grass', 'grass', 'grass', 'grass', 'grass', 'grass', 'grass'],
+                ['grass', 'water', 'star',  'home',  'grass', 'water', 'grass'],
+                ['grass', 'grass', 'grass', 'grass', 'grass', 'grass', 'grass'],
+                ['grass', 'water', 'grass', 'water', 'grass', 'water', 'grass'],
+                ['grass', 'grass', 'grass', 'grass', 'grass', 'grass', 'grass']
+            ];
+
+            const solution = {
+                goalArea: 8,
+                optimalWallCount: 4,
+                optimalSolution: [[1, 2], [2, 1], [3, 2], [4, 1]]
+            };
+
+            const result = MapValidator.validate(map, solution);
+            expect(result.valid).toBe(false);
+            expect(result.errors).toContain('Map has no bee tiles - at least one bee is required');
+        });
+
+        test('should fail validation when map has neither stars nor bees', () => {
+            const map = [
+                ['grass', 'grass', 'grass', 'grass', 'grass', 'grass', 'grass'],
+                ['grass', 'water', 'grass', 'water', 'grass', 'water', 'grass'],
+                ['grass', 'grass', 'grass', 'grass', 'grass', 'grass', 'grass'],
+                ['grass', 'water', 'grass', 'home',  'grass', 'water', 'grass'],
+                ['grass', 'grass', 'grass', 'grass', 'grass', 'grass', 'grass'],
+                ['grass', 'water', 'grass', 'water', 'grass', 'water', 'grass'],
+                ['grass', 'grass', 'grass', 'grass', 'grass', 'grass', 'grass']
+            ];
+
+            const solution = {
+                goalArea: 8,
+                optimalWallCount: 4,
+                optimalSolution: [[1, 2], [2, 1], [3, 2], [4, 1]]
+            };
+
+            const result = MapValidator.validate(map, solution);
+            expect(result.valid).toBe(false);
+            expect(result.errors).toContain('Map has no star tiles - at least one star is required');
+            expect(result.errors).toContain('Map has no bee tiles - at least one bee is required');
         });
     });
 });
