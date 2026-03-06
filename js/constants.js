@@ -34,6 +34,7 @@ const CONSTANTS = {
 
     // Map generation
     MAX_GENERATION_ATTEMPTS: 100,  // Maximum attempts to generate a valid map
+    WEAK_HOLE_THRESHOLD: 2,        // Holes must force a detour of more than this many steps
     
     // Tile distribution (probabilities should sum to 1.0)
     TILE_DISTRIBUTION: {

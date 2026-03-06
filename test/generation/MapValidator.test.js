@@ -374,7 +374,7 @@ describe('MapValidator', () => {
             expect(result.errors).not.toContain('Map has adjacent hole tiles - holes must not be next to each other');
         });
 
-        test('should fail validation when hole can be bypassed with 5 or fewer extra steps', () => {
+        test('should fail validation when hole can be bypassed with 2 or fewer extra steps', () => {
             // Hole at (3,1) — pet can go around it via row 2 or row 4 easily
             const map = [
                 ['grass', 'grass', 'grass', 'grass', 'grass', 'grass', 'grass'],
@@ -397,11 +397,11 @@ describe('MapValidator', () => {
             expect(result.errors.some(e => e.includes('hole(s) that can be bypassed'))).toBe(true);
         });
 
-        test('should pass validation when hole requires more than 5 extra steps to bypass', () => {
+        test('should pass validation when hole requires more than 2 extra steps to bypass', () => {
             // Hole at (6,3) — only alternative path winds through a long corridor
             // Baseline (hole blocking): 8 steps via col 6 and row 0
             // Filled (hole passable): 1 step south to edge row 6
-            // Extra steps: 7 > 5 threshold
+            // Extra steps: 7 > 2 threshold
             const map = [
                 ['grass', 'grass', 'grass', 'grass', 'grass', 'grass', 'grass'],
                 ['grass', 'grass', 'water', 'water', 'water', 'water', 'grass'],

@@ -77,10 +77,11 @@ class MapValidator {
             errors.push('Map has adjacent hole tiles - holes must not be next to each other');
         }
         
-        // 10. Holes must be strategically significant (>5 extra steps to get around)
+        // 10. Holes must be strategically significant (detour > WEAK_HOLE_THRESHOLD steps)
         const weakHoles = this._findWeakHoles(map);
         if (weakHoles.length > 0) {
-            errors.push(`Map has ${weakHoles.length} hole(s) that can be bypassed with 5 or fewer extra steps`);
+            const t = typeof CONSTANTS !== 'undefined' ? CONSTANTS.WEAK_HOLE_THRESHOLD : 2;
+            errors.push(`Map has ${weakHoles.length} hole(s) that can be bypassed with ${t} or fewer extra steps`);
         }
         
         // 11. Tiles with maxPerLevel must not exceed their limit
@@ -229,9 +230,10 @@ class MapValidator {
                 return _isBlocking(tile);
             });
 
-            // If the detour around the hole is ≤ 5 extra steps, it's weak
+            // If the detour around the hole is ≤ WEAK_HOLE_THRESHOLD extra steps, it's weak
+            const threshold = typeof CONSTANTS !== 'undefined' ? CONSTANTS.WEAK_HOLE_THRESHOLD : 2;
             const extraSteps = baselineDist - filledDist;
-            if (extraSteps <= 5 && filledDist < Infinity) {
+            if (extraSteps <= threshold && filledDist < Infinity) {
                 weakHoles.push([hr, hc]);
             }
         }

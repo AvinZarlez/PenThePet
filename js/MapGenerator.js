@@ -66,6 +66,8 @@ class MapGenerator {
                 map = this._generateRandomMap();
                 this._fixAdjacentHoles(map);
                 this._enforceMaxPerLevel(map);
+                this._removeWeakHoles(map);
+                this._placeStrategicHoles(map);
                 if (this._validateMap(map)) {
                     // Calculate optimal goal for this map
                     result = this.calculateGoal(map, maxWalls);
@@ -449,6 +451,154 @@ class MapGenerator {
                     map[r][c] = (data && data.blocksMovement) ? 'water' : 'grass';
                 }
             }
+        }
+    }
+
+    /**
+     * Remove any randomly-placed weak holes by converting them to grass.
+     * A hole is "weak" if filling it saves ≤ 5 steps on the path to the edge.
+     * @private
+     * @param {Array} map - 2D array of tile types (modified in place)
+     */
+    _removeWeakHoles(map) {
+        const _isFillable = typeof isFillableTile === 'function' ? isFillableTile : (t) => {
+            const d = typeof TILE_DATA !== 'undefined' ? TILE_DATA[t] : null;
+            return d ? (d.blocksMovement && d.wallPlaceable) : false;
+        };
+        const _isBlocking = typeof isBlockingTile === 'function' ? isBlockingTile : (t) => {
+            const d = typeof TILE_DATA !== 'undefined' ? TILE_DATA[t] : null;
+            return d ? d.blocksMovement : false;
+        };
+        const rows = map.length;
+        const cols = map[0].length;
+
+        const holes = [];
+        for (let r = 0; r < rows; r++) {
+            for (let c = 0; c < cols; c++) {
+                if (_isFillable(map[r][c])) holes.push([r, c]);
+            }
+        }
+        if (holes.length === 0) return;
+
+        const baselineDist = PathfindingUtils.shortestPathToEdge(map, (tile) => _isBlocking(tile));
+
+        for (const [hr, hc] of holes) {
+            const filledDist = PathfindingUtils.shortestPathToEdge(map, (tile, r, c) => {
+                if (r === hr && c === hc) return false;
+                return _isBlocking(tile);
+            });
+            const extraSteps = baselineDist - filledDist;
+            const threshold = typeof CONSTANTS !== 'undefined' ? CONSTANTS.WEAK_HOLE_THRESHOLD : 2;
+            if (extraSteps <= threshold || filledDist === Infinity) {
+                map[hr][hc] = 'grass';
+            }
+        }
+    }
+
+    /**
+     * Place holes at strategic bottleneck positions in the map.
+     *
+     * Scans every interior grass tile and measures how many extra steps
+     * a player would need if that tile were a blocking hole. Tiles where
+     * the detour exceeds CONSTANTS.WEAK_HOLE_THRESHOLD are good candidates
+     * — they match the weak-hole validation threshold, so the validator
+     * will accept them.
+     *
+     * Only attempts placement ~65% of the time so that some maps remain
+     * hole-free (satisfying the ≥ 20% no-hole requirement).
+     *
+     * @private
+     * @param {Array} map - 2D array of tile types (modified in place)
+     */
+    _placeStrategicHoles(map) {
+        // Only attempt hole placement some of the time
+        if (Math.random() > 0.65) return;
+
+        const _isFillable = typeof isFillableTile === 'function' ? isFillableTile : (t) => {
+            const d = typeof TILE_DATA !== 'undefined' ? TILE_DATA[t] : null;
+            return d ? (d.blocksMovement && d.wallPlaceable) : false;
+        };
+        const _isBlocking = (tile) => {
+            const d = typeof TILE_DATA !== 'undefined' ? TILE_DATA[tile] : null;
+            return d ? d.blocksMovement : false;
+        };
+        const _tileData = typeof TILE_DATA !== 'undefined' ? TILE_DATA : {};
+        const maxHoles = (_tileData.hole && _tileData.hole.maxPerLevel) || 3;
+        const rows = map.length;
+        const cols = map[0].length;
+
+        // Count existing holes (from random placement that survived _removeWeakHoles)
+        let existingHoles = 0;
+        for (let r = 0; r < rows; r++) {
+            for (let c = 0; c < cols; c++) {
+                if (_isFillable(map[r][c])) existingHoles++;
+            }
+        }
+        if (existingHoles >= maxHoles) return;
+
+        // Find home position
+        let homeR = Math.floor(rows / 2), homeC = Math.floor(cols / 2);
+        for (let r = 0; r < rows; r++) {
+            for (let c = 0; c < cols; c++) {
+                if (map[r][c] === 'home') { homeR = r; homeC = c; }
+            }
+        }
+
+        // Baseline path length (current map, no new holes)
+        const baseline = PathfindingUtils.shortestPathToEdge(map, (tile) => _isBlocking(tile));
+        if (baseline === Infinity) return;
+
+        // Find candidate grass tiles where adding a hole creates a meaningful detour
+        const threshold = typeof CONSTANTS !== 'undefined' ? CONSTANTS.WEAK_HOLE_THRESHOLD : 2;
+        const candidates = [];
+        for (let r = 1; r < rows - 1; r++) {
+            for (let c = 1; c < cols - 1; c++) {
+                if (map[r][c] !== 'grass') continue;
+                // Skip tiles adjacent to home
+                if (Math.abs(r - homeR) <= 1 && Math.abs(c - homeC) <= 1) continue;
+                // Skip tiles adjacent to existing holes
+                let adjToHole = false;
+                if (r > 0 && _isFillable(map[r - 1][c])) adjToHole = true;
+                if (r < rows - 1 && _isFillable(map[r + 1][c])) adjToHole = true;
+                if (c > 0 && _isFillable(map[r][c - 1])) adjToHole = true;
+                if (c < cols - 1 && _isFillable(map[r][c + 1])) adjToHole = true;
+                if (adjToHole) continue;
+
+                // Temporarily place hole and measure path increase
+                map[r][c] = 'hole';
+                const withHole = PathfindingUtils.shortestPathToEdge(map, (tile) => _isBlocking(tile));
+                map[r][c] = 'grass';
+
+                if (withHole === Infinity) continue;
+                const impact = withHole - baseline;
+                if (impact > threshold) {
+                    candidates.push({ r, c, impact });
+                }
+            }
+        }
+
+        if (candidates.length === 0) return;
+
+        // Shuffle candidates for variety
+        for (let i = candidates.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [candidates[i], candidates[j]] = [candidates[j], candidates[i]];
+        }
+
+        // Place holes one at a time, rechecking adjacency after each
+        let placed = existingHoles;
+        for (const { r, c } of candidates) {
+            if (placed >= maxHoles) break;
+            // Re-check adjacency (may have changed from earlier placements in this loop)
+            let adjToHole = false;
+            if (r > 0 && _isFillable(map[r - 1][c])) adjToHole = true;
+            if (r < rows - 1 && _isFillable(map[r + 1][c])) adjToHole = true;
+            if (c > 0 && _isFillable(map[r][c - 1])) adjToHole = true;
+            if (c < cols - 1 && _isFillable(map[r][c + 1])) adjToHole = true;
+            if (adjToHole) continue;
+
+            map[r][c] = 'hole';
+            placed++;
         }
     }
 
