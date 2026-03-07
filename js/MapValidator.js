@@ -55,6 +55,12 @@ class MapValidator {
             errors.push('Not all walkable tiles are reachable from home');
         }
         
+        // 12. Every non-edge walkable tile must be reachable without traversing edge tiles
+        // Holes are treated as passable (they can be filled), but edge tiles cannot be used
+        if (!this._allNonEdgeTilesReachableViaInterior(map)) {
+            errors.push('Not all non-edge tiles are reachable from home without traversing edge tiles');
+        }
+        
         // 6. Every available wall must be needed for the optimal score
         if (solution.maxWalls !== undefined) {
             if (solution.optimalWallCount !== solution.maxWalls) {
@@ -133,6 +139,18 @@ class MapValidator {
      */
     static _allWalkableTilesReachable(map) {
         return PathfindingUtils.allWalkableTilesReachable(map);
+    }
+
+    /**
+     * Check that every non-edge walkable tile is reachable from home
+     * without traversing edge tiles. Holes are treated as passable.
+     * Delegates to PathfindingUtils.allNonEdgeTilesReachableViaInterior().
+     * @private
+     * @param {Array} map - 2D array of tile type strings
+     * @returns {boolean} True if all non-edge walkable tiles are reachable via interior path
+     */
+    static _allNonEdgeTilesReachableViaInterior(map) {
+        return PathfindingUtils.allNonEdgeTilesReachableViaInterior(map);
     }
 
     /**

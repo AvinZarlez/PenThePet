@@ -257,6 +257,46 @@ class PathfindingUtils {
     }
 
     /**
+     * Check that every non-edge walkable tile is reachable from home
+     * without traversing edge tiles. Holes are treated as passable since
+     * filling a hole with a wall counts as accessing that path.
+     *
+     * This prevents maps where interior tiles are only accessible by
+     * walking along the perimeter.
+     *
+     * @param {Array} map - 2D array of tile type strings ('grass', 'water', 'home', 'star', 'bee', 'hole')
+     * @returns {boolean} True if all non-edge walkable tiles are reachable via an interior-only path
+     */
+    static allNonEdgeTilesReachableViaInterior(map) {
+        const [homeRow, homeCol] = PathfindingUtils._findHome(map);
+        if (homeRow < 0) return false;
+
+        const rows = map.length;
+        const cols = map[0].length;
+
+        const _isFillable = typeof isFillableTile === 'function' ? isFillableTile : () => false;
+
+        // BFS from home, treating edge tiles and non-fillable blocking tiles as barriers.
+        // Holes (fillable tiles) are passable since they can be filled by placing a wall.
+        const visited = PathfindingUtils._bfsReachable(
+            map, homeRow, homeCol,
+            (tile, r, c) => {
+                if (r === 0 || r === rows - 1 || c === 0 || c === cols - 1) return true;
+                return isBlockingTile(tile) && !_isFillable(tile);
+            }
+        );
+
+        // Every non-edge, non-blocking tile must be reachable via an interior path
+        for (let r = 1; r < rows - 1; r++) {
+            for (let c = 1; c < cols - 1; c++) {
+                if (!isBlockingTile(map[r][c]) && !visited.has(`${r},${c}`)) return false;
+            }
+        }
+
+        return true;
+    }
+
+    /**
      * Count tiles reachable from home via BFS using a custom blocking function.
      * Used by hole strength validation to measure the impact of a hole.
      *
