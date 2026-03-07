@@ -121,35 +121,13 @@ MapGenerator.generate()
   → If all attempts fail: THROW ERROR (no fallback)
 ```
 
-## Agent Quick Reference
+## Key Invariants
 
-**When generating maps:**
-
-1. Use GitHub Actions (preferred) — opens a PR
-2. Use `scripts/generate-map.js` for local generation
-3. Run `scripts/audit-maps.js` to validate existing maps
-4. `CONSTANTS.MAX_WALLS = 15` — never change without regenerating all maps
-5. All maps must pass `MapValidator` (goal ≥ 5, not all walls on edges)
-6. Verify JSON format after generation
-
-**When modifying generation:**
-
-1. Solver algorithm changes require regenerating all existing maps
-2. Accuracy over speed (user requirement)
-3. Update `MapValidator.js` when adding quality rules
-4. Test with maps of different sizes (7×7, 9×9, 11×11, 17×17)
-5. Run `npm test` after changes
-
-**Key invariants:**
-
-- `maxWalls = floor(size × 0.75)` (stored explicitly per-map)
-- Goal = maximum achievable area
-- goalArea ≥ 5
-- At least one wall not on edge
-- Home can reach edge initially
-- **No fallbacks** — generation throws on failure
+- `maxWalls = floor(size × 0.75)` — stored per-map; never change without regenerating all maps
+- Goal = maximum achievable area; `goalArea ≥ 5`; at least one wall not on edge
+- Home can reach edge initially; no fallbacks — generation throws on failure
 - Compact format: tile string (`g`/`w`/`h`) + flat solution array `[r,c,r,c,…]`
-- No solver or map generation in the browser — browser is checker only
+- No map generation in the browser — browser is checker only
 
 ---
 

@@ -44,7 +44,7 @@ PenThePet/
 ```
 
 **Script loading order** in `index.html` (must not change):
-`constants.js → config.js → tileTypes.js → CookieUtils.js → DateUtils.js → PathfindingUtils.js → Grid.js → firebase-config.js → CloudMigration.js → CloudSync.js → Game.js → Menu.js → main.js`
+`constants.js → config.js → tileData.js → tileTypes.js → CookieUtils.js → DateUtils.js → PathfindingUtils.js → Grid.js → firebase-config.js → CloudMigration.js → CloudSync.js → Game.js → Menu.js → main.js`
 
 ## 🎯 Key File Notes
 
@@ -77,9 +77,8 @@ See [CLOUD_SYNC_SETUP.md](CLOUD_SYNC_SETUP.md) for the Firestore mapping and sch
 
 ## 🔧 How to Extend
 
-- **New tile type:** See [TILE_SYSTEM.md](TILE_SYSTEM.md) — add one entry to `js/tileData.js`
-- **New menu option:** Extend the `Menu` class with new modal type + cookie storage
-- **New game mode:** Extend the `Game` class
+- **New tile type:** Add one entry to `js/tileData.js` + SVG asset. See [TILE_SYSTEM.md](TILE_SYSTEM.md).
+- **New menu option / game mode:** Extend `Menu` or `Game` class.
 - **New preference:** `CookieUtils.setCookie('key', value, 365)` / `CookieUtils.getCookie('key')`
 - **New CSS:** tile cursor/hover → `css/game.css`; new modal → `css/modals.css` or `css/menu.css`
 - **Configuration changes:** Edit `js/constants.js` first, then `js/config.js` if needed

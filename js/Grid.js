@@ -1,12 +1,8 @@
 /**
  * Grid Class
- * 
- * Manages the game grid data structure and tile state.
- * Maps are loaded from maps/YYYY.json (generated offline by the Python solver pipeline).
- * This class handles state management: loading maps, tracking tiles, saving/restoring state.
  *
- * Compact map format helpers (parseCompactMap, parseCompactSolution) are also defined here
- * for use by both the browser (main.js, Menu.js) and Node.js scripts.
+ * Manages game grid state and tile data. Maps are loaded from maps/YYYY.json.
+ * Also exports parseCompactMap() and parseCompactSolution() for decoding map data.
  */
 
 // Import TILE_DATA lookup if in Node.js environment
@@ -16,11 +12,7 @@ if (typeof TILE_DATA === 'undefined' && typeof require !== 'undefined') {
     global.COMPACT_CHAR_TO_TILE = _td.COMPACT_CHAR_TO_TILE;
 }
 
-/**
- * Character-to-tile mapping used in the compact map string format.
- * Derived from TILE_DATA in tileData.js — single source of truth.
- * @type {Object}
- */
+/** compact char → tile name; derived from TILE_DATA (single source of truth) */
 const COMPACT_TILE_CHARS = (typeof COMPACT_CHAR_TO_TILE !== 'undefined')
     ? COMPACT_CHAR_TO_TILE
     : (() => {
@@ -34,10 +26,7 @@ const COMPACT_TILE_CHARS = (typeof COMPACT_CHAR_TO_TILE !== 'undefined')
 
 /**
  * Parse a compact map string into a 2D array of tile type names.
- * The compact format encodes each tile as a single character:
- *   'g' = grass, 'w' = water, 'h' = home
- * Tiles are stored row-major: the first `size` characters are row 0, next `size` are row 1, etc.
- *
+ * Tiles are stored row-major: first `size` chars are row 0, etc.
  * @param {string} mapStr - Compact map string of length size*size
  * @param {number} size - Grid side length
  * @returns {Array} 2D array of tile type strings
@@ -59,10 +48,8 @@ function parseCompactMap(mapStr, size) {
 }
 
 /**
- * Parse a compact (flat) optimal solution array into coordinate pairs.
- * The compact format stores coordinates as a flat array [r0, c0, r1, c1, ...].
- *
- * @param {Array<number>} flatArr - Flat array of alternating row/col values
+ * Parse a compact (flat) solution array into coordinate pairs.
+ * @param {Array<number>} flatArr - Flat array [r0, c0, r1, c1, ...]
  * @returns {Array<Array<number>>} Array of [row, col] coordinate pairs
  */
 function parseCompactSolution(flatArr) {
