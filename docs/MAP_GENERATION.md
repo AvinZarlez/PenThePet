@@ -68,7 +68,7 @@ Each entry in `maps/YYYY.json` is keyed by date (`YYYY-MM-DD`):
 ### Method 1: GitHub Actions (recommended)
 
 1. **Actions** tab → **Generate Daily Map** → **Run workflow**
-2. Parameters: `date` (optional, defaults to next available), `size` (exact or range like `7-13`), `count` (default 1)
+2. Parameters: `date` (optional, defaults to next available), `size` (exact or range like `7-17`), `count` (default 1)
 3. The workflow generates maps, validates quality, and opens a PR against `main`
 
 > **Setup:** Enable "Allow GitHub Actions to create and approve pull requests" in Settings → Actions → General, or add a `REPO_TOKEN` secret with `repo` scope.
@@ -79,7 +79,7 @@ Each entry in `maps/YYYY.json` is keyed by date (`YYYY-MM-DD`):
 pip install -r scripts/solver/requirements.txt
 
 node scripts/generate-map.js --date 2026-02-15 --size 9
-node scripts/generate-map.js --size 7-13 --count 5
+node scripts/generate-map.js --size 7-17 --count 5
 node scripts/generate-map.js --fresh --count 10 --date 2026-03-01 --size 9
 ```
 

@@ -148,7 +148,7 @@ async function main() {
 
     const mapsDir = path.join(__dirname, '../maps');
 
-    // Parse size input — supports an exact value ("9") or a range ("7-13")
+    // Parse size input — supports an exact value ("9") or a range ("7-17")
     let parsedSize;
     try {
         parsedSize = parseSizeInput(sizeInput);
