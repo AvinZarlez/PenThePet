@@ -2119,15 +2119,19 @@ class Game {
             } else {
                 this.elapsedSeconds = 0;
             }
+        }
+
+        // Load best state before showing the pause overlay so it is
+        // captured by PAUSE_HIDDEN_SELECTORS when the overlay appears.
+        this.loadBestState(dateString);
+        this.updateBestStateBanner();
+
+        if (!this.isSubmitted) {
             // Show ready overlay — timer starts only when user clicks Begin
             this.isReadyPending = true;
             this.isPaused = true;
             this._showPauseOverlay();
         }
-
-        // Load best state (pre-submission best score/walls) from cookie
-        this.loadBestState(dateString);
-        this.updateBestStateBanner();
 
         this.updateTimerDisplay();
         this.updateTimerButton();
@@ -2370,7 +2374,15 @@ class Game {
  * CSS selectors for game elements to hide when the pause overlay is shown.
  * @type {string[]}
  */
-Game.PAUSE_HIDDEN_SELECTORS = ['.controls', '.grid-container', '#notification', '#solutionToggleBar', '#roamSpaceViewer', '#bestStateBanner', '#hintUsedDisplay'];
+Game.PAUSE_HIDDEN_SELECTORS = [
+    '.controls',
+    '.grid-container',
+    '#notification',
+    '#solutionToggleBar',
+    '#roamSpaceViewer',
+    '#bestStateBanner',
+    '#hintUsedDisplay',
+];
 
 // Export for use in other modules
 if (typeof module !== 'undefined' && module.exports) {

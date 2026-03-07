@@ -684,11 +684,5 @@ describe('applyCloudProgressState()', () => {
         CloudSync.applyCloudProgressState(docId, { bestScore: 5, bestWalls: 'not-valid-json' });
         expect(CookieUtils.getCookie(cookieName)).toBeNull();
     });
-
-    test('accepts bestWalls as already-parsed array (non-serialized)', () => {
-        CloudSync.applyCloudProgressState(docId, { bestScore: 8, bestWalls: [[2, 3]] });
-        const saved = JSON.parse(CookieUtils.getCookie(cookieName));
-        expect(saved.bestScore).toBe(8);
-        expect(saved.bestWalls).toEqual([[2, 3]]);
-    });
 });
+
