@@ -107,6 +107,7 @@ const CloudSync = (function () {
     const SETTINGS_DOC = 'settings';
     const TIMER_DOC_PREFIX = 'timer_';
     const HINTS_DOC_PREFIX = 'hints_';
+    const PROGRESS_DOC_PREFIX = 'progress_';
 
     // ----------------------------------------------------------------
     // Configuration helpers
@@ -530,6 +531,63 @@ const CloudSync = (function () {
     }
 
     /**
+     * Upload the best pre-submission state for a puzzle to Firestore.
+     * Called from Game.saveBestState() whenever a new best penned score is set.
+     * Conflict resolution: HIGHEST BEST SCORE WINS (see applyCloudProgressState).
+     * @param {string} dateString - Puzzle date (YYYY-MM-DD)
+     * @param {Object} data - { bestScore: number, bestWalls: Array }
+     */
+    async function saveProgressState(dateString, data) {
+        if (!db || !currentUser) return;
+        try {
+            // Firestore does not support nested arrays — serialize bestWalls to JSON string
+            const serialized = { bestScore: data.bestScore, bestWalls: JSON.stringify(data.bestWalls) };
+            const docRef = db
+                .collection('users')
+                .doc(currentUser.uid)
+                .collection(COLLECTION_NAME)
+                .doc(PROGRESS_DOC_PREFIX + dateString);
+            await docRef.set(serialized, { merge: true });
+        } catch (e) {
+            console.error('CloudSync: Failed to save progress state:', e);
+        }
+    }
+
+    /**
+     * Apply a cloud progress state to the local cookie.
+     * Conflict resolution: HIGHEST BEST SCORE WINS.
+     * @param {string} docId - Firestore doc ID (e.g. 'progress_2026-01-01')
+     * @param {Object} data - { bestScore: number, bestWalls: string|Array }
+     */
+    function applyCloudProgressState(docId, data) {
+        if (!data || typeof data.bestScore !== 'number') return;
+
+        // Deserialize bestWalls (stored as JSON string in Firestore)
+        let cloudWalls = data.bestWalls;
+        if (typeof cloudWalls === 'string') {
+            try { cloudWalls = JSON.parse(cloudWalls); } catch { return; }
+        }
+        if (!Array.isArray(cloudWalls)) return;
+
+        const cloudScore = data.bestScore;
+        const cookieName = docId; // 'progress_YYYY-MM-DD' is both the doc id and the cookie name
+
+        // Conflict resolution: highest bestScore wins
+        const localValue = CookieUtils.getCookie(cookieName);
+        if (localValue) {
+            try {
+                const localData = JSON.parse(localValue);
+                if (typeof localData.bestScore === 'number' && localData.bestScore >= cloudScore) {
+                    return; // Local is equal or better — keep local
+                }
+            } catch { /* fall through to use cloud data */ }
+        }
+
+        // Cloud wins — write to local cookie
+        CookieUtils.setCookie(cookieName, JSON.stringify({ bestScore: cloudScore, bestWalls: cloudWalls }), 365);
+    }
+
+    /**
      * Apply a legacy hints_ cloud doc to local cookies.
      * Backward compat: merges hint data from old hints_YYYY-MM-DD Firestore docs
      * into the submission cookie so hints are kept in a single place per level.
@@ -762,6 +820,10 @@ const CloudSync = (function () {
                     applyCloudHints(doc.id, doc.data());
                     return;
                 }
+                if (doc.id.startsWith(PROGRESS_DOC_PREFIX)) {
+                    applyCloudProgressState(doc.id, doc.data());
+                    return;
+                }
                 // Submission conflict resolution — see docs/CLOUD_SYNC_SETUP.md
                 applyCloudSubmission(doc.id, _deserializeSubmissionFromFirestore(doc.data()));
             });
@@ -822,29 +884,39 @@ const CloudSync = (function () {
             const name = parts[0];
             const isSubmission = name.startsWith('submission_');
             const isTimer = name.startsWith(TIMER_DOC_PREFIX);
+            const isProgress = name.startsWith(PROGRESS_DOC_PREFIX);
             // Skip legacy hints_ cookies — their data migrates into the submission cookie
-            if (!isSubmission && !isTimer) continue;
+            if (!isSubmission && !isTimer && !isProgress) continue;
             const value = CookieUtils.getCookie(name);
             if (!value) continue;
 
             try {
                 let data = JSON.parse(value);
                 let docId;
+                let uploadData;
                 if (isSubmission) {
                     docId = name.replace('submission_', '');
                     // Migrate to current schema before uploading
                     data = CloudMigration.migrateSubmission(data);
                     // Only upload fully submitted records (with a score)
                     if (typeof data.score !== 'number') continue;
+                    uploadData = _serializeSubmissionForFirestore(data);
+                } else if (isProgress) {
+                    docId = name; // progress_YYYY-MM-DD kept as-is
+                    // Only upload valid progress records (with a bestScore)
+                    if (typeof data.bestScore !== 'number') continue;
+                    // Serialize bestWalls for Firestore (no nested arrays)
+                    uploadData = { bestScore: data.bestScore, bestWalls: JSON.stringify(data.bestWalls) };
                 } else {
                     docId = name; // timer_YYYY-MM-DD kept as-is
+                    uploadData = data;
                 }
                 const docRef = db
                     .collection('users')
                     .doc(currentUser.uid)
                     .collection(COLLECTION_NAME)
                     .doc(docId);
-                await docRef.set(isSubmission ? _serializeSubmissionForFirestore(data) : data, { merge: true });
+                await docRef.set(uploadData, { merge: true });
             } catch (e) {
                 console.error('CloudSync: Failed to upload local cookie', name, ':', e);
             }
@@ -1281,6 +1353,7 @@ const CloudSync = (function () {
         getUsername: function () { return username; },
         saveSubmission: saveSubmission,
         saveTimerState: saveTimerState,
+        saveProgressState: saveProgressState,
         deleteSubmission: deleteSubmission,
         deleteAllSubmissions: deleteAllSubmissions,
         saveSettings: saveSettings,
@@ -1303,6 +1376,7 @@ const CloudSync = (function () {
         getAndClearCloudOverwrites: getAndClearCloudOverwrites,
         // Exposed for unit testing of conflict resolution logic.
         applyCloudTimerState: applyCloudTimerState,
+        applyCloudProgressState: applyCloudProgressState,
         applyCloudHints: applyCloudHints,
         applyCloudSubmission: applyCloudSubmission,
         applyCloudDataToLocal: applyCloudDataToLocal,

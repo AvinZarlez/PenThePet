@@ -616,3 +616,79 @@ describe('CloudSync', () => {
         });
     });
 });
+
+// ============================================================
+// Progress State (Best State) Tests
+// ============================================================
+
+describe('saveProgressState()', () => {
+    test('should not throw when not logged in', async () => {
+        await expect(
+            CloudSync.saveProgressState('2026-01-01', { bestScore: 5, bestWalls: [[1, 2]] })
+        ).resolves.toBeUndefined();
+    });
+
+    test('should be exposed on the public API', () => {
+        expect(typeof CloudSync.saveProgressState).toBe('function');
+    });
+});
+
+describe('applyCloudProgressState()', () => {
+    const DATE = '2026-06-20';
+    const cookieName = `progress_${DATE}`;
+    const docId = `progress_${DATE}`;
+
+    beforeEach(() => {
+        CookieUtils.deleteCookie(cookieName);
+    });
+
+    afterEach(() => {
+        CookieUtils.deleteCookie(cookieName);
+    });
+
+    test('writes cloud data when no local cookie exists', () => {
+        CloudSync.applyCloudProgressState(docId, { bestScore: 10, bestWalls: JSON.stringify([[1, 2]]) });
+        const saved = JSON.parse(CookieUtils.getCookie(cookieName));
+        expect(saved.bestScore).toBe(10);
+        expect(saved.bestWalls).toEqual([[1, 2]]);
+    });
+
+    test('writes cloud data when cloud score is higher', () => {
+        CookieUtils.setCookie(cookieName, JSON.stringify({ bestScore: 5, bestWalls: [[0, 0]] }), 1);
+        CloudSync.applyCloudProgressState(docId, { bestScore: 12, bestWalls: JSON.stringify([[1, 2]]) });
+        const saved = JSON.parse(CookieUtils.getCookie(cookieName));
+        expect(saved.bestScore).toBe(12);
+    });
+
+    test('keeps local data when local score is higher', () => {
+        CookieUtils.setCookie(cookieName, JSON.stringify({ bestScore: 20, bestWalls: [[3, 3]] }), 1);
+        CloudSync.applyCloudProgressState(docId, { bestScore: 10, bestWalls: JSON.stringify([[1, 2]]) });
+        const saved = JSON.parse(CookieUtils.getCookie(cookieName));
+        expect(saved.bestScore).toBe(20);
+        expect(saved.bestWalls).toEqual([[3, 3]]);
+    });
+
+    test('keeps local data when local score is equal to cloud score', () => {
+        CookieUtils.setCookie(cookieName, JSON.stringify({ bestScore: 10, bestWalls: [[3, 3]] }), 1);
+        CloudSync.applyCloudProgressState(docId, { bestScore: 10, bestWalls: JSON.stringify([[1, 2]]) });
+        const saved = JSON.parse(CookieUtils.getCookie(cookieName));
+        expect(saved.bestWalls).toEqual([[3, 3]]); // local walls preserved
+    });
+
+    test('ignores cloud data with no bestScore', () => {
+        CloudSync.applyCloudProgressState(docId, { bestWalls: JSON.stringify([[1, 2]]) });
+        expect(CookieUtils.getCookie(cookieName)).toBeNull();
+    });
+
+    test('ignores cloud data with invalid bestWalls JSON', () => {
+        CloudSync.applyCloudProgressState(docId, { bestScore: 5, bestWalls: 'not-valid-json' });
+        expect(CookieUtils.getCookie(cookieName)).toBeNull();
+    });
+
+    test('accepts bestWalls as already-parsed array (non-serialized)', () => {
+        CloudSync.applyCloudProgressState(docId, { bestScore: 8, bestWalls: [[2, 3]] });
+        const saved = JSON.parse(CookieUtils.getCookie(cookieName));
+        expect(saved.bestScore).toBe(8);
+        expect(saved.bestWalls).toEqual([[2, 3]]);
+    });
+});
