@@ -22,8 +22,8 @@ describe('parseSizeInput', () => {
     });
 
     test('parses a valid range string', () => {
-        const result = parseSizeInput('7-13');
-        expect(result).toEqual({ type: 'range', min: 7, max: 13 });
+        const result = parseSizeInput('7-17');
+        expect(result).toEqual({ type: 'range', min: 7, max: 17 });
     });
 
     test('parses a range where min equals max', () => {

@@ -40,7 +40,7 @@ See [TILE_SYSTEM.md](TILE_SYSTEM.md). In short: add one entry to `js/tileData.js
 ```bash
 pip install -r scripts/solver/requirements.txt
 node scripts/generate-map.js --size 9               # single map
-node scripts/generate-map.js --size 7-13 --count 5  # 5 maps, random sizes
+node scripts/generate-map.js --size 7-17 --count 5  # 5 maps, random sizes
 node scripts/generate-map.js --fresh --count 10 --date 2026-03-01 --size 9
 ```
 

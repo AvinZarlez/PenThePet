@@ -16,7 +16,7 @@ const CONSTANTS = require('../../js/constants.js');
  * Parse a size input string into either an exact size or a range.
  * Accepts:
  *   - Exact: "9"    → { type: 'exact', value: 9 }
- *   - Range: "7-13" → { type: 'range', min: 7, max: 13 }
+ *   - Range: "7-17" → { type: 'range', min: 7, max: 17 }
  * Sizes must be within [MIN_GRID_SIZE, MAX_GRID_SIZE].
  * @param {string|number} sizeStr
  * @returns {{ type: 'exact', value: number } | { type: 'range', min: number, max: number }}
@@ -38,7 +38,7 @@ function parseSizeInput(sizeStr) {
     }
     const exact = parseInt(str);
     if (isNaN(exact)) {
-        throw new Error(`Invalid size "${str}": must be a number or range (e.g., "9" or "7-13")`);
+        throw new Error(`Invalid size "${str}": must be a number or range (e.g., "9" or "7-17")`);
     }
     if (exact < MIN_GRID_SIZE || exact > MAX_GRID_SIZE) {
         throw new Error(`Invalid size ${exact}: must be between ${MIN_GRID_SIZE} and ${MAX_GRID_SIZE}`);
