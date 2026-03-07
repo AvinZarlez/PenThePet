@@ -1,6 +1,6 @@
 /**
  * Constants
- * 
+ *
  * Centralized constants for game parameters and limits.
  * These values can be tweaked at the code level for easy configuration.
  */
@@ -11,7 +11,7 @@ const CONSTANTS = {
 
     // Wall configuration
     MAX_WALLS: 12,              // Absolute maximum walls (for largest grid sizes)
-    
+
     /**
      * Calculate max walls for a given grid size.
      * Uses 75% of grid size as the wall budget - this provides a good balance
@@ -23,12 +23,12 @@ const CONSTANTS = {
     maxWallsForSize: function(size) {
         return Math.floor(size * 0.75);
     },
-    
+
     // Grid configuration
     MAX_GRID_SIZE: 17,          // Maximum grid size (17x17)
     MIN_GRID_SIZE: 7,           // Minimum grid size (7x7)
     DEFAULT_GRID_SIZE: 9,       // Default grid size (9x9)
-    
+
     // Map data
     FIRST_MAP_YEAR: 2026,          // First year that has map data files in maps/
 
@@ -41,21 +41,23 @@ const CONSTANTS = {
         grass: 0.7,             // 70% chance of grass tiles
         water: 0.3,             // 30% chance of water tiles
     },
-    
+
     // Cell visual settings
     CELL: {
-        GAP: 3,                 // Gap between cells in pixels
+        GAP: 3,                 // Gap between cells in pixels (normal screens)
+        GAP_SMALL: 1,           // Gap between cells in pixels (small screens)
+        GAP_BREAKPOINT: 640,    // Screen width in pixels below which the small gap is used
         MIN_SIZE: 6,            // Minimum cell size in pixels (for very large grids on mobile)
         MAX_SIZE: 50,           // Maximum cell size in pixels (desktop)
     },
-    
+
     // Grid sizing
     GRID_PADDING: 6,            // Padding around the grid in pixels
-    
+
     // Gameplay
     ALLOW_WALL_REMOVAL: true,   // Allow clicking walls to remove them
     AUTO_SAVE_STATE: false,     // Auto-save game state to localStorage
-    
+
     // Hints
     HINTS_DISABLED_DEFAULT: false,          // Default: hints are enabled
     HINTS_NEVER_SHOW_TARGET_DEFAULT: true,  // Default: target score is not revealed

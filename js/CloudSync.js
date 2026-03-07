@@ -431,7 +431,7 @@ const CloudSync = (function () {
                 .doc(currentUser.uid)
                 .collection(COLLECTION_NAME)
                 .doc(dateString);
-            await docRef.set(data);
+            await docRef.set(_serializeSubmissionForFirestore(data));
             updateSyncStatus('synced');
         } catch (e) {
             console.error('CloudSync: Failed to save submission:', e);
@@ -696,6 +696,37 @@ const CloudSync = (function () {
     }
 
     // ----------------------------------------------------------------
+    // Firestore serialization helpers
+    // ----------------------------------------------------------------
+
+    /**
+     * Serialize submission data for Firestore storage.
+     * Converts the walls field from an array of [row, col] pairs to a JSON string,
+     * because Firestore does not support nested arrays.
+     * @param {Object} data - Submission data with walls as an array (or already a string)
+     * @returns {Object} Copy of data with walls as a JSON string, or data unchanged if walls is absent
+     */
+    function _serializeSubmissionForFirestore(data) {
+        if (!data || !Array.isArray(data.walls)) return data;
+        return Object.assign({}, data, { walls: JSON.stringify(data.walls) });
+    }
+
+    /**
+     * Deserialize submission data received from Firestore.
+     * Converts the walls field from a JSON string back to an array of [row, col] pairs.
+     * @param {Object} data - Submission data with walls as a JSON string (or already an array)
+     * @returns {Object} Copy of data with walls as an array, or data unchanged if walls is absent
+     */
+    function _deserializeSubmissionFromFirestore(data) {
+        if (!data || typeof data.walls !== 'string') return data;
+        try {
+            return Object.assign({}, data, { walls: JSON.parse(data.walls) });
+        } catch {
+            return data; // Malformed JSON — return as-is and let migration handle it
+        }
+    }
+
+    // ----------------------------------------------------------------
     // Data sync — download & merge
     // ----------------------------------------------------------------
 
@@ -732,7 +763,7 @@ const CloudSync = (function () {
                     return;
                 }
                 // Submission conflict resolution — see docs/CLOUD_SYNC_SETUP.md
-                applyCloudSubmission(doc.id, doc.data());
+                applyCloudSubmission(doc.id, _deserializeSubmissionFromFirestore(doc.data()));
             });
 
             // Upload any local-only data that the cloud does not yet have.
@@ -813,7 +844,7 @@ const CloudSync = (function () {
                     .doc(currentUser.uid)
                     .collection(COLLECTION_NAME)
                     .doc(docId);
-                await docRef.set(data, { merge: true });
+                await docRef.set(isSubmission ? _serializeSubmissionForFirestore(data) : data, { merge: true });
             } catch (e) {
                 console.error('CloudSync: Failed to upload local cookie', name, ':', e);
             }
@@ -879,7 +910,7 @@ const CloudSync = (function () {
                     }
                     // Submission conflict resolution — see docs/CLOUD_SYNC_SETUP.md.
                     // Returns true if cloud was applied; false if local submission was kept.
-                    const cloudApplied = applyCloudSubmission(change.doc.id, change.doc.data());
+                    const cloudApplied = applyCloudSubmission(change.doc.id, _deserializeSubmissionFromFirestore(change.doc.data()));
                     submissionsUpdated = true;
                     if (!cloudApplied) {
                         // Local submission "won" — schedule a writeback so other devices converge.
@@ -911,7 +942,7 @@ const CloudSync = (function () {
                 try {
                     // Migrate before writing back so other devices receive current schema
                     const migratedData = CloudMigration.migrateSubmission(JSON.parse(cookieValue));
-                    collRef.doc(docId).set(migratedData).catch(function (e) {
+                    collRef.doc(docId).set(_serializeSubmissionForFirestore(migratedData)).catch(function (e) {
                         console.error('CloudSync: Failed to push local win to Firestore:', e);
                     });
                 } catch { /* malformed cookie — defer to next full sync */ }
@@ -1274,7 +1305,10 @@ const CloudSync = (function () {
         applyCloudTimerState: applyCloudTimerState,
         applyCloudHints: applyCloudHints,
         applyCloudSubmission: applyCloudSubmission,
-        applyCloudDataToLocal: applyCloudDataToLocal
+        applyCloudDataToLocal: applyCloudDataToLocal,
+        // Exposed for unit testing of Firestore serialization.
+        _serializeSubmissionForFirestore: _serializeSubmissionForFirestore,
+        _deserializeSubmissionFromFirestore: _deserializeSubmissionFromFirestore,
     };
 })();
 

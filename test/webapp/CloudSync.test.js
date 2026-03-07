@@ -500,4 +500,119 @@ describe('CloudSync', () => {
             });
         });
     });
+
+    // -----------------------------------------------------------------------
+    // Firestore walls serialization
+    // Firestore does not support nested arrays, so walls [[row,col],...] must
+    // be serialized to a JSON string before writing and deserialized on read.
+    // -----------------------------------------------------------------------
+    describe('Firestore walls serialization', () => {
+        const walls = [[0, 1], [2, 3], [4, 5]];
+        const wallsJson = JSON.stringify(walls);
+
+        describe('_serializeSubmissionForFirestore', () => {
+            test('converts walls array to JSON string', () => {
+                const data = { score: 5, walls: walls, timestamp: 'ts' };
+                const result = CloudSync._serializeSubmissionForFirestore(data);
+                expect(typeof result.walls).toBe('string');
+                expect(result.walls).toBe(wallsJson);
+            });
+
+            test('leaves other fields unchanged', () => {
+                const data = { score: 7, walls: walls, time: 42 };
+                const result = CloudSync._serializeSubmissionForFirestore(data);
+                expect(result.score).toBe(7);
+                expect(result.time).toBe(42);
+            });
+
+            test('returns data unchanged when walls is already a string', () => {
+                const data = { score: 5, walls: wallsJson };
+                const result = CloudSync._serializeSubmissionForFirestore(data);
+                expect(result.walls).toBe(wallsJson);
+            });
+
+            test('returns data unchanged when walls is absent', () => {
+                const data = { score: 5 };
+                const result = CloudSync._serializeSubmissionForFirestore(data);
+                expect(result).toBe(data);
+            });
+
+            test('does not mutate the original data object', () => {
+                const data = { score: 5, walls: walls };
+                CloudSync._serializeSubmissionForFirestore(data);
+                expect(Array.isArray(data.walls)).toBe(true);
+            });
+        });
+
+        describe('_deserializeSubmissionFromFirestore', () => {
+            test('converts walls JSON string back to array', () => {
+                const data = { score: 5, walls: wallsJson };
+                const result = CloudSync._deserializeSubmissionFromFirestore(data);
+                expect(Array.isArray(result.walls)).toBe(true);
+                expect(result.walls).toEqual(walls);
+            });
+
+            test('leaves other fields unchanged', () => {
+                const data = { score: 9, walls: wallsJson, time: 30 };
+                const result = CloudSync._deserializeSubmissionFromFirestore(data);
+                expect(result.score).toBe(9);
+                expect(result.time).toBe(30);
+            });
+
+            test('returns data unchanged when walls is already an array', () => {
+                const data = { score: 5, walls: walls };
+                const result = CloudSync._deserializeSubmissionFromFirestore(data);
+                expect(result).toBe(data);
+            });
+
+            test('returns data unchanged when walls is absent', () => {
+                const data = { score: 5 };
+                const result = CloudSync._deserializeSubmissionFromFirestore(data);
+                expect(result).toBe(data);
+            });
+
+            test('returns data unchanged when walls JSON is malformed', () => {
+                const data = { score: 5, walls: 'not-valid-json' };
+                const result = CloudSync._deserializeSubmissionFromFirestore(data);
+                expect(result.walls).toBe('not-valid-json');
+            });
+
+            test('does not mutate the original data object', () => {
+                const data = { score: 5, walls: wallsJson };
+                CloudSync._deserializeSubmissionFromFirestore(data);
+                expect(typeof data.walls).toBe('string');
+            });
+        });
+
+        describe('round-trip: serialize then deserialize', () => {
+            test('restores the original walls array after a round-trip', () => {
+                const data = { score: 5, walls: walls, timestamp: 'ts', time: 10 };
+                const serialized = CloudSync._serializeSubmissionForFirestore(data);
+                const deserialized = CloudSync._deserializeSubmissionFromFirestore(serialized);
+                expect(deserialized.walls).toEqual(walls);
+                expect(deserialized.score).toBe(5);
+            });
+
+            test('applyCloudSubmission correctly handles deserialized walls from Firestore', () => {
+                const DATE = '2026-06-15';
+                const submissionCookie = `submission_${DATE}`;
+                CookieUtils.deleteCookie(submissionCookie);
+                CloudSync.getAndClearCloudOverwrites();
+
+                // Simulate data as it arrives from Firestore (walls serialized as JSON string)
+                const firestoreDoc = {
+                    __version: '1.1', score: 8, walls: wallsJson,
+                    timestamp: new Date().toISOString(), time: 20, hintsUsed: [],
+                };
+                const deserialized = CloudSync._deserializeSubmissionFromFirestore(firestoreDoc);
+                CloudSync.applyCloudSubmission(DATE, deserialized);
+
+                const saved = JSON.parse(CookieUtils.getCookie(submissionCookie));
+                expect(saved.score).toBe(8);
+                expect(Array.isArray(saved.walls)).toBe(true);
+                expect(saved.walls).toEqual(walls);
+                CookieUtils.deleteCookie(submissionCookie);
+            });
+        });
+    });
 });
