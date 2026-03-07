@@ -264,7 +264,7 @@ class PathfindingUtils {
      * This prevents maps where interior tiles are only accessible by
      * walking along the perimeter.
      *
-     * @param {Array} map - 2D array of tile type strings ('grass', 'water', 'home', 'star', 'bee', 'hole')
+     * @param {Array} map - 2D array of tile type strings
      * @returns {boolean} True if all non-edge walkable tiles are reachable via an interior-only path
      */
     static allNonEdgeTilesReachableViaInterior(map) {
