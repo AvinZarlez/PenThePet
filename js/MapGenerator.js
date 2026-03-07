@@ -15,6 +15,8 @@
             const td = require('./tileData.js');
             global.TILE_DATA = td.TILE_DATA;
             global.TILE_TO_NUMERIC = td.TILE_TO_NUMERIC;
+            global.isFillableTile = td.isFillableTile;
+            global.getTileScore = td.getTileScore;
         }
         if (typeof global.PathfindingUtils === 'undefined') {
             global.PathfindingUtils = require('./PathfindingUtils.js');
@@ -62,6 +64,9 @@ class MapGenerator {
             // Try to generate a valid random map
             while (attempts < this.maxAttempts) {
                 map = this._generateRandomMap();
+                this._fixAdjacentHoles(map);
+                this._enforceMaxPerLevel(map);
+                this._placeHoles(map);
                 if (this._validateMap(map)) {
                     // Calculate optimal goal for this map
                     result = this.calculateGoal(map, maxWalls);
@@ -223,6 +228,11 @@ class MapGenerator {
      * Calculate the maximum achievable area (goal) for a given map.
      * Uses the MILP solver to find the optimal wall placements, then runs BFS
      * to determine the resulting penned area.
+     *
+     * For fillable tiles (e.g. holes), a wall placed on them "fills" them,
+     * making them passable and scoring like their transformed tile type.
+     * The solver handles this correctly in its objective function.
+     *
      * @param {Array} map - 2D array of tile types (strings)
      * @param {number} maxWalls - Maximum number of walls that can be placed
      * @returns {Object|null} Object with {goalArea, optimalWallCount, optimalSolution, wallPositions, pennedTiles},
@@ -347,6 +357,286 @@ class MapGenerator {
             if (!b.has(key)) return false;
         }
         return true;
+    }
+
+    /**
+     * Fix adjacent fillable tiles (holes) by replacing one of each pair with grass.
+     * Scans in row-major order; when two adjacent fillable tiles are found,
+     * the second one is replaced with grass.
+     * @private
+     * @param {Array} map - 2D array of tile types (modified in place)
+     */
+    _fixAdjacentHoles(map) {
+        const _isFillable = typeof isFillableTile === 'function' ? isFillableTile : (t) => {
+            const d = typeof TILE_DATA !== 'undefined' ? TILE_DATA[t] : null;
+            return d ? (d.blocksMovement && d.wallPlaceable) : false;
+        };
+        const rows = map.length;
+        const cols = map[0].length;
+        for (let r = 0; r < rows; r++) {
+            for (let c = 0; c < cols; c++) {
+                if (!_isFillable(map[r][c])) continue;
+                // Check right neighbor
+                if (c + 1 < cols && _isFillable(map[r][c + 1])) {
+                    map[r][c + 1] = 'grass';
+                }
+                // Check down neighbor
+                if (r + 1 < rows && _isFillable(map[r + 1][c])) {
+                    map[r + 1][c] = 'grass';
+                }
+            }
+        }
+    }
+
+    /**
+     * Enforce maxPerLevel limits from TILE_DATA.
+     * For each tile type that has a maxPerLevel property, if the count exceeds
+     * the limit, excess tiles are replaced with 'grass' (or 'water' for
+     * blocking tiles). Replaces in reverse row-major order to keep earlier tiles.
+     * @private
+     * @param {Array} map - 2D array of tile types (modified in place)
+     */
+    _enforceMaxPerLevel(map) {
+        const _tileData = typeof TILE_DATA !== 'undefined' ? TILE_DATA : {};
+        // Build limits map: tileName -> maxPerLevel
+        const limits = {};
+        for (const [name, data] of Object.entries(_tileData)) {
+            if (data.maxPerLevel !== undefined) {
+                limits[name] = data.maxPerLevel;
+            }
+        }
+        if (Object.keys(limits).length === 0) return;
+
+        // Count occurrences and collect positions (first N are kept)
+        const counts = {};
+        const rows = map.length;
+        const cols = map[0].length;
+        for (let r = 0; r < rows; r++) {
+            for (let c = 0; c < cols; c++) {
+                const tile = map[r][c];
+                if (limits[tile] === undefined) continue;
+                counts[tile] = (counts[tile] || 0) + 1;
+                if (counts[tile] > limits[tile]) {
+                    // Excess tile: replace with grass for passable tiles, water for blocking
+                    const data = _tileData[tile];
+                    map[r][c] = (data && data.blocksMovement) ? 'water' : 'grass';
+                }
+            }
+        }
+    }
+
+    /**
+     * Place holes at interior positions that naturally create detours.
+     *
+     * Finds interior grass tiles where placing a hole creates a meaningful
+     * detour (cuts off > WEAK_HOLE_THRESHOLD tiles), using water reinforcement
+     * to strengthen borderline positions.
+     *
+     * Hole placement is attempted 40% of the time (skipped 60%), ensuring
+     * well above the ≥ 25% no-hole requirement.
+     *
+     * @private
+     * @param {Array} map - 2D array of tile types (modified in place)
+     */
+    _placeHoles(map) {
+        const _isFillable = typeof isFillableTile === 'function' ? isFillableTile : (t) => {
+            const d = typeof TILE_DATA !== 'undefined' ? TILE_DATA[t] : null;
+            return d ? (d.blocksMovement && d.wallPlaceable) : false;
+        };
+        const _isBlocking = typeof isBlockingTile === 'function' ? isBlockingTile : (t) => {
+            const d = typeof TILE_DATA !== 'undefined' ? TILE_DATA[t] : null;
+            return d ? d.blocksMovement : false;
+        };
+        const _tileData = typeof TILE_DATA !== 'undefined' ? TILE_DATA : {};
+        const threshold = typeof CONSTANTS !== 'undefined' ? CONSTANTS.WEAK_HOLE_THRESHOLD : 0;
+        const globalMaxHoles = (_tileData.hole && _tileData.hole.maxPerLevel) || 3;
+        // Randomly pick a per-level max between 1 and globalMaxHoles
+        const maxHoles = Math.floor(Math.random() * globalMaxHoles) + 1;
+        const rows = map.length;
+        const cols = map[0].length;
+
+        // Only attempt hole placement 40% of the time
+        if (Math.random() > 0.40) return;
+
+        // Find home position
+        let homeR = Math.floor(rows / 2), homeC = Math.floor(cols / 2);
+        for (let r = 0; r < rows; r++) {
+            for (let c = 0; c < cols; c++) {
+                if (map[r][c] === 'home') { homeR = r; homeC = c; }
+            }
+        }
+
+        // Find interior grass tiles that create a detour when blocked.
+        // Score each candidate by its natural impact, then try reinforcement.
+        const candidates = [];
+        for (let r = 1; r < rows - 1; r++) {
+            for (let c = 1; c < cols - 1; c++) {
+                if (map[r][c] !== 'grass') continue;
+                if (Math.abs(r - homeR) <= 1 && Math.abs(c - homeC) <= 1) continue;
+
+                // Temporarily place hole and measure impact
+                map[r][c] = 'hole';
+                const strong = this._isHoleStrong(map, r, c, threshold, _isBlocking);
+                map[r][c] = 'grass';
+
+                if (strong) {
+                    candidates.push({ r, c, natural: true });
+                } else {
+                    // Still a candidate for reinforcement
+                    candidates.push({ r, c, natural: false });
+                }
+            }
+        }
+
+        // Sort: natural strong candidates first, then reinforcement candidates
+        // Shuffle within each group for variety
+        const naturals = candidates.filter(c => c.natural);
+        const reinforceable = candidates.filter(c => !c.natural);
+        for (const arr of [naturals, reinforceable]) {
+            for (let i = arr.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [arr[i], arr[j]] = [arr[j], arr[i]];
+            }
+        }
+        const sortedCandidates = [...naturals, ...reinforceable];
+
+        // Place holes
+        let holeCount = 0;
+        for (const { r, c, natural } of sortedCandidates) {
+            if (holeCount >= maxHoles) break;
+            if (map[r][c] !== 'grass') continue;
+
+            // Check adjacency to existing holes
+            let adjToHole = false;
+            const dirs = [[-1, 0], [1, 0], [0, -1], [0, 1]];
+            for (const [dr, dc] of dirs) {
+                const nr = r + dr, nc = c + dc;
+                if (nr >= 0 && nr < rows && nc >= 0 && nc < cols && _isFillable(map[nr][nc])) {
+                    adjToHole = true;
+                    break;
+                }
+            }
+            if (adjToHole) continue;
+
+            map[r][c] = 'hole';
+
+            if (!PathfindingUtils.hasPathToEdge(map) || !PathfindingUtils.allWalkableTilesReachable(map)) {
+                map[r][c] = 'grass';
+                continue;
+            }
+
+            if (natural) {
+                // Naturally strong — just verify
+                if (this._isHoleStrong(map, r, c, threshold, _isBlocking)) {
+                    holeCount++;
+                    continue;
+                }
+            }
+
+            // Try water reinforcement
+            const reinforced = this._reinforceWithWater(map, r, c, threshold, _isBlocking);
+            if (reinforced && PathfindingUtils.allWalkableTilesReachable(map)) {
+                holeCount++;
+            } else {
+                map[r][c] = 'grass';
+            }
+        }
+    }
+
+    /**
+     * Try to reinforce a hole at (hr,hc) by creating a water barrier line
+     * through or near the hole. The barrier extends perpendicular to the escape
+     * path direction, creating a "dam" that the pet must go around.
+     *
+     * The barrier must have at least 1 water tile on each side of the hole
+     * to force a detour > 2 steps.
+     *
+     * @private
+     * @param {Array} map - 2D map (modified in place; caller reverts if returns false)
+     * @param {number} hr - Hole row
+     * @param {number} hc - Hole column
+     * @param {number} threshold - Minimum detour steps
+     * @param {Function} _isBlocking - Blocking tile checker
+     * @returns {boolean} True if hole was successfully reinforced
+     */
+    _reinforceWithWater(map, hr, hc, threshold, _isBlocking) {
+        const rows = map.length;
+        const cols = map[0].length;
+
+        // Try creating a barrier in each orientation: horizontal row, vertical column
+        const orientations = [
+            // Horizontal barrier: convert tiles along row hr (extend left/right)
+            { steps: [[0, -1], [0, 1]] },
+            // Vertical barrier: convert tiles along column hc (extend up/down)
+            { steps: [[-1, 0], [1, 0]] },
+        ];
+
+        for (const config of orientations) {
+            const waterAdded = [];
+
+            // Extend barrier in both directions from the hole
+            for (const [dr, dc] of config.steps) {
+                for (let dist = 1; dist <= Math.max(rows, cols); dist++) {
+                    const nr = hr + dr * dist;
+                    const nc = hc + dc * dist;
+                    if (nr < 0 || nr >= rows || nc < 0 || nc >= cols) break;
+                    if (map[nr][nc] !== 'grass') break;
+                    waterAdded.push([nr, nc]);
+                }
+            }
+
+            if (waterAdded.length < 2) continue; // Need at least 1 on each side
+
+            // Place all water tiles
+            for (const [wr, wc] of waterAdded) {
+                map[wr][wc] = 'water';
+            }
+
+            // Verify connectivity — shorten barrier if needed
+            while (waterAdded.length > 0) {
+                if (PathfindingUtils.hasPathToEdge(map) && PathfindingUtils.allWalkableTilesReachable(map)) {
+                    break;
+                }
+                // Remove last water tile
+                const [wr, wc] = waterAdded.pop();
+                map[wr][wc] = 'grass';
+            }
+
+            // Check hole strength
+            if (waterAdded.length >= 2 && this._isHoleStrong(map, hr, hc, threshold, _isBlocking)) {
+                return true;
+            }
+
+            // Revert
+            for (const [wr, wc] of waterAdded) {
+                map[wr][wc] = 'grass';
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Check if a hole is strategically significant (area loss > threshold).
+     * Measures how many tiles become unreachable from home when the hole is placed.
+     * @private
+     * @param {Array} map - 2D map
+     * @param {number} hr - Hole row
+     * @param {number} hc - Hole column
+     * @param {number} threshold - Minimum area loss
+     * @param {Function} _isBlocking - Blocking tile checker
+     * @returns {boolean}
+     */
+    _isHoleStrong(map, hr, hc, threshold, _isBlocking) {
+        // Measure reachable area with hole blocking
+        const holeArea = PathfindingUtils.reachableAreaCount(map, (tile) => _isBlocking(tile));
+        // Measure reachable area if hole were passable (filled)
+        const filledArea = PathfindingUtils.reachableAreaCount(map, (tile, r, c) => {
+            if (r === hr && c === hc) return false;
+            return _isBlocking(tile);
+        });
+        // Area loss = tiles cut off by the hole
+        return (filledArea - holeArea) > threshold;
     }
 
 }

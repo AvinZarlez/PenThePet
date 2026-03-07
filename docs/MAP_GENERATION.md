@@ -39,6 +39,8 @@ All maps must pass `MapValidator` checks:
 2. **Goal area ≥ 5** — prevents trivially easy maps
 3. **Wall budget** — optimal wall count ≤ `floor(size × 0.75)`
 4. **Strategic placement** — at least one optimal wall is on a non-edge tile
+5. **No adjacent holes** — fillable tiles (holes) cannot be orthogonally adjacent; one is replaced with grass
+6. **Hole bypass check** — if the pet can get around an empty hole with ≤5 extra steps compared to walking through a filled hole, the hole is replaced with water. Uses BFS shortest-path comparison to ensure accuracy.
 
 ## Map Data Format
 
@@ -57,7 +59,7 @@ Each entry in `maps/YYYY.json` is keyed by date (`YYYY-MM-DD`):
 }
 ```
 
-**`map`** — compact string of `size²` characters, row-major: `g`=grass, `w`=water, `h`=home. Decode with `parseCompactMap(mapStr, size)` in `js/Grid.js`.
+**`map`** — compact string of `size²` characters, row-major: `g`=grass, `w`=water, `h`=home, `s`=star, `b`=bee, `o`=hole. Decode with `parseCompactMap(mapStr, size)` in `js/Grid.js`.
 
 **`optimalSolution`** — flat array `[r0, c0, r1, c1, …]` of optimal wall coordinates. Decode with `parseCompactSolution(flatArr)` in `js/Grid.js`.
 

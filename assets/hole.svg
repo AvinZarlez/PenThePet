@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 50 50">
+  <defs>
+    <radialGradient id="holeGrad" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#1a1a2e"/>
+      <stop offset="60%" stop-color="#2d2d44"/>
+      <stop offset="100%" stop-color="#4a3728"/>
+    </radialGradient>
+    <pattern id="holePattern" x="0" y="0" width="50" height="50" patternUnits="userSpaceOnUse">
+      <!-- Earthy rim -->
+      <rect width="50" height="50" fill="#6d4c41"/>
+      <!-- Dark pit center -->
+      <ellipse cx="25" cy="25" rx="20" ry="18" fill="url(#holeGrad)"/>
+      <!-- Rim highlights -->
+      <ellipse cx="25" cy="25" rx="20" ry="18" fill="none" stroke="#5d4037" stroke-width="2"/>
+      <ellipse cx="25" cy="22" rx="18" ry="14" fill="none" stroke="#4e342e" stroke-width="1" opacity="0.5"/>
+      <!-- Dirt texture on rim -->
+      <circle cx="8" cy="10" r="2" fill="#795548" opacity="0.6"/>
+      <circle cx="42" cy="12" r="1.5" fill="#795548" opacity="0.5"/>
+      <circle cx="6" cy="38" r="2" fill="#795548" opacity="0.5"/>
+      <circle cx="44" cy="40" r="1.5" fill="#795548" opacity="0.6"/>
+      <circle cx="12" cy="44" r="1" fill="#8d6e63" opacity="0.4"/>
+      <circle cx="38" cy="6" r="1" fill="#8d6e63" opacity="0.4"/>
+      <!-- Depth shadows -->
+      <ellipse cx="25" cy="28" rx="12" ry="8" fill="#0d0d1a" opacity="0.4"/>
+    </pattern>
+  </defs>
+  <rect width="50" height="50" fill="url(#holePattern)"/>
+</svg>

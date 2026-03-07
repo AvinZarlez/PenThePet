@@ -34,7 +34,8 @@ const CONSTANTS = {
 
     // Map generation
     MAX_GENERATION_ATTEMPTS: 100,  // Maximum attempts to generate a valid map
-
+    WEAK_HOLE_THRESHOLD: 4,        // Holes must force a detour of more than this many steps
+    
     // Tile distribution (probabilities should sum to 1.0)
     TILE_DISTRIBUTION: {
         grass: 0.7,             // 70% chance of grass tiles

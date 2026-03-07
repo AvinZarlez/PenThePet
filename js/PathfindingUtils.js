@@ -22,6 +22,18 @@ if (typeof BLOCKING_NUMERIC_IDS === 'undefined' && typeof require !== 'undefined
     if (typeof global.isBlockingTile === 'undefined') {
         global.isBlockingTile = _td.isBlockingTile;
     }
+    if (typeof global.FILLABLE_TILES === 'undefined') {
+        global.FILLABLE_TILES = _td.FILLABLE_TILES;
+    }
+    if (typeof global.isFillableTile === 'undefined') {
+        global.isFillableTile = _td.isFillableTile;
+    }
+    if (typeof global.FILLABLE_NUMERIC_IDS === 'undefined') {
+        global.FILLABLE_NUMERIC_IDS = _td.FILLABLE_NUMERIC_IDS;
+    }
+    if (typeof global.FILLED_SCORE_MAP === 'undefined') {
+        global.FILLED_SCORE_MAP = _td.FILLED_SCORE_MAP;
+    }
 }
 
 class PathfindingUtils {
@@ -99,6 +111,44 @@ class PathfindingUtils {
     // -------------------------------------------------------------------------
     // Public API — numeric map (used by game runtime and solver)
     // -------------------------------------------------------------------------
+
+    /**
+     * Compute the shortest path distance (BFS) from home to any edge tile.
+     * Used by hole placement validation to compare path lengths.
+     *
+     * @param {Array} map - 2D array of tile type strings
+     * @param {Function} [isBlocking] - Optional custom blocking function (tile, row, col) => boolean.
+     *   Defaults to isBlockingTile(tile).
+     * @returns {number} Shortest distance in steps from home to an edge, or Infinity if unreachable
+     */
+    static shortestPathToEdge(map, isBlocking) {
+        const [homeRow, homeCol] = PathfindingUtils._findHome(map);
+        if (homeRow < 0) return Infinity;
+
+        const rows = map.length, cols = map[0].length;
+        if (homeRow === 0 || homeRow === rows - 1 || homeCol === 0 || homeCol === cols - 1) return 0;
+
+        const blockFn = isBlocking || (tile => isBlockingTile(tile));
+        const visited = new Set([`${homeRow},${homeCol}`]);
+        const queue = [[homeRow, homeCol, 0]];
+        const directions = [[-1, 0], [1, 0], [0, -1], [0, 1]];
+
+        while (queue.length > 0) {
+            const [row, col, dist] = queue.shift();
+            for (const [dr, dc] of directions) {
+                const nr = row + dr;
+                const nc = col + dc;
+                if (nr < 0 || nr >= rows || nc < 0 || nc >= cols) continue;
+                const key = `${nr},${nc}`;
+                if (visited.has(key)) continue;
+                if (blockFn(map[nr][nc], nr, nc)) continue;
+                if (nr === 0 || nr === rows - 1 || nc === 0 || nc === cols - 1) return dist + 1;
+                visited.add(key);
+                queue.push([nr, nc, dist + 1]);
+            }
+        }
+        return Infinity;
+    }
 
     /**
      * Check if home is penned in (cannot reach any edge).
@@ -183,17 +233,20 @@ class PathfindingUtils {
 
     /**
      * Check that every non-blocking tile on the map is reachable from home.
+     * Fillable tiles (e.g. holes) are treated as passable during traversal
+     * because the player can fill them by placing a wall.
      *
-     * @param {Array} map - 2D array of tile type strings ('grass', 'water', 'home', 'star', 'bee')
+     * @param {Array} map - 2D array of tile type strings ('grass', 'water', 'home', 'star', 'bee', 'hole')
      * @returns {boolean} True if all walkable tiles are reachable from home
      */
     static allWalkableTilesReachable(map) {
         const [homeRow, homeCol] = PathfindingUtils._findHome(map);
         if (homeRow < 0) return false;
 
+        const _isFillable = typeof isFillableTile === 'function' ? isFillableTile : () => false;
         const visited = PathfindingUtils._bfsReachable(
             map, homeRow, homeCol,
-            tile => isBlockingTile(tile)
+            tile => isBlockingTile(tile) && !_isFillable(tile)
         );
         for (let i = 0; i < map.length; i++) {
             for (let j = 0; j < map[i].length; j++) {
@@ -204,9 +257,32 @@ class PathfindingUtils {
     }
 
     /**
+     * Count tiles reachable from home via BFS using a custom blocking function.
+     * Used by hole strength validation to measure the impact of a hole.
+     *
+     * @param {Array} map - 2D array of tile type strings
+     * @param {Function} [isBlockingFn] - Custom blocking function (tile, row, col) => boolean
+     * @returns {number} Number of tiles reachable from home
+     */
+    static reachableAreaCount(map, isBlockingFn) {
+        const [homeRow, homeCol] = PathfindingUtils._findHome(map);
+        if (homeRow < 0) return 0;
+
+        const blockFn = isBlockingFn || (tile => isBlockingTile(tile));
+        const visited = PathfindingUtils._bfsReachable(
+            map, homeRow, homeCol,
+            blockFn
+        );
+        return visited.size;
+    }
+
+    /**
      * Find all tile positions inside the penned area (reachable from home without
      * crossing blocking tiles or the given wall positions).
      * Called by calculateGoal in MapGenerator to determine the penned area after solving.
+     *
+     * For fillable tiles (e.g. holes) that have a wall placed on them, the tile
+     * becomes passable rather than blocked — the wall "fills" the tile.
      *
      * @param {Array} map - 2D array of tile type strings ('grass', 'water', 'home', etc.)
      * @param {Set<string>} [wallPositions] - Optional set of "row,col" strings for placed walls
@@ -217,9 +293,17 @@ class PathfindingUtils {
         if (homeRow < 0) return [];
 
         const blocked = wallPositions || new Set();
+        const _isFillable = typeof isFillableTile === 'function' ? isFillableTile : () => false;
         const visited = PathfindingUtils._bfsReachable(
             map, homeRow, homeCol,
-            (tile, r, c) => isBlockingTile(tile) || blocked.has(`${r},${c}`)
+            (tile, r, c) => {
+                const key = `${r},${c}`;
+                if (blocked.has(key)) {
+                    // Wall placed here: fillable tiles become passable, others become walls
+                    return !_isFillable(tile);
+                }
+                return isBlockingTile(tile);
+            }
         );
         return [...visited].map(key => key.split(',').map(Number));
     }

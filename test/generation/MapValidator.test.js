@@ -308,5 +308,156 @@ describe('MapValidator', () => {
             expect(result.errors).toContain('Map has no star tiles - at least one star is required');
             expect(result.errors).toContain('Map has no bee tiles - at least one bee is required');
         });
+
+        test('should fail validation when map has adjacent hole tiles', () => {
+            const map = [
+                ['grass', 'grass', 'grass', 'grass', 'grass', 'grass', 'grass'],
+                ['grass', 'water', 'grass', 'water', 'grass', 'water', 'grass'],
+                ['grass', 'grass', 'grass', 'grass', 'grass', 'grass', 'grass'],
+                ['grass', 'water', 'star',  'home',  'bee',   'water', 'grass'],
+                ['grass', 'hole',  'hole',  'grass', 'grass', 'grass', 'grass'],
+                ['grass', 'water', 'grass', 'water', 'grass', 'water', 'grass'],
+                ['grass', 'grass', 'grass', 'grass', 'grass', 'grass', 'grass']
+            ];
+
+            const solution = {
+                goalArea: 8,
+                optimalWallCount: 4,
+                optimalSolution: [[1, 2], [2, 1], [3, 2], [4, 3]]
+            };
+
+            const result = MapValidator.validate(map, solution);
+            expect(result.valid).toBe(false);
+            expect(result.errors).toContain('Map has adjacent hole tiles - holes must not be next to each other');
+        });
+
+        test('should fail validation when map has vertically adjacent hole tiles', () => {
+            const map = [
+                ['grass', 'grass', 'grass', 'grass', 'grass', 'grass', 'grass'],
+                ['grass', 'water', 'grass', 'water', 'grass', 'water', 'grass'],
+                ['grass', 'grass', 'grass', 'grass', 'hole',  'grass', 'grass'],
+                ['grass', 'water', 'star',  'home',  'hole',  'water', 'grass'],
+                ['grass', 'grass', 'grass', 'grass', 'bee',   'grass', 'grass'],
+                ['grass', 'water', 'grass', 'water', 'grass', 'water', 'grass'],
+                ['grass', 'grass', 'grass', 'grass', 'grass', 'grass', 'grass']
+            ];
+
+            const solution = {
+                goalArea: 8,
+                optimalWallCount: 4,
+                optimalSolution: [[1, 2], [2, 1], [3, 2], [4, 3]]
+            };
+
+            const result = MapValidator.validate(map, solution);
+            expect(result.valid).toBe(false);
+            expect(result.errors).toContain('Map has adjacent hole tiles - holes must not be next to each other');
+        });
+
+        test('should pass validation when holes are not adjacent', () => {
+            const map = [
+                ['grass', 'grass', 'grass', 'grass', 'grass', 'grass', 'grass'],
+                ['grass', 'water', 'grass', 'water', 'grass', 'water', 'grass'],
+                ['grass', 'hole',  'grass', 'grass', 'grass', 'grass', 'grass'],
+                ['grass', 'water', 'star',  'home',  'bee',   'water', 'grass'],
+                ['grass', 'grass', 'grass', 'grass', 'grass', 'hole',  'grass'],
+                ['grass', 'water', 'grass', 'water', 'grass', 'water', 'grass'],
+                ['grass', 'grass', 'grass', 'grass', 'grass', 'grass', 'grass']
+            ];
+
+            const solution = {
+                goalArea: 8,
+                optimalWallCount: 4,
+                optimalSolution: [[1, 2], [2, 3], [3, 2], [4, 1]]
+            };
+
+            const result = MapValidator.validate(map, solution);
+            expect(result.errors).not.toContain('Map has adjacent hole tiles - holes must not be next to each other');
+        });
+
+        test('should fail validation when hole cuts off too few tiles', () => {
+            // Hole at (0,3) — on the edge, doesn't cut off any tiles from home
+            // (pet can reach all non-blocking tiles without going through the hole)
+            const map = [
+                ['grass', 'grass', 'grass', 'hole',  'grass', 'grass', 'grass'],
+                ['grass', 'grass', 'grass', 'grass', 'grass', 'grass', 'grass'],
+                ['grass', 'grass', 'grass', 'grass', 'grass', 'grass', 'grass'],
+                ['grass', 'grass', 'star',  'home',  'bee',   'grass', 'grass'],
+                ['grass', 'grass', 'grass', 'grass', 'grass', 'grass', 'grass'],
+                ['grass', 'grass', 'grass', 'grass', 'grass', 'grass', 'grass'],
+                ['grass', 'grass', 'grass', 'grass', 'grass', 'grass', 'grass']
+            ];
+
+            const solution = {
+                goalArea: 8,
+                optimalWallCount: 4,
+                optimalSolution: [[2, 2], [2, 4], [4, 2], [4, 4]]
+            };
+
+            const result = MapValidator.validate(map, solution);
+            expect(result.valid).toBe(false);
+            expect(result.errors.some(e => e.includes('hole(s) that cut off'))).toBe(true);
+        });
+
+        test('should pass validation when hole cuts off more than 4 tiles', () => {
+            // Hole at (1,3) blocks access to all of row 0 (7 tiles)
+            // Water barrier across row 1 with hole as only crossing
+            // Area loss = 8 > 4 threshold
+            const map = [
+                ['grass', 'grass', 'grass', 'grass', 'grass', 'grass', 'grass'],
+                ['water', 'water', 'water', 'hole',  'water', 'water', 'water'],
+                ['grass', 'grass', 'grass', 'grass', 'grass', 'grass', 'grass'],
+                ['grass', 'grass', 'star',  'home',  'bee',   'grass', 'grass'],
+                ['grass', 'grass', 'grass', 'grass', 'grass', 'grass', 'grass'],
+                ['grass', 'grass', 'grass', 'grass', 'grass', 'grass', 'grass'],
+                ['grass', 'grass', 'grass', 'grass', 'grass', 'grass', 'grass']
+            ];
+
+            const solution = {
+                goalArea: 8,
+                optimalWallCount: 4,
+                optimalSolution: [[2, 2], [2, 4], [4, 2], [4, 4]]
+            };
+
+            const result = MapValidator.validate(map, solution);
+            expect(result.errors.some(e => e.includes('hole(s) that cut off'))).toBe(false);
+        });
+
+        test('should fail validation when too many holes (maxPerLevel exceeded)', () => {
+            const map = [
+                ['grass', 'grass', 'grass', 'grass', 'grass', 'grass', 'grass'],
+                ['grass', 'water', 'grass', 'hole',  'grass', 'water', 'grass'],
+                ['grass', 'grass', 'grass', 'grass', 'grass', 'grass', 'grass'],
+                ['grass', 'hole',  'star',  'home',  'bee',   'hole',  'grass'],
+                ['grass', 'grass', 'grass', 'grass', 'grass', 'grass', 'grass'],
+                ['grass', 'water', 'grass', 'hole',  'grass', 'water', 'grass'],
+                ['grass', 'grass', 'grass', 'grass', 'grass', 'grass', 'grass']
+            ];
+            const solution = {
+                goalArea: 8,
+                optimalWallCount: 4,
+                optimalSolution: [[2, 1], [2, 5], [4, 1], [4, 5]]
+            };
+            const result = MapValidator.validate(map, solution);
+            expect(result.errors.some(e => e.includes('Too many hole tiles'))).toBe(true);
+        });
+
+        test('should pass validation when holes are within maxPerLevel limit', () => {
+            const map = [
+                ['grass', 'grass', 'grass', 'grass', 'grass', 'grass', 'grass'],
+                ['grass', 'water', 'grass', 'water', 'grass', 'water', 'grass'],
+                ['grass', 'grass', 'grass', 'grass', 'grass', 'grass', 'grass'],
+                ['grass', 'water', 'star',  'home',  'bee',   'water', 'grass'],
+                ['grass', 'grass', 'grass', 'grass', 'grass', 'grass', 'grass'],
+                ['grass', 'water', 'grass', 'water', 'grass', 'water', 'grass'],
+                ['grass', 'grass', 'grass', 'grass', 'grass', 'grass', 'grass']
+            ];
+            const solution = {
+                goalArea: 8,
+                optimalWallCount: 4,
+                optimalSolution: [[2, 1], [2, 5], [4, 1], [4, 5]]
+            };
+            const result = MapValidator.validate(map, solution);
+            expect(result.errors.some(e => e.includes('Too many'))).toBe(false);
+        });
     });
 });

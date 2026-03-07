@@ -169,7 +169,7 @@ async function initGame() {
         for (const [row, col] of submission.walls) {
             const tile = game.isValidPosition(row, col) ? game.grid.getTile(row, col) : null;
             if (tile && isWallPlaceable(tile)) {
-                game.grid.setTile(row, col, 'wall');
+                game.grid.setTile(row, col, getWallTransform(tile));
                 game.wallCount++;
             }
         }

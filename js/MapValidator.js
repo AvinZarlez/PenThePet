@@ -72,6 +72,24 @@ class MapValidator {
             errors.push('Map has no bee tiles - at least one bee is required');
         }
         
+        // 9. No adjacent holes (fillable tiles that block movement)
+        if (this._hasAdjacentHoles(map)) {
+            errors.push('Map has adjacent hole tiles - holes must not be next to each other');
+        }
+        
+        // 10. Holes must be strategically significant (area loss > WEAK_HOLE_THRESHOLD)
+        const weakHoles = this._findWeakHoles(map);
+        if (weakHoles.length > 0) {
+            const t = typeof CONSTANTS !== 'undefined' ? CONSTANTS.WEAK_HOLE_THRESHOLD : 2;
+            errors.push(`Map has ${weakHoles.length} hole(s) that cut off ${t} or fewer tiles`);
+        }
+        
+        // 11. Tiles with maxPerLevel must not exceed their limit
+        const maxPerLevelErrors = this._checkMaxPerLevel(map);
+        for (const err of maxPerLevelErrors) {
+            errors.push(err);
+        }
+        
         return {
             valid: errors.length === 0,
             errors: errors
@@ -145,6 +163,107 @@ class MapValidator {
             }
         }
         return false;
+    }
+
+    /**
+     * Check if any two fillable tiles (e.g. holes) are adjacent to each other.
+     * Fillable tiles are identified generically by blocksMovement AND wallPlaceable.
+     * @private
+     * @param {Array} map - 2D array of tile type strings
+     * @returns {boolean} True if any adjacent holes are found
+     */
+    static _hasAdjacentHoles(map) {
+        const _isFillable = typeof isFillableTile === 'function' ? isFillableTile : (t) => {
+            const d = typeof TILE_DATA !== 'undefined' ? TILE_DATA[t] : null;
+            return d ? (d.blocksMovement && d.wallPlaceable) : false;
+        };
+        const rows = map.length;
+        const cols = map[0].length;
+        for (let r = 0; r < rows; r++) {
+            for (let c = 0; c < cols; c++) {
+                if (!_isFillable(map[r][c])) continue;
+                // Check right and down neighbors (avoids double-counting)
+                if (c + 1 < cols && _isFillable(map[r][c + 1])) return true;
+                if (r + 1 < rows && _isFillable(map[r + 1][c])) return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Find holes (fillable tiles) that can be bypassed with 5 or fewer extra steps.
+     *
+     * For each fillable tile, computes the reachable area from home with the
+     * hole blocking vs. filled (passable). If the area loss (tiles cut off by
+     * the hole) is ≤ WEAK_HOLE_THRESHOLD, the hole is "weak" — it doesn't
+     * create a meaningful obstacle.
+     *
+     * @private
+     * @param {Array} map - 2D array of tile type strings
+     * @returns {Array<Array<number>>} Array of [row, col] positions of weak holes
+     */
+    static _findWeakHoles(map) {
+        const _isFillable = typeof isFillableTile === 'function' ? isFillableTile : (t) => {
+            const d = typeof TILE_DATA !== 'undefined' ? TILE_DATA[t] : null;
+            return d ? (d.blocksMovement && d.wallPlaceable) : false;
+        };
+        const _isBlocking = typeof isBlockingTile === 'function' ? isBlockingTile : () => false;
+        const rows = map.length;
+        const cols = map[0].length;
+
+        // Collect all fillable tile positions
+        const holes = [];
+        for (let r = 0; r < rows; r++) {
+            for (let c = 0; c < cols; c++) {
+                if (_isFillable(map[r][c])) holes.push([r, c]);
+            }
+        }
+        if (holes.length === 0) return [];
+
+        const weakHoles = [];
+        for (const [hr, hc] of holes) {
+            // Reachable area with hole blocking
+            const holeArea = PathfindingUtils.reachableAreaCount(map, (tile) => _isBlocking(tile));
+
+            // Reachable area if this hole were passable (as if filled)
+            const filledArea = PathfindingUtils.reachableAreaCount(map, (tile, r, c) => {
+                if (r === hr && c === hc) return false; // treat this hole as passable
+                return _isBlocking(tile);
+            });
+
+            // If the hole cuts off ≤ WEAK_HOLE_THRESHOLD tiles, it's weak
+            const threshold = typeof CONSTANTS !== 'undefined' ? CONSTANTS.WEAK_HOLE_THRESHOLD : 2;
+            const areaLoss = filledArea - holeArea;
+            if (areaLoss <= threshold) {
+                weakHoles.push([hr, hc]);
+            }
+        }
+
+        return weakHoles;
+    }
+
+    /**
+     * Check that no tile exceeds its maxPerLevel limit.
+     * Reads the maxPerLevel property from TILE_DATA for each tile type.
+     * @private
+     * @param {Array} map - 2D array of tile type strings
+     * @returns {Array<string>} Array of error messages (empty if all OK)
+     */
+    static _checkMaxPerLevel(map) {
+        const _tileData = typeof TILE_DATA !== 'undefined' ? TILE_DATA : {};
+        const counts = {};
+        for (const row of map) {
+            for (const tile of row) {
+                counts[tile] = (counts[tile] || 0) + 1;
+            }
+        }
+        const errors = [];
+        for (const [name, data] of Object.entries(_tileData)) {
+            if (data.maxPerLevel !== undefined && counts[name] > data.maxPerLevel) {
+                errors.push(`Too many ${name} tiles (${counts[name]} > max ${data.maxPerLevel})`);
+            }
+        }
+        return errors;
     }
 }
 

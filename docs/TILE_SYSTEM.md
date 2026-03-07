@@ -56,8 +56,16 @@ player instructions, and the Python solver read from `js/tileData.js` automatica
 | Water | 0     | ❌             | ✅              | 30%                |
 | Star  | 3     | ❌             | ❌              | 5%                 |
 | Bee   | -3    | ❌             | ❌              | 3%                 |
+| Hole  | 0     | ✅             | ✅              | 3%                 |
+| Filled Hole | 1 | ❌          | ❌              | Wall-placed only   |
 | Home  | 1     | ❌             | ❌              | Placed at center   |
 | Wall  | 0     | ❌             | ✅              | Player-placed only |
+
+### Fillable Tiles
+
+Fillable tiles are tiles with both `blocksMovement: true` and `wallPlaceable: true`. When a wall is placed on a fillable tile, it transforms into the tile specified by `wallTransformsTo` (e.g. hole → filledHole). The transformed tile has `wallState: true`, allowing the player to click it again to revert it to its original tile type.
+
+This mechanic is generic — new fillable tile types can be added by setting `blocksMovement`, `wallPlaceable`, and `wallTransformsTo` in `TILE_DATA`. The game logic (`handleCellClick`) and utility functions (`isFillableTile`, `isWallState`, `getWallTransform`) handle the rest automatically.
 
 ## Architecture
 

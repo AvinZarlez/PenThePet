@@ -310,20 +310,20 @@ class Game {
 
         const currentTileType = this.grid.getTile(row, col);
 
-        // Allow clicking on wall-placeable tiles (convert to wall)
+        // Allow clicking on wall-placeable tiles (convert to wall or transformed tile)
         if (isWallPlaceable(currentTileType)) {
             // Check if wall limit reached
             if (this.wallCount >= this.maxWalls) {
                 this.showNotification(`All ${this.maxWalls} walls have been placed!`);
                 return;
             }
-            this.grid.setTile(row, col, 'wall');
+            this.grid.setTile(row, col, getWallTransform(currentTileType));
             this.wallCount++;
             this.render();
             this.updateWallCounter();
         }
-        // Allow clicking on walls to remove them (revert to original tile type)
-        else if (currentTileType === 'wall') {
+        // Allow clicking on wall-state tiles to remove them (revert to original tile type)
+        else if (isWallState(currentTileType)) {
             const originalTile = this.grid.initialTiles[row] && this.grid.initialTiles[row][col];
             this.grid.setTile(row, col, originalTile || 'grass');
             this.wallCount = Math.max(0, this.wallCount - 1);
@@ -1172,11 +1172,11 @@ class Game {
         // Lock the timer before saving (so the locked time is included in submission)
         this.lockTimer();
 
-        // Get current wall positions
+        // Get current wall positions (includes walls and wall-state tiles like filled holes)
         const wallPositions = [];
         for (let i = 0; i < this.grid.size; i++) {
             for (let j = 0; j < this.grid.size; j++) {
-                if (this.grid.getTile(i, j) === 'wall') {
+                if (isWallState(this.grid.getTile(i, j))) {
                     wallPositions.push([i, j]);
                 }
             }
@@ -1501,19 +1501,19 @@ class Game {
         // Clear all existing walls first (revert to original tile type)
         for (let i = 0; i < this.grid.size; i++) {
             for (let j = 0; j < this.grid.size; j++) {
-                if (this.grid.getTile(i, j) === 'wall') {
+                if (isWallState(this.grid.getTile(i, j))) {
                     const originalTile = this.grid.initialTiles[i] && this.grid.initialTiles[i][j];
                     this.grid.setTile(i, j, originalTile || 'grass');
                 }
             }
         }
 
-        // Place new walls (on wall-placeable tiles)
+        // Place new walls (on wall-placeable tiles, using wallTransformsTo if defined)
         this.wallCount = 0;
         for (const [row, col] of wallPositions) {
             const tile = this.isValidPosition(row, col) ? this.grid.getTile(row, col) : null;
             if (tile && isWallPlaceable(tile)) {
-                this.grid.setTile(row, col, 'wall');
+                this.grid.setTile(row, col, getWallTransform(tile));
                 this.wallCount++;
             }
         }
