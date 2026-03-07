@@ -1,0 +1,17 @@
+{
+  "name": "Pen the Pet",
+  "short_name": "PenThePet",
+  "description": "A daily logic puzzle about fencing in your pet",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#5cb85c",
+  "theme_color": "#5cb85c",
+  "icons": [
+    {
+      "src": "assets/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

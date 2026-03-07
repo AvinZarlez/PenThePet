@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <!--
+    PenThePet Favicon — Placeholder Art
+    Cute cat face on a game-green rounded-square background.
+    Designed to be legible at 16 × 16 px and above.
+    To customise: replace shapes with commissioned artwork
+    while keeping viewBox="0 0 32 32".
+  -->
+
+  <!-- Background: game green with rounded corners -->
+  <rect width="32" height="32" rx="6" fill="#5cb85c"/>
+
+  <!-- Left ear (drawn before head so it sits behind) -->
+  <polygon points="6,18 9,7 13,18" fill="#f5deb3"/>
+  <polygon points="7.5,17 9,11 11,17" fill="#e899a8"/>
+
+  <!-- Right ear -->
+  <polygon points="19,18 23,7 26,18" fill="#f5deb3"/>
+  <polygon points="20.5,17 23,11 24.5,17" fill="#e899a8"/>
+
+  <!-- Head -->
+  <circle cx="16" cy="21" r="10" fill="#f5deb3"/>
+
+  <!-- Eyes -->
+  <ellipse cx="12.5" cy="19" rx="1.8" ry="2.2" fill="#2d2d2d"/>
+  <ellipse cx="19.5" cy="19" rx="1.8" ry="2.2" fill="#2d2d2d"/>
+  <!-- Eye highlights -->
+  <circle cx="13.3" cy="17.8" r="0.65" fill="white"/>
+  <circle cx="20.3" cy="17.8" r="0.65" fill="white"/>
+
+  <!-- Nose -->
+  <ellipse cx="16" cy="22.5" rx="1.1" ry="0.75" fill="#e899a8"/>
+
+  <!-- Mouth -->
+  <path d="M14,24.5 Q16,27 18,24.5" fill="none" stroke="#c07888"
+        stroke-width="0.8" stroke-linecap="round"/>
+
+  <!-- Whiskers left -->
+  <line x1="3" y1="21.5" x2="12.5" y2="22"
+        stroke="#aaa" stroke-width="0.4" stroke-linecap="round"/>
+  <line x1="3" y1="23.5" x2="12.5" y2="23.5"
+        stroke="#aaa" stroke-width="0.4" stroke-linecap="round"/>
+
+  <!-- Whiskers right -->
+  <line x1="19.5" y1="22" x2="29" y2="21.5"
+        stroke="#aaa" stroke-width="0.4" stroke-linecap="round"/>
+  <line x1="19.5" y1="23.5" x2="29" y2="23.5"
+        stroke="#aaa" stroke-width="0.4" stroke-linecap="round"/>
+</svg>
