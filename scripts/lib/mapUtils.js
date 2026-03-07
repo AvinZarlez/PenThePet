@@ -264,6 +264,61 @@ function fixMapsDatabase(maps) {
     return fixed;
 }
 
+// ---------------------------------------------------------------------------
+// Weave insertion helper
+// ---------------------------------------------------------------------------
+
+/**
+ * Weave-insert new map data objects into an existing maps database.
+ * New maps are randomly inserted into the portion of the list starting
+ * two days after the given reference date. Existing maps before that point
+ * are not touched. All maps in the insertion zone (existing + new) are
+ * reassigned sequential dates starting from today + 2 days.
+ *
+ * @param {Object} maps - Existing maps object keyed by date (YYYY-MM-DD)
+ * @param {Array<Object>} newMapDataList - New map data objects (date fields will be overwritten)
+ * @param {string} today - Reference date in YYYY-MM-DD format
+ * @returns {Object} New maps object with weave-inserted maps
+ */
+function weaveInsert(maps, newMapDataList, today) {
+    const insertionStartDate = incrementDate(incrementDate(today));
+
+    // Split into fixed maps (before insertion zone) and the insertion zone list
+    const sortedDates = Object.keys(maps).sort();
+    const fixedMaps = {};
+    const insertionZoneList = [];
+
+    for (const date of sortedDates) {
+        if (date < insertionStartDate) {
+            fixedMaps[date] = { ...maps[date] };
+        } else {
+            insertionZoneList.push({ ...maps[date] });
+        }
+    }
+
+    // Randomly insert each new map at a random position in the combined list
+    const combinedList = [...insertionZoneList];
+    for (const newMap of newMapDataList) {
+        const insertIndex = Math.floor(Math.random() * (combinedList.length + 1));
+        combinedList.splice(insertIndex, 0, { ...newMap });
+    }
+
+    // Assign sequential dates to the combined list starting from insertionStartDate
+    let currentDate = insertionStartDate;
+    for (const mapData of combinedList) {
+        mapData.date = currentDate;
+        currentDate = incrementDate(currentDate);
+    }
+
+    // Rebuild and return the complete maps object
+    const result = { ...fixedMaps };
+    for (const mapData of combinedList) {
+        result[mapData.date] = mapData;
+    }
+
+    return result;
+}
+
 module.exports = {
     parseSizeInput,
     getRandomSize,
@@ -274,5 +329,6 @@ module.exports = {
     getNextDayNumber,
     validateMapsDatabase,
     fixMapsDatabase,
+    weaveInsert,
 };
 

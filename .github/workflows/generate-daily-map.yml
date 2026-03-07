@@ -15,6 +15,11 @@ on:
         description: 'Number of maps to generate'
         required: false
         default: '1'
+      weave:
+        description: 'Randomly insert new maps into existing future dates (starting 2 days from now) instead of appending to the end'
+        required: false
+        default: 'false'
+        type: boolean
 
 jobs:
   generate-map:
@@ -56,13 +61,19 @@ jobs:
           DATE_ARG="${{ github.event.inputs.date }}"
           SIZE_ARG="${{ github.event.inputs.size }}"
           COUNT_ARG="${{ github.event.inputs.count }}"
+          WEAVE_ARG="${{ github.event.inputs.weave }}"
 
-          if [ -n "$DATE_ARG" ]; then
+          EXTRA_FLAGS=""
+          if [ "$WEAVE_ARG" = "true" ]; then
+            EXTRA_FLAGS="--weave"
+          fi
+
+          if [ -n "$DATE_ARG" ] && [ "$WEAVE_ARG" != "true" ]; then
             echo "Generating ${COUNT_ARG} map(s) starting ${DATE_ARG} (size: ${SIZE_ARG})"
-            node scripts/generate-map.js --size "${SIZE_ARG}" --count "${COUNT_ARG}" --date "${DATE_ARG}"
+            node scripts/generate-map.js --size "${SIZE_ARG}" --count "${COUNT_ARG}" --date "${DATE_ARG}" ${EXTRA_FLAGS}
           else
-            echo "Generating ${COUNT_ARG} map(s) with auto-assigned date(s) (size: ${SIZE_ARG})"
-            node scripts/generate-map.js --size "${SIZE_ARG}" --count "${COUNT_ARG}"
+            echo "Generating ${COUNT_ARG} map(s) with auto-assigned date(s) (size: ${SIZE_ARG}, weave: ${WEAVE_ARG})"
+            node scripts/generate-map.js --size "${SIZE_ARG}" --count "${COUNT_ARG}" ${EXTRA_FLAGS}
           fi
 
       - name: Check for changes
@@ -82,7 +93,10 @@ jobs:
           git add maps/
           DATE_ARG="${{ github.event.inputs.date }}"
           COUNT_ARG="${{ github.event.inputs.count }}"
-          if [ "${COUNT_ARG}" -gt 1 ]; then
+          WEAVE_ARG="${{ github.event.inputs.weave }}"
+          if [ "$WEAVE_ARG" = "true" ]; then
+            git commit -m "Weave-insert ${COUNT_ARG} daily map(s) into future schedule"
+          elif [ "${COUNT_ARG}" -gt 1 ]; then
             if [ -n "$DATE_ARG" ]; then
               git commit -m "Add ${COUNT_ARG} daily maps starting ${DATE_ARG}"
             else
@@ -105,7 +119,11 @@ jobs:
           DATE_ARG="${{ github.event.inputs.date }}"
           COUNT_ARG="${{ github.event.inputs.count }}"
           SIZE_ARG="${{ github.event.inputs.size }}"
-          if [ "${COUNT_ARG}" -gt 1 ]; then
+          WEAVE_ARG="${{ github.event.inputs.weave }}"
+          if [ "$WEAVE_ARG" = "true" ]; then
+            TITLE="Weave-insert ${COUNT_ARG} new daily map(s) (size: ${SIZE_ARG})"
+            BODY="Weave-inserted ${COUNT_ARG} map(s) with size **${SIZE_ARG}** randomly into the future schedule (starting 2 days from today)."
+          elif [ "${COUNT_ARG}" -gt 1 ]; then
             TITLE="Add ${COUNT_ARG} new daily maps (size: ${SIZE_ARG})"
             BODY="Generated ${COUNT_ARG} map(s) with size **${SIZE_ARG}** using the map generation pipeline."
           elif [ -n "$DATE_ARG" ]; then
