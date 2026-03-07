@@ -9,6 +9,8 @@
  *   --size N or N-M     Exact size or a random range picked per map (default: 9)
  *   --count N           Number of maps to generate (default: 1)
  *   --fresh             Replace all existing maps (default: append)
+ *   --weave             Randomly insert new maps into the existing list starting
+ *                       two days after the current date (incompatible with --fresh)
  *
  * This script uses ONLY MILPSolver (via MapGenerator) for production map generation.
  * BruteForceSolver is NOT used here — it is only for test verification in test/.
@@ -29,6 +31,7 @@ const {
     getNextDayNumber,
     validateMapsDatabase,
     fixMapsDatabase,
+    weaveInsert,
 } = require('./lib/mapUtils.js');
 
 /**
@@ -122,6 +125,7 @@ async function main() {
     let sizeInput = '9';
     let count = 1;
     let fresh = false;
+    let weave = false;
 
     for (let i = 0; i < args.length; i++) {
         if (args[i] === '--date' && i + 1 < args.length) {
@@ -132,7 +136,14 @@ async function main() {
             count = parseInt(args[i + 1]);
         } else if (args[i] === '--fresh') {
             fresh = true;
+        } else if (args[i] === '--weave') {
+            weave = true;
         }
+    }
+
+    if (weave && fresh) {
+        console.error('Error: --weave and --fresh cannot be used together');
+        process.exit(1);
     }
 
     const mapsDir = path.join(__dirname, '../maps');
@@ -149,7 +160,15 @@ async function main() {
     console.log('='.repeat(60));
     console.log('Map Generation');
     console.log('='.repeat(60));
-    console.log(`Mode:  ${fresh ? 'FRESH (replace all existing maps)' : 'APPEND (add to existing maps)'}`);
+    let modeLabel;
+    if (fresh) {
+        modeLabel = 'FRESH (replace all existing maps)';
+    } else if (weave) {
+        modeLabel = 'WEAVE (randomly insert into future dates)';
+    } else {
+        modeLabel = 'APPEND (add to existing maps)';
+    }
+    console.log(`Mode:  ${modeLabel}`);
     console.log(`Count: ${count}`);
     console.log(`Size:  ${sizeInput}`);
     console.log('='.repeat(60));
@@ -169,6 +188,8 @@ async function main() {
     if (!startDate) {
         startDate = fresh ? new Date().toISOString().split('T')[0] : getNextAvailableDate(mapsDir);
         console.log(`No date provided, auto-assigned${count > 1 ? ' start' : ''}: ${startDate}`);
+    } else if (weave) {
+        console.warn('Warning: --date is ignored in --weave mode (dates are reassigned by insertion logic)');
     }
 
     // Reject malformed dates early
@@ -177,8 +198,8 @@ async function main() {
         process.exit(1);
     }
 
-    // When generating a single map, refuse to overwrite an existing date unless --fresh
-    if (count === 1 && !fresh && maps[startDate]) {
+    // When generating a single map in append mode, refuse to overwrite an existing date unless --fresh
+    if (count === 1 && !fresh && !weave && maps[startDate]) {
         console.error(`Error: Map for ${startDate} already exists`);
         console.error(`Existing map: "${maps[startDate].mapName}" (Day ${maps[startDate].dayNumber})`);
         process.exit(1);
@@ -187,9 +208,12 @@ async function main() {
     let nextDayNumber = fresh ? 1 : getNextDayNumber(mapsDir);
     let currentDate = startDate;
 
+    // In weave mode, collect new maps separately before inserting
+    const newMapsList = [];
+
     for (let i = 0; i < count; i++) {
         // When appending a batch, skip over dates that already have maps
-        if (!fresh && count > 1) {
+        if (!fresh && !weave && count > 1) {
             while (maps[currentDate]) {
                 console.log(`Map for ${currentDate} already exists, skipping...`);
                 currentDate = incrementDate(currentDate);
@@ -204,17 +228,33 @@ async function main() {
             process.exit(1);
         }
 
-        mapData.dayNumber = nextDayNumber++;
-        maps[currentDate] = mapData;
+        if (weave) {
+            newMapsList.push(mapData);
+        } else {
+            mapData.dayNumber = nextDayNumber++;
+            maps[currentDate] = mapData;
 
-        console.log(`\n${'='.repeat(60)}`);
-        console.log('✓ Added to maps database');
-        console.log(`  Day Number: ${mapData.dayNumber}`);
-        console.log(`  Date:       ${currentDate}`);
-        console.log(`  Name:       "${mapData.mapName}"`);
-        console.log('='.repeat(60));
+            console.log(`\n${'='.repeat(60)}`);
+            console.log('✓ Added to maps database');
+            console.log(`  Day Number: ${mapData.dayNumber}`);
+            console.log(`  Date:       ${currentDate}`);
+            console.log(`  Name:       "${mapData.mapName}"`);
+            console.log('='.repeat(60));
+        }
 
         currentDate = incrementDate(currentDate);
+    }
+
+    // In weave mode, randomly insert new maps into the future portion of the list
+    if (weave) {
+        const today = new Date().toISOString().split('T')[0];
+        const insertionStartDate = incrementDate(incrementDate(today));
+        maps = weaveInsert(maps, newMapsList, today);
+
+        console.log(`\n${'='.repeat(60)}`);
+        console.log(`✓ Weave-inserted ${count} new map(s) into the schedule`);
+        console.log(`  Insertion zone starts: ${insertionStartDate}`);
+        console.log('='.repeat(60));
     }
 
     // Validate and auto-fix database consistency (sequential day numbers, unique names)
@@ -268,4 +308,5 @@ module.exports = {
     incrementDate,
     getNextDayNumber,
     getNextAvailableDate,
+    weaveInsert,
 };
