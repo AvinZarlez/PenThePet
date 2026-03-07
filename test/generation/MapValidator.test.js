@@ -398,11 +398,11 @@ describe('MapValidator', () => {
             expect(result.errors.some(e => e.includes('hole(s) that can be bypassed'))).toBe(true);
         });
 
-        test('should pass validation when hole requires more than 0 extra steps to bypass', () => {
+        test('should pass validation when hole requires more than 4 extra steps to bypass', () => {
             // Hole at (6,3) — only alternative path winds through a long corridor
             // Baseline (hole blocking): 8 steps via col 6 and row 0
             // Filled (hole passable): 1 step south to edge row 6
-            // Extra steps: 7 > 0 threshold
+            // Extra steps: 7 > 4 threshold
             const map = [
                 ['grass', 'grass', 'grass', 'grass', 'grass', 'grass', 'grass'],
                 ['grass', 'grass', 'water', 'water', 'water', 'water', 'grass'],
