@@ -131,6 +131,17 @@ describe('CONSTANTS', () => {
             expect(CONSTANTS.CELL.GAP).toBeGreaterThanOrEqual(0);
         });
 
+        test('CELL.GAP_SMALL should be a non-negative number less than CELL.GAP', () => {
+            expect(typeof CONSTANTS.CELL.GAP_SMALL).toBe('number');
+            expect(CONSTANTS.CELL.GAP_SMALL).toBeGreaterThanOrEqual(0);
+            expect(CONSTANTS.CELL.GAP_SMALL).toBeLessThan(CONSTANTS.CELL.GAP);
+        });
+
+        test('CELL.GAP_BREAKPOINT should be a positive number', () => {
+            expect(typeof CONSTANTS.CELL.GAP_BREAKPOINT).toBe('number');
+            expect(CONSTANTS.CELL.GAP_BREAKPOINT).toBeGreaterThan(0);
+        });
+
         test('CELL.MIN_SIZE should be a positive number', () => {
             expect(typeof CONSTANTS.CELL.MIN_SIZE).toBe('number');
             expect(CONSTANTS.CELL.MIN_SIZE).toBeGreaterThan(0);

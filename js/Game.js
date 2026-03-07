@@ -29,6 +29,8 @@ class Game {
 
         // Grid sizing constants
         this.CELL_GAP = CONSTANTS.CELL.GAP;
+        this.CELL_GAP_SMALL = CONSTANTS.CELL.GAP_SMALL;
+        this.CELL_GAP_BREAKPOINT = CONSTANTS.CELL.GAP_BREAKPOINT;
         this.GRID_PADDING = CONSTANTS.GRID_PADDING;
         this.MIN_CELL_SIZE = CONSTANTS.CELL.MIN_SIZE;
         this.MAX_CELL_SIZE = CONSTANTS.CELL.MAX_SIZE;
@@ -1095,6 +1097,17 @@ class Game {
     }
 
     /**
+     * Calculate optimal cell gap based on viewport width.
+     * On small screens the gap is reduced to avoid visually thick grid lines.
+     * @returns {number} The gap size in pixels
+     */
+    calculateCellGap() {
+        return window.innerWidth <= this.CELL_GAP_BREAKPOINT
+            ? this.CELL_GAP_SMALL
+            : this.CELL_GAP;
+    }
+
+    /**
      * Calculate optimal cell size based on viewport and grid size
      * @returns {number} The calculated cell size in pixels
      */
@@ -1103,7 +1116,7 @@ class Game {
         const availableWidth = window.innerWidth * 0.90;
 
         // Calculate total space needed for gaps and padding
-        const totalGap = this.CELL_GAP * (this.grid.size - 1);
+        const totalGap = this.calculateCellGap() * (this.grid.size - 1);
         const totalPadding = this.GRID_PADDING * 2; // padding on both sides
 
         // Calculate max cell size that fits the available width
@@ -1117,10 +1130,11 @@ class Game {
      */
     updateCellSizes() {
         const cellSize = this.calculateCellSize();
+        const cellGap = this.calculateCellGap();
         this.gridElement.style.setProperty('--cell-size', `${cellSize}px`);
-        this.gridElement.style.setProperty('--grid-gap', `${this.CELL_GAP}px`);
+        this.gridElement.style.setProperty('--grid-gap', `${cellGap}px`);
         this.gridElement.style.setProperty('--grid-padding', '3px');
-        this.gridElement.style.gap = `${this.CELL_GAP}px`;
+        this.gridElement.style.gap = `${cellGap}px`;
     }
 
     /**
