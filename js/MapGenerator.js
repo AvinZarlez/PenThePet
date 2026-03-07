@@ -432,8 +432,8 @@ class MapGenerator {
      * detour (cuts off > WEAK_HOLE_THRESHOLD tiles), using water reinforcement
      * to strengthen borderline positions.
      *
-     * Only attempts hole placement ~40% of the time so that some maps remain
-     * hole-free (satisfying the ≥ 25% no-hole requirement).
+     * Hole placement is attempted 40% of the time (skipped 60%), ensuring
+     * well above the ≥ 25% no-hole requirement.
      *
      * @private
      * @param {Array} map - 2D array of tile types (modified in place)
