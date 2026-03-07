@@ -233,17 +233,20 @@ class PathfindingUtils {
 
     /**
      * Check that every non-blocking tile on the map is reachable from home.
+     * Fillable tiles (e.g. holes) are treated as passable during traversal
+     * because the player can fill them by placing a wall.
      *
-     * @param {Array} map - 2D array of tile type strings ('grass', 'water', 'home', 'star', 'bee')
+     * @param {Array} map - 2D array of tile type strings ('grass', 'water', 'home', 'star', 'bee', 'hole')
      * @returns {boolean} True if all walkable tiles are reachable from home
      */
     static allWalkableTilesReachable(map) {
         const [homeRow, homeCol] = PathfindingUtils._findHome(map);
         if (homeRow < 0) return false;
 
+        const _isFillable = typeof isFillableTile === 'function' ? isFillableTile : () => false;
         const visited = PathfindingUtils._bfsReachable(
             map, homeRow, homeCol,
-            tile => isBlockingTile(tile)
+            tile => isBlockingTile(tile) && !_isFillable(tile)
         );
         for (let i = 0; i < map.length; i++) {
             for (let j = 0; j < map[i].length; j++) {
@@ -251,6 +254,26 @@ class PathfindingUtils {
             }
         }
         return true;
+    }
+
+    /**
+     * Count tiles reachable from home via BFS using a custom blocking function.
+     * Used by hole strength validation to measure the impact of a hole.
+     *
+     * @param {Array} map - 2D array of tile type strings
+     * @param {Function} [isBlockingFn] - Custom blocking function (tile, row, col) => boolean
+     * @returns {number} Number of tiles reachable from home
+     */
+    static reachableAreaCount(map, isBlockingFn) {
+        const [homeRow, homeCol] = PathfindingUtils._findHome(map);
+        if (homeRow < 0) return 0;
+
+        const blockFn = isBlockingFn || (tile => isBlockingTile(tile));
+        const visited = PathfindingUtils._bfsReachable(
+            map, homeRow, homeCol,
+            blockFn
+        );
+        return visited.size;
     }
 
     /**

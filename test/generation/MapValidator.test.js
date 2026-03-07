@@ -374,9 +374,9 @@ describe('MapValidator', () => {
             expect(result.errors).not.toContain('Map has adjacent hole tiles - holes must not be next to each other');
         });
 
-        test('should fail validation when hole can be bypassed with zero extra steps', () => {
-            // Hole at (0,3) — on the edge, pet never crosses it (exits south equally fast)
-            // Baseline: 3 steps south from home. Filled: same 3 steps south. Extra=0.
+        test('should fail validation when hole cuts off too few tiles', () => {
+            // Hole at (0,3) — on the edge, doesn't cut off any tiles from home
+            // (pet can reach all non-blocking tiles without going through the hole)
             const map = [
                 ['grass', 'grass', 'grass', 'hole',  'grass', 'grass', 'grass'],
                 ['grass', 'grass', 'grass', 'grass', 'grass', 'grass', 'grass'],
@@ -395,32 +395,31 @@ describe('MapValidator', () => {
 
             const result = MapValidator.validate(map, solution);
             expect(result.valid).toBe(false);
-            expect(result.errors.some(e => e.includes('hole(s) that can be bypassed'))).toBe(true);
+            expect(result.errors.some(e => e.includes('hole(s) that cut off'))).toBe(true);
         });
 
-        test('should pass validation when hole requires more than 4 extra steps to bypass', () => {
-            // Hole at (6,3) — only alternative path winds through a long corridor
-            // Baseline (hole blocking): 8 steps via col 6 and row 0
-            // Filled (hole passable): 1 step south to edge row 6
-            // Extra steps: 7 > 4 threshold
+        test('should pass validation when hole cuts off more than 4 tiles', () => {
+            // Hole at (1,3) blocks access to all of row 0 (7 tiles)
+            // Water barrier across row 1 with hole as only crossing
+            // Area loss = 8 > 4 threshold
             const map = [
                 ['grass', 'grass', 'grass', 'grass', 'grass', 'grass', 'grass'],
-                ['grass', 'grass', 'water', 'water', 'water', 'water', 'grass'],
-                ['grass', 'grass', 'grass', 'grass', 'grass', 'water', 'grass'],
-                ['water', 'water', 'water', 'water', 'grass', 'water', 'grass'],
-                ['water', 'water', 'grass', 'water', 'grass', 'water', 'grass'],
-                ['water', 'water', 'star',  'home',  'bee',   'water', 'grass'],
-                ['water', 'water', 'water', 'hole',  'water', 'water', 'grass']
+                ['water', 'water', 'water', 'hole',  'water', 'water', 'water'],
+                ['grass', 'grass', 'grass', 'grass', 'grass', 'grass', 'grass'],
+                ['grass', 'grass', 'star',  'home',  'bee',   'grass', 'grass'],
+                ['grass', 'grass', 'grass', 'grass', 'grass', 'grass', 'grass'],
+                ['grass', 'grass', 'grass', 'grass', 'grass', 'grass', 'grass'],
+                ['grass', 'grass', 'grass', 'grass', 'grass', 'grass', 'grass']
             ];
 
             const solution = {
                 goalArea: 8,
                 optimalWallCount: 4,
-                optimalSolution: [[2, 3], [3, 4], [4, 4], [5, 4]]
+                optimalSolution: [[2, 2], [2, 4], [4, 2], [4, 4]]
             };
 
             const result = MapValidator.validate(map, solution);
-            expect(result.errors.some(e => e.includes('hole(s) that can be bypassed'))).toBe(false);
+            expect(result.errors.some(e => e.includes('hole(s) that cut off'))).toBe(false);
         });
 
         test('should fail validation when too many holes (maxPerLevel exceeded)', () => {

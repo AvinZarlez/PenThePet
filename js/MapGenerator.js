@@ -610,24 +610,26 @@ class MapGenerator {
     }
 
     /**
-     * Check if a hole is strategically significant (detour > threshold).
+     * Check if a hole is strategically significant (area loss > threshold).
+     * Measures how many tiles become unreachable from home when the hole is placed.
      * @private
      * @param {Array} map - 2D map
      * @param {number} hr - Hole row
      * @param {number} hc - Hole column
-     * @param {number} threshold - Minimum detour steps
+     * @param {number} threshold - Minimum area loss
      * @param {Function} _isBlocking - Blocking tile checker
      * @returns {boolean}
      */
     _isHoleStrong(map, hr, hc, threshold, _isBlocking) {
-        const baselineDist = PathfindingUtils.shortestPathToEdge(map, (tile) => _isBlocking(tile));
-        if (baselineDist === Infinity) return false;
-        const filledDist = PathfindingUtils.shortestPathToEdge(map, (tile, r, c) => {
+        // Measure reachable area with hole blocking
+        const holeArea = PathfindingUtils.reachableAreaCount(map, (tile) => _isBlocking(tile));
+        // Measure reachable area if hole were passable (filled)
+        const filledArea = PathfindingUtils.reachableAreaCount(map, (tile, r, c) => {
             if (r === hr && c === hc) return false;
             return _isBlocking(tile);
         });
-        if (filledDist === Infinity) return false;
-        return (baselineDist - filledDist) > threshold;
+        // Area loss = tiles cut off by the hole
+        return (filledArea - holeArea) > threshold;
     }
 
 }

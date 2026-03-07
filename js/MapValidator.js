@@ -77,11 +77,11 @@ class MapValidator {
             errors.push('Map has adjacent hole tiles - holes must not be next to each other');
         }
         
-        // 10. Holes must be strategically significant (detour > WEAK_HOLE_THRESHOLD steps)
+        // 10. Holes must be strategically significant (area loss > WEAK_HOLE_THRESHOLD)
         const weakHoles = this._findWeakHoles(map);
         if (weakHoles.length > 0) {
             const t = typeof CONSTANTS !== 'undefined' ? CONSTANTS.WEAK_HOLE_THRESHOLD : 2;
-            errors.push(`Map has ${weakHoles.length} hole(s) that can be bypassed with ${t} or fewer extra steps`);
+            errors.push(`Map has ${weakHoles.length} hole(s) that cut off ${t} or fewer tiles`);
         }
         
         // 11. Tiles with maxPerLevel must not exceed their limit
@@ -193,9 +193,10 @@ class MapValidator {
     /**
      * Find holes (fillable tiles) that can be bypassed with 5 or fewer extra steps.
      *
-     * For each fillable tile, computes the shortest path from home to any edge
-     * with the hole empty (blocking) vs. filled (passable). If the difference
-     * is ≤ 5 steps, the hole is "weak" — it doesn't create a meaningful obstacle.
+     * For each fillable tile, computes the reachable area from home with the
+     * hole blocking vs. filled (passable). If the area loss (tiles cut off by
+     * the hole) is ≤ WEAK_HOLE_THRESHOLD, the hole is "weak" — it doesn't
+     * create a meaningful obstacle.
      *
      * @private
      * @param {Array} map - 2D array of tile type strings
@@ -219,21 +220,21 @@ class MapValidator {
         }
         if (holes.length === 0) return [];
 
-        // Baseline: shortest path with all holes empty (blocking)
-        const baselineDist = PathfindingUtils.shortestPathToEdge(map, (tile) => _isBlocking(tile));
-
         const weakHoles = [];
         for (const [hr, hc] of holes) {
-            // Temporarily make this hole passable (as if filled)
-            const filledDist = PathfindingUtils.shortestPathToEdge(map, (tile, r, c) => {
+            // Reachable area with hole blocking
+            const holeArea = PathfindingUtils.reachableAreaCount(map, (tile) => _isBlocking(tile));
+
+            // Reachable area if this hole were passable (as if filled)
+            const filledArea = PathfindingUtils.reachableAreaCount(map, (tile, r, c) => {
                 if (r === hr && c === hc) return false; // treat this hole as passable
                 return _isBlocking(tile);
             });
 
-            // If the detour around the hole is ≤ WEAK_HOLE_THRESHOLD extra steps, it's weak
+            // If the hole cuts off ≤ WEAK_HOLE_THRESHOLD tiles, it's weak
             const threshold = typeof CONSTANTS !== 'undefined' ? CONSTANTS.WEAK_HOLE_THRESHOLD : 2;
-            const extraSteps = baselineDist - filledDist;
-            if (extraSteps <= threshold && filledDist < Infinity) {
+            const areaLoss = filledArea - holeArea;
+            if (areaLoss <= threshold) {
                 weakHoles.push([hr, hc]);
             }
         }
