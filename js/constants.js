@@ -2,7 +2,6 @@
  * Constants
  *
  * Centralized constants for game parameters and limits.
- * These values can be tweaked at the code level for easy configuration.
  */
 
 const CONSTANTS = {
@@ -13,12 +12,9 @@ const CONSTANTS = {
     MAX_WALLS: 12,              // Absolute maximum walls (for largest grid sizes)
 
     /**
-     * Calculate max walls for a given grid size.
-     * Uses 75% of grid size as the wall budget - this provides a good balance
-     * between challenge and solvability across different grid sizes.
-     * Examples: 7x7→5, 9x9→6, 10x10→7, 11x11→8, 16x16→12, 17x17→12
-     * @param {number} size - Grid size (one dimension)
-     * @returns {number} Maximum walls allowed
+     * Max walls for a given grid size: floor(size × 0.75).
+     * Examples: 7×7→5, 9×9→6, 11×11→8, 17×17→12
+     * @param {number} size @returns {number}
      */
     maxWallsForSize: function(size) {
         return Math.floor(size * 0.75);

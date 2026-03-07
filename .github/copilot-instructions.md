@@ -29,20 +29,11 @@ Tests: `test/webapp/` (browser components), `test/generation/` (map generation).
 **Generation** (`scripts/`): Offline Node.js + Python MILP solver (PuLP + CBC). Goal = **MAXIMUM** penned area.
 
 **Script loading order** in `index.html` (must not change):
-`constants.js → config.js → tileTypes.js → CookieUtils.js → DateUtils.js → PathfindingUtils.js → Grid.js → Game.js → Menu.js → main.js`
+`constants.js → config.js → tileData.js → tileTypes.js → CookieUtils.js → DateUtils.js → PathfindingUtils.js → Grid.js → firebase-config.js → CloudMigration.js → CloudSync.js → Game.js → Menu.js → main.js`
 
-**Tile system:** All tile properties in `js/tileData.js` (single source of truth). Add a tile → add one entry there + SVG asset.
+**Tile system:** All tile properties in `js/tileData.js` (single source of truth). Add a tile → add one entry there + SVG asset. See [docs/TILE_SYSTEM.md](../docs/TILE_SYSTEM.md).
 
-## Map Generation
-
-Maps are pre-generated offline in `maps/YYYY.json`. Wall budget = `floor(size × 0.75)`. All maps validated by `MapValidator`. No fallbacks — generation throws on failure.
-
-```bash
-node scripts/generate-map.js --size 9              # single map
-node scripts/generate-map.js --size 7-13 --count 5 # batch
-node scripts/generate-map.js --fresh --count 10     # replace all
-node scripts/audit-maps.js                          # validate all
-```
+**Map generation:** Maps pre-generated offline in `maps/YYYY.json`. Wall budget = `floor(size × 0.75)`. No fallbacks — generation throws on failure. See [docs/MAP_GENERATION.md](../docs/MAP_GENERATION.md).
 
 ## Documentation
 
@@ -50,7 +41,7 @@ node scripts/audit-maps.js                          # validate all
 - [docs/ARCHITECTURE.md](../docs/ARCHITECTURE.md) — design decisions
 - [docs/TESTING.md](../docs/TESTING.md) — testing guide
 - [docs/DEVELOPMENT.md](../docs/DEVELOPMENT.md) — dev setup, workflow, CI/CD
-- [docs/MAP_GENERATION.md](../docs/MAP_GENERATION.md) — generation algorithm and agent quick reference
+- [docs/MAP_GENERATION.md](../docs/MAP_GENERATION.md) — generation algorithm and commands
 - [docs/TILE_SYSTEM.md](../docs/TILE_SYSTEM.md) — tile properties and how to add tile types
 - [docs/CLOUD_SYNC_SETUP.md](../docs/CLOUD_SYNC_SETUP.md) — Firebase cloud sync setup
 

@@ -78,23 +78,7 @@ Use DevTools (F12) → Sources to set breakpoints. Check Network tab for 404s on
 
 ### Branch Protection (main)
 
-Required settings under **Settings → Branches → main**:
-
-| Setting | Value |
-|---|---|
-| Require pull request before merging | ✅ |
-| Required approvals | 1 |
-| Dismiss stale approvals on new commits | ✅ |
-| Require review from Code Owners | ✅ |
-| Restrict who can dismiss reviews | ✅ @AvinZarlez only |
-| Require status checks to pass | ✅ (`Lint` and `Test`) |
-| Do not allow bypassing above settings | ✅ |
-| Restrict who can push to branch | ✅ @AvinZarlez only |
-| Allow force pushes / deletions | ❌ |
-
-**Required status checks:** `Lint` (from `lint.yml`) and `Test` (from `test.yml`). If a check doesn't appear in the search box, run the workflow once manually via Actions → workflow → Run workflow.
-
-**CODEOWNERS** (`.github/CODEOWNERS`) requires @AvinZarlez to approve every PR.
+`main` requires a PR with 1 approval (Code Owner @AvinZarlez), passing `Lint` and `Test` status checks, and no force-pushes. See repository Settings → Branches for details.
 
 ### Dependabot
 

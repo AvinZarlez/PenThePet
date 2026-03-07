@@ -1,13 +1,9 @@
 /**
  * Pathfinding Utilities
- * 
- * Shared BFS pathfinding logic used by the game, solver pipeline,
- * map generator, and map validator.
- * 
- * This module is the single source of truth for:
- * - Checking if the pet is penned in (numeric map format)
- * - Calculating penned area size (numeric map format)
- * - Checking if home has a path to an edge (string map format)
+ *
+ * BFS pathfinding used by the game, solver pipeline, map generator, and map validator.
+ * - Numeric map format: isPenned, calculatePennedArea, calculatePennedScore
+ * - String map format: hasPathToEdge, allWalkableTilesReachable
  */
 
 // Import blocking-tile sets from tileData if in Node.js environment

@@ -1,42 +1,14 @@
 /**
  * Tile Data Definitions — Single Source of Truth
  *
- * This file is the canonical definition for every tile type. Both the
- * browser/Node.js code and the Python solver (via Node.js subprocess)
- * read tile properties from this file. No other file duplicates these values.
+ * All tile type properties are defined here. Both browser/Node.js code and
+ * the Python solver read from this file. No other file duplicates these values.
  *
- * To add a new tile type, add an entry to TILE_DATA below. All game logic,
- * rendering, generation, scoring, the Python solver, and player instructions
- * are built automatically from this data.
+ * To add a new tile: add an entry to TILE_DATA below + an SVG asset.
+ * All game logic, rendering, generation, scoring, solving, and player
+ * instructions derive from this data automatically.
  *
- * Each tile type defines:
- *   score         - Points contributed when inside the penned area
- *   wallPlaceable - Whether the player can place/remove a wall on this tile
- *   clickable     - Whether clicking this tile does something (place or remove wall)
- *   blocksMovement - Whether this tile blocks pet movement / pathfinding
- *   chance        - Probability (0.00–1.00) this tile appears during generation
- *                   (only tiles with chance > 0 participate; home is placed separately)
- *   compactChar   - Single character used in the compact map string format
- *   numericId     - Numeric value used in the solver's numeric map format
- *   cssClass      - CSS class applied to the cell element
- *   assets        - Ordered list of visual layers rendered on the cell.
- *                   The first entry is the base background; subsequent entries
- *                   are overlays. Strings ending in ".svg" are loaded as <img>;
- *                   others are rendered as text/emoji overlays.
- *   enclosedAssets - Optional. When defined and the tile is inside the penned
- *                   (enclosed) area, these assets are used instead of `assets`.
- *                   Falls back to `assets` if not defined.
- *   floatAnimation - Optional boolean. When true, the last overlay layer renders
- *                   with a gentle floating/wiggle CSS animation (top layer only).
- *                   The outline layer beneath it stays still to ground the tile.
- *   pawOverlay    - Optional list of assets to render as escape-path overlay.
- *                   If undefined, uses default ['paw.svg'].
- *                   If [] (empty), no overlay is rendered.
- *                   If ['custom.svg'] or ['emoji'], those are rendered instead.
- *   description   - Human-readable description for player instructions.
- *                   Rendered in the instructions modal so designers can
- *                   document a tile in one place and have it show to players.
- *   ariaLabel     - Function (row, col) => string for screen reader label
+ * See docs/TILE_SYSTEM.md for full property documentation.
  */
 
 const TILE_DATA = {
@@ -164,62 +136,37 @@ const TILE_DATA = {
 
 // ─── Derived lookup tables (built once, used everywhere) ──────────────
 
-/**
- * Map from compact character → tile name.
- * Used by parseCompactMap() in Grid.js.
- * @type {Object<string, string>}
- */
+/** compact character → tile name (used by parseCompactMap in Grid.js) */
 const COMPACT_CHAR_TO_TILE = {};
 for (const [name, data] of Object.entries(TILE_DATA)) {
     COMPACT_CHAR_TO_TILE[data.compactChar] = name;
 }
 
-/**
- * Map from tile name → compact character.
- * Used by encodeCompactMap() in generate-map.js.
- * @type {Object<string, string>}
- */
+/** tile name → compact character (used by encodeCompactMap in generate-map.js) */
 const TILE_TO_COMPACT_CHAR = {};
 for (const [name, data] of Object.entries(TILE_DATA)) {
     TILE_TO_COMPACT_CHAR[name] = data.compactChar;
 }
 
-/**
- * Map from numericId → score.
- * Used by PathfindingUtils.calculatePennedScore() to compute weighted scores
- * from numeric map arrays without needing tile name lookups.
- * @type {Object<number, number>}
- */
+/** numericId → score (used by PathfindingUtils.calculatePennedScore) */
 const NUMERIC_ID_TO_SCORE = {};
 for (const data of Object.values(TILE_DATA)) {
     NUMERIC_ID_TO_SCORE[data.numericId] = data.score;
 }
 
-/**
- * Map from tile name → numericId.
- * Used by MapGenerator._mapToNumeric().
- * @type {Object<string, number>}
- */
+/** tile name → numericId (used by MapGenerator._mapToNumeric) */
 const TILE_TO_NUMERIC = {};
 for (const [name, data] of Object.entries(TILE_DATA)) {
     TILE_TO_NUMERIC[name] = data.numericId;
 }
 
-/**
- * Map from numericId → tile name.
- * Used by MILPSolver for converting numeric maps to string maps.
- * @type {Object<number, string>}
- */
+/** numericId → tile name (used by MILPSolver) */
 const NUMERIC_TO_TILE = {};
 for (const [name, data] of Object.entries(TILE_DATA)) {
     NUMERIC_TO_TILE[data.numericId] = name;
 }
 
-/**
- * Set of numericIds that block movement.
- * Derived from the blocksMovement property in TILE_DATA.
- * @type {Set<number>}
- */
+/** Set of numericIds that block movement */
 const BLOCKING_NUMERIC_IDS = new Set();
 for (const data of Object.values(TILE_DATA)) {
     if (data.blocksMovement) {
@@ -227,12 +174,7 @@ for (const data of Object.values(TILE_DATA)) {
     }
 }
 
-/**
- * Set of tile name strings that block movement.
- * Used by PathfindingUtils.hasPathToEdge() and Game.isBlockingTile()
- * to avoid hardcoding tile names like 'water' or 'wall'.
- * @type {Set<string>}
- */
+/** Set of tile names that block movement */
 const BLOCKING_TILES = new Set();
 for (const [name, data] of Object.entries(TILE_DATA)) {
     if (data.blocksMovement) {
@@ -240,13 +182,7 @@ for (const [name, data] of Object.entries(TILE_DATA)) {
     }
 }
 
-/**
- * Set of tile name strings that are fillable (blocksMovement AND wallPlaceable).
- * These tiles become passable when a wall is placed on them.
- * Used by PathfindingUtils and the solver to handle tiles that transform
- * from blocking to passable when a wall is placed.
- * @type {Set<string>}
- */
+/** Set of tile names that are fillable (blocksMovement AND wallPlaceable — become passable when filled) */
 const FILLABLE_TILES = new Set();
 for (const [name, data] of Object.entries(TILE_DATA)) {
     if (data.blocksMovement && data.wallPlaceable) {
@@ -254,10 +190,7 @@ for (const [name, data] of Object.entries(TILE_DATA)) {
     }
 }
 
-/**
- * Set of numericIds for fillable tiles.
- * @type {Set<number>}
- */
+/** Set of numericIds for fillable tiles */
 const FILLABLE_NUMERIC_IDS = new Set();
 for (const data of Object.values(TILE_DATA)) {
     if (data.blocksMovement && data.wallPlaceable) {
@@ -265,11 +198,7 @@ for (const data of Object.values(TILE_DATA)) {
     }
 }
 
-/**
- * Map from numericId → filled score for fillable tiles.
- * When a fillable tile is filled (wall placed), it uses the wallTransformsTo tile's score.
- * @type {Object<number, number>}
- */
+/** numericId → filled score for fillable tiles (score of the wallTransformsTo tile) */
 const FILLED_SCORE_MAP = {};
 for (const data of Object.values(TILE_DATA)) {
     if (data.blocksMovement && data.wallPlaceable && data.wallTransformsTo) {
@@ -278,77 +207,49 @@ for (const data of Object.values(TILE_DATA)) {
     }
 }
 
-/**
- * Check if a tile name represents a wall-placeable tile.
- * @param {string} tileName - Tile type name
- * @returns {boolean}
- */
+/** Returns true if a wall can be placed on this tile. @param {string} tileName @returns {boolean} */
 function isWallPlaceable(tileName) {
     const data = TILE_DATA[tileName];
     return data ? data.wallPlaceable : false;
 }
 
-/**
- * Get the score value for a tile by name.
- * @param {string} tileName - Tile type name
- * @returns {number}
- */
+/** Returns the score value for a tile by name. @param {string} tileName @returns {number} */
 function getTileScore(tileName) {
     const data = TILE_DATA[tileName];
     return data ? data.score : 0;
 }
 
-/**
- * Get the score value for a numeric tile ID.
- * @param {number} numericId - Numeric tile ID
- * @returns {number}
- */
+/** Returns the score value for a numeric tile ID. @param {number} numericId @returns {number} */
 function getNumericTileScore(numericId) {
     return NUMERIC_ID_TO_SCORE[numericId] !== undefined ? NUMERIC_ID_TO_SCORE[numericId] : 0;
 }
 
-/**
- * Check if a numeric tile ID blocks movement.
- * @param {number} numericId - Numeric tile ID
- * @returns {boolean}
- */
+/** Returns true if the numeric tile ID blocks movement. @param {number} numericId @returns {boolean} */
 function isBlockingNumericId(numericId) {
     return BLOCKING_NUMERIC_IDS.has(numericId);
 }
 
-/**
- * Check if a tile name blocks movement (string map format).
- * @param {string} tileName - Tile type name
- * @returns {boolean}
- */
+/** Returns true if the tile name blocks movement. @param {string} tileName @returns {boolean} */
 function isBlockingTile(tileName) {
     return BLOCKING_TILES.has(tileName);
 }
 
 /**
- * Check if a tile name is fillable (blocks movement but can have wall placed).
- * Fillable tiles become passable when a wall is placed on them.
- * @param {string} tileName - Tile type name
- * @returns {boolean}
+ * Returns true if the tile is fillable (blocksMovement + wallPlaceable — becomes passable when filled).
+ * @param {string} tileName @returns {boolean}
  */
 function isFillableTile(tileName) {
     return FILLABLE_TILES.has(tileName);
 }
 
-/**
- * Check if a numeric tile ID is fillable.
- * @param {number} numericId - Numeric tile ID
- * @returns {boolean}
- */
+/** Returns true if the numeric tile ID is fillable. @param {number} numericId @returns {boolean} */
 function isFillableNumericId(numericId) {
     return FILLABLE_NUMERIC_IDS.has(numericId);
 }
 
 /**
- * Check if a tile represents a "wall placed" state (wall or filled hole).
- * Used to determine if clicking should remove a wall.
- * @param {string} tileName - Tile type name
- * @returns {boolean}
+ * Returns true if this tile represents a "wall placed" state (wall or filled hole).
+ * @param {string} tileName @returns {boolean}
  */
 function isWallState(tileName) {
     const data = TILE_DATA[tileName];
@@ -356,20 +257,16 @@ function isWallState(tileName) {
 }
 
 /**
- * Get the tile name that a wall-placeable tile transforms into when a wall is placed.
- * Returns 'wall' if no wallTransformsTo is defined.
- * @param {string} tileName - Tile type name
- * @returns {string} The transformed tile name
+ * Returns the tile name a wall-placeable tile transforms into when filled.
+ * Falls back to 'wall' if no wallTransformsTo is defined.
+ * @param {string} tileName @returns {string}
  */
 function getWallTransform(tileName) {
     const data = TILE_DATA[tileName];
     return (data && data.wallTransformsTo) ? data.wallTransformsTo : 'wall';
 }
 
-/**
- * Get eligible tile type names (those with chance > 0) for map generation.
- * @returns {string[]} Array of tile type names
- */
+/** Returns tile names eligible for map generation (chance > 0). @returns {string[]} */
 function getEligibleTileTypes() {
     return Object.entries(TILE_DATA)
         .filter(([, data]) => data.chance > 0)
@@ -377,32 +274,22 @@ function getEligibleTileTypes() {
 }
 
 /**
- * Get a tile type's rendering/display info by name.
- * Returns the TILE_DATA entry which includes cssClass, assets, ariaLabel, etc.
- * Falls back to grass if the name is not found.
- * @param {string} typeName - The name of the tile type
- * @returns {Object} The tile data object
+ * Returns tile data by name. Falls back to grass if not found.
+ * @param {string} typeName @returns {Object}
  */
 function getTileType(typeName) {
     return TILE_DATA[typeName] || TILE_DATA.grass;
 }
 
-/**
- * Check if a tile type is clickable.
- * Uses the clickable property from TILE_DATA.
- * @param {string} typeName - The name of the tile type
- * @returns {boolean} True if the tile can be clicked
- */
+/** Returns true if the tile type is clickable. @param {string} typeName @returns {boolean} */
 function isTileClickable(typeName) {
     const data = TILE_DATA[typeName];
     return data ? data.clickable : false;
 }
 
 /**
- * Get the asset list for a tile, using enclosedAssets when enclosed.
- * @param {string} tileName - Tile type name
- * @param {boolean} isEnclosed - Whether the tile is inside the penned area
- * @returns {string[]} Ordered list of asset filenames to render
+ * Returns asset list for a tile, using enclosedAssets when the tile is penned.
+ * @param {string} tileName @param {boolean} isEnclosed @returns {string[]}
  */
 function getTileAssets(tileName, isEnclosed) {
     const data = TILE_DATA[tileName];
@@ -414,12 +301,9 @@ function getTileAssets(tileName, isEnclosed) {
 }
 
 /**
- * Get the paw overlay asset list for a tile on the escape path.
- * If pawOverlay is undefined, returns default ['paw.svg'].
- * If pawOverlay is [] (empty), returns [] (no overlay).
- * If pawOverlay has items, returns those items.
- * @param {string} tileName - Tile type name
- * @returns {string[]} Asset list to render as paw overlay
+ * Returns paw overlay assets for escape-path rendering.
+ * undefined pawOverlay → ['paw.svg']; [] → no overlay; custom list → those assets.
+ * @param {string} tileName @returns {string[]}
  */
 function getPawOverlay(tileName) {
     const data = TILE_DATA[tileName];
