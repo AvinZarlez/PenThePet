@@ -66,7 +66,7 @@ class MapGenerator {
                 map = this._generateRandomMap();
                 this._fixAdjacentHoles(map);
                 this._enforceMaxPerLevel(map);
-                this._reinforceHoles(map);
+                this._placeHoles(map);
                 if (this._validateMap(map)) {
                     // Calculate optimal goal for this map
                     result = this.calculateGoal(map, maxWalls);
@@ -138,44 +138,61 @@ class MapGenerator {
 
     /**
      * Generate a random map without validation.
-     * Uses chance values from TILE_DATA to determine tile types per-tile
-     * via random rolls against a cumulative probability distribution.
+     * Uses chance values from TILE_DATA to determine tile counts,
+     * builds an exact-size tile list, then shuffles to randomise placement.
      * @private
      * @returns {Array} 2D array of tile types
      */
     _generateRandomMap() {
-        const center = Math.floor(this.size / 2);
+        const totalTiles = this.size * this.size;
+        const reservedTiles = 1; // home tile placed separately
+        const fillCount = totalTiles - reservedTiles;
         
-        // Build cumulative probability distribution from TILE_DATA
-        const cdf = [];
+        // Build a list of eligible tile types and their chances from TILE_DATA
+        const eligibleTiles = [];
         let totalChance = 0;
         for (const [name, data] of Object.entries(TILE_DATA)) {
             if (data.chance > 0) {
+                eligibleTiles.push({ name, chance: data.chance });
                 totalChance += data.chance;
-                cdf.push({ name, cumulative: totalChance });
             }
         }
-        // Normalise to [0, 1]
-        for (const entry of cdf) entry.cumulative /= totalChance;
         
-        // Build the 2D map with per-tile random rolls
+        // Compute how many of each tile type based on chance proportions
+        const tileList = [];
+        let placed = 0;
+        for (let i = 0; i < eligibleTiles.length; i++) {
+            const t = eligibleTiles[i];
+            let count;
+            if (i === eligibleTiles.length - 1) {
+                // Last tile type gets the remainder to ensure exact total
+                count = fillCount - placed;
+            } else {
+                count = Math.floor((t.chance / totalChance) * fillCount);
+            }
+            for (let j = 0; j < count; j++) {
+                tileList.push(t.name);
+            }
+            placed += count;
+        }
+        
+        // Shuffle the tile list (Fisher-Yates)
+        for (let i = tileList.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [tileList[i], tileList[j]] = [tileList[j], tileList[i]];
+        }
+        
+        // Insert home at center position so every slot is accounted for
+        const centerIndex = Math.floor(this.size / 2) * this.size + Math.floor(this.size / 2);
+        tileList.splice(centerIndex, 0, 'home');
+        
+        // Build the 2D map
         const map = [];
+        let idx = 0;
         for (let i = 0; i < this.size; i++) {
             const row = [];
             for (let j = 0; j < this.size; j++) {
-                if (i === center && j === center) {
-                    row.push('home');
-                } else {
-                    const r = Math.random();
-                    let tileName = cdf[cdf.length - 1].name;
-                    for (const entry of cdf) {
-                        if (r < entry.cumulative) {
-                            tileName = entry.name;
-                            break;
-                        }
-                    }
-                    row.push(tileName);
-                }
+                row.push(tileList[idx++]);
             }
             map.push(row);
         }
@@ -409,22 +426,19 @@ class MapGenerator {
     }
 
     /**
-     * Reinforce weak holes by adding water tiles nearby to create bottlenecks,
-     * or place holes at interior positions that naturally create detours.
+     * Place holes at interior positions that naturally create detours.
      *
-     * Two-phase approach:
-     * Phase 1: Remove any randomly-placed holes that are on edges or weak.
-     * Phase 2: Place holes at interior positions where they create a meaningful
-     *          detour (extra > WEAK_HOLE_THRESHOLD), using water reinforcement
-     *          to strengthen borderline positions.
+     * Finds interior grass tiles where placing a hole creates a meaningful
+     * detour (cuts off > WEAK_HOLE_THRESHOLD tiles), using water reinforcement
+     * to strengthen borderline positions.
      *
-     * Only attempts hole placement ~65% of the time so that some maps remain
-     * hole-free (satisfying the ≥ 20% no-hole requirement).
+     * Only attempts hole placement ~40% of the time so that some maps remain
+     * hole-free (satisfying the ≥ 25% no-hole requirement).
      *
      * @private
      * @param {Array} map - 2D array of tile types (modified in place)
      */
-    _reinforceHoles(map) {
+    _placeHoles(map) {
         const _isFillable = typeof isFillableTile === 'function' ? isFillableTile : (t) => {
             const d = typeof TILE_DATA !== 'undefined' ? TILE_DATA[t] : null;
             return d ? (d.blocksMovement && d.wallPlaceable) : false;
@@ -435,21 +449,14 @@ class MapGenerator {
         };
         const _tileData = typeof TILE_DATA !== 'undefined' ? TILE_DATA : {};
         const threshold = typeof CONSTANTS !== 'undefined' ? CONSTANTS.WEAK_HOLE_THRESHOLD : 0;
-        const maxHoles = (_tileData.hole && _tileData.hole.maxPerLevel) || 3;
+        const globalMaxHoles = (_tileData.hole && _tileData.hole.maxPerLevel) || 3;
+        // Randomly pick a per-level max between 1 and globalMaxHoles
+        const maxHoles = Math.floor(Math.random() * globalMaxHoles) + 1;
         const rows = map.length;
         const cols = map[0].length;
 
-        // Phase 1: Remove all randomly placed holes — we'll place them strategically
-        for (let r = 0; r < rows; r++) {
-            for (let c = 0; c < cols; c++) {
-                if (_isFillable(map[r][c])) {
-                    map[r][c] = 'grass';
-                }
-            }
-        }
-
-        // Only attempt hole placement some of the time (25% chance of no holes)
-        if (Math.random() > 0.75) return;
+        // Only attempt hole placement 40% of the time
+        if (Math.random() > 0.40) return;
 
         // Find home position
         let homeR = Math.floor(rows / 2), homeC = Math.floor(cols / 2);
@@ -459,7 +466,7 @@ class MapGenerator {
             }
         }
 
-        // Phase 2: Find interior grass tiles that create a detour when blocked.
+        // Find interior grass tiles that create a detour when blocked.
         // Score each candidate by its natural impact, then try reinforcement.
         const candidates = [];
         for (let r = 1; r < rows - 1; r++) {
