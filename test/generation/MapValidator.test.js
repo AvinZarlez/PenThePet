@@ -459,5 +459,84 @@ describe('MapValidator', () => {
             const result = MapValidator.validate(map, solution);
             expect(result.errors.some(e => e.includes('Too many'))).toBe(false);
         });
+
+        test('should fail validation when non-edge tile is only reachable via edge tiles', () => {
+            // star at (1,3) is a non-edge interior tile.
+            // Row 2 has water at cols 1-5 and grass only at edge cols 0 and 6,
+            // so the only path from home (row 3) to star (row 1) goes through
+            // the edge column 0 or 6 — failing the interior-path check.
+            const map = [
+                ['grass', 'grass', 'grass', 'grass', 'grass', 'grass', 'grass'],
+                ['grass', 'grass', 'grass', 'star',  'grass', 'grass', 'grass'],
+                ['grass', 'water', 'water', 'water', 'water', 'water', 'grass'],
+                ['grass', 'water', 'bee',   'home',  'grass', 'water', 'grass'],
+                ['grass', 'grass', 'grass', 'grass', 'grass', 'grass', 'grass'],
+                ['grass', 'grass', 'grass', 'grass', 'grass', 'grass', 'grass'],
+                ['grass', 'grass', 'grass', 'grass', 'grass', 'grass', 'grass']
+            ];
+
+            const solution = {
+                goalArea: 6,
+                optimalWallCount: 4,
+                optimalSolution: [[3, 2], [4, 1], [4, 3], [5, 2]]
+            };
+
+            const result = MapValidator.validate(map, solution);
+            expect(result.valid).toBe(false);
+            expect(result.errors).toContain(
+                'Not all non-edge tiles are reachable from home without traversing edge tiles'
+            );
+        });
+
+        test('should pass validation when hole enables non-edge interior access', () => {
+            // Same barrier as above, but hole at (2,3) makes the star at (1,3)
+            // reachable from home without traversing edge tiles:
+            // home (3,3) → hole (2,3) [passable] → star (1,3).
+            const map = [
+                ['grass', 'grass', 'grass', 'grass', 'grass', 'grass', 'grass'],
+                ['grass', 'grass', 'grass', 'star',  'grass', 'grass', 'grass'],
+                ['grass', 'water', 'water', 'hole',  'water', 'water', 'grass'],
+                ['grass', 'water', 'bee',   'home',  'grass', 'water', 'grass'],
+                ['grass', 'grass', 'grass', 'grass', 'grass', 'grass', 'grass'],
+                ['grass', 'grass', 'grass', 'grass', 'grass', 'grass', 'grass'],
+                ['grass', 'grass', 'grass', 'grass', 'grass', 'grass', 'grass']
+            ];
+
+            const solution = {
+                goalArea: 6,
+                optimalWallCount: 4,
+                optimalSolution: [[3, 2], [4, 1], [4, 3], [5, 2]]
+            };
+
+            const result = MapValidator.validate(map, solution);
+            expect(result.errors).not.toContain(
+                'Not all non-edge tiles are reachable from home without traversing edge tiles'
+            );
+        });
+
+        test('should pass validation when all non-edge tiles are reachable via interior path', () => {
+            // Well-connected interior: every non-water interior tile is accessible
+            // from home without needing to walk along the map perimeter.
+            const map = [
+                ['grass', 'grass', 'grass', 'grass', 'grass', 'grass', 'grass'],
+                ['grass', 'water', 'grass', 'grass', 'grass', 'water', 'grass'],
+                ['grass', 'grass', 'grass', 'grass', 'grass', 'grass', 'grass'],
+                ['grass', 'water', 'star',  'home',  'bee',   'water', 'grass'],
+                ['grass', 'grass', 'grass', 'grass', 'grass', 'grass', 'grass'],
+                ['grass', 'water', 'grass', 'grass', 'grass', 'water', 'grass'],
+                ['grass', 'grass', 'grass', 'grass', 'grass', 'grass', 'grass']
+            ];
+
+            const solution = {
+                goalArea: 8,
+                optimalWallCount: 4,
+                optimalSolution: [[1, 2], [2, 1], [3, 2], [4, 1]]
+            };
+
+            const result = MapValidator.validate(map, solution);
+            expect(result.errors).not.toContain(
+                'Not all non-edge tiles are reachable from home without traversing edge tiles'
+            );
+        });
     });
 });

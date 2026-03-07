@@ -201,14 +201,18 @@ class MapGenerator {
     }
 
     /**
-     * Validate that a map has a path from home to edge with no walls.
-     * Delegates to PathfindingUtils.hasPathToEdge() for shared BFS logic.
+     * Validate that a map has a path from home to edge with no walls,
+     * all walkable tiles are reachable from home, and every non-edge
+     * walkable tile is reachable without traversing edge tiles.
+     * Delegates to PathfindingUtils for shared BFS logic.
      * @private
      * @param {Array} map - 2D array of tile types
      * @returns {boolean} True if map is valid
      */
     _validateMap(map) {
-        return PathfindingUtils.hasPathToEdge(map) && PathfindingUtils.allWalkableTilesReachable(map);
+        return PathfindingUtils.hasPathToEdge(map) &&
+            PathfindingUtils.allWalkableTilesReachable(map) &&
+            PathfindingUtils.allNonEdgeTilesReachableViaInterior(map);
     }
 
     /**

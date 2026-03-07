@@ -377,11 +377,16 @@ describe('MapGenerator', () => {
         });
 
         test('should return true when home is on the edge', () => {
-            const generator = new MapGenerator(3);
+            // Home at (0,2) - top-center of a 5x5 grid. Even though home is on row 0
+            // (an edge row), it has a direct non-edge neighbor at (1,2), so every
+            // interior non-blocking tile is reachable via a non-edge path.
+            const generator = new MapGenerator(5);
             const map = [
-                ['home', 'grass', 'grass'],
-                ['grass', 'grass', 'grass'],
-                ['grass', 'grass', 'grass']
+                ['grass', 'grass', 'home',  'grass', 'grass'],
+                ['grass', 'grass', 'grass', 'grass', 'grass'],
+                ['grass', 'grass', 'grass', 'grass', 'grass'],
+                ['grass', 'grass', 'grass', 'grass', 'grass'],
+                ['grass', 'grass', 'grass', 'grass', 'grass']
             ];
 
             const isValid = generator._validateMap(map);
