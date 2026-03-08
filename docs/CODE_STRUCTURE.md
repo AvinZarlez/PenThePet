@@ -112,7 +112,7 @@ counterElement.textContent = I18N.t("walls_counter", {
 
 ### Adding a new language
 
-1. In `js/i18n.js`, copy the `en` object and add it under a new language code:
+First, in `js/i18n.js`, copy the `en` object and add it under a new language code:
 
 ```js
 const LANGUAGES = {
@@ -121,7 +121,7 @@ const LANGUAGES = {
 };
 ```
 
-2. Add an entry to `LANGUAGE_OPTIONS`:
+Then add an entry to `LANGUAGE_OPTIONS`:
 
 ```js
 const LANGUAGE_OPTIONS = [
@@ -130,7 +130,7 @@ const LANGUAGE_OPTIONS = [
 ];
 ```
 
-3. Strings missing from the new language automatically fall back to `en`.
+Strings missing from the new language automatically fall back to `en`.
 
 ### Tile descriptions
 
