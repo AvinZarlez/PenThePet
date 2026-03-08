@@ -602,9 +602,9 @@ const I18N = {
     },
 
     /**
-     * Switch to a new language, persist to cookie, and update all
-     * data-i18n-* elements in the DOM.
-     * Also syncs the languageSelector dropdown if present.
+     * Switch to a new language and persist to cookie.
+     * Callers are responsible for triggering a page reload so that all text
+     * (tile descriptions, overlays, etc.) re-renders in the new language.
      * @param {string} lang - Language code (e.g. 'en')
      */
     setLanguage(lang) {
@@ -612,15 +612,6 @@ const I18N = {
         this._lang = lang;
         if (typeof CookieUtils !== 'undefined') {
             CookieUtils.setCookie('lang', lang, 3650); // ~10 years
-        }
-        if (typeof document !== 'undefined') {
-            this._applyToDOM();
-            // Keep the language selector dropdown in sync (e.g. when cloud sync
-            // applies a different language on first sign-in from another device).
-            const selector = document.getElementById('languageSelector');
-            if (selector && selector.value !== lang) {
-                selector.value = lang;
-            }
         }
     },
 
