@@ -6,6 +6,120 @@
  * all views.
  */
 
+/* ========== Design Tokens (CSS Custom Properties) ========== */
+/*
+ * All colour and sizing values for the theme live here.
+ * To retheme the whole game, tweak the values in :root only.
+ */
+:root {
+    /* --- Page background (135deg gradient: top-left → bottom-right) --- */
+    --page-bg-start:   #0d0f1a;
+    --page-bg-end:     #1b1030;
+
+    /* --- Container & card surfaces --- */
+    --container-bg:    #1c1e30;   /* main card (was white) */
+    --surface-bg:      #22253c;   /* info bars, inner panels */
+    --surface-hover:   #2a2e48;   /* hover / active surface */
+
+    /* --- Brand accent (purple-blue) --- */
+    --accent-start:    #7c8bef;
+    --accent-end:      #9966db;
+    --accent:          #7c8bef;
+    --accent-glow:     rgba(124, 139, 239, 0.30);
+    --accent-glow-strong: rgba(124, 139, 239, 0.55);
+
+    /* --- Typography --- */
+    --text-primary:    #eceef8;   /* near-white headings & primary content */
+    --text-secondary:  #a8aece;   /* secondary labels, subtitles */
+    --text-muted:      #7e87b0;   /* helper text, placeholders, day-headers */
+    --text-on-accent:  #ffffff;
+    --text-on-surface: #cdd0e8;   /* text on standard controls */
+
+    /* --- Links --- */
+    --link-color:      #9aabf7;   /* unvisited — lighter than accent, legible on dark */
+    --link-visited:    #c8a8f8;   /* visited — soft lavender, distinct from unvisited */
+    --link-hover:      #bccbff;   /* hover — brightest, draws the eye */
+
+    /* --- Borders --- */
+    --border-subtle:   #272c3f;   /* very soft, dividers */
+    --border-default:  #363b58;   /* standard border */
+    --border-strong:   #464e76;   /* prominent border */
+
+    /* --- Standard controls (Reset, Wall counter, Area display, Timer…) --- */
+    --ctrl-bg-start:   #242840;
+    --ctrl-bg-end:     #1c1e30;
+    --ctrl-hover-start: #2c3050;
+    --ctrl-hover-end:   #242840;
+    --ctrl-border:     #363b58;
+
+    /* --- Uniform control-bar height --- */
+    --ctrl-height:     44px;
+
+    /* --- Error / Red --- */
+    --error-start:     #c43c30;
+    --error-end:       #9e2820;
+    --error-text:      #f09090;
+    --error-bg:        #1e0a0a;
+    --error-border:    #b83030;
+    --error-glow:      rgba(196, 60, 48, 0.30);
+
+    /* --- Success / Green --- */
+    --success-start:   #2e7d52;
+    --success-end:     #1e5e3c;
+    --success-text:    #5dbe84;
+    --success-bg:      #0f2018;
+    --success-border:  #2e7d52;
+    --success-glow:    rgba(46, 125, 82, 0.30);
+
+    /* --- Warning / Amber --- */
+    --warning-start:   #7a6000;
+    --warning-end:     #5c4800;
+    --warning-text:    #e8c020;
+    --warning-bg:      #1e1800;
+    --warning-border:  #9a7a00;
+
+    /* --- Info / Blue --- */
+    --info-start:      #1b5fa0;
+    --info-end:        #124e88;
+    --info-text:       #6ab0e8;
+    --info-bg:         #0a1622;
+    --info-border:     #2e78c8;
+    --info-glow:       rgba(43, 120, 200, 0.30);
+
+    /* --- Penned area states (area-size-display) --- */
+    --penned-yellow-start:  #2a2400;
+    --penned-yellow-end:    #1e1a00;
+    --penned-yellow-border: #9a7a00;
+    --penned-green-start:   #0d2018;
+    --penned-green-end:     #162c22;
+    --penned-green-border:  #2e7d52;
+
+    /* --- Grid chrome --- */
+    --grid-bg: #0d0f1a;
+
+    /* --- Pause overlay --- */
+    --pause-overlay-start: #111423;
+    --pause-overlay-end:   #0e1020;
+
+    /* --- Info deeper bg (for submitted/viewing-optimal states) --- */
+    --info-bg-deep: #0f1e30;
+
+    /* --- Error hover / deep --- */
+    --error-bg-hover: #2e1010;
+
+    /* --- Debug section (developer tools — intentionally distinct pink) --- */
+    --debug-bg:       #2a1020;
+    --debug-border:   #c2185b;
+    --debug-text:     #e880b0;
+    --debug-range-bg: #4a1030;
+    --debug-btn-start: #c2185b;
+    --debug-btn-end:   #880e4f;
+
+    /* --- Google OAuth button (dark-mode neutral styling) --- */
+    --oauth-bg:   #2a2a2e;
+    --oauth-text: #e8e8f0;
+}
+
 /* ========== Global Reset ========== */
 * {
     margin: 0;
@@ -15,7 +129,7 @@
 
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, var(--page-bg-start) 0%, var(--page-bg-end) 100%);
     min-height: 100vh;
     display: flex;
     justify-content: center;
@@ -25,10 +139,10 @@ body {
 
 /* ========== Container ========== */
 .container {
-    background: white;
+    background: var(--container-bg);
     border-radius: 20px;
     padding: 30px;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
     max-width: 980px;
     width: 100%;
     position: relative; /* For menu button positioning */
@@ -37,34 +151,51 @@ body {
 /* ========== Typography ========== */
 h1 {
     text-align: center;
-    color: #333;
+    color: var(--text-primary);
     margin-bottom: 10px;
     font-size: 2em;
 }
 
 .subtitle {
     text-align: center;
-    color: #666;
+    color: var(--text-secondary);
     margin-bottom: 20px;
     font-size: 0.9em;
 }
 
+/* ========== Links ========== */
+a {
+    color: var(--link-color);
+    text-decoration: underline;
+}
+
+a:visited {
+    color: var(--link-visited);
+}
+
+a:hover,
+a:focus {
+    color: var(--link-hover);
+    outline-offset: 2px;
+}
+
 /* ========== Generic Button Styles ========== */
 button {
-    padding: 12px 24px;
+    padding: 0 24px;
+    height: var(--ctrl-height);
     font-size: 1em;
     border: none;
     border-radius: 8px;
     cursor: pointer;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
+    background: linear-gradient(135deg, var(--accent-start) 0%, var(--accent-end) 100%);
+    color: var(--text-on-accent);
     font-weight: bold;
     transition: transform 0.2s, box-shadow 0.2s;
 }
 
 button:hover {
     transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4);
 }
 
 button:active {
@@ -79,25 +210,25 @@ button:active {
 }
 
 #newGameBtn {
-    padding: 12px 32px;
+    padding: 0 32px;
     font-size: 1.1em;
 }
 
 /* ========== Error Message ========== */
 .error-message {
-    background: linear-gradient(135deg, #ff6b6b 0%, #ff5252 100%);
-    color: white;
+    background: linear-gradient(135deg, var(--error-start) 0%, var(--error-end) 100%);
+    color: var(--text-on-accent);
     padding: 40px;
     border-radius: 15px;
     text-align: center;
     margin: 30px 0;
-    box-shadow: 0 10px 30px rgba(255, 82, 82, 0.3);
+    box-shadow: 0 10px 30px var(--error-glow);
 }
 
 .error-message h2 {
     font-size: 2em;
     margin-bottom: 20px;
-    color: white;
+    color: var(--text-on-accent);
 }
 
 .error-message p {
@@ -109,7 +240,7 @@ button:active {
 /* ========== Footer ========== */
 footer {
     text-align: center;
-    color: #666;
+    color: var(--text-secondary);
     font-size: 0.8em;
     margin-top: 20px;
 }

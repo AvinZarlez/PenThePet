@@ -18,21 +18,22 @@
 }
 
 .menu-option-btn {
-    padding: 15px 20px;
+    padding: 0 20px;
+    height: var(--ctrl-height);
     font-size: 1.1em;
     text-align: left;
-    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-    border: 2px solid #667eea;
+    background: var(--surface-bg);
+    border: 2px solid var(--accent);
     border-radius: 10px;
     cursor: pointer;
     transition: all 0.2s ease;
-    color: #333;
+    color: var(--text-primary);
     font-weight: bold;
 }
 
 .menu-option-btn:hover {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
+    background: linear-gradient(135deg, var(--accent-start) 0%, var(--accent-end) 100%);
+    color: var(--text-on-accent);
     transform: translateX(5px);
 }
 
@@ -53,19 +54,20 @@
 
 .calendar-nav-btn {
     background: none;
-    border: 2px solid #667eea;
+    border: 2px solid var(--accent);
     border-radius: 6px;
-    color: #667eea;
+    color: var(--accent);
     font-size: 1.3em;
     line-height: 1;
     padding: 4px 10px;
     cursor: pointer;
     transition: background 0.2s ease, color 0.2s ease;
+    height: auto;
 }
 
 .calendar-nav-btn:hover {
-    background: #667eea;
-    color: white;
+    background: var(--accent-start);
+    color: var(--text-on-accent);
 }
 
 .calendar-nav-btn:disabled {
@@ -76,14 +78,15 @@
 .calendar-month-label {
     font-weight: bold;
     font-size: 1.05em;
-    color: #333;
+    color: var(--text-primary);
 }
 
 .calendar-today-btn {
     width: 100%;
-    padding: 8px;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
+    padding: 0 8px;
+    height: calc(var(--ctrl-height) - 8px);
+    background: linear-gradient(135deg, var(--accent-start) 0%, var(--accent-end) 100%);
+    color: var(--text-on-accent);
     border: none;
     border-radius: 8px;
     font-size: 0.9em;
@@ -99,7 +102,7 @@
 /* -------- Loading State -------- */
 .level-list-loading {
     text-align: center;
-    color: #888;
+    color: var(--text-muted);
     padding: 30px 20px;
     font-size: 0.95em;
 }
@@ -116,7 +119,7 @@
     text-align: center;
     font-size: 0.7em;
     font-weight: bold;
-    color: #999;
+    color: var(--text-muted);
     padding: 4px 0;
 }
 
@@ -129,7 +132,7 @@
     border-radius: 6px;
     min-height: 60px;
     font-size: 0.72em;
-    color: #ccc;
+    color: var(--text-muted);
     text-align: center;
 }
 
@@ -139,23 +142,24 @@
 }
 
 .calendar-day-level {
-    background: #f8f9fa;
-    border: 2px solid #e9ecef;
+    background: var(--surface-bg);
+    border: 2px solid var(--border-subtle);
     cursor: pointer;
-    color: #333;
+    color: var(--text-primary);
     transition: background 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+    height: auto;
 }
 
 .calendar-day-level:hover {
-    background: #e9ecef;
-    border-color: #667eea;
+    background: var(--surface-hover);
+    border-color: var(--accent);
     transform: scale(1.06);
 }
 
 .calendar-day-level.active {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    border-color: #667eea;
+    background: linear-gradient(135deg, var(--accent-start) 0%, var(--accent-end) 100%);
+    color: var(--text-on-accent);
+    border-color: var(--accent);
 }
 
 .calendar-day-num {
@@ -186,7 +190,7 @@
 }
 
 .calendar-status-syncing {
-    color: #bbb;
+    color: var(--text-muted);
     font-size: 0.85em;
 }
 
@@ -199,18 +203,19 @@
 
 .cloud-sync-login-btn {
     background: none;
-    border: 1px solid #667eea;
-    color: #667eea;
+    border: 1px solid var(--accent);
+    color: var(--accent);
     padding: 4px 12px;
     border-radius: 16px;
     cursor: pointer;
     font-size: 0.85em;
     transition: background 0.2s, color 0.2s;
+    height: auto;
 }
 
 .cloud-sync-login-btn:hover {
-    background: #667eea;
-    color: #fff;
+    background: var(--accent-start);
+    color: var(--text-on-accent);
 }
 
 .cloud-sync-user-info {
@@ -223,7 +228,7 @@
 }
 
 .cloud-sync-email {
-    color: #555;
+    color: var(--text-secondary);
     max-width: 180px;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -232,17 +237,18 @@
 
 .cloud-sync-signout-btn {
     background: none;
-    border: 1px solid #ccc;
-    color: #666;
+    border: 1px solid var(--border-default);
+    color: var(--text-secondary);
     padding: 2px 10px;
     border-radius: 12px;
     cursor: pointer;
     font-size: 0.8em;
+    height: auto;
 }
 
 .cloud-sync-signout-btn:hover {
-    border-color: #999;
-    color: #333;
+    border-color: var(--border-strong);
+    color: var(--text-primary);
 }
 
 .cloud-sync-status {
@@ -252,18 +258,18 @@
 }
 
 .cloud-sync-status.synced {
-    color: #2e7d32;
-    background: #e8f5e9;
+    color: var(--success-text);
+    background: var(--success-bg);
 }
 
 .cloud-sync-status.syncing {
-    color: #f57c00;
-    background: #fff3e0;
+    color: var(--warning-text);
+    background: var(--warning-bg);
 }
 
 .cloud-sync-status.error {
-    color: #c62828;
-    background: #ffebee;
+    color: var(--error-text);
+    background: var(--error-bg);
 }
 
 /* ========== Cloud Sync Auth Modal ========== */
@@ -281,35 +287,38 @@
 .auth-form label {
     font-weight: 600;
     font-size: 0.9em;
-    color: #333;
+    color: var(--text-primary);
 }
 
 .auth-input {
-    padding: 10px 12px;
-    border: 1px solid #ddd;
+    padding: 0 12px;
+    height: var(--ctrl-height);
+    border: 1px solid var(--border-default);
     border-radius: 8px;
     font-size: 1em;
     width: 100%;
     box-sizing: border-box;
+    background: var(--surface-bg);
+    color: var(--text-primary);
 }
 
 .auth-input:focus {
     outline: none;
-    border-color: #667eea;
-    box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.2);
+    border-color: var(--accent);
+    box-shadow: 0 0 0 2px var(--accent-glow);
 }
 
 .auth-error {
-    color: #c62828;
-    background: #ffebee;
+    color: var(--error-text);
+    background: var(--error-bg);
     padding: 8px 12px;
     border-radius: 8px;
     font-size: 0.9em;
 }
 
 .profile-success {
-    color: #1b5e20;
-    background: #e8f5e9;
+    color: var(--success-text);
+    background: var(--success-bg);
     padding: 8px 12px;
     border-radius: 8px;
     font-size: 0.9em;
@@ -323,7 +332,8 @@
 
 .auth-btn {
     flex: 1;
-    padding: 10px;
+    padding: 0 10px;
+    height: var(--ctrl-height);
     border: none;
     border-radius: 8px;
     font-size: 0.95em;
@@ -337,8 +347,8 @@
 }
 
 .auth-btn-primary {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: #fff;
+    background: linear-gradient(135deg, var(--accent-start) 0%, var(--accent-end) 100%);
+    color: var(--text-on-accent);
 }
 
 .auth-btn-primary:hover:not(:disabled) {
@@ -346,17 +356,19 @@
 }
 
 .auth-btn-secondary {
-    background: #f0f0f0;
-    color: #333;
+    background: var(--surface-bg);
+    color: var(--text-primary);
+    border: 1px solid var(--border-default);
 }
 
 .auth-btn-secondary:hover:not(:disabled) {
-    background: #e0e0e0;
+    background: var(--surface-hover);
 }
 
 .auth-btn-sm {
     flex: none;
-    padding: 6px 14px;
+    padding: 0 14px;
+    height: calc(var(--ctrl-height) - 8px);
     font-size: 0.85em;
 }
 
@@ -366,7 +378,8 @@
     justify-content: center;
     gap: 8px;
     width: 100%;
-    padding: 11px;
+    padding: 0 11px;
+    height: var(--ctrl-height);
     border: none;
     border-radius: 8px;
     font-size: 0.95em;
@@ -381,13 +394,13 @@
 }
 
 .auth-oauth-google {
-    background: #fff;
-    color: #3c4043;
-    border: 1px solid #dadce0;
+    background: var(--oauth-bg);
+    color: var(--oauth-text);
+    border: 1px solid var(--border-default);
 }
 
 .auth-oauth-google:hover:not(:disabled) {
-    background: #f8f9fa;
+    background: var(--surface-hover);
 }
 
 .auth-oauth-icon {
@@ -400,7 +413,7 @@
     display: flex;
     align-items: center;
     gap: 10px;
-    color: #999;
+    color: var(--text-muted);
     font-size: 0.85em;
     margin: 4px 0;
 }
@@ -409,7 +422,7 @@
 .auth-divider::after {
     content: '';
     flex: 1;
-    border-top: 1px solid #e0e0e0;
+    border-top: 1px solid var(--border-subtle);
 }
 
 .profile-linked-accounts {
@@ -418,7 +431,7 @@
 
 .profile-section-label {
     font-size: 0.85em;
-    color: #777;
+    color: var(--text-muted);
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.04em;
@@ -430,7 +443,7 @@
     align-items: center;
     justify-content: space-between;
     padding: 7px 0;
-    border-bottom: 1px solid #f0f0f0;
+    border-bottom: 1px solid var(--border-subtle);
 }
 
 .linked-account-row:last-child {
@@ -439,26 +452,27 @@
 
 .linked-account-name {
     font-size: 0.9em;
-    color: #333;
+    color: var(--text-primary);
 }
 
 .linked-account-disconnect {
-    background: #ffebee;
-    color: #c62828;
+    background: var(--error-bg);
+    color: var(--error-text);
+    border: 1px solid var(--error-border);
 }
 
 .linked-account-disconnect:hover:not(:disabled) {
-    background: #ffcdd2;
+    background: var(--error-bg-hover);
 }
 
 /* ========== Options Account Section ========== */
 .options-account-section {
-    border-top: 1px solid #e9ecef;
+    border-top: 1px solid var(--border-subtle);
     padding-top: 15px;
 }
 
 .options-account-info {
-    color: #555;
+    color: var(--text-secondary);
     margin-bottom: 10px;
     font-size: 0.95em;
 }
@@ -470,36 +484,40 @@
 }
 
 .options-account-btn {
-    padding: 8px 16px;
-    border: 1px solid #667eea;
+    padding: 0 16px;
+    height: var(--ctrl-height);
+    border: 1px solid var(--accent);
     border-radius: 8px;
     background: none;
-    color: #667eea;
+    color: var(--accent);
     cursor: pointer;
     font-size: 0.9em;
     transition: background 0.2s, color 0.2s;
     text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .options-account-btn:hover {
-    background: #667eea;
-    color: white;
+    background: var(--accent-start);
+    color: var(--text-on-accent);
 }
 
 .options-account-signout {
-    border-color: #ccc;
-    color: #666;
+    border-color: var(--border-default);
+    color: var(--text-secondary);
 }
 
 .options-account-signout:hover {
-    background: #ccc;
-    color: #333;
+    background: var(--surface-hover);
+    color: var(--text-primary);
 }
 
 /* Sync error modal */
 .sync-error-details {
-    background: #fff8f8;
-    border: 1px solid #e57373;
+    background: var(--error-bg);
+    border: 1px solid var(--error-border);
     border-radius: 6px;
     padding: 12px;
     font-size: 0.85em;
@@ -508,5 +526,5 @@
     max-height: 200px;
     overflow-y: auto;
     margin: 8px 0;
-    color: #c62828;
+    color: var(--error-text);
 }
