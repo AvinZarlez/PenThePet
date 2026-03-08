@@ -959,12 +959,16 @@
 }
 
 /* ========== Best State Banner ========== */
+.best-state-wrapper {
+    display: flex;
+    justify-content: center;
+    margin: 4px 0;
+}
+
 .best-state-banner {
-    display: block;
-    width: 100%;
-    max-width: 400px;
-    margin: 4px auto;
     padding: 8px 16px;
+    min-width: 200px;
+    max-width: 400px;
     background: linear-gradient(135deg, #f0f0f0 0%, #e0e0e0 100%);
     border-radius: 8px;
     border: 2px solid #333;

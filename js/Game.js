@@ -1081,11 +1081,16 @@ class Game {
         const banner = document.getElementById('bestStateBanner');
         if (!banner) return;
 
+        // Also control the wrapper so it doesn't occupy space when hidden
+        const wrapper = banner.closest('.best-state-wrapper');
+
         if (this.isSubmitted) {
             banner.style.display = 'none';
+            if (wrapper) wrapper.style.display = 'none';
             return;
         }
 
+        if (wrapper) wrapper.style.display = '';
         banner.style.display = '';
         const label = banner.querySelector('.best-state-label');
         if (this.bestScore === null) {
@@ -2380,7 +2385,7 @@ Game.PAUSE_HIDDEN_SELECTORS = [
     '#notification',
     '#solutionToggleBar',
     '#roamSpaceViewer',
-    '#bestStateBanner',
+    '.best-state-wrapper',
     '#hintUsedDisplay',
 ];
 
