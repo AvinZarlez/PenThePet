@@ -97,6 +97,10 @@ const CONSTANTS = {
         { value: 'Pacific/Auckland',      label: 'New Zealand (NZST, UTC+12)'        },
     ],
 
+    // Level selector UI text
+    LEVEL_SELECTOR_LOADING_TEXT: 'Loading...',
+    LEVEL_SELECTOR_SYNC_STATUS_UNKNOWN: '???',
+
     // Animal options for pet selection
     ANIMAL_OPTIONS: [
         { emoji: '🐶', name: 'Dog' },

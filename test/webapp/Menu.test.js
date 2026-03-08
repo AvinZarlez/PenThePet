@@ -769,4 +769,128 @@ describe('Menu', () => {
             spy.mockRestore();
         });
     });
+
+    describe('Loading Screen', () => {
+        test('should open level selector modal immediately before maps are loaded', async () => {
+            // Delay fetch so we can inspect the DOM after the sync part of
+            // openLevelSelector runs but before the fetched data returns.
+            // Promise.resolve() resolves as a microtask, so the synchronous
+            // part of openLevelSelector (including showing the modal) runs first.
+            global.fetch = jest.fn(() => Promise.resolve({ ok: false }));
+
+            const openPromise = menu.openLevelSelector();
+
+            // Modal should be visible right away (sync part has already run)
+            const levelSelectorModal = document.getElementById('levelSelectorModal');
+            expect(levelSelectorModal.classList.contains('show')).toBe(true);
+
+            await openPromise;
+        });
+
+        test('should show loading text while maps are being fetched', async () => {
+            // Use a fetch that resolves in a microtask so we can read the DOM
+            // after the synchronous section (which renders the loading indicator)
+            // but before the async section (which replaces it with the calendar).
+            global.fetch = jest.fn(() => Promise.resolve({ ok: false }));
+
+            const openPromise = menu.openLevelSelector();
+
+            const levelList = document.getElementById('levelList');
+            expect(levelList.querySelector('.level-list-loading')).not.toBeNull();
+
+            await openPromise;
+        });
+
+        test('_showLevelListLoading should render the loading constant text', () => {
+            menu._showLevelListLoading();
+            const levelList = document.getElementById('levelList');
+            const loadingEl = levelList.querySelector('.level-list-loading');
+            expect(loadingEl).not.toBeNull();
+            expect(loadingEl.textContent).toBe(CONSTANTS.LEVEL_SELECTOR_LOADING_TEXT);
+        });
+
+        test('should populate level list after maps load', async () => {
+            await menu.openLevelSelector();
+            const levelList = document.getElementById('levelList');
+            expect(levelList.querySelector('.calendar-day-level')).not.toBeNull();
+        });
+
+        test('should queue level selection while syncing and load after sync completes', async () => {
+            await menu.loadMapsDatabase();
+
+            let resolveSync;
+            const syncPromise = new Promise(resolve => { resolveSync = resolve; });
+
+            // Set up a mock CloudSync that is configured, logged in, and returns a controllable promise
+            global.CloudSync = {
+                isConfigured: () => true,
+                isLoggedIn: () => true,
+                syncNow: jest.fn(() => syncPromise)
+            };
+
+            const loadLevelSpy = jest.spyOn(menu, 'loadLevel').mockResolvedValue();
+
+            // Open the level selector — this starts the background sync
+            menu.openLevelSelector();
+
+            // While sync is in progress, selecting a level should queue it
+            await menu.selectLevel('2026-02-06');
+            expect(menu._pendingLevelSelection).toBe('2026-02-06');
+            expect(loadLevelSpy).not.toHaveBeenCalled();
+
+            // Resolve the sync — the .then() handler should pick up the pending selection
+            resolveSync();
+            await syncPromise;
+            // Flush remaining microtasks
+            await Promise.resolve();
+
+            expect(loadLevelSpy).toHaveBeenCalled();
+
+            loadLevelSpy.mockRestore();
+            delete global.CloudSync;
+        });
+
+        test('should show ??? status badges while syncing', async () => {
+            await menu.loadMapsDatabase();
+            menu._isSyncing = true;
+            menu.populateLevelList();
+
+            const levelList = document.getElementById('levelList');
+            const syncingBadges = levelList.querySelectorAll('.calendar-status-syncing');
+            expect(syncingBadges.length).toBeGreaterThan(0);
+            expect(syncingBadges[0].textContent).toBe(CONSTANTS.LEVEL_SELECTOR_SYNC_STATUS_UNKNOWN);
+        });
+
+        test('should show real status badges after sync completes', async () => {
+            game.loadSubmission = jest.fn(date => {
+                if (date === '2026-02-06') return { score: 12, walls: [] };
+                return null;
+            });
+            await menu.loadMapsDatabase();
+            menu._isSyncing = false;
+            menu.populateLevelList();
+
+            const levelList = document.getElementById('levelList');
+            expect(levelList.querySelectorAll('.calendar-status-syncing').length).toBe(0);
+            const statusBadges = levelList.querySelectorAll('.calendar-status');
+            expect(statusBadges.length).toBeGreaterThan(0);
+        });
+
+        test('should cancel pending selection when level selector modal is closed', async () => {
+            await menu.loadMapsDatabase();
+            menu._isSyncing = true;
+            menu._pendingLevelSelection = '2026-02-06';
+
+            const levelSelectorModal = document.getElementById('levelSelectorModal');
+            menu.closeModal(levelSelectorModal);
+
+            expect(menu._pendingLevelSelection).toBeNull();
+        });
+
+        test('should cancel pending selection when closeAllModals is called', async () => {
+            menu._pendingLevelSelection = '2026-02-06';
+            menu.closeAllModals();
+            expect(menu._pendingLevelSelection).toBeNull();
+        });
+    });
 });

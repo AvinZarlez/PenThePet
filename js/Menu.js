@@ -18,6 +18,8 @@ class Menu {
         this.showAllLevels = false; // Debug: show future levels in selector
         this.currentCalendarMonth = null; // Track which month is shown in the calendar
         this._loadedYears = new Set(); // Track which years have been fetched
+        this._isSyncing = false; // Whether a cloud sync is currently in progress
+        this._pendingLevelSelection = null; // Level queued to load once sync finishes
 
         this.attachEventListeners();
     }
@@ -226,24 +228,43 @@ class Menu {
         if (this.game && typeof this.game.pauseTimer === 'function') {
             this.game.pauseTimer();
         }
-        
-        // Load maps database if not already loaded
-        if (!this.mapsDatabase) {
-            await this.loadMapsDatabase();
-        }
 
-        // Sync latest cloud data before showing the level selector so
-        // calendar checkmarks (✓/🏆) reflect the most up-to-date state.
-        if (typeof CloudSync !== 'undefined' && CloudSync.isConfigured() && CloudSync.isLoggedIn()) {
-            await CloudSync.syncNow();
-        }
-
-        // Populate level list
-        this.populateLevelList();
-
+        // Open the modal immediately so the UI feels responsive
         const levelSelectorModal = document.getElementById('levelSelectorModal');
         if (levelSelectorModal) {
             levelSelectorModal.classList.add('show');
+        }
+
+        // Load maps database if not already loaded (show loading state while waiting)
+        if (!this.mapsDatabase) {
+            this._showLevelListLoading();
+            await this.loadMapsDatabase();
+        }
+
+        // Kick off cloud sync in the background without blocking the UI.
+        // While syncing, the calendar renders with unknown (???) completion badges.
+        if (!this._isSyncing &&
+            typeof CloudSync !== 'undefined' &&
+            CloudSync.isConfigured() &&
+            CloudSync.isLoggedIn()) {
+            this._isSyncing = true;
+            this.populateLevelList();
+            CloudSync.syncNow().then(() => {
+                this._isSyncing = false;
+                this.populateLevelList();
+                const levelSelectorModal = document.getElementById('levelSelectorModal');
+                const isModalOpen = levelSelectorModal && levelSelectorModal.classList.contains('show');
+                if (this._pendingLevelSelection && isModalOpen) {
+                    const date = this._pendingLevelSelection;
+                    this._pendingLevelSelection = null;
+                    this._loadPendingLevel(date);
+                }
+            }).catch(() => {
+                this._isSyncing = false;
+                this.populateLevelList();
+            });
+        } else {
+            this.populateLevelList();
         }
     }
 
@@ -279,6 +300,17 @@ class Menu {
                 Object.assign(this.mapsDatabase, await response.json());
             }
         } catch { /* year file not found — skip */ }
+    }
+
+    /**
+     * Display a loading indicator inside the level list.
+     * Called while maps are being fetched before the calendar can render.
+     * @private
+     */
+    _showLevelListLoading() {
+        const levelList = document.getElementById('levelList');
+        if (!levelList) return;
+        levelList.innerHTML = `<p class="level-list-loading">${CONSTANTS.LEVEL_SELECTOR_LOADING_TEXT}</p>`;
     }
 
     /**
@@ -470,7 +502,10 @@ class Menu {
 
                 const submission = this.game.loadSubmission(date);
                 let statusHtml = '';
-                if (submission) {
+                if (this._isSyncing) {
+                    // Show unknown badge while cloud sync is in progress
+                    statusHtml = `<span class="calendar-status calendar-status-syncing">${CONSTANTS.LEVEL_SELECTOR_SYNC_STATUS_UNKNOWN}</span>`;
+                } else if (submission) {
                     const metGoal = submission.score >= mapData.goal;
                     statusHtml = `<span class="calendar-status">${metGoal ? '🏆' : '✓'}</span>`;
                 }
@@ -494,7 +529,9 @@ class Menu {
     }
 
     /**
-     * Select and load a specific level
+     * Select and load a specific level.
+     * If a cloud sync is currently in progress, the level load is queued
+     * and executed automatically once the sync completes.
      * @param {string} date - Date string of the level to load
      */
     async selectLevel(date) {
@@ -507,15 +544,30 @@ class Menu {
         this._saveCurrentLevelToCookie(date);
         this.currentLevel = date;
 
-        // Close modal and reload game with selected level
-        this.closeAllModals();
-
-        // Sync latest cloud data for this level before loading it.
-        if (typeof CloudSync !== 'undefined' && CloudSync.isConfigured() && CloudSync.isLoggedIn()) {
-            await CloudSync.syncNow();
+        // If cloud sync is still in progress, queue the level load.
+        // The calendar re-renders to highlight the pending selection so the
+        // user can see their choice, and the level will load once sync finishes.
+        if (this._isSyncing) {
+            this._pendingLevelSelection = date;
+            this.populateLevelList();
+            return;
         }
 
-        // Load the selected level
+        // Close modal and load the selected level
+        this.closeAllModals();
+        const mapData = this.mapsDatabase[date];
+        await this.loadLevel(mapData);
+    }
+
+    /**
+     * Load a level that was queued while a cloud sync was in progress.
+     * Called automatically after sync resolves.
+     * @param {string} date - Date string of the level to load
+     * @private
+     */
+    async _loadPendingLevel(date) {
+        if (!this.mapsDatabase || !this.mapsDatabase[date]) return;
+        this.closeAllModals();
         const mapData = this.mapsDatabase[date];
         await this.loadLevel(mapData);
     }
@@ -742,21 +794,28 @@ class Menu {
     }
 
     /**
-     * Close a specific modal
+     * Close a specific modal.
+     * If the level selector is closed while a sync is pending, any queued
+     * level selection is cancelled so it does not load unexpectedly later.
      * @param {HTMLElement} modal - Modal element to close
      */
     closeModal(modal) {
         if (modal) {
             modal.classList.remove('show');
+            if (modal.id === 'levelSelectorModal') {
+                this._pendingLevelSelection = null;
+            }
         }
     }
 
     /**
-     * Close all modals
+     * Close all modals.
+     * Also cancels any queued level selection (same reasoning as closeModal).
      */
     closeAllModals() {
         const modals = document.querySelectorAll('.modal');
         modals.forEach(modal => modal.classList.remove('show'));
+        this._pendingLevelSelection = null;
     }
 
     /**
