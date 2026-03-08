@@ -512,7 +512,7 @@ class Menu {
 
                 cell.innerHTML = `
                     <span class="calendar-day-num">${day}</span>
-                    <span class="calendar-level-num">Day ${mapData.dayNumber}</span>
+                    <span class="calendar-level-num">${I18N.t('calendar_day_label', { dayNumber: mapData.dayNumber })}</span>
                     <span class="calendar-level-name">${mapData.mapName}</span>
                     ${statusHtml}
                 `;

@@ -134,6 +134,20 @@ const LANGUAGES = {
         share_hint_checked: 'checked for optimal',
         share_hint_target: 'revealed target',
 
+        // ── Hint Notifications ────────────────────────────────────────────
+        hint_not_optimal_notification: 'A more optimal solution exists.',
+
+        // ── Cloud Notification ────────────────────────────────────────────
+        cloud_data_loaded: '☁️ Updated level data loaded from cloud',
+
+        // ── No Map Error ──────────────────────────────────────────────────
+        no_map_title: 'No Map Available',
+        no_map_text: 'Sorry, there is no puzzle available for today ({date}).',
+        no_map_check_back: 'Please check back tomorrow for a new puzzle!',
+
+        // ── Calendar Level ────────────────────────────────────────────────
+        calendar_day_label: 'Day {dayNumber}',
+
         // ── Menu Modal ────────────────────────────────────────────────────
         menu_title: 'Menu',
         menu_close_aria: 'Close menu',

@@ -1481,6 +1481,8 @@ class Game {
                 }
             }
 
+            // Update the metric label
+            const metricLabel = document.querySelector('.metric-label');
             if (metricLabel) {
                 metricLabel.textContent = I18N.t('metric_label_yours');
             }
@@ -2062,7 +2064,7 @@ class Game {
 
             const msg = isOptimal
                 ? I18N.t('hint_optimal_notification')
-                : 'A more optimal solution exists.';
+                : I18N.t('hint_not_optimal_notification');
             this._showNotification(msg);
         } else if (!this.neverShowTarget) {
             // Second press: reveal target

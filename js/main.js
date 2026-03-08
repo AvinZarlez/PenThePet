@@ -69,12 +69,12 @@ function showNoMapError() {
     if (container) {
         container.innerHTML = `
             <h1><span aria-hidden="true">🐾</span> Pen the Pet</h1>
-            <p class="subtitle">A Logic Puzzle Game About Fencing</p>
+            <p class="subtitle">${I18N.t('subtitle')}</p>
             
             <div class="error-message">
-                <h2>No Map Available</h2>
-                <p>Sorry, there is no puzzle available for today (${DateUtils.getTodayDate()}).</p>
-                <p>Please check back tomorrow for a new puzzle!</p>
+                <h2>${I18N.t('no_map_title')}</h2>
+                <p>${I18N.t('no_map_text', { date: DateUtils.getTodayDate() })}</p>
+                <p>${I18N.t('no_map_check_back')}</p>
             </div>
             
             <footer>
@@ -263,7 +263,7 @@ async function initGame() {
                 // Notify the user when cloud data overwrote the current level's local data.
                 if (cloudOverwrites.has(game.currentDate) &&
                     game && typeof game.showNotification === 'function') {
-                    game.showNotification('☁️ Updated level data loaded from cloud');
+                    game.showNotification(I18N.t('cloud_data_loaded'));
                 }
                 return;
             }
