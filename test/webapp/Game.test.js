@@ -1726,6 +1726,25 @@ describe('Game — Best State', () => {
         });
     });
 
+    describe('handleSubmission() hides best state banner', () => {
+        test('hides the best state banner when submission is made', () => {
+            game.currentDate = '2026-01-01';
+            game.isSubmitted = false;
+            game.bestScore = 8;
+            game.bestWalls = [[1, 1]];
+            // Show the banner first
+            game.updateBestStateBanner();
+            const banner = document.getElementById('bestStateBanner');
+            expect(banner.style.display).not.toBe('none');
+
+            // Submit the puzzle
+            game.handleSubmission(5);
+
+            // Banner should now be hidden
+            expect(banner.style.display).toBe('none');
+        });
+    });
+
     describe('_checkAndUpdateBestState()', () => {
         test('saves new best state when score improves', () => {
             game.bestScore = null;

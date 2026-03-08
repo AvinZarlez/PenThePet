@@ -1320,6 +1320,9 @@ class Game {
 
         // Show solution toggle bar if optimal solution is available
         this.updateSolutionToggleBar();
+
+        // Hide the best state banner now that the puzzle is submitted
+        this.updateBestStateBanner();
     }
 
     /**
