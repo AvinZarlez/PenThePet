@@ -1,18 +1,18 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 50 50">
-  <!-- Green grass ground -->
-  <rect width="50" height="50" fill="#5cb85c"/>
-  <!-- Subtle grass blades -->
-  <path d="M5 48 Q6 42 4 38" stroke="#4caf50" stroke-width="1" fill="none" opacity="0.5"/>
-  <path d="M45 48 Q46 42 44 38" stroke="#4caf50" stroke-width="1" fill="none" opacity="0.5"/>
-  <!-- Thin doghouse frame around edges -->
-  <rect x="2" y="12" width="46" height="36" rx="3" fill="#c0855a" opacity="0.6"/>
-  <!-- Large open interior (most of the tile) -->
-  <rect x="4" y="14" width="42" height="34" rx="2" fill="#3d2b1a"/>
-  <!-- Interior highlight for depth -->
-  <rect x="5" y="15" width="40" height="32" rx="2" fill="#4a3728" opacity="0.6"/>
-  <!-- Small roof peak at top -->
-  <polygon points="0,14 25,1 50,14" fill="#8b4513"/>
-  <polygon points="0,14 25,1 50,14" fill="none" stroke="#6d3410" stroke-width="1" stroke-linejoin="round"/>
+  <!-- Dog house — transparent background (grass.svg provides the base) -->
+  <!-- Roof: triangle with eave overhang -->
+  <polygon points="2,23 25,4 48,23" fill="#8b4513"/>
+  <line x1="2" y1="23" x2="48" y2="23" stroke="#6d3410" stroke-width="1"/>
   <!-- Roof ridge highlight -->
-  <line x1="11" y1="8" x2="39" y2="8" stroke="#a0522d" stroke-width="1" opacity="0.3"/>
+  <path d="M12,16 L25,5 L38,16" fill="none" stroke="#a0522d" stroke-width="1" opacity="0.4"/>
+  <!-- House body: rounded top corners, flat bottom -->
+  <path d="M7,49 L7,26 Q7,22 11,22 L39,22 Q43,22 43,26 L43,49 Z" fill="#c0855a"/>
+  <!-- Right-side shading for 3D depth -->
+  <path d="M38,22 Q43,22 43,26 L43,49 L38,49 Z" fill="#8b5a33" opacity="0.5"/>
+  <!-- Wood grain detail -->
+  <path d="M10,28 Q25,26 40,28" stroke="#a0704a" stroke-width="0.7" fill="none" opacity="0.35"/>
+  <!-- Large arch entrance hole -->
+  <path d="M14,49 L14,37 Q14,26 25,26 Q36,26 36,37 L36,49 Z" fill="#2a1a0e"/>
+  <!-- Arch frame highlight -->
+  <path d="M14,37 Q14,28 25,28 Q36,28 36,37" fill="none" stroke="#5a3820" stroke-width="1.2" opacity="0.5"/>
 </svg>

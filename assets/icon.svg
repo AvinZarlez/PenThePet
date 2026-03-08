@@ -1,79 +1,56 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
   <!--
-    PenThePet App Icon — Placeholder Art
-    A cute cat peeking over a wooden fence in a grassy pen.
+    PenThePet App Icon — Fence & Dog House
+    A dog house inside a wooden fenced pen on a grassy background.
     Designed to look great at 192 × 192 and 512 × 512 sizes.
     Maskable safe zone: innermost 80 × 80 centred area (x 10–90, y 10–90).
-    To customise: replace shapes with commissioned artwork
-    while keeping viewBox="0 0 100 100".
   -->
 
   <!-- Background: game green -->
   <rect width="100" height="100" rx="16" fill="#5cb85c"/>
 
   <!-- Grass ground (lower third) -->
-  <rect x="0" y="65" width="100" height="35" fill="#4caf50"/>
+  <rect x="0" y="68" width="100" height="32" fill="#4caf50"/>
 
   <!-- Subtle grass blades -->
   <path d="M15 95 Q14 88 16 82" stroke="#45a049" stroke-width="1.5"
         fill="none" stroke-linecap="round"/>
-  <path d="M30 95 Q31 86 29 80" stroke="#45a049" stroke-width="1.5"
-        fill="none" stroke-linecap="round"/>
-  <path d="M70 95 Q71 87 69 81" stroke="#45a049" stroke-width="1.5"
-        fill="none" stroke-linecap="round"/>
-  <path d="M85 95 Q84 88 86 82" stroke="#45a049" stroke-width="1.5"
+  <path d="M85 95 Q86 88 84 82" stroke="#45a049" stroke-width="1.5"
         fill="none" stroke-linecap="round"/>
 
-  <!-- Fence posts (colours taken from wall.svg) -->
-  <rect x="14" y="55" width="9" height="38" rx="2" fill="#6d4c41"/>
-  <rect x="45.5" y="52" width="9" height="41" rx="2" fill="#6d4c41"/>
-  <rect x="77" y="55" width="9" height="38" rx="2" fill="#6d4c41"/>
-  <!-- Post shading (right edge) -->
-  <rect x="20" y="55" width="3" height="38" rx="1" fill="#5d4037" opacity="0.4"/>
-  <rect x="51.5" y="52" width="3" height="41" rx="1" fill="#5d4037" opacity="0.4"/>
-  <rect x="83" y="55" width="3" height="38" rx="1" fill="#5d4037" opacity="0.4"/>
+  <!-- Dog house: roof -->
+  <polygon points="22,46 50,20 78,46" fill="#8b4513"/>
+  <line x1="22" y1="46" x2="78" y2="46" stroke="#6d3410" stroke-width="1.5"/>
+  <!-- Roof ridge highlights -->
+  <path d="M33,37 L50,21 L67,37" fill="none" stroke="#a0522d"
+        stroke-width="1.5" opacity="0.45"/>
 
-  <!-- Fence rails -->
-  <rect x="12" y="57" width="76" height="8" rx="2" fill="#8d6e63"/>
-  <rect x="12" y="70" width="76" height="8" rx="2" fill="#8d6e63"/>
+  <!-- Dog house: body (rounded top corners, flat bottom) -->
+  <path d="M30,72 L30,50 Q30,46 34,46 L66,46 Q70,46 70,50 L70,72 Z"
+        fill="#c0855a"/>
+  <!-- Right-side shading for depth -->
+  <path d="M65,46 Q70,46 70,50 L70,72 L65,72 Z" fill="#8b5a33" opacity="0.5"/>
+  <!-- Wood grain detail -->
+  <path d="M33,53 Q50,51 67,53" stroke="#a0704a" stroke-width="1"
+        fill="none" opacity="0.35"/>
+
+  <!-- Dog house: large arch entrance -->
+  <path d="M38,72 L38,58 Q38,47 50,47 Q62,47 62,58 L62,72 Z" fill="#2a1a0e"/>
+  <!-- Arch frame highlight -->
+  <path d="M38,58 Q38,49 50,49 Q62,49 62,58" fill="none"
+        stroke="#5a3820" stroke-width="1.5" opacity="0.5"/>
+
+  <!-- Fence posts (2 outer posts, drawn behind rails) -->
+  <rect x="12" y="56" width="10" height="38" rx="2" fill="#6d4c41"/>
+  <rect x="78" y="56" width="10" height="38" rx="2" fill="#6d4c41"/>
+  <!-- Post shading -->
+  <rect x="19" y="56" width="3" height="38" rx="1" fill="#5d4037" opacity="0.4"/>
+  <rect x="85" y="56" width="3" height="38" rx="1" fill="#5d4037" opacity="0.4"/>
+
+  <!-- Fence rails (in front of dog house, suggesting depth) -->
+  <rect x="10" y="60" width="80" height="8" rx="2" fill="#8d6e63"/>
+  <rect x="10" y="74" width="80" height="8" rx="2" fill="#8d6e63"/>
   <!-- Rail top highlights -->
-  <rect x="12" y="57" width="76" height="2" rx="1" fill="#a1887f" opacity="0.6"/>
-  <rect x="12" y="70" width="76" height="2" rx="1" fill="#a1887f" opacity="0.6"/>
-
-  <!-- Cat ears (drawn before head so they sit behind) -->
-  <!-- Left ear -->
-  <polygon points="30,52 36,30 43,52" fill="#f5deb3"/>
-  <polygon points="32,50 36,35 41,50" fill="#e899a8"/>
-  <!-- Right ear -->
-  <polygon points="57,52 64,30 70,52" fill="#f5deb3"/>
-  <polygon points="59,50 64,35 68,50" fill="#e899a8"/>
-
-  <!-- Cat head -->
-  <circle cx="50" cy="57" r="22" fill="#f5deb3"/>
-
-  <!-- Eyes -->
-  <ellipse cx="41" cy="52" rx="4" ry="5" fill="#2d2d2d"/>
-  <ellipse cx="59" cy="52" rx="4" ry="5" fill="#2d2d2d"/>
-  <!-- Eye highlights -->
-  <circle cx="42.5" cy="50" r="1.5" fill="white"/>
-  <circle cx="60.5" cy="50" r="1.5" fill="white"/>
-
-  <!-- Nose -->
-  <ellipse cx="50" cy="60" rx="2.5" ry="1.8" fill="#e899a8"/>
-
-  <!-- Mouth -->
-  <path d="M45,64 Q50,69 55,64" fill="none" stroke="#c07888"
-        stroke-width="1.5" stroke-linecap="round"/>
-
-  <!-- Whiskers left -->
-  <line x1="18" y1="58" x2="44" y2="60"
-        stroke="#bbb" stroke-width="1" stroke-linecap="round"/>
-  <line x1="16" y1="63" x2="44" y2="63"
-        stroke="#bbb" stroke-width="1" stroke-linecap="round"/>
-
-  <!-- Whiskers right -->
-  <line x1="56" y1="60" x2="82" y2="58"
-        stroke="#bbb" stroke-width="1" stroke-linecap="round"/>
-  <line x1="56" y1="63" x2="84" y2="63"
-        stroke="#bbb" stroke-width="1" stroke-linecap="round"/>
+  <rect x="10" y="60" width="80" height="2" rx="1" fill="#a1887f" opacity="0.6"/>
+  <rect x="10" y="74" width="80" height="2" rx="1" fill="#a1887f" opacity="0.6"/>
 </svg>
