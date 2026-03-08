@@ -96,6 +96,14 @@
     opacity: 0.85;
 }
 
+/* -------- Loading State -------- */
+.level-list-loading {
+    text-align: center;
+    color: #888;
+    padding: 30px 20px;
+    font-size: 0.95em;
+}
+
 /* -------- Calendar Grid -------- */
 .calendar-grid {
     display: grid;
@@ -175,6 +183,11 @@
     font-size: 1em;
     line-height: 1.2;
     margin-top: 2px;
+}
+
+.calendar-status-syncing {
+    color: #bbb;
+    font-size: 0.85em;
 }
 
 /* ========== Cloud Sync Bar ========== */
