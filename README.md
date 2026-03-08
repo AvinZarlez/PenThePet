@@ -41,11 +41,11 @@
 
 Access these from the **☰ Menu → Options**:
 
-| Option | Description |
-|--------|-------------|
-| **Pet Type** | Choose from 26 animal emojis |
-| **Hint Mode** | *Disabled* — no hints. *Check Optimal* — area turns yellow/green based on goal. *Reveal Target* — shows your area vs. the goal (e.g., "8 / 11"). |
-| **Debug Mode** | Shows developer tools at the bottom of the page |
+| Option         | Description                                                                                                                                      |
+| -------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **Pet Type**   | Choose from 26 animal emojis                                                                                                                     |
+| **Hint Mode**  | _Disabled_ — no hints. _Check Optimal_ — area turns yellow/green based on goal. _Reveal Target_ — shows your area vs. the goal (e.g., "8 / 11"). |
+| **Debug Mode** | Shows developer tools at the bottom of the page                                                                                                  |
 
 ---
 

@@ -39,12 +39,12 @@ See [CODE_STRUCTURE.md](CODE_STRUCTURE.md) for the full file listing.
 
 ## Performance
 
-| Metric | Target | Status |
-|---|---|---|
-| Page load | <100ms | ✅ |
-| Map load (pre-generated) | <50ms | ✅ |
-| BFS on max grid (17×17) | <10ms | ✅ |
-| Tests (full suite) | <10s | ✅ |
+| Metric                   | Target | Status |
+| ------------------------ | ------ | ------ |
+| Page load                | <100ms | ✅     |
+| Map load (pre-generated) | <50ms  | ✅     |
+| BFS on max grid (17×17)  | <10ms  | ✅     |
+| Tests (full suite)       | <10s   | ✅     |
 
 ## Extensibility
 

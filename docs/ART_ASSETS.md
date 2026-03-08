@@ -4,16 +4,16 @@ All game art assets are stored in the `assets/` folder at the project root. Thes
 
 ## Asset Inventory
 
-| Asset | File | Size | Usage |
-|-------|------|------|-------|
-| Grass | `assets/grass.svg` | 50×50 px | Default ground tile. Repeating green grass texture with blade details. Displayed for all walkable grass cells. |
-| Water | `assets/water.svg` | 50×50 px | Water obstacle tile. Blue lake water texture with wave highlights. Cannot be clicked or traversed. Works as both a repeating and standalone texture. |
-| Wall | `assets/wall.svg` | 50×50 px | Player-placed wall tile. Wooden fence texture with plank and post details. Shown when player clicks a grass tile. |
-| Home | `assets/home.svg` | 50×50 px | Pet's home tile overlay. Dog house artwork rendered on top of grass. Has a dark doorway area in the center sized for the user's chosen pet emoji to be displayed on top. |
-| Penned | `assets/penned.svg` | 50×50 px | Penned area tile. Yellow-tinted grass texture indicating tiles the pet can access when enclosed. Applied to grass tiles within the penned area. |
-| Star | `assets/star.svg` | 50×50 px | Star tile overlay. Gold star icon rendered on top of grass. Star tiles score 3 points instead of 1 when inside the penned area. |
-| Bee | `assets/bee.svg` | 50×50 px | Bee tile overlay. Bee icon rendered on top of grass. Bee tiles subtract 3 points when inside the penned area. |
-| Paw | `assets/paw.svg` | 30×30 px | Escape path indicator. Custom paw print icon overlaid on each tile along the pet's escape route. Rotated in code to face the direction the pet walks toward the grid edge. |
+| Asset  | File                | Size     | Usage                                                                                                                                                                      |
+| ------ | ------------------- | -------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Grass  | `assets/grass.svg`  | 50×50 px | Default ground tile. Repeating green grass texture with blade details. Displayed for all walkable grass cells.                                                             |
+| Water  | `assets/water.svg`  | 50×50 px | Water obstacle tile. Blue lake water texture with wave highlights. Cannot be clicked or traversed. Works as both a repeating and standalone texture.                       |
+| Wall   | `assets/wall.svg`   | 50×50 px | Player-placed wall tile. Wooden fence texture with plank and post details. Shown when player clicks a grass tile.                                                          |
+| Home   | `assets/home.svg`   | 50×50 px | Pet's home tile overlay. Dog house artwork rendered on top of grass. Has a dark doorway area in the center sized for the user's chosen pet emoji to be displayed on top.   |
+| Penned | `assets/penned.svg` | 50×50 px | Penned area tile. Yellow-tinted grass texture indicating tiles the pet can access when enclosed. Applied to grass tiles within the penned area.                            |
+| Star   | `assets/star.svg`   | 50×50 px | Star tile overlay. Gold star icon rendered on top of grass. Star tiles score 3 points instead of 1 when inside the penned area.                                            |
+| Bee    | `assets/bee.svg`    | 50×50 px | Bee tile overlay. Bee icon rendered on top of grass. Bee tiles subtract 3 points when inside the penned area.                                                              |
+| Paw    | `assets/paw.svg`    | 30×30 px | Escape path indicator. Custom paw print icon overlaid on each tile along the pet's escape route. Rotated in code to face the direction the pet walks toward the grid edge. |
 
 ## Design Guidelines
 

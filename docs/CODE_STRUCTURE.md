@@ -65,15 +65,15 @@ PenThePet/
 
 All cookie operations go through `CookieUtils`. Currently stored:
 
-| Cookie | Purpose | Set By |
-|--------|---------|--------|
-| `selectedPet` | Chosen animal emoji | Menu.js |
-| `hintsDisabled` | Whether hints are disabled | Menu.js |
-| `neverShowTarget` | Whether target score is never revealed | Menu.js |
-| `lang` | UI language preference (e.g. `en`) | i18n.js / main.js |
-| `currentLevel` | Selected puzzle date | Menu.js |
-| `debugMode` | Debug tools visibility | Menu.js |
-| `submission_YYYY-MM-DD` | All level data: score, walls, time, and `hintsUsed` (v1.1+). May exist before formal submission with hints only (no score). | Game.js |
+| Cookie                  | Purpose                                                                                                                     | Set By            |
+| ----------------------- | --------------------------------------------------------------------------------------------------------------------------- | ----------------- |
+| `selectedPet`           | Chosen animal emoji                                                                                                         | Menu.js           |
+| `hintsDisabled`         | Whether hints are disabled                                                                                                  | Menu.js           |
+| `neverShowTarget`       | Whether target score is never revealed                                                                                      | Menu.js           |
+| `lang`                  | UI language preference (e.g. `en`)                                                                                          | i18n.js / main.js |
+| `currentLevel`          | Selected puzzle date                                                                                                        | Menu.js           |
+| `debugMode`             | Debug tools visibility                                                                                                      | Menu.js           |
+| `submission_YYYY-MM-DD` | All level data: score, walls, time, and `hintsUsed` (v1.1+). May exist before formal submission with hints only (no score). | Game.js           |
 
 All cookies expire after 1 year, path `/`, SameSite `Lax`.
 
@@ -97,7 +97,10 @@ All user-facing strings live in **`js/i18n.js`** — the single source of truth 
 
 ```js
 // Simple key lookup
-counterElement.textContent = I18N.t('walls_counter', { wallCount: 3, maxWalls: 9 });
+counterElement.textContent = I18N.t("walls_counter", {
+  wallCount: 3,
+  maxWalls: 9,
+});
 // → "3 / 9"
 ```
 
@@ -122,8 +125,8 @@ const LANGUAGES = {
 
 ```js
 const LANGUAGE_OPTIONS = [
-    { value: 'en', label: 'English' },
-    { value: 'es', label: 'Español' }, // new option
+  { value: "en", label: "English" },
+  { value: "es", label: "Español" }, // new option
 ];
 ```
 

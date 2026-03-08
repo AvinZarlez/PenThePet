@@ -31,24 +31,24 @@ npm run lint:markdown:fix             # Markdown linting
 
 ### Webapp Tests (`test/webapp/`)
 
-| File | What it tests |
-|---|---|
-| `constants.test.js` | CONSTANTS values, types, tile distribution sums |
-| `wordList.test.js` | Word list non-empty, no duplicates, helper functions |
-| `PathfindingUtils.test.js` | `isPenned()`, `calculatePennedArea()`, edge cases |
-| `Grid.test.js` | Constructor, map loading, state management, tile get/set |
-| `Menu.test.js` | Modal open/close, cookie persistence, level loading, options |
-| `CookieUtils.test.js` | Read/write cookies, emoji/JSON values, name collisions |
-| `DateUtils.test.js` | ISO date formatting, display formatting |
+| File                       | What it tests                                                |
+| -------------------------- | ------------------------------------------------------------ |
+| `constants.test.js`        | CONSTANTS values, types, tile distribution sums              |
+| `wordList.test.js`         | Word list non-empty, no duplicates, helper functions         |
+| `PathfindingUtils.test.js` | `isPenned()`, `calculatePennedArea()`, edge cases            |
+| `Grid.test.js`             | Constructor, map loading, state management, tile get/set     |
+| `Menu.test.js`             | Modal open/close, cookie persistence, level loading, options |
+| `CookieUtils.test.js`      | Read/write cookies, emoji/JSON values, name collisions       |
+| `DateUtils.test.js`        | ISO date formatting, display formatting                      |
 
 ### Generation Tests (`test/generation/`)
 
-| File | What it tests |
-|---|---|
-| `MapGenerator.test.js` | Map size/structure, path validation, solver, retry logic |
-| `MapValidator.test.js` | Quality validation rules |
-| `generate-maps.test.js` | `validateMapsDatabase`, `fixMapsDatabase`, `getNextDayNumber` |
-| `generate-map.test.js` | `parseSizeInput`, `getRandomSize`, `incrementDate`, `getNextAvailableDate` |
+| File                    | What it tests                                                              |
+| ----------------------- | -------------------------------------------------------------------------- |
+| `MapGenerator.test.js`  | Map size/structure, path validation, solver, retry logic                   |
+| `MapValidator.test.js`  | Quality validation rules                                                   |
+| `generate-maps.test.js` | `validateMapsDatabase`, `fixMapsDatabase`, `getNextDayNumber`              |
+| `generate-map.test.js`  | `parseSizeInput`, `getRandomSize`, `incrementDate`, `getNextAvailableDate` |
 
 ### Excluded from Coverage
 
@@ -59,11 +59,11 @@ npm run lint:markdown:fix             # Markdown linting
 Use Jest's `describe`/`test` pattern with Arrange-Act-Assert:
 
 ```javascript
-describe('MyFunction', () => {
-    test('should handle basic case', () => {
-        const result = myFunction(input);
-        expect(result).toBe(expected);
-    });
+describe("MyFunction", () => {
+  test("should handle basic case", () => {
+    const result = myFunction(input);
+    expect(result).toBe(expected);
+  });
 });
 ```
 

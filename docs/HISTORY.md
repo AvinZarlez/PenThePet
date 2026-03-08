@@ -22,7 +22,7 @@ Then came puzzle generation, and that's where things got rough.
 
 For the daily puzzles to work, I needed to pre-generate maps with calculated optimal scores. That's a combinatorial optimization problem — given a wall budget, find the placement that maximizes enclosed area. There are billions of possible placements even on modest grids.
 
-I asked Copilot to build a solver. First attempt was a greedy algorithm, which is just the wrong approach for this kind of problem. Then it tried an exhaustive search that stored all the combinations in memory and crashed the browser. Then it gave me a version that *minimized* the area instead of *maximizing* it. Literally one comparison operator pointing the wrong way — `<` instead of `>`. That bug took days to find because the code looked completely fine. It ran, it produced output, it just... produced the wrong output.
+I asked Copilot to build a solver. First attempt was a greedy algorithm, which is just the wrong approach for this kind of problem. Then it tried an exhaustive search that stored all the combinations in memory and crashed the browser. Then it gave me a version that _minimized_ the area instead of _maximizing_ it. Literally one comparison operator pointing the wrong way — `<` instead of `>`. That bug took days to find because the code looked completely fine. It ran, it produced output, it just... produced the wrong output.
 
 That's the kind of mistake that's really hard to catch. No error, no crash. I only found it because I played the puzzles and thought "these feel too easy." That gut feeling — does this match what I intended? — is something AI just doesn't have.
 

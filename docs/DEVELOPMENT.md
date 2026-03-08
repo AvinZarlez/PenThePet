@@ -65,9 +65,9 @@ Edit `js/constants.js`, regenerate maps if needed (`--fresh`), run `npm test`.
 **Browser console:**
 
 ```javascript
-window.game              // Game instance
-window.game.grid.tiles   // Current tile layout
-window.game.render()     // Force re-render
+window.game; // Game instance
+window.game.grid.tiles; // Current tile layout
+window.game.render(); // Force re-render
 ```
 
 Use DevTools (F12) → Sources to set breakpoints. Check Network tab for 404s on map files.
@@ -104,14 +104,14 @@ Use **relative paths** in HTML (`js/main.js` not `/js/main.js`) — absolute pat
 
 ## Troubleshooting
 
-| Problem | Fix |
-|---|---|
-| Module not found in tests | `rm -rf node_modules && npm install` |
+| Problem                             | Fix                                                                     |
+| ----------------------------------- | ----------------------------------------------------------------------- |
+| Module not found in tests           | `rm -rf node_modules && npm install`                                    |
 | Game loads locally but not on Pages | Check for absolute paths, case-sensitive filenames, committed map files |
-| Tests timeout | Use smaller maps in tests (`size = 5`); set `jest.setTimeout(30000)` |
-| Coverage below threshold | Run `npm test -- --coverage`, find uncovered lines, add tests |
-| ESLint errors | `npm run lint:fix` |
-| Map generation fails | Check Python/PuLP install; verify tile distribution sums to ~1.0 |
+| Tests timeout                       | Use smaller maps in tests (`size = 5`); set `jest.setTimeout(30000)`    |
+| Coverage below threshold            | Run `npm test -- --coverage`, find uncovered lines, add tests           |
+| ESLint errors                       | `npm run lint:fix`                                                      |
+| Map generation fails                | Check Python/PuLP install; verify tile distribution sums to ~1.0        |
 
 ## VS Code Setup
 
