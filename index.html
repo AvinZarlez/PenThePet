@@ -28,33 +28,41 @@
 <body>
     <div class="container">
         <!-- Menu Button -->
-        <button id="menuBtn" class="menu-btn" aria-label="Open menu">☰</button>
+        <button id="menuBtn" class="menu-btn" data-i18n-aria="btn_menu_open" aria-label="Open menu">☰</button>
+
+        <!-- Language Selector -->
+        <div class="language-selector-container">
+            <select id="languageSelector" class="language-selector" data-i18n-aria="language_aria" aria-label="Select language">
+                <option value="en">English</option>
+            </select>
+        </div>
 
         <!-- Cloud Sync UI (hidden until Firebase is configured) -->
         <div id="cloudSyncBar" class="cloud-sync-bar">
             <button id="cloudSyncLoginBtn" class="cloud-sync-login-btn" style="display: none;"
+                    data-i18n="cloud_sync_sign_in_btn"
                     onclick="CloudSync.openAuthModal()">☁️ Sign In to Sync</button>
             <div id="cloudSyncUserInfo" class="cloud-sync-user-info" style="display: none;">
                 <span id="cloudSyncUserEmail" class="cloud-sync-email"></span>
                 <span id="cloudSyncStatus" class="cloud-sync-status" style="display: none;"></span>
-                <button class="cloud-sync-signout-btn" onclick="CloudSync.handleSignOut()">Sign Out</button>
+                <button class="cloud-sync-signout-btn" data-i18n="cloud_sync_sign_out_btn" onclick="CloudSync.handleSignOut()">Sign Out</button>
             </div>
         </div>
 
         <h1><span aria-hidden="true">🐾</span> Pen the Pet</h1>
-        <p class="subtitle">A Logic Puzzle Game About Fencing</p>
+        <p class="subtitle" data-i18n="subtitle">A Logic Puzzle Game About Fencing</p>
 
         <div class="map-info">
             <div class="map-info-item">
-                <span class="map-info-label">Day:</span>
+                <span class="map-info-label" data-i18n="label_day">Day:</span>
                 <span id="mapDay" class="map-info-value">1</span>
             </div>
             <div class="map-info-item">
-                <span class="map-info-label">Map:</span>
+                <span class="map-info-label" data-i18n="label_map">Map:</span>
                 <span id="mapName" class="map-info-value">Canyon</span>
             </div>
             <div class="map-info-item">
-                <span class="map-info-label">Date:</span>
+                <span class="map-info-label" data-i18n="label_date">Date:</span>
                 <span id="mapDate" class="map-info-value">2026-02-06</span>
             </div>
         </div>
@@ -70,51 +78,53 @@
         </div>
 
         <div class="controls">
-            <button id="resetBtn">Reset</button>
+            <button id="resetBtn" data-i18n="btn_reset">Reset</button>
             <div class="wall-counter">
-                <span class="counter-label">Walls Placed:</span>
+                <span class="counter-label" data-i18n="label_walls_placed">Walls Placed:</span>
                 <span id="wallCounter" class="counter-value">0 / 9</span>
             </div>
             <div class="area-size-display">
-                <span class="counter-label">Area Size:</span>
+                <span class="counter-label" data-i18n="label_area_size">Area Size:</span>
                 <span id="areaSize" class="counter-value">∞</span>
             </div>
-            <button id="timerBtn" class="timer-btn" title="Pause timer" aria-label="Pause timer">
+            <button id="timerBtn" class="timer-btn" data-i18n-title="timer_pause_title" data-i18n-aria="timer_pause_aria" title="Pause timer" aria-label="Pause timer">
                 <span id="timerValue" class="timer-value">00:00</span>
                 <span id="timerIcon" class="timer-icon" aria-hidden="true">⏸</span>
             </button>
             <button id="hintCheckBtn" class="hint-check-btn" style="display: none;" disabled
+                    data-i18n-title="hint_check_title_disabled" data-i18n-aria="hint_check_aria"
                     title="Pen the pet first to check your solution" aria-label="Check if optimal">
-                <span class="hint-check-label">Check if Optimal</span>
+                <span class="hint-check-label" data-i18n="hint_check_label">Check if Optimal</span>
             </button>
             <button class="penned-status not-penned" id="pennedStatus"
+                    data-i18n-title="status_cant_escape"
                     title="Pet can still escape - keep building walls!"
                     data-interactive="false">
-                <span class="submit-label">Unsolved</span><span class="submit-check">✗</span>
+                <span class="submit-label" data-i18n="status_unsolved">Unsolved</span><span class="submit-check">✗</span>
             </button>
         </div>
 
         <div id="notification" class="notification"></div>
 
         <div id="solutionToggleBar" class="solution-toggle-bar" style="display: none;">
-            <span id="solutionViewLabel" class="solution-view-label">Viewing: Your Solution</span>
-            <button id="solutionToggleBtn" class="solution-toggle-btn" aria-label="Toggle between your solution and optimal result">
+            <span id="solutionViewLabel" class="solution-view-label" data-i18n="solution_viewing_yours">Viewing: Your Solution</span>
+            <button id="solutionToggleBtn" class="solution-toggle-btn" data-i18n-aria="solution_toggle_aria" aria-label="Toggle between your solution and optimal result" data-i18n="solution_toggle_view_optimal">
                 View Optimal Result
             </button>
         </div>
 
         <aside id="roamSpaceViewer" class="roam-viewer-sidebar">
             <article class="viewer-card">
-                <header class="viewer-header">Pet Containment Summary</header>
+                <header class="viewer-header" data-i18n="viewer_header">Pet Containment Summary</header>
                 <section class="metrics-display">
-                    <label class="metric-label">Roaming Area Score</label>
+                    <label class="metric-label" data-i18n="metric_label_roaming">Roaming Area Score</label>
                     <output class="metric-value" id="roamAreaMetric">0</output>
                     <small class="metric-percentage" id="roamAreaPercentage"></small>
-                    <small class="metric-helper">yellow tiles counted</small>
+                    <small class="metric-helper" data-i18n="metric_helper">yellow tiles counted</small>
                 </section>
                 <footer class="viewer-footer">
-                    <button id="shareScoreBtn" class="share-score-btn">📋 Copy Score</button>
-                    <button id="exitViewer" class="exit-viewer-btn">Back to Game</button>
+                    <button id="shareScoreBtn" class="share-score-btn" data-i18n="btn_copy_score">📋 Copy Score</button>
+                    <button id="exitViewer" class="exit-viewer-btn" data-i18n="btn_back_to_game">Back to Game</button>
                 </footer>
             </article>
         </aside>
@@ -127,45 +137,45 @@
 
         <div class="best-state-wrapper">
             <button id="bestStateBanner" class="best-state-banner" disabled style="display: none;">
-                <span class="best-state-label">Best So Far: None</span>
+                <span class="best-state-label" data-i18n="best_so_far_none">Best So Far: None</span>
             </button>
         </div>
 
         <div class="debug-section" style="display: none;">
-            <h3>🛠️ Debug Tools</h3>
+            <h3 data-i18n="debug_heading">🛠️ Debug Tools</h3>
             <div class="debug-content">
                 <div class="debug-item">
                     <label for="debugShowAllLevels">
                         <input type="checkbox" id="debugShowAllLevels">
-                        Show All Levels
+                        <span data-i18n="debug_show_all_levels">Show All Levels</span>
                     </label>
-                    <small class="option-help">Shows future levels in the level selector</small>
+                    <small class="option-help" data-i18n="debug_show_all_levels_help">Shows future levels in the level selector</small>
                 </div>
                 <div class="debug-item">
-                    <button id="debugResetLevel">Reset Level</button>
+                    <button id="debugResetLevel" data-i18n="debug_reset_level">Reset Level</button>
                 </div>
                 <div class="debug-item">
-                    <button id="debugResetAll">Reset All Data</button>
+                    <button id="debugResetAll" data-i18n="debug_reset_all">Reset All Data</button>
                 </div>
             </div>
         </div>
 
         <footer>
             <p>Made by <a href="https://www.AvinZarlez.com" target="_blank" rel="noopener noreferrer">Avin Zarlez</a></p>
-            <p><a id="githubFooterLink" href="https://github.com/AvinZarlez/penthepet" target="_blank" rel="noopener noreferrer">View on GitHub</a></p>
+            <p><a id="githubFooterLink" href="https://github.com/AvinZarlez/penthepet" target="_blank" rel="noopener noreferrer" data-i18n="footer_view_github">View on GitHub</a></p>
         </footer>
     </div>
 
     <!-- Menu Modal -->
     <div id="menuModal" class="modal">
         <div class="modal-content menu-modal-content">
-            <button class="modal-close" aria-label="Close menu">&times;</button>
-            <h2>Menu</h2>
+            <button class="modal-close" data-i18n-aria="menu_close_aria" aria-label="Close menu">&times;</button>
+            <h2 data-i18n="menu_title">Menu</h2>
             <div class="menu-options">
-                <button id="levelSelectorBtn" class="menu-option-btn">📅 Level Selector</button>
-                <button id="instructionsBtn" class="menu-option-btn">📖 Instructions</button>
-                <button id="aboutBtn" class="menu-option-btn">ℹ️ About</button>
-                <button id="optionsBtn" class="menu-option-btn">⚙️ Options</button>
+                <button id="levelSelectorBtn" class="menu-option-btn" data-i18n="btn_level_selector">📅 Level Selector</button>
+                <button id="instructionsBtn" class="menu-option-btn" data-i18n="btn_instructions">📖 Instructions</button>
+                <button id="aboutBtn" class="menu-option-btn" data-i18n="btn_about">ℹ️ About</button>
+                <button id="optionsBtn" class="menu-option-btn" data-i18n="btn_options">⚙️ Options</button>
             </div>
         </div>
     </div>
@@ -173,9 +183,9 @@
     <!-- Level Selector Modal -->
     <div id="levelSelectorModal" class="modal">
         <div class="modal-content">
-            <button class="modal-close" aria-label="Close level selector">&times;</button>
-            <h2>Level Selector</h2>
-            <p class="modal-description">Choose a previous day's puzzle to play</p>
+            <button class="modal-close" data-i18n-aria="level_selector_close_aria" aria-label="Close level selector">&times;</button>
+            <h2 data-i18n="level_selector_title">Level Selector</h2>
+            <p class="modal-description" data-i18n="level_selector_description">Choose a previous day's puzzle to play</p>
             <div id="levelList" class="level-list">
                 <!-- Levels will be populated dynamically -->
             </div>
@@ -185,39 +195,39 @@
     <!-- Instructions Modal -->
     <div id="instructionsModal" class="modal">
         <div class="modal-content">
-            <button class="modal-close" aria-label="Close instructions">&times;</button>
-            <h2>How to Play</h2>
+            <button class="modal-close" data-i18n-aria="instructions_close_aria" aria-label="Close instructions">&times;</button>
+            <h2 data-i18n="instructions_title">How to Play</h2>
             <div class="modal-section">
-                <h3>Objective</h3>
-                <p>Build walls to pen in your pet! The goal is to create the largest enclosed area possible.</p>
+                <h3 data-i18n="instructions_objective_heading">Objective</h3>
+                <p data-i18n="instructions_objective_text">Build walls to pen in your pet! The goal is to create the largest enclosed area possible.</p>
             </div>
             <div class="modal-section">
-                <h3>Gameplay</h3>
+                <h3 data-i18n="instructions_gameplay_heading">Gameplay</h3>
                 <div id="tileDescriptions" class="tile-descriptions"></div>
             </div>
             <div class="modal-section">
-                <h3>Scoring</h3>
+                <h3 data-i18n="instructions_scoring_heading">Scoring</h3>
                 <ul>
-                    <li>The game checks if your pet can escape (reach the edge)</li>
-                    <li>When penned (✓), your area size shows the enclosed space</li>
-                    <li>Try to match or exceed the goal area size</li>
-                    <li>Larger penned areas score better!</li>
-                    <li><strong>You can only submit once per puzzle</strong> - plan carefully!</li>
-                    <li>After submission, you can view the optimal solution to compare</li>
+                    <li data-i18n="instructions_scoring_1">The game checks if your pet can escape (reach the edge)</li>
+                    <li data-i18n="instructions_scoring_2">When penned (✓), your area size shows the enclosed space</li>
+                    <li data-i18n="instructions_scoring_3">Try to match or exceed the goal area size</li>
+                    <li data-i18n="instructions_scoring_4">Larger penned areas score better!</li>
+                    <li data-i18n-html="instructions_scoring_5"><strong>You can only submit once per puzzle</strong> - plan carefully!</li>
+                    <li data-i18n="instructions_scoring_6">After submission, you can view the optimal solution to compare</li>
                 </ul>
             </div>
             <div class="modal-section">
-                <h3>Hint System</h3>
+                <h3 data-i18n="instructions_hints_heading">Hint System</h3>
                 <ul>
-                    <li>When a pet is penned, you can press the <strong>Check if Optimal</strong> button to tell you whether your current score is the optimal solution.</li>
-                    <li>The score display will be yellow 🟡 if below `<` the optimal score. It will turn green 🟢 when the correct answer is found `✅`.</li>
-                    <li>If enabled, after checking the first hint, you can get further help by pressing <strong>Reveal Target</strong> to see the optiminal solution alongside your current score.</li>
-                    <li>You can disable hints entirely from the <strong>Options</strong> menu.</li>
+                    <li data-i18n-html="instructions_hints_1">When a pet is penned, you can press the <strong>Check if Optimal</strong> button to tell you whether your current score is the optimal solution.</li>
+                    <li data-i18n="instructions_hints_2">The score display will be yellow 🟡 if below `<` the optimal score. It will turn green 🟢 when the correct answer is found `✅`.</li>
+                    <li data-i18n-html="instructions_hints_3">If enabled, after checking the first hint, you can get further help by pressing <strong>Reveal Target</strong> to see the optimal solution alongside your current score.</li>
+                    <li data-i18n-html="instructions_hints_4">You can disable hints entirely from the <strong>Options</strong> menu.</li>
                 </ul>
             </div>
             <div class="modal-section">
-                <h3>Options</h3>
-                <p>You can customize your pet type and hint preferences in the Options menu. Your preferences are saved automatically.</p>
+                <h3 data-i18n="instructions_options_heading">Options</h3>
+                <p data-i18n="instructions_options_text">You can customize your pet type and hint preferences in the Options menu. Your preferences are saved automatically.</p>
             </div>
         </div>
     </div>
@@ -225,31 +235,31 @@
     <!-- About Modal -->
     <div id="aboutModal" class="modal">
         <div class="modal-content">
-            <button class="modal-close" aria-label="Close about">&times;</button>
-            <h2>About Pen the Pet</h2>
+            <button class="modal-close" data-i18n-aria="about_close_aria" aria-label="Close about">&times;</button>
+            <h2 data-i18n="about_title">About Pen the Pet</h2>
             <div class="modal-section">
-                <p><strong>Pen the Pet</strong> is a logic puzzle game where you fence in your pet by strategically placing walls to create the largest enclosed area.</p>
-                <p>Each day features a new hand-crafted puzzle with a unique layout and challenge.</p>
+                <p data-i18n-html="about_description_1"><strong>Pen the Pet</strong> is a logic puzzle game where you fence in your pet by strategically placing walls to create the largest enclosed area.</p>
+                <p data-i18n="about_description_2">Each day features a new hand-crafted puzzle with a unique layout and challenge.</p>
             </div>
             <div class="modal-section">
-                <h3>Features</h3>
+                <h3 data-i18n="about_features_heading">Features</h3>
                 <ul>
-                    <li>Daily puzzles with unique maps</li>
-                    <li>Multiple pet types to choose from</li>
-                    <li>Configurable hint system</li>
-                    <li>Accessible keyboard navigation</li>
-                    <li>Mobile-friendly design</li>
+                    <li data-i18n="about_features_1">Daily puzzles with unique maps</li>
+                    <li data-i18n="about_features_2">Multiple pet types to choose from</li>
+                    <li data-i18n="about_features_3">Configurable hint system</li>
+                    <li data-i18n="about_features_4">Accessible keyboard navigation</li>
+                    <li data-i18n="about_features_5">Mobile-friendly design</li>
                 </ul>
             </div>
             <div class="modal-section">
-                <h3>Feedback</h3>
-                <p>Found a bug or have a feature idea? <a id="githubIssuesLink" href="https://github.com/AvinZarlez/penthepet/issues" target="_blank" rel="noopener noreferrer">Open an issue on GitHub</a> — all feedback is welcome!</p>
+                <h3 data-i18n="about_feedback_heading">Feedback</h3>
+                <p data-i18n-html="about_feedback_text">Found a bug or have a feature idea? <a id="githubIssuesLink" href="https://github.com/AvinZarlez/penthepet/issues" target="_blank" rel="noopener noreferrer">Open an issue on GitHub</a> — all feedback is welcome!</p>
             </div>
             <div class="modal-section">
-                <h3>Credits</h3>
-                <p>Made by <a href="https://www.AvinZarlez.com" target="_blank" rel="noopener noreferrer">Avin Zarlez</a></p>
-                <p><a id="githubProjectLink" href="https://github.com/AvinZarlez/penthepet" target="_blank" rel="noopener noreferrer">View this project on GitHub</a></p>
-                <p>© 2026 Pen the Pet</p>
+                <h3 data-i18n="about_credits_heading">Credits</h3>
+                <p data-i18n-html="about_credits_1">Made by <a href="https://www.AvinZarlez.com" target="_blank" rel="noopener noreferrer">Avin Zarlez</a></p>
+                <p><a id="githubProjectLink" href="https://github.com/AvinZarlez/penthepet" target="_blank" rel="noopener noreferrer" data-i18n="about_view_github">View this project on GitHub</a></p>
+                <p data-i18n="about_copyright">© 2026 Pen the Pet</p>
             </div>
         </div>
     </div>
@@ -257,11 +267,11 @@
     <!-- Options Modal -->
     <div id="optionsModal" class="modal">
         <div class="modal-content">
-            <button class="modal-close" aria-label="Close options">&times;</button>
-            <h2>Options</h2>
+            <button class="modal-close" data-i18n-aria="options_close_aria" aria-label="Close options">&times;</button>
+            <h2 data-i18n="options_title">Options</h2>
             <div class="modal-section">
                 <div class="option-item">
-                    <label for="modalPetType">Pet Type:</label>
+                    <label for="modalPetType" data-i18n="options_pet_type_label">Pet Type:</label>
                     <select id="modalPetType">
                         <!-- Options populated dynamically from CONSTANTS.ANIMAL_OPTIONS -->
                     </select>
@@ -269,40 +279,40 @@
                 <div class="option-item">
                     <label for="modalHintsDisabled">
                         <input type="checkbox" id="modalHintsDisabled">
-                        Disable hints
+                        <span data-i18n="options_hints_disabled_label">Disable hints</span>
                     </label>
                 </div>
                 <div class="option-item" id="neverShowTargetOptionItem">
                     <label for="modalNeverShowTarget">
                         <input type="checkbox" id="modalNeverShowTarget">
-                        Never show target
+                        <span data-i18n="options_never_show_target_label">Never show target</span>
                     </label>
                 </div>
                 <div class="option-item">
-                    <label for="modalTimezone">Time Zone:</label>
+                    <label for="modalTimezone" data-i18n="options_timezone_label">Time Zone:</label>
                     <select id="modalTimezone">
                         <!-- Options populated dynamically from CONSTANTS.TIMEZONE_OPTIONS -->
                     </select>
-                    <small class="option-help">Used to determine which puzzle is today's</small>
+                    <small class="option-help" data-i18n="options_timezone_help">Used to determine which puzzle is today's</small>
                 </div>
                 <div class="option-item" id="debugModeOptionItem" style="display: none;">
                     <label for="debugModeCheckbox">
                         <input type="checkbox" id="debugModeCheckbox">
-                        Enable Debug Mode
+                        <span data-i18n="options_debug_mode_label">Enable Debug Mode</span>
                     </label>
-                    <small class="option-help">Shows debug tools at the bottom of the page</small>
+                    <small class="option-help" data-i18n="options_debug_mode_help">Shows debug tools at the bottom of the page</small>
                 </div>
             </div>
             <div id="optionsAccountSection" class="modal-section options-account-section" style="display: none;">
-                <h3>☁️ Account</h3>
+                <h3 data-i18n="options_account_heading">☁️ Account</h3>
                 <div id="optionsAccountSignedOut">
-                    <button class="options-account-btn" onclick="CloudSync.openAuthModal()">Sign In to Sync</button>
+                    <button class="options-account-btn" data-i18n="options_sign_in_to_sync" onclick="CloudSync.openAuthModal()">Sign In to Sync</button>
                 </div>
                 <div id="optionsAccountSignedIn" style="display: none;">
-                    <p class="options-account-info">Signed in as: <strong id="optionsUsername"></strong></p>
+                    <p class="options-account-info"><span data-i18n="options_signed_in_as">Signed in as:</span> <strong id="optionsUsername"></strong></p>
                     <div class="options-account-buttons">
-                        <button class="options-account-btn" onclick="CloudSync.openEditProfileModal()">✏️ Edit Username / Email</button>
-                        <button class="options-account-btn options-account-signout" onclick="CloudSync.handleSignOut()">Sign Out</button>
+                        <button class="options-account-btn" data-i18n="options_edit_profile" onclick="CloudSync.openEditProfileModal()">✏️ Edit Username / Email</button>
+                        <button class="options-account-btn options-account-signout" data-i18n="options_sign_out" onclick="CloudSync.handleSignOut()">Sign Out</button>
                     </div>
                 </div>
             </div>
@@ -312,26 +322,26 @@
     <!-- Edit Profile Modal -->
     <div id="editProfileModal" class="modal">
         <div class="modal-content cloud-sync-modal-content">
-            <button class="modal-close" aria-label="Close edit profile" onclick="CloudSync.closeEditProfileModal()">&times;</button>
-            <h2>✏️ Edit Profile</h2>
-            <p class="modal-description">Update your username or email address</p>
+            <button class="modal-close" data-i18n-aria="edit_profile_close_aria" aria-label="Close edit profile" onclick="CloudSync.closeEditProfileModal()">&times;</button>
+            <h2 data-i18n="edit_profile_title">✏️ Edit Profile</h2>
+            <p class="modal-description" data-i18n="edit_profile_description">Update your username or email address</p>
             <div class="auth-form">
-                <label for="profileUsername">Username</label>
-                <input type="text" id="profileUsername" class="auth-input" placeholder="Your display name" autocomplete="username">
-                <label for="profileEmail">Email</label>
-                <input type="email" id="profileEmail" class="auth-input" placeholder="you@example.com" autocomplete="email">
+                <label for="profileUsername" data-i18n="edit_profile_username_label">Username</label>
+                <input type="text" id="profileUsername" class="auth-input" data-i18n-placeholder="edit_profile_username_placeholder" placeholder="Your display name" autocomplete="username">
+                <label for="profileEmail" data-i18n="edit_profile_email_label">Email</label>
+                <input type="email" id="profileEmail" class="auth-input" data-i18n-placeholder="edit_profile_email_placeholder" placeholder="you@example.com" autocomplete="email">
                 <div class="profile-linked-accounts">
-                    <p class="profile-section-label">Connected accounts</p>
+                    <p class="profile-section-label" data-i18n="edit_profile_connected_heading">Connected accounts</p>
                     <div class="linked-account-row">
-                        <span class="linked-account-name">Google</span>
-                        <button id="linkGoogleBtn" class="auth-btn auth-btn-secondary auth-btn-sm" onclick="CloudSync.handleLinkWithGoogle()">Connect</button>
+                        <span class="linked-account-name" data-i18n="edit_profile_google">Google</span>
+                        <button id="linkGoogleBtn" class="auth-btn auth-btn-secondary auth-btn-sm" data-i18n="edit_profile_connect" onclick="CloudSync.handleLinkWithGoogle()">Connect</button>
                     </div>
                 </div>
                 <div id="profileError" class="auth-error" style="display: none;"></div>
                 <div id="profileSuccess" class="profile-success" style="display: none;"></div>
                 <div class="auth-buttons">
-                    <button id="profileSaveBtn" class="auth-btn auth-btn-primary" onclick="CloudSync.handleSaveProfile()">Save Changes</button>
-                    <button class="auth-btn auth-btn-secondary" onclick="CloudSync.closeEditProfileModal()">Cancel</button>
+                    <button id="profileSaveBtn" class="auth-btn auth-btn-primary" data-i18n="edit_profile_save" onclick="CloudSync.handleSaveProfile()">Save Changes</button>
+                    <button class="auth-btn auth-btn-secondary" data-i18n="edit_profile_cancel" onclick="CloudSync.closeEditProfileModal()">Cancel</button>
                 </div>
             </div>
         </div>
@@ -340,19 +350,19 @@
     <!-- Cloud Sync Auth Modal -->
     <div id="cloudSyncModal" class="modal">
         <div class="modal-content cloud-sync-modal-content">
-            <button class="modal-close" aria-label="Close sign in" onclick="CloudSync.closeAuthModal()">&times;</button>
-            <h2>☁️ Cloud Sync</h2>
-            <p class="modal-description">Sign in to sync your puzzle progress across devices</p>
+            <button class="modal-close" data-i18n-aria="cloud_sync_modal_close_aria" aria-label="Close sign in" onclick="CloudSync.closeAuthModal()">&times;</button>
+            <h2 data-i18n="cloud_sync_modal_title">☁️ Cloud Sync</h2>
+            <p class="modal-description" data-i18n="cloud_sync_modal_description">Sign in to sync your puzzle progress across devices</p>
             <div class="auth-form">
                 <button id="authGoogleBtn" class="auth-oauth-btn auth-oauth-google" onclick="CloudSync.handleSignInWithGoogle()">
-                    <span class="auth-oauth-icon" aria-hidden="true">G</span> Sign in with Google
+                    <span class="auth-oauth-icon" aria-hidden="true">G</span> <span data-i18n="cloud_sync_sign_in_google">Sign in with Google</span>
                 </button>
-                <div class="auth-divider"><span>or use email link</span></div>
-                <label for="authEmailLink">Email</label>
-                <input type="email" id="authEmailLink" class="auth-input" placeholder="you@example.com" autocomplete="email">
+                <div class="auth-divider"><span data-i18n="cloud_sync_or_email">or use email link</span></div>
+                <label for="authEmailLink" data-i18n="cloud_sync_email_label">Email</label>
+                <input type="email" id="authEmailLink" class="auth-input" data-i18n-placeholder="cloud_sync_email_placeholder" placeholder="you@example.com" autocomplete="email">
                 <div id="authLinkError" class="auth-error" style="display: none;"></div>
                 <div id="authLinkSuccess" class="profile-success" style="display: none;"></div>
-                <button id="authSendLinkBtn" class="auth-btn auth-btn-primary" onclick="CloudSync.handleSendSignInLink()">Send Sign-In Link</button>
+                <button id="authSendLinkBtn" class="auth-btn auth-btn-primary" data-i18n="cloud_sync_send_link" onclick="CloudSync.handleSendSignInLink()">Send Sign-In Link</button>
             </div>
         </div>
     </div>
@@ -360,11 +370,11 @@
     <!-- Sync Error Modal -->
     <div id="syncErrorModal" class="modal">
         <div class="modal-content">
-            <button class="modal-close" aria-label="Close sync error">&times;</button>
-            <h2>⚠️ Sync Error</h2>
-            <p>There was an error syncing your data with the cloud:</p>
+            <button class="modal-close" data-i18n-aria="sync_error_close_aria" aria-label="Close sync error">&times;</button>
+            <h2 data-i18n="sync_error_title">⚠️ Sync Error</h2>
+            <p data-i18n="sync_error_text">There was an error syncing your data with the cloud:</p>
             <pre id="syncErrorMessage" class="sync-error-details"></pre>
-            <p>Please <a id="syncErrorIssueLink" href="https://github.com/AvinZarlez/penthepet/issues" target="_blank" rel="noopener noreferrer">submit an issue on GitHub</a> with the error details above to help us fix it.</p>
+            <p>Please <a id="syncErrorIssueLink" href="https://github.com/AvinZarlez/penthepet/issues" target="_blank" rel="noopener noreferrer" data-i18n="sync_error_link_text">submit an issue on GitHub</a> with the error details above to help us fix it.</p>
         </div>
     </div>
 
@@ -379,6 +389,7 @@
     <script src="js/tileData.js"></script>
     <script src="js/tileTypes.js"></script>
     <script src="js/CookieUtils.js"></script>
+    <script src="js/i18n.js"></script>
     <script src="js/DateUtils.js"></script>
     <script src="js/PathfindingUtils.js"></script>
     <script src="js/Grid.js"></script>

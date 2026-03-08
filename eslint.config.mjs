@@ -56,6 +56,9 @@ export default [
                 getRandomWord: 'readonly',
                 WORD_LIST: 'readonly',
                 updateMapInfo: 'readonly',
+                I18N: 'readonly',
+                LANGUAGE_OPTIONS: 'readonly',
+                LANGUAGES: 'readonly',
             },
         },
         rules: {

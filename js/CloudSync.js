@@ -307,15 +307,15 @@ const CloudSync = (function () {
         if (!el) return;
         el.style.display = 'inline-block';
         if (state === 'syncing') {
-            el.textContent = '🔄 Syncing…';
+            el.textContent = I18N.t('cloud_sync_syncing');
             el.title = 'Syncing with cloud';
             el.className = 'cloud-sync-status syncing';
         } else if (state === 'synced') {
-            el.textContent = '☁️ Synced';
+            el.textContent = I18N.t('cloud_sync_synced');
             el.title = 'All data synced to cloud';
             el.className = 'cloud-sync-status synced';
         } else if (state === 'error') {
-            el.textContent = '⚠️ Sync error';
+            el.textContent = I18N.t('cloud_sync_error');
             el.title = errorMsg || 'Sync failed';
             el.className = 'cloud-sync-status error';
             if (errorMsg) {

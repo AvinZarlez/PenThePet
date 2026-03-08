@@ -296,7 +296,31 @@ async function initGame() {
 }
 
 // Start the game when the DOM is fully loaded
-window.addEventListener('DOMContentLoaded', initGame);
+window.addEventListener('DOMContentLoaded', () => {
+    // Load saved language preference and apply translated strings to the DOM
+    I18N.loadFromCookie();
+
+    // Populate language selector options from LANGUAGE_OPTIONS
+    const langSelector = document.getElementById('languageSelector');
+    if (langSelector) {
+        langSelector.innerHTML = '';
+        LANGUAGE_OPTIONS.forEach(opt => {
+            const option = document.createElement('option');
+            option.value = opt.value;
+            option.textContent = opt.label;
+            langSelector.appendChild(option);
+        });
+        langSelector.value = I18N.getLanguage();
+        langSelector.addEventListener('change', () => {
+            I18N.setLanguage(langSelector.value);
+        });
+    }
+
+    // Apply translated strings to static HTML elements
+    I18N._applyToDOM();
+
+    initGame();
+});
 
 // Export for use in Node.js testing
 if (typeof module !== 'undefined' && module.exports) {
