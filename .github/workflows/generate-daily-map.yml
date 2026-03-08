@@ -10,7 +10,7 @@ on:
       size:
         description: 'Map size — exact (e.g. "9") or a range to pick from randomly (e.g. "7-17"). Must be between 7 (minimum) and 17 (maximum).'
         required: true
-        default: '9'
+        default: '7-17'
       count:
         description: 'Number of maps to generate'
         required: false
