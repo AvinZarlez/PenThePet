@@ -957,3 +957,37 @@
     margin-top: 4px;
     margin-bottom: 4px;
 }
+
+/* ========== Best State Banner ========== */
+.best-state-wrapper {
+    display: flex;
+    justify-content: center;
+    margin: 4px 0;
+}
+
+.best-state-banner {
+    padding: 8px 16px;
+    min-width: 200px;
+    max-width: 400px;
+    background: linear-gradient(135deg, #f0f0f0 0%, #e0e0e0 100%);
+    border-radius: 8px;
+    border: 2px solid #333;
+    font-size: 0.95em;
+    font-weight: bold;
+    color: #333;
+    text-align: center;
+    transition: all 0.3s ease;
+    cursor: not-allowed;
+}
+
+.best-state-banner:not(:disabled) {
+    cursor: pointer;
+}
+
+.best-state-banner:not(:disabled):hover {
+    background: linear-gradient(135deg, #e8e8e8 0%, #d8d8d8 100%);
+}
+
+.best-state-banner:disabled {
+    opacity: 0.7;
+}

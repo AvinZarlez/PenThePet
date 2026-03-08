@@ -43,6 +43,10 @@ class Game {
         this.optimalSolution = null;
         this.viewingOptimal = false;  // Track if user is viewing optimal solution
 
+        // Best state (best penned score achieved before submission)
+        this.bestScore = null;
+        this.bestWalls = null;
+
         // Animation state
         this._pennedAnimationTimeouts = [];
         this._pawAnimationTimeouts = [];
@@ -915,6 +919,11 @@ class Game {
             const yellowTileCount = isPenned ? this.calculateScore() : 0;
 
             if (isPenned) {
+                // Check and update best state when penned and not yet submitted
+                if (!this.isSubmitted) {
+                    this._checkAndUpdateBestState(yellowTileCount);
+                }
+
                 // Change button text based on submission state
                 if (this.isSubmitted) {
                     statusElement.innerHTML = '<span class="submit-label">View Result</span>';
@@ -996,6 +1005,115 @@ class Game {
         this.updateHintButton();
     }
 
+    // =====================================================================
+    // Best State Methods
+    // =====================================================================
+
+    /**
+     * Check if the current penned score beats the stored best state, and
+     * if so, save the new best state (walls + score) to cookie and cloud.
+     * @param {number} currentScore - Pre-calculated score for the current penned area
+     * @private
+     */
+    _checkAndUpdateBestState(currentScore) {
+        if (!this.currentDate) return;
+        if (this.bestScore !== null && currentScore <= this.bestScore) return;
+
+        // Collect current wall positions
+        const walls = [];
+        for (let i = 0; i < this.grid.size; i++) {
+            for (let j = 0; j < this.grid.size; j++) {
+                if (isWallState(this.grid.getTile(i, j))) {
+                    walls.push([i, j]);
+                }
+            }
+        }
+
+        this.bestScore = currentScore;
+        this.bestWalls = walls;
+        this.saveBestState(this.currentDate, currentScore, walls);
+        this.updateBestStateBanner();
+    }
+
+    /**
+     * Save the best state (score + walls) to cookie and sync to cloud.
+     * Stored separately from the submission cookie so it is never confused
+     * with a formally submitted result.
+     * Cookie name format: progress_YYYY-MM-DD
+     * @param {string} dateString - Puzzle date
+     * @param {number} score - Best penned area score
+     * @param {Array} walls - Wall positions [[row, col], ...]
+     */
+    saveBestState(dateString, score, walls) {
+        const data = { bestScore: score, bestWalls: walls };
+        CookieUtils.setCookie(`progress_${dateString}`, JSON.stringify(data), 365);
+
+        if (typeof CloudSync !== 'undefined' && CloudSync.isConfigured() && CloudSync.isLoggedIn()) {
+            CloudSync.saveProgressState(dateString, data);
+        }
+    }
+
+    /**
+     * Load the best state from cookie into this.bestScore / this.bestWalls.
+     * @param {string} dateString - Puzzle date
+     */
+    loadBestState(dateString) {
+        const value = CookieUtils.getCookie(`progress_${dateString}`);
+        if (value) {
+            try {
+                const data = JSON.parse(value);
+                if (typeof data.bestScore === 'number' && Array.isArray(data.bestWalls)) {
+                    this.bestScore = data.bestScore;
+                    this.bestWalls = data.bestWalls;
+                    return;
+                }
+            } catch { /* ignore malformed cookie */ }
+        }
+        this.bestScore = null;
+        this.bestWalls = null;
+    }
+
+    /**
+     * Update the "Best Placement So Far" banner with the current best score.
+     * Hidden after submission (best state is only meaningful before submitting).
+     */
+    updateBestStateBanner() {
+        const banner = document.getElementById('bestStateBanner');
+        if (!banner) return;
+
+        // Also control the wrapper so it doesn't occupy space when hidden
+        const wrapper = banner.closest('.best-state-wrapper');
+
+        if (this.isSubmitted) {
+            banner.style.display = 'none';
+            if (wrapper) wrapper.style.display = 'none';
+            return;
+        }
+
+        if (wrapper) wrapper.style.display = '';
+        banner.style.display = '';
+        const label = banner.querySelector('.best-state-label');
+        if (this.bestScore === null) {
+            if (label) label.textContent = 'Best So Far: None';
+            banner.disabled = true;
+            banner.title = 'Pen the pet to record your best score';
+        } else {
+            if (label) label.textContent = `Best So Far: ${this.bestScore}`;
+            banner.disabled = false;
+            banner.title = 'Click to restore your best wall placement';
+        }
+    }
+
+    /**
+     * Restore the wall placement from the best saved state.
+     * Has no effect if no best state exists or the puzzle is already submitted.
+     */
+    loadBestStateWalls() {
+        if (!this.bestWalls || this.isSubmitted) return;
+        this.loadWallPositions(this.bestWalls);
+        this.render();
+    }
+
     /**
      * Reset the game to initial state.
      * Blocked when the player has already submitted.
@@ -1054,6 +1172,12 @@ class Game {
         const hintCheckBtn = document.getElementById('hintCheckBtn');
         if (hintCheckBtn) {
             hintCheckBtn.addEventListener('click', () => this.handleHintCheck());
+        }
+
+        // Best state banner — load best wall configuration when clicked
+        const bestStateBanner = document.getElementById('bestStateBanner');
+        if (bestStateBanner) {
+            bestStateBanner.addEventListener('click', () => this.loadBestStateWalls());
         }
 
         // Timer button
@@ -2000,6 +2124,14 @@ class Game {
             } else {
                 this.elapsedSeconds = 0;
             }
+        }
+
+        // Load best state before showing the pause overlay so it is
+        // captured by PAUSE_HIDDEN_SELECTORS when the overlay appears.
+        this.loadBestState(dateString);
+        this.updateBestStateBanner();
+
+        if (!this.isSubmitted) {
             // Show ready overlay — timer starts only when user clicks Begin
             this.isReadyPending = true;
             this.isPaused = true;
@@ -2129,7 +2261,12 @@ class Game {
         this._hidePauseOverlay();
         if (this.currentDate) {
             CookieUtils.deleteCookie(`timer_${this.currentDate}`);
+            // Clear best state when fully resetting the level
+            CookieUtils.deleteCookie(`progress_${this.currentDate}`);
         }
+        this.bestScore = null;
+        this.bestWalls = null;
+        this.updateBestStateBanner();
         this._startTimerInterval();
         this.updateTimerDisplay();
         this.updateTimerButton();
@@ -2242,7 +2379,15 @@ class Game {
  * CSS selectors for game elements to hide when the pause overlay is shown.
  * @type {string[]}
  */
-Game.PAUSE_HIDDEN_SELECTORS = ['.controls', '.grid-container', '#notification', '#solutionToggleBar', '#roamSpaceViewer'];
+Game.PAUSE_HIDDEN_SELECTORS = [
+    '.controls',
+    '.grid-container',
+    '#notification',
+    '#solutionToggleBar',
+    '#roamSpaceViewer',
+    '.best-state-wrapper',
+    '#hintUsedDisplay',
+];
 
 // Export for use in other modules
 if (typeof module !== 'undefined' && module.exports) {

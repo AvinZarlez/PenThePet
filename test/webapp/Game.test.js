@@ -57,6 +57,10 @@ function setupDOM() {
                 </footer>
             </article>
         </aside>
+        <div id="hintUsedDisplay" class="hint-used-display" style="display: none;"></div>
+        <button id="bestStateBanner" class="best-state-banner" disabled style="display: none;">
+            <span class="best-state-label">Best So Far: None</span>
+        </button>
     `;
 }
 
@@ -1545,5 +1549,229 @@ describe('Game — Pet Wander & Return', () => {
         game._petPos = { row: 2, col: 1 };
         game.render();
         expect(game._petReturnTimeouts.length).toBeGreaterThan(0);
+    });
+});
+
+// ============================================================
+// Best State Feature Tests
+// ============================================================
+
+/**
+ * Creates a game with a 5x5 grid containing a penned configuration:
+ * walls fully surround the home tile so the pet is immediately penned.
+ *
+ *   G G G G G
+ *   G W W W G
+ *   G W H W G   ← home at (2,2), surrounded by walls
+ *   G W W W G
+ *   G G G G G
+ */
+function createPennedGameForBestState() {
+    setupDOM();
+    const g = new Game(5);
+    const tiles = Array.from({ length: 5 }, () => Array(5).fill('grass'));
+    tiles[2][2] = 'home';
+    g.grid.loadMap(tiles);
+    g.grid.saveInitialState();
+    g.currentDate = '2026-06-01';
+    // Place walls that surround the home tile
+    [[1,1],[1,2],[1,3],[2,1],[2,3],[3,1],[3,2],[3,3]].forEach(([r,c]) => {
+        g.grid.setTile(r, c, 'wall');
+        g.wallCount++;
+    });
+    return g;
+}
+
+describe('Game — Best State', () => {
+    let game;
+
+    beforeEach(() => {
+        setupDOM();
+        document.cookie.split(';').forEach((c) => {
+            document.cookie = c.trim().split('=')[0] + '=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/';
+        });
+        jest.useFakeTimers();
+        game = createGame();
+    });
+
+    afterEach(() => {
+        game._stopTimerInterval();
+        jest.useRealTimers();
+    });
+
+    describe('initial state', () => {
+        test('bestScore starts as null', () => {
+            expect(game.bestScore).toBeNull();
+        });
+
+        test('bestWalls starts as null', () => {
+            expect(game.bestWalls).toBeNull();
+        });
+    });
+
+    describe('saveBestState() / loadBestState()', () => {
+        test('saveBestState writes cookie and loadBestState restores it', () => {
+            game.saveBestState('2026-01-01', 12, [[1, 1], [2, 2]]);
+            game.bestScore = null;
+            game.bestWalls = null;
+            game.loadBestState('2026-01-01');
+            expect(game.bestScore).toBe(12);
+            expect(game.bestWalls).toEqual([[1, 1], [2, 2]]);
+        });
+
+        test('loadBestState sets nulls when no cookie exists', () => {
+            game.bestScore = 5;
+            game.bestWalls = [[0, 0]];
+            game.loadBestState('2026-99-99');
+            expect(game.bestScore).toBeNull();
+            expect(game.bestWalls).toBeNull();
+        });
+
+        test('loadBestState ignores malformed cookie', () => {
+            CookieUtils.setCookie('progress_2026-01-01', 'not-json', 1);
+            game.loadBestState('2026-01-01');
+            expect(game.bestScore).toBeNull();
+            expect(game.bestWalls).toBeNull();
+        });
+
+        test('loadBestState ignores cookie missing bestScore', () => {
+            CookieUtils.setCookie('progress_2026-01-01', JSON.stringify({ bestWalls: [] }), 1);
+            game.loadBestState('2026-01-01');
+            expect(game.bestScore).toBeNull();
+        });
+    });
+
+    describe('updateBestStateBanner()', () => {
+        test('shows "Best So Far: None" with disabled button when bestScore is null', () => {
+            game.isSubmitted = false;
+            game.bestScore = null;
+            game.updateBestStateBanner();
+            const banner = document.getElementById('bestStateBanner');
+            expect(banner.style.display).not.toBe('none');
+            expect(banner.disabled).toBe(true);
+            expect(banner.querySelector('.best-state-label').textContent).toBe('Best So Far: None');
+        });
+
+        test('shows score and enables button when bestScore is set', () => {
+            game.isSubmitted = false;
+            game.bestScore = 15;
+            game.bestWalls = [[1, 1]];
+            game.updateBestStateBanner();
+            const banner = document.getElementById('bestStateBanner');
+            expect(banner.style.display).not.toBe('none');
+            expect(banner.disabled).toBe(false);
+            expect(banner.querySelector('.best-state-label').textContent).toBe('Best So Far: 15');
+        });
+
+        test('hides banner after submission', () => {
+            game.isSubmitted = true;
+            game.bestScore = 10;
+            game.updateBestStateBanner();
+            const banner = document.getElementById('bestStateBanner');
+            expect(banner.style.display).toBe('none');
+        });
+    });
+
+    describe('_checkAndUpdateBestState()', () => {
+        test('saves new best state when score improves', () => {
+            game.bestScore = null;
+            game._checkAndUpdateBestState(10);
+            expect(game.bestScore).toBe(10);
+            expect(Array.isArray(game.bestWalls)).toBe(true);
+        });
+
+        test('does not update when score is not better', () => {
+            game.bestScore = 20;
+            game.bestWalls = [[0, 0]];
+            game._checkAndUpdateBestState(10);
+            expect(game.bestScore).toBe(20);
+            expect(game.bestWalls).toEqual([[0, 0]]);
+        });
+
+        test('does not update when score equals current best', () => {
+            game.bestScore = 10;
+            const oldWalls = [[0, 0]];
+            game.bestWalls = oldWalls;
+            game._checkAndUpdateBestState(10);
+            expect(game.bestScore).toBe(10);
+            expect(game.bestWalls).toBe(oldWalls); // same reference, not replaced
+        });
+
+        test('updates banner after saving new best', () => {
+            game.bestScore = null;
+            game._checkAndUpdateBestState(7);
+            const banner = document.getElementById('bestStateBanner');
+            expect(banner.querySelector('.best-state-label').textContent).toBe('Best So Far: 7');
+        });
+
+        test('persists best state to cookie', () => {
+            game.bestScore = null;
+            game._checkAndUpdateBestState(8);
+            const raw = CookieUtils.getCookie('progress_2026-01-01');
+            expect(raw).not.toBeNull();
+            const data = JSON.parse(raw);
+            expect(data.bestScore).toBe(8);
+        });
+    });
+
+    describe('loadBestStateWalls()', () => {
+        test('does nothing when bestWalls is null', () => {
+            game.bestWalls = null;
+            expect(() => game.loadBestStateWalls()).not.toThrow();
+        });
+
+        test('does nothing when puzzle is submitted', () => {
+            game.isSubmitted = true;
+            game.bestWalls = [[1, 1]];
+            expect(() => game.loadBestStateWalls()).not.toThrow();
+            // No wall should be placed since we're submitted
+        });
+
+        test('restores wall positions when called with valid bestWalls', () => {
+            const g = createPennedGameForBestState();
+            g.bestWalls = [[1, 1], [1, 2]];
+            g.loadBestStateWalls();
+            // After loading, wallCount should match bestWalls length
+            expect(g.wallCount).toBe(2);
+        });
+    });
+
+    describe('resetTimer() clears best state', () => {
+        test('clears bestScore and bestWalls on resetTimer()', () => {
+            game.bestScore = 10;
+            game.bestWalls = [[0, 0]];
+            game.resetTimer();
+            expect(game.bestScore).toBeNull();
+            expect(game.bestWalls).toBeNull();
+        });
+
+        test('deletes progress cookie on resetTimer()', () => {
+            CookieUtils.setCookie('progress_2026-01-01', JSON.stringify({ bestScore: 5, bestWalls: [] }), 1);
+            game.resetTimer();
+            expect(CookieUtils.getCookie('progress_2026-01-01')).toBeNull();
+        });
+    });
+
+    describe('initTimerForDate() loads best state', () => {
+        test('loads bestScore from cookie when not yet submitted', () => {
+            CookieUtils.setCookie('progress_2026-01-01', JSON.stringify({ bestScore: 20, bestWalls: [[0,1]] }), 1);
+            game.initTimerForDate('2026-01-01');
+            expect(game.bestScore).toBe(20);
+            expect(game.bestWalls).toEqual([[0, 1]]);
+        });
+
+        test('loads bestScore from cookie even when submitted', () => {
+            // Best state persists through submission
+            game.isSubmitted = true;
+            game.elapsedSeconds = 0;
+            game.submittedScore = 8;
+            CookieUtils.setCookie('progress_2026-01-01', JSON.stringify({ bestScore: 8, bestWalls: [[0,1]] }), 1);
+            // Supply a minimal submission cookie so loadSubmission() works
+            CookieUtils.setCookie('submission_2026-01-01', JSON.stringify({
+                __version: '1.1', score: 8, walls: [[0,1]], timestamp: '', time: 0, hintsUsed: []
+            }), 1);
+            game.initTimerForDate('2026-01-01');
+            expect(game.bestScore).toBe(8);
+        });
     });
 });
