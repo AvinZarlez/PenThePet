@@ -313,6 +313,10 @@ window.addEventListener('DOMContentLoaded', () => {
         langSelector.value = I18N.getLanguage();
         langSelector.addEventListener('change', () => {
             I18N.setLanguage(langSelector.value);
+            // Sync language preference to cloud when signed in
+            if (typeof CloudSync !== 'undefined' && CloudSync.isConfigured() && CloudSync.isLoggedIn()) {
+                CloudSync.saveSettings({ lang: langSelector.value });
+            }
         });
     }
 

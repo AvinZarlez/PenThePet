@@ -11,7 +11,7 @@ Once enabled:
 
 - Submissions you make on one device automatically appear on all your
   other signed-in devices.
-- Settings (pet type, hint preferences) are synced when you sign in on a new device.
+- Settings (pet type, hint preferences, language) are synced when you sign in on a new device.
 - Each user's data is stored privately; no one else can read or write it.
 
 Cloud sync is powered by **Firebase** — Google's free serverless backend.

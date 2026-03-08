@@ -258,7 +258,7 @@ const LANGUAGES = {
         sync_error_title: '⚠️ Sync Error',
         sync_error_close_aria: 'Close sync error',
         sync_error_text: 'There was an error syncing your data with the cloud:',
-        sync_error_link_text: 'submit an issue on GitHub',
+        sync_error_contact_html: 'Please <a id="syncErrorIssueLink" href="{repoUrl}/issues" target="_blank" rel="noopener noreferrer">submit an issue on GitHub</a> with the error details above to help us fix it.',
 
         // ── Debug Section ─────────────────────────────────────────────────
         debug_heading: '🛠️ Debug Tools',
@@ -337,6 +337,7 @@ const I18N = {
     /**
      * Switch to a new language, persist to cookie, and update all
      * data-i18n-* elements in the DOM.
+     * Also syncs the languageSelector dropdown if present.
      * @param {string} lang - Language code (e.g. 'en')
      */
     setLanguage(lang) {
@@ -347,6 +348,12 @@ const I18N = {
         }
         if (typeof document !== 'undefined') {
             this._applyToDOM();
+            // Keep the language selector dropdown in sync (e.g. when cloud sync
+            // applies a different language on first sign-in from another device).
+            const selector = document.getElementById('languageSelector');
+            if (selector && selector.value !== lang) {
+                selector.value = lang;
+            }
         }
     },
 

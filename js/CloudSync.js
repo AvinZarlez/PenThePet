@@ -19,6 +19,7 @@
  *   selectedPet              settings.selectedPet (part of settings doc)
  *   hintsDisabled            settings.hintsDisabled (part of settings doc)
  *   neverShowTarget          settings.neverShowTarget (part of settings doc)
+ *   lang                     settings.lang        (UI language preference)
  *
  * Cookies NOT synced to cloud (intentional):
  *   currentLevel   — transient UI state (which puzzle is open); device-local
@@ -70,7 +71,7 @@
  *      timestamp (tiebreak needed but unavailable), cloud is used as a safe
  *      default.
  *
- * Settings (selectedPet, hintsDisabled, neverShowTarget, username): CLOUD WINS always.
+ * Settings (selectedPet, hintsDisabled, neverShowTarget, lang, username): CLOUD WINS always.
  *
  * When cloud data overwrites local data (rules C and E-cloud-wins), the
  * `applyCloudDataToLocal()` helper writes the winning data to the local
@@ -884,6 +885,9 @@ const CloudSync = (function () {
         if (settings.neverShowTarget !== undefined) {
             CookieUtils.setCookie('neverShowTarget', settings.neverShowTarget, 365);
         }
+        if (settings.lang !== undefined && typeof I18N !== 'undefined') {
+            I18N.setLanguage(settings.lang);
+        }
         if (settings.username !== undefined) {
             username = settings.username;
             updateAuthUI(currentUser);
@@ -947,11 +951,13 @@ const CloudSync = (function () {
         const selectedPet = CookieUtils.getCookie('selectedPet');
         const hintsDisabled = CookieUtils.getCookie('hintsDisabled');
         const neverShowTarget = CookieUtils.getCookie('neverShowTarget');
-        if (selectedPet || hintsDisabled !== null || neverShowTarget !== null) {
+        const lang = CookieUtils.getCookie('lang');
+        if (selectedPet || hintsDisabled !== null || neverShowTarget !== null || lang) {
             const settings = {};
             if (selectedPet) settings.selectedPet = selectedPet;
             if (hintsDisabled !== null) settings.hintsDisabled = hintsDisabled;
             if (neverShowTarget !== null) settings.neverShowTarget = neverShowTarget;
+            if (lang) settings.lang = lang;
             try {
                 const docRef = db
                     .collection('users')

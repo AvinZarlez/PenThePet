@@ -52,6 +52,17 @@ See [CODE_STRUCTURE.md](CODE_STRUCTURE.md) for the full file listing.
 
 **New game modes:** Extend the `Game` class. Timer, undo/redo, and hint infrastructure already exists.
 
+## Localization (i18n)
+
+All user-facing strings live in **`js/i18n.js`**. No visible text is hardcoded in `index.html` or JS.
+
+- **HTML** elements that contain text use `data-i18n="key"` attributes (or `data-i18n-html` for HTML content, `data-i18n-title` for tooltips, `data-i18n-aria` for aria-labels, `data-i18n-placeholder` for inputs). Their content is initially empty and filled by `I18N._applyToDOM()` on startup.
+- **JS** code calls `I18N.t('key', { param: value })` everywhere a string is needed.
+- Language preference is stored in the `lang` cookie and synced to cloud (with other settings) so it follows the user across devices.
+- To add a new language: add a language code block to `LANGUAGES` in `i18n.js` (keys missing from the new language fall back to `en`) and add an entry to `LANGUAGE_OPTIONS`.
+
+See [CODE_STRUCTURE.md — Localization](CODE_STRUCTURE.md#-localization) for details.
+
 ---
 
 **See also:** [docs/README.md](README.md) · [CODE_STRUCTURE.md](CODE_STRUCTURE.md) · [MAP_GENERATION.md](MAP_GENERATION.md) · [TILE_SYSTEM.md](TILE_SYSTEM.md)
