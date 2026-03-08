@@ -44,9 +44,10 @@ Cloud sync is an **opt-in feature**. If you choose to sign in:
   read or write it**.
 - Your email address is used by Firebase for authentication only and is not visible
   to us in any analytics or log data.
-- You can delete all your cloud data at any time from the Options menu
-  (☰ Menu → Options → ☁️ Account → 🗑️ Delete All Cloud Data). Deleting your
-  cloud data also signs you out.
+- You can delete your account and all cloud data at any time from the Options menu
+  (☰ Menu → Options → ☁️ Account → 🗑️ Delete Account & Cloud Data). This
+  permanently deletes your Firebase Authentication account and all associated
+  Firestore records.
 
 ### Cookies (Local Storage Only)
 
@@ -77,9 +78,10 @@ have the following rights regarding your personal data:
   you at any time using the
   ☰ Menu → Options → ☁️ Account → 📥 Download My Data button. The file is a
   JSON export of your puzzle submissions, timer states, and settings.
-- **Right to erasure** — you can delete your cloud data at any time from the
-  Options menu (☰ Menu → Options → ☁️ Account → 🗑️ Delete All Cloud Data),
-  which removes all Firestore records associated with your account.
+- **Right to erasure** — you can permanently delete your account and all cloud
+  data at any time from the Options menu
+  (☰ Menu → Options → ☁️ Account → 🗑️ Delete Account & Cloud Data),
+  which removes your Firebase Authentication account and all Firestore records.
 - **Right to object** — analytics are anonymous and cannot be linked to you, but
   you can block them entirely using browser privacy settings, a content blocker, or
   Firefox's Enhanced Tracking Protection.

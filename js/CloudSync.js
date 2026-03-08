@@ -1315,13 +1315,33 @@ const CloudSync = (function () {
     async function handleDeleteAllCloudData() {
         const msg = typeof I18N !== 'undefined'
             ? I18N.t('options_delete_cloud_data_confirm')
-            : 'Delete all your cloud data? This cannot be undone. You will be signed out';
+            : 'Delete your account and all cloud data? This cannot be undone';
         if (!window.confirm(msg)) return;
         try {
             await deleteAllSubmissions();
-            await signOut();
         } catch (e) {
-            console.error('CloudSync: Failed to delete cloud data:', e);
+            console.error('CloudSync: Failed to delete Firestore data:', e);
+            return;
+        }
+        try {
+            await currentUser.delete();
+        } catch (e) {
+            if (e && e.code === 'auth/requires-recent-login') {
+                // Firebase requires a fresh sign-in before deleting an account.
+                // Sign the user out so they can re-authenticate and try again.
+                console.warn('CloudSync: Re-auth required to delete account — signing out');
+                try {
+                    await signOut();
+                } catch (signOutErr) {
+                    console.error('CloudSync: Sign out failed during re-auth flow:', signOutErr);
+                }
+                alert(typeof I18N !== 'undefined'
+                    ? I18N.t('options_delete_requires_reauth')
+                    : 'Please sign in again and then delete your account immediately after signing in.'
+                );
+            } else {
+                console.error('CloudSync: Failed to delete account:', e);
+            }
         }
     }
 
@@ -1421,7 +1441,7 @@ const CloudSync = (function () {
             'auth/operation-not-allowed': 'This sign-in method is not enabled in the Firebase console.',
             'auth/invalid-api-key': 'Invalid Firebase API key. Check firebase-config.js.',
             'auth/configuration-not-found': 'Firebase Authentication is not configured. Enable it in the Firebase console.',
-            'auth/requires-recent-login': 'Please sign out and sign in again before changing your email.',
+            'auth/requires-recent-login': 'For security, please sign out and sign in again before performing this action.',
             'auth/expired-action-code': 'The sign-in link has expired. Please request a new one.',
             'auth/invalid-action-code': 'The sign-in link is invalid or has already been used.',
             'auth/popup-closed-by-user': 'Sign-in cancelled. Please try again.',
