@@ -486,12 +486,7 @@ class MapGenerator {
         if (Math.random() > 0.40) return;
 
         // Find home position
-        let homeR = Math.floor(rows / 2), homeC = Math.floor(cols / 2);
-        for (let r = 0; r < rows; r++) {
-            for (let c = 0; c < cols; c++) {
-                if (map[r][c] === 'home') { homeR = r; homeC = c; }
-            }
-        }
+        const [homeR, homeC] = MapValidator._findHomePosition(map);
 
         // Find interior grass tiles that create a detour when blocked.
         // Score each candidate by its natural impact, then try reinforcement.
@@ -499,7 +494,7 @@ class MapGenerator {
         for (let r = 1; r < rows - 1; r++) {
             for (let c = 1; c < cols - 1; c++) {
                 if (map[r][c] !== 'grass') continue;
-                if (Math.abs(r - homeR) <= 1 && Math.abs(c - homeC) <= 1) continue;
+                if (homeR !== -1 && Math.abs(r - homeR) <= 1 && Math.abs(c - homeC) <= 1) continue;
 
                 // Temporarily place hole and measure impact
                 map[r][c] = 'hole';
