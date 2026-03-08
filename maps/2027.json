@@ -140,9 +140,9 @@
     "date": "2027-01-06",
     "mapName": "Spire-1",
     "size": 16,
-    "goal": 77,
+    "goal": 81,
     "maxWalls": 12,
-    "map": "wwgwgggggwswggbgssggggggggggwggwggbgwbwwgggwgggbsggwwgwggwgwwgggwgwgwgwwwgggwwggwgggggwwwwggggoggggwgggwgwgwswgwwggggwwgggggggggwggggwgghggwwggggggbwgggbwggggsgggggggwswwggwsgggswgggwgggwgwgswwgwwwgwwggggwgggggbggggwwwbwggwggggwgggwggoggbsggwgggwgwggwwgwgg",
+    "map": "wwgwgggggwswggbgssggggggggggwggwggbgwbwwgggwgggbsggwwgwggwgwwgggwgwgwgwwwgggwwggwgggggwwwwggggoggggwgggwgwgwswgwwggggwwgggggggggwggggwgghggwwggggggbwggggwggggsgggggggwswwggwsgggswgggwgggwgwgswwgwwwgwwggggwgggggbggggwwwbwggwggggwgggwggoggbsggwgggwgwggwwgwgg",
     "optimalSolution": [
       1,
       8,
@@ -680,9 +680,9 @@
     "date": "2027-01-26",
     "mapName": "Copper-3",
     "size": 11,
-    "goal": 27,
+    "goal": 31,
     "maxWalls": 8,
-    "map": "wgssggwgggggggwwwggggswggggggggwgggwgwggggggwwgwgwgggggwwgbghbggbwwgwwwwggwswwgggwwwggwgwggggwgwogggsgwggggggggggggggwggw",
+    "map": "wgssggwgggggggwwwggggswggggggggwgggwgwggggggwwgwgwgggggwwgbghgggbwwgwwwwggwswwgggwwwggwgwggggwgwogggsgwggggggggggggggwggw",
     "optimalSolution": [
       0,
       7,

@@ -10,11 +10,11 @@ describe('MapValidator', () => {
             // 7x7 map with path to edge (maxWalls = floor(7*0.75) = 5)
             const map = [
                 ['grass', 'grass', 'grass', 'grass', 'grass', 'grass', 'grass'],
-                ['grass', 'water', 'grass', 'water', 'grass', 'water', 'grass'],
+                ['grass', 'water', 'star',  'water', 'grass', 'water', 'grass'],
                 ['grass', 'grass', 'grass', 'grass', 'grass', 'grass', 'grass'],
-                ['grass', 'water', 'star',  'home',  'bee',   'water', 'grass'],
+                ['grass', 'water', 'grass', 'home',  'grass', 'water', 'grass'],
                 ['grass', 'grass', 'grass', 'grass', 'grass', 'grass', 'grass'],
-                ['grass', 'water', 'grass', 'water', 'grass', 'water', 'grass'],
+                ['grass', 'water', 'grass', 'water', 'bee',   'water', 'grass'],
                 ['grass', 'grass', 'grass', 'grass', 'grass', 'grass', 'grass']
             ];
             
@@ -97,11 +97,11 @@ describe('MapValidator', () => {
             // 7x7 map: maxWallsForSize(7) = 5
             const map = [
                 ['grass', 'grass', 'grass', 'grass', 'grass', 'grass', 'grass'],
-                ['grass', 'water', 'grass', 'water', 'grass', 'water', 'grass'],
+                ['grass', 'water', 'star',  'water', 'grass', 'water', 'grass'],
                 ['grass', 'grass', 'grass', 'grass', 'grass', 'grass', 'grass'],
-                ['grass', 'water', 'star',  'home',  'bee',   'water', 'grass'],
+                ['grass', 'water', 'grass', 'home',  'grass', 'water', 'grass'],
                 ['grass', 'grass', 'grass', 'grass', 'grass', 'grass', 'grass'],
-                ['grass', 'water', 'grass', 'water', 'grass', 'water', 'grass'],
+                ['grass', 'water', 'grass', 'water', 'bee',   'water', 'grass'],
                 ['grass', 'grass', 'grass', 'grass', 'grass', 'grass', 'grass']
             ];
             
@@ -200,11 +200,11 @@ describe('MapValidator', () => {
         test('should pass when all walls are needed (rule 1)', () => {
             const map = [
                 ['grass', 'grass', 'grass', 'grass', 'grass', 'grass', 'grass'],
-                ['grass', 'water', 'grass', 'water', 'grass', 'water', 'grass'],
+                ['grass', 'water', 'star',  'water', 'grass', 'water', 'grass'],
                 ['grass', 'grass', 'grass', 'grass', 'grass', 'grass', 'grass'],
-                ['grass', 'water', 'star',  'home',  'bee',   'water', 'grass'],
+                ['grass', 'water', 'grass', 'home',  'grass', 'water', 'grass'],
                 ['grass', 'grass', 'grass', 'grass', 'grass', 'grass', 'grass'],
-                ['grass', 'water', 'grass', 'water', 'grass', 'water', 'grass'],
+                ['grass', 'water', 'grass', 'water', 'bee',   'water', 'grass'],
                 ['grass', 'grass', 'grass', 'grass', 'grass', 'grass', 'grass']
             ];
             
@@ -223,11 +223,11 @@ describe('MapValidator', () => {
         test('should skip rule 1 when maxWalls not provided in solution', () => {
             const map = [
                 ['grass', 'grass', 'grass', 'grass', 'grass', 'grass', 'grass'],
-                ['grass', 'water', 'grass', 'water', 'grass', 'water', 'grass'],
+                ['grass', 'water', 'star',  'water', 'grass', 'water', 'grass'],
                 ['grass', 'grass', 'grass', 'grass', 'grass', 'grass', 'grass'],
-                ['grass', 'water', 'star',  'home',  'bee',   'water', 'grass'],
+                ['grass', 'water', 'grass', 'home',  'grass', 'water', 'grass'],
                 ['grass', 'grass', 'grass', 'grass', 'grass', 'grass', 'grass'],
-                ['grass', 'water', 'grass', 'water', 'grass', 'water', 'grass'],
+                ['grass', 'water', 'grass', 'water', 'bee',   'water', 'grass'],
                 ['grass', 'grass', 'grass', 'grass', 'grass', 'grass', 'grass']
             ];
             
@@ -520,9 +520,9 @@ describe('MapValidator', () => {
             const map = [
                 ['grass', 'grass', 'grass', 'grass', 'grass', 'grass', 'grass'],
                 ['grass', 'water', 'grass', 'grass', 'grass', 'water', 'grass'],
-                ['grass', 'grass', 'grass', 'grass', 'grass', 'grass', 'grass'],
-                ['grass', 'water', 'star',  'home',  'bee',   'water', 'grass'],
-                ['grass', 'grass', 'grass', 'grass', 'grass', 'grass', 'grass'],
+                ['grass', 'grass', 'star',  'grass', 'grass', 'grass', 'grass'],
+                ['grass', 'water', 'grass', 'home',  'grass', 'water', 'grass'],
+                ['grass', 'grass', 'grass', 'grass', 'bee',   'grass', 'grass'],
                 ['grass', 'water', 'grass', 'grass', 'grass', 'water', 'grass'],
                 ['grass', 'grass', 'grass', 'grass', 'grass', 'grass', 'grass']
             ];
@@ -537,6 +537,74 @@ describe('MapValidator', () => {
             expect(result.errors).not.toContain(
                 'Not all non-edge tiles are reachable from home without traversing edge tiles'
             );
+        });
+
+        test('should fail validation when a star is adjacent to home', () => {
+            // Star at (3,2) is directly left of home at (3,3) — always penned, no strategic choice
+            const map = [
+                ['grass', 'grass', 'grass', 'grass', 'grass', 'grass', 'grass'],
+                ['grass', 'water', 'grass', 'water', 'grass', 'water', 'grass'],
+                ['grass', 'grass', 'grass', 'grass', 'grass', 'grass', 'grass'],
+                ['grass', 'water', 'star',  'home',  'grass', 'water', 'grass'],
+                ['grass', 'grass', 'grass', 'grass', 'grass', 'grass', 'grass'],
+                ['grass', 'water', 'grass', 'water', 'bee',   'water', 'grass'],
+                ['grass', 'grass', 'grass', 'grass', 'grass', 'grass', 'grass']
+            ];
+
+            const solution = {
+                goalArea: 8,
+                optimalWallCount: 4,
+                optimalSolution: [[1, 2], [2, 1], [3, 2], [4, 1]]
+            };
+
+            const result = MapValidator.validate(map, solution);
+            expect(result.valid).toBe(false);
+            expect(result.errors.some(e => e.includes('Score-modifying tiles adjacent to home'))).toBe(true);
+        });
+
+        test('should fail validation when a bee is adjacent to home', () => {
+            // Bee at (3,4) is directly right of home at (3,3) — always penned, no strategic choice
+            const map = [
+                ['grass', 'grass', 'grass', 'grass', 'grass', 'grass', 'grass'],
+                ['grass', 'water', 'star',  'water', 'grass', 'water', 'grass'],
+                ['grass', 'grass', 'grass', 'grass', 'grass', 'grass', 'grass'],
+                ['grass', 'water', 'grass', 'home',  'bee',   'water', 'grass'],
+                ['grass', 'grass', 'grass', 'grass', 'grass', 'grass', 'grass'],
+                ['grass', 'water', 'grass', 'water', 'grass', 'water', 'grass'],
+                ['grass', 'grass', 'grass', 'grass', 'grass', 'grass', 'grass']
+            ];
+
+            const solution = {
+                goalArea: 8,
+                optimalWallCount: 4,
+                optimalSolution: [[1, 2], [2, 1], [3, 2], [4, 1]]
+            };
+
+            const result = MapValidator.validate(map, solution);
+            expect(result.valid).toBe(false);
+            expect(result.errors.some(e => e.includes('Score-modifying tiles adjacent to home'))).toBe(true);
+        });
+
+        test('should pass validation when score-modifying tiles are not adjacent to home', () => {
+            // Star at (1,2) and bee at (5,4) — both far from home at (3,3)
+            const map = [
+                ['grass', 'grass', 'grass', 'grass', 'grass', 'grass', 'grass'],
+                ['grass', 'water', 'star',  'water', 'grass', 'water', 'grass'],
+                ['grass', 'grass', 'grass', 'grass', 'grass', 'grass', 'grass'],
+                ['grass', 'water', 'grass', 'home',  'grass', 'water', 'grass'],
+                ['grass', 'grass', 'grass', 'grass', 'grass', 'grass', 'grass'],
+                ['grass', 'water', 'grass', 'water', 'bee',   'water', 'grass'],
+                ['grass', 'grass', 'grass', 'grass', 'grass', 'grass', 'grass']
+            ];
+
+            const solution = {
+                goalArea: 8,
+                optimalWallCount: 4,
+                optimalSolution: [[1, 2], [2, 1], [3, 2], [4, 1]]
+            };
+
+            const result = MapValidator.validate(map, solution);
+            expect(result.errors.some(e => e.includes('Score-modifying tiles adjacent to home'))).toBe(false);
         });
     });
 });

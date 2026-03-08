@@ -66,6 +66,7 @@ class MapGenerator {
                 map = this._generateRandomMap();
                 this._fixAdjacentHoles(map);
                 this._enforceMaxPerLevel(map);
+                this._removeScoreModifyingTilesAdjacentToHome(map);
                 this._placeHoles(map);
                 if (this._validateMap(map)) {
                     // Calculate optimal goal for this map
@@ -388,6 +389,28 @@ class MapGenerator {
                 if (r + 1 < rows && _isFillable(map[r + 1][c])) {
                     map[r + 1][c] = 'grass';
                 }
+            }
+        }
+    }
+
+    /**
+     * Remove score-modifying tiles (e.g. stars, bees) that are orthogonally adjacent to home.
+     * Such tiles are always penned regardless of wall placement, so they offer no strategic choice.
+     * Replaced with 'grass'. Delegates tile and home detection to MapValidator helpers.
+     * @private
+     * @param {Array} map - 2D array of tile types (modified in place)
+     */
+    _removeScoreModifyingTilesAdjacentToHome(map) {
+        const rows = map.length;
+        const cols = map[0].length;
+        const [homeR, homeC] = MapValidator._findHomePosition(map);
+        if (homeR === -1) return;
+
+        const dirs = [[-1, 0], [1, 0], [0, -1], [0, 1]];
+        for (const [dr, dc] of dirs) {
+            const r = homeR + dr, c = homeC + dc;
+            if (r >= 0 && r < rows && c >= 0 && c < cols && MapValidator._isScoreModifyingTile(map[r][c])) {
+                map[r][c] = 'grass';
             }
         }
     }
