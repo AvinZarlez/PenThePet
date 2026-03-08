@@ -19,6 +19,7 @@
 /** All supported languages and their display names (shown in native script). */
 const LANGUAGE_OPTIONS = [
     { value: 'en', label: 'English' },
+    { value: 'es', label: 'Español' },
 ];
 
 /** All translated strings, keyed by language code then string key. */
@@ -287,6 +288,272 @@ const LANGUAGES = {
         tile_hole_aria: 'Hole at row {row}, column {col}. Click to fill with a wall.',
         tile_filledHole_description: 'A filled hole acts as grass, scoring 1 point when inside your penned area. Click to remove the fill.',
         tile_filledHole_aria: 'Filled hole at row {row}, column {col}. Acts as grass. Click to remove fill.',
+    },
+
+    es: {
+        // ── Language ──────────────────────────────────────────────────────
+        language_aria: 'Seleccionar idioma',
+
+        // ── Page ──────────────────────────────────────────────────────────
+        page_title: 'Encierra a la Mascota - Un Juego de Lógica',
+        subtitle: 'Un juego de lógica sobre cercas',
+
+        // ── Map Info ──────────────────────────────────────────────────────
+        label_day: 'Día:',
+        label_map: 'Mapa:',
+        label_date: 'Fecha:',
+
+        // ── Controls Bar ──────────────────────────────────────────────────
+        btn_reset: 'Reiniciar',
+        btn_menu_open: 'Abrir menú',
+        label_walls_placed: 'Muros colocados:',
+        label_area_size: 'Tamaño del área:',
+
+        // ── Timer ─────────────────────────────────────────────────────────
+        timer_pause_title: 'Pausar temporizador',
+        timer_pause_aria: 'Pausar temporizador',
+        timer_resume_title: 'Haz clic en Reanudar para continuar',
+        timer_locked_title: 'Temporizador bloqueado tras el envío',
+        timer_pause_icon: '⏸',
+        timer_play_icon: '▶',
+        timer_locked_icon: '⏱',
+
+        // ── Pause Overlay ─────────────────────────────────────────────────
+        pause_title: 'Pausa',
+        ready_title: '¿Listo?',
+        btn_resume: '▶ Reanudar',
+        btn_begin: '▶ Comenzar',
+
+        // ── Hint Button ───────────────────────────────────────────────────
+        hint_check_label: 'Verificar si es óptimo',
+        hint_check_aria: 'Verificar si es óptimo',
+        hint_check_title_disabled: 'Primero encierra a la mascota para verificar tu solución',
+        hint_check_title_penned: 'Verificar si tu solución es óptima',
+        hint_check_title_not_penned: 'Primero encierra a la mascota para verificar tu solución',
+        hint_reveal_target: 'Revelar objetivo',
+        hint_reveal_title_penned: 'Revelar la puntuación objetivo',
+        hint_reveal_title_not_penned: 'Primero encierra a la mascota',
+        hint_target_revealed_title: 'Objetivo ya revelado',
+        hint_target_disabled_title: 'La revelación del objetivo está desactivada en las opciones',
+        hint_optimal: 'Óptimo',
+        hint_not_optimal: 'No óptimo',
+        hint_optimal_label: 'Óptimo es {score}',
+        hint_used_display: 'Pista usada: {hints}',
+        hint_optimal_notification: '¡Tu solución es óptima! 🎉',
+
+        // ── Penned Status Button ───────────────────────────────────────────
+        status_unsolved: 'Sin resolver',
+        status_submit: 'Enviar',
+        status_view_result: 'Ver resultado',
+        status_view_submitted: 'Ver tu puntuación enviada ({count} casillas)',
+        status_view_submitted_simple: 'Ver tu puntuación enviada',
+        status_penned_submit: '¡Mascota encerrada! Haz clic para enviar tu puntuación ({count} casillas)',
+        status_cant_escape: 'La mascota aún puede escapar - ¡sigue construyendo muros!',
+
+        // ── Area Size Display ─────────────────────────────────────────────
+        area_size_with_goal: '{areaSize} / {goalAreaSize}',
+        area_size_below_goal: '{areaSize} <',
+        area_size_at_goal: '{areaSize} ✅',
+        area_size_infinity: '∞',
+
+        // ── Best State Banner ─────────────────────────────────────────────
+        best_so_far_none: 'Mejor hasta ahora: Ninguno',
+        best_so_far: 'Mejor hasta ahora: {score}',
+        best_so_far_title_none: 'Encierra a la mascota para registrar tu mejor puntuación',
+        best_so_far_title: 'Haz clic para restaurar tu mejor colocación de muros',
+
+        // ── Walls Counter ─────────────────────────────────────────────────
+        walls_counter: '{wallCount} / {maxWalls}',
+
+        // ── Home Legend ───────────────────────────────────────────────────
+        home_label: 'Inicio {emoji}',
+
+        // ── Solution Toggle Bar ───────────────────────────────────────────
+        solution_viewing_yours: 'Viendo: Tu solución',
+        solution_viewing_optimal: 'Viendo: Resultado óptimo',
+        solution_is_optimal_star: '⭐ ¡Tu solución es óptima!',
+        solution_toggle_view_optimal: 'Ver resultado óptimo',
+        solution_toggle_view_yours: 'Ver tu solución',
+        solution_toggle_aria: 'Alternar entre tu solución y el resultado óptimo',
+
+        // ── Roam Viewer Sidebar ───────────────────────────────────────────
+        viewer_header: 'Resumen de contención de la mascota',
+        metric_label_yours: 'Puntuación de tu solución',
+        metric_label_optimal: 'Puntuación del resultado óptimo',
+        metric_label_roaming: 'Puntuación del área de deambulación',
+        metric_helper: 'casillas amarillas contadas',
+        btn_copy_score: '📋 Copiar puntuación',
+        btn_back_to_game: 'Volver al juego',
+        copied_success: '✓ ¡Copiado!',
+        copied_failed: '✗ Falló',
+
+        // ── Score / Metrics ───────────────────────────────────────────────
+        pct_of_goal: '{pct}% del objetivo ({userScore}/{goalScore})',
+        perfect_score: '<strong>¡PERFECTO!</strong><br>¡Lograste la puntuación óptima de {goalScore}!<br>Tiempo: {time}',
+        your_score_info: 'Tu puntuación<br>Óptimo: {goalScore} casillas<br>Tiempo: {time}',
+
+        // ── Share Text ────────────────────────────────────────────────────
+        share_title: 'Encierra a la Mascota {emoji}',
+        share_day_map_date: 'Día {day} - {mapName} - {date}',
+        share_day_date: 'Día {day} - {date}',
+        share_score_line: 'Puntuación: {pct}% - Tiempo: {time}',
+        share_hints_line: 'Pistas usadas: {hints}',
+        share_hint_checked: 'verificado como óptimo',
+        share_hint_target: 'objetivo revelado',
+
+        // ── Hint Notifications ────────────────────────────────────────────
+        hint_not_optimal_notification: 'Existe una solución más óptima.',
+
+        // ── Cloud Notification ────────────────────────────────────────────
+        cloud_data_loaded: '☁️ Datos del nivel actualizados cargados desde la nube',
+
+        // ── No Map Error ──────────────────────────────────────────────────
+        no_map_title: 'Mapa no disponible',
+        no_map_text: 'Lo sentimos, no hay ningún rompecabezas disponible para hoy ({date}).',
+        no_map_check_back: '¡Vuelve mañana para un nuevo rompecabezas!',
+
+        // ── Calendar Level ────────────────────────────────────────────────
+        calendar_day_label: 'Día {dayNumber}',
+
+        // ── Menu Modal ────────────────────────────────────────────────────
+        menu_title: 'Menú',
+        menu_close_aria: 'Cerrar menú',
+        btn_level_selector: '📅 Selector de niveles',
+        btn_instructions: '📖 Instrucciones',
+        btn_about: 'ℹ️ Acerca de',
+        btn_options: '⚙️ Opciones',
+
+        // ── Level Selector Modal ──────────────────────────────────────────
+        level_selector_title: 'Selector de niveles',
+        level_selector_description: 'Elige el rompecabezas de un día anterior para jugar',
+        level_selector_close_aria: 'Cerrar selector de niveles',
+        level_selector_loading: 'Cargando…',
+        level_selector_sync_unknown: '???',
+        calendar_go_to_today: 'Ir a hoy',
+        calendar_prev: '‹',
+        calendar_next: '›',
+        calendar_prev_aria: 'Mes anterior',
+        calendar_next_aria: 'Mes siguiente',
+
+        // ── Instructions Modal ────────────────────────────────────────────
+        instructions_title: 'Cómo jugar',
+        instructions_close_aria: 'Cerrar instrucciones',
+        instructions_objective_heading: 'Objetivo',
+        instructions_objective_text: '¡Construye muros para encerrar a tu mascota! El objetivo es crear el área cercada más grande posible.',
+        instructions_gameplay_heading: 'Jugabilidad',
+        instructions_scoring_heading: 'Puntuación',
+        instructions_scoring_1: 'El juego comprueba si tu mascota puede escapar (llegar al borde)',
+        instructions_scoring_2: 'Cuando está encerrada (✓), el tamaño del área muestra el espacio cercado',
+        instructions_scoring_3: 'Intenta igualar o superar el tamaño del área objetivo',
+        instructions_scoring_4: '¡Las áreas cercadas más grandes puntúan mejor!',
+        instructions_scoring_5: 'Solo puedes enviar una vez por rompecabezas — ¡planea con cuidado!',
+        instructions_scoring_6: 'Tras el envío, puedes ver la solución óptima para comparar',
+        instructions_hints_heading: 'Sistema de pistas',
+        instructions_hints_1: 'Cuando la mascota está encerrada, puedes pulsar el botón <strong>Verificar si es óptimo</strong> para saber si tu puntuación actual es la solución óptima.',
+        instructions_hints_2: 'La puntuación será amarilla 🟡 si está por debajo `<` de la puntuación óptima. Se volverá verde 🟢 cuando encuentres la respuesta correcta `✅`.',
+        instructions_hints_3: 'Si está habilitado, tras comprobar la primera pista, puedes obtener más ayuda pulsando <strong>Revelar objetivo</strong> para ver la solución óptima junto a tu puntuación actual.',
+        instructions_hints_4: 'Puedes desactivar las pistas completamente desde el menú de <strong>Opciones</strong>.',
+        instructions_options_heading: 'Opciones',
+        instructions_options_text: 'Puedes personalizar el tipo de mascota y las preferencias de pistas en el menú de Opciones. Tus preferencias se guardan automáticamente.',
+
+        // ── About Modal ───────────────────────────────────────────────────
+        about_title: 'Acerca de Encierra a la Mascota',
+        about_close_aria: 'Cerrar acerca de',
+        about_description_1: '<strong>Encierra a la Mascota</strong> es un juego de lógica en el que cercas a tu mascota colocando muros estratégicamente para crear el área cercada más grande.',
+        about_description_2: 'Cada día presenta un nuevo rompecabezas con un diseño y desafío únicos.',
+        about_features_heading: 'Características',
+        about_features_1: 'Rompecabezas diarios con mapas únicos',
+        about_features_2: 'Múltiples tipos de mascota para elegir',
+        about_features_3: 'Sistema de pistas configurable',
+        about_features_4: 'Navegación accesible por teclado',
+        about_features_5: 'Diseño adaptado a móviles',
+        about_feedback_heading: 'Comentarios',
+        about_feedback_text: '¿Encontraste un error o tienes una idea? <a id="githubIssuesLink" href="{repoUrl}/issues" target="_blank" rel="noopener noreferrer">Abre un problema en GitHub</a> — ¡todos los comentarios son bienvenidos!',
+        about_credits_heading: 'Créditos',
+        about_credits_1: 'Creado por <a href="https://www.AvinZarlez.com" target="_blank" rel="noopener noreferrer">Avin Zarlez</a>',
+        about_view_github: 'Ver este proyecto en GitHub',
+        about_copyright: '© 2026 Encierra a la Mascota',
+
+        // ── Options Modal ─────────────────────────────────────────────────
+        options_title: 'Opciones',
+        options_close_aria: 'Cerrar opciones',
+        options_pet_type_label: 'Tipo de mascota:',
+        options_hints_disabled_label: 'Desactivar pistas',
+        options_never_show_target_label: 'Nunca mostrar objetivo',
+        options_timezone_label: 'Zona horaria:',
+        options_timezone_help: 'Se usa para determinar cuál es el rompecabezas de hoy',
+        options_debug_mode_label: 'Activar modo de depuración',
+        options_debug_mode_help: 'Muestra herramientas de depuración al final de la página',
+        options_account_heading: '☁️ Cuenta',
+        options_sign_in_to_sync: 'Iniciar sesión para sincronizar',
+        options_signed_in_as: 'Sesión iniciada como:',
+        options_edit_profile: '✏️ Editar nombre / correo',
+        options_sign_out: 'Cerrar sesión',
+
+        // ── Cloud Sync Bar ────────────────────────────────────────────────
+        cloud_sync_sign_in_btn: '☁️ Iniciar sesión para sincronizar',
+        cloud_sync_sign_out_btn: 'Cerrar sesión',
+        cloud_sync_syncing: '🔄 Sincronizando…',
+        cloud_sync_synced: '☁️ Sincronizado',
+        cloud_sync_error: '⚠️ Error de sincronización',
+
+        // ── Edit Profile Modal ────────────────────────────────────────────
+        edit_profile_title: '✏️ Editar perfil',
+        edit_profile_close_aria: 'Cerrar editar perfil',
+        edit_profile_description: 'Actualiza tu nombre de usuario o dirección de correo',
+        edit_profile_username_label: 'Nombre de usuario',
+        edit_profile_username_placeholder: 'Tu nombre para mostrar',
+        edit_profile_email_label: 'Correo electrónico',
+        edit_profile_email_placeholder: 'tu@ejemplo.com',
+        edit_profile_connected_heading: 'Cuentas conectadas',
+        edit_profile_google: 'Google',
+        edit_profile_connect: 'Conectar',
+        edit_profile_save: 'Guardar cambios',
+        edit_profile_cancel: 'Cancelar',
+
+        // ── Cloud Sync Auth Modal ─────────────────────────────────────────
+        cloud_sync_modal_title: '☁️ Sincronización en la nube',
+        cloud_sync_modal_close_aria: 'Cerrar inicio de sesión',
+        cloud_sync_modal_description: 'Inicia sesión para sincronizar tu progreso entre dispositivos',
+        cloud_sync_sign_in_google: 'Iniciar sesión con Google',
+        cloud_sync_or_email: 'o usa un enlace por correo',
+        cloud_sync_email_label: 'Correo electrónico',
+        cloud_sync_email_placeholder: 'tu@ejemplo.com',
+        cloud_sync_send_link: 'Enviar enlace de inicio de sesión',
+
+        // ── Sync Error Modal ──────────────────────────────────────────────
+        sync_error_title: '⚠️ Error de sincronización',
+        sync_error_close_aria: 'Cerrar error de sincronización',
+        sync_error_text: 'Se produjo un error al sincronizar tus datos con la nube:',
+        sync_error_contact_html: 'Por favor, <a id="syncErrorIssueLink" href="{repoUrl}/issues" target="_blank" rel="noopener noreferrer">abre un problema en GitHub</a> con los detalles del error para ayudarnos a solucionarlo.',
+
+        // ── Debug Section ─────────────────────────────────────────────────
+        debug_heading: '🛠️ Herramientas de depuración',
+        debug_show_all_levels: 'Mostrar todos los niveles',
+        debug_show_all_levels_help: 'Muestra niveles futuros en el selector de niveles',
+        debug_reset_level: 'Reiniciar nivel',
+        debug_reset_all: 'Restablecer todos los datos',
+
+        // ── Footer ────────────────────────────────────────────────────────
+        footer_view_github: 'Ver en GitHub',
+
+        // ── Tile Descriptions (referenced by descriptionKey in tileData.js) ─
+        tile_grass_description: 'Haz clic en las casillas de hierba para colocar muros. Cada casilla de hierba en tu área cercada suma 1 punto.',
+        tile_grass_aria: 'Casilla de hierba en fila {row}, columna {col}. Haz clic para construir un muro.',
+        tile_water_description: 'Las casillas de agua bloquean el movimiento y no se pueden hacer clic. No se pueden colocar muros en el agua.',
+        tile_water_aria: 'Casilla de agua en fila {row}, columna {col}. No se puede hacer clic.',
+        tile_wall_description: 'Los muros bloquean el movimiento de la mascota. Haz clic en un muro para eliminarlo. Tienes un número limitado de muros para colocar.',
+        tile_wall_aria: 'Muro en fila {row}, columna {col}. Haz clic para eliminar.',
+        tile_home_description: 'Tu mascota comienza en la casilla de inicio. El área cercada se mide desde aquí.',
+        tile_home_aria: 'Casilla de inicio en fila {row}, columna {col}. Ubicación de inicio de la mascota.',
+        tile_star_description: 'Las casillas de estrella actúan como hierba pero suman 3 puntos en lugar de 1 cuando están dentro de tu área cercada. No se pueden colocar muros en las estrellas.',
+        tile_star_aria: 'Casilla de estrella en fila {row}, columna {col}. Vale 3 puntos. No se puede colocar un muro aquí.',
+        tile_bee_description: 'Las casillas de abeja actúan como hierba pero restan 3 puntos cuando están dentro de tu área cercada. ¡Intenta mantener a las abejas fuera! No se pueden colocar muros en las abejas.',
+        tile_bee_aria: 'Casilla de abeja en fila {row}, columna {col}. Cuesta 3 puntos. No se puede colocar un muro aquí.',
+        tile_hole_description: 'Los agujeros bloquean el movimiento como el agua, pero puedes rellenarlos colocando un muro. Un agujero relleno actúa como hierba y suma 1 punto.',
+        tile_hole_aria: 'Agujero en fila {row}, columna {col}. Haz clic para rellenar con un muro.',
+        tile_filledHole_description: 'Un agujero relleno actúa como hierba, sumando 1 punto cuando está dentro de tu área cercada. Haz clic para eliminar el relleno.',
+        tile_filledHole_aria: 'Agujero relleno en fila {row}, columna {col}. Actúa como hierba. Haz clic para eliminar el relleno.',
     },
 };
 
