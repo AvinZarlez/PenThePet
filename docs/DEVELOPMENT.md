@@ -119,4 +119,4 @@ Pre-configured in `.vscode/` — launch configs for running/debugging tests, tas
 
 ---
 
-**See also:** [docs/README.md](README.md) · [TESTING.md](TESTING.md) · [DEBUGGING_BRANCHES.md](DEBUGGING_BRANCHES.md) · [MAP_GENERATION.md](MAP_GENERATION.md) · [CLOUD_SYNC_SETUP.md](CLOUD_SYNC_SETUP.md)
+**See also:** [docs/README.md](README.md) · [TESTING.md](TESTING.md) · [DEBUGGING_BRANCHES.md](DEBUGGING_BRANCHES.md) · [MAP_GENERATION.md](MAP_GENERATION.md) · [FIREBASE_SETUP.md](FIREBASE_SETUP.md)

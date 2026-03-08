@@ -1,23 +1,37 @@
-# ☁️ Cloud Sync Setup Guide
+# 🔥 Firebase Setup Guide
 
-This guide explains how to enable cross-device cloud sync so that your
-puzzle progress is automatically available on every browser and device you use.
+This guide explains how to enable **cloud sync** and **analytics** for your
+fork of Pen the Pet using Firebase.
 
 ## Overview
 
 By default the app stores all data **locally in your browser** (cookies).
-Cloud sync is an **opt-in feature** that is disabled until you configure it.
-Once enabled:
+Firebase provides two **opt-in** features, both disabled until you configure them:
+
+### Cloud Sync
 
 - Submissions you make on one device automatically appear on all your
   other signed-in devices.
 - Settings (pet type, hint preferences, language) are synced when you sign in on a new device.
 - Each user's data is stored privately; no one else can read or write it.
 
-Cloud sync is powered by **Firebase** — Google's free serverless backend.
-You need to create your own Firebase project and connect it to your fork of
-this repository. Firebase's free tier (Spark plan) is more than sufficient
-for normal use.
+### Analytics
+
+Anonymous, privacy-preserving usage events are sent to Firebase Analytics:
+
+| Event | When logged | Why it's useful |
+|---|---|---|
+| `level_loaded` | Player opens a puzzle | Daily active player proxy |
+| `level_completed` | Player submits their solution | Completion rate, score distribution, perfect-score rate, time-to-solve |
+| `hint_used` | Player uses the hint button | Difficulty signal |
+| `js_error` | An unhandled JavaScript error occurs | Catch regressions in production |
+
+No user IDs, email addresses, or personally-identifiable information are ever
+logged.  Analytics is completely independent of cloud sync — you can enable
+one without the other.
+
+Both features are powered by **Firebase** — Google's free serverless backend.
+Firebase's free tier (Spark plan) is more than sufficient for normal use.
 
 ## Prerequisites
 
@@ -246,13 +260,15 @@ This keeps credentials out of the committed codebase.
    | `FIREBASE_STORAGE_BUCKET`      | `your-project.firebasestorage.app` |
    | `FIREBASE_MESSAGING_SENDER_ID` | `1234567890`                       |
    | `FIREBASE_APP_ID`              | `1:1234567890:web:abcdef`          |
+   | `FIREBASE_MEASUREMENT_ID`      | `G-XXXXXXXXXX` _(analytics only — optional)_ |
 
 3. Push any change to `main` (or trigger the **Deploy static content to Pages**
    workflow manually). The workflow will substitute the secrets into
    `js/firebase-config.js` at deploy time.
 
 The app detects that `apiKey` is non-empty and automatically enables the
-cloud sync UI. The committed file always contains empty strings, so no
+cloud sync UI.  When `measurementId` is also set, Firebase Analytics is
+enabled.  The committed file always contains empty strings, so no
 credentials are stored in the repository.
 
 ### Step 9 — Test the Setup
@@ -447,12 +463,43 @@ Migration runs automatically when:
 - `CloudSync.applyCloudSubmission()` receives data from Firestore.
 - `CloudSync.uploadLocalSubmissions()` writes data back to Firestore.
 
-## Running Without Cloud Sync
+## Running Without Cloud Sync or Analytics
 
 If you fork this repository and do **not** want cloud sync, simply skip Step 8
 (do not add the secrets). The `apiKey` in `js/firebase-config.js` will remain
 empty after deployment and the app will behave exactly as before — all data
 stays in local cookies and the cloud sync UI is hidden.
+
+Analytics is independent. Omitting `FIREBASE_MEASUREMENT_ID` disables only
+analytics while leaving cloud sync (if configured) untouched.
+
+## Firebase Analytics Setup
+
+Firebase Analytics is enabled automatically when `FIREBASE_MEASUREMENT_ID` is
+set (Step 8). No additional Firebase console steps are required beyond what is
+already done for cloud sync.
+
+If you want to enable **analytics only** (without cloud sync):
+
+1. Complete Steps 1 and 2 (create project, register app).
+2. Skip Steps 3–7 (Authentication and Firestore are not needed for analytics).
+3. In Step 8, add only `FIREBASE_MEASUREMENT_ID` — the remaining secrets can
+   be left unset.
+
+### Viewing Analytics Data
+
+1. In the Firebase console, go to **Analytics → Dashboard**.
+2. Events appear within 24 hours (the **DebugView** panel updates in
+   near-real-time for devices in debug mode).
+
+### Events Reference
+
+| Event | Parameters | Description |
+|---|---|---|
+| `level_loaded` | `puzzle_date`, `already_completed` | Player opened a puzzle |
+| `level_completed` | `puzzle_date`, `score`, `goal_score`, `walls_used`, `elapsed_seconds`, `is_perfect`, `hints_used_count` | Player submitted a solution |
+| `hint_used` | `puzzle_date`, `hint_type` | Player pressed the hint button |
+| `js_error` | `error_message`, `error_source` | An unhandled JavaScript error occurred |
 
 ## Firebase Free Tier Limits
 
@@ -472,7 +519,7 @@ reads and writes — far below the free limits.
 
 ### "☁️ Sign In to Sync" button does not appear
 
-The `apiKey` was not injected at deploy time. Verify that all six
+The `apiKey` was not injected at deploy time. Verify that the required
 `FIREBASE_*` repository secrets are set (Step 8) and that the
 **Deploy static content to Pages** workflow ran after you added them.
 
@@ -553,6 +600,7 @@ domain if you use one.
 ## Additional Resources
 
 - [Firebase Console](https://console.firebase.google.com)
+- [Firebase Analytics Documentation](https://firebase.google.com/docs/analytics)
 - [Firebase Firestore Documentation](https://firebase.google.com/docs/firestore)
 - [Firebase Authentication Documentation](https://firebase.google.com/docs/auth)
 - [Firebase Pricing (Spark plan)](https://firebase.google.com/pricing)

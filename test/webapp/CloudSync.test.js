@@ -297,7 +297,7 @@ describe('CloudSync', () => {
 
     // -----------------------------------------------------------------------
     // Conflict resolution logic
-    // See docs/CLOUD_SYNC_SETUP.md for the full priority-ordered rules.
+    // See docs/FIREBASE_SETUP.md for the full priority-ordered rules.
     // -----------------------------------------------------------------------
     describe('conflict resolution', () => {
         const DATE = '2026-06-01';

@@ -60,6 +60,7 @@ global.LANGUAGE_OPTIONS = i18nModule.LANGUAGE_OPTIONS;
 global.CloudMigration = require('../js/CloudMigration.js');
 global.FIREBASE_CONFIG = require('../js/firebase-config.js');
 global.CloudSync = require('../js/CloudSync.js');
+global.Analytics = require('../js/Analytics.js');
 global.DateUtils = require('../js/DateUtils.js');
 global.PathfindingUtils = require('../js/PathfindingUtils.js');
 global.MILPSolver = require('../scripts/solver/MILPSolver.js');

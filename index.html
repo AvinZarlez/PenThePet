@@ -376,12 +376,13 @@
         </div>
     </div>
 
-    <!-- Firebase SDK (compat) — loaded only when needed; CloudSync gracefully no-ops if missing -->
+    <!-- Firebase SDK (compat) — loaded only when needed; CloudSync/Analytics gracefully no-op if missing -->
     <script src="https://www.gstatic.com/firebasejs/11.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/11.7.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/11.7.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/11.7.1/firebase-analytics-compat.js"></script>
 
-    <!-- Game Scripts (Load in order: constants -> config -> types -> utils -> pathfinding -> grid -> firebase-config -> migration -> cloud -> game -> menu -> main) -->
+    <!-- Game Scripts (Load in order: constants -> config -> types -> utils -> pathfinding -> grid -> firebase-config -> migration -> cloud -> analytics -> game -> menu -> main) -->
     <script src="js/constants.js"></script>
     <script src="js/config.js"></script>
     <script src="js/tileData.js"></script>
@@ -394,6 +395,7 @@
     <script src="js/firebase-config.js"></script>
     <script src="js/CloudMigration.js"></script>
     <script src="js/CloudSync.js"></script>
+    <script src="js/Analytics.js"></script>
     <script src="js/Game.js"></script>
     <script src="js/Menu.js"></script>
     <script src="js/main.js"></script>

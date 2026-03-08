@@ -537,7 +537,7 @@ const CloudSync = (function () {
 
     /**
      * Apply a cloud timer state to the local cookie.
-     * Conflict rule B: BOTH IN-PROGRESS → HIGHEST ELAPSED WINS. See docs/CLOUD_SYNC_SETUP.md.
+     * Conflict rule B: BOTH IN-PROGRESS → HIGHEST ELAPSED WINS. See docs/FIREBASE_SETUP.md.
      * @param {string} docId - Firestore doc ID (e.g. 'timer_2026-01-01')
      * @param {Object} data - {elapsed: number}
      */
@@ -645,7 +645,7 @@ const CloudSync = (function () {
      * Applies schema migration then resolves the conflict.
      * Hints are part of the submission document — no separate hints cookie is needed.
      *
-     * Conflict rules (see docs/CLOUD_SYNC_SETUP.md for the full rule table):
+     * Conflict rules (see docs/FIREBASE_SETUP.md for the full rule table):
      *   C. LOCAL IN-PROGRESS, CLOUD SUBMITTED → cloud submission always wins.
      *   D. LOCAL SUBMITTED, CLOUD IN-PROGRESS → local keeps; local uploaded to cloud.
      *   E. BOTH SUBMITTED → HIGHER SCORE WINS; TIEBREAK BY EARLIEST SUBMISSION TIMESTAMP.
@@ -814,7 +814,7 @@ const CloudSync = (function () {
 
     /**
      * Download all cloud submissions and merge into local cookies.
-     * Conflict resolution rules: see docs/CLOUD_SYNC_SETUP.md.
+     * Conflict resolution rules: see docs/FIREBASE_SETUP.md.
      *
      * When the realtime listener is active and a full sync was completed within
      * CONSTANTS.CLOUD_SYNC_CACHE_TTL_SECONDS, the expensive Firestore download
@@ -868,7 +868,7 @@ const CloudSync = (function () {
                     applyCloudProgressState(doc.id, doc.data());
                     return;
                 }
-                // Submission conflict resolution — see docs/CLOUD_SYNC_SETUP.md
+                // Submission conflict resolution — see docs/FIREBASE_SETUP.md
                 applyCloudSubmission(doc.id, _deserializeSubmissionFromFirestore(doc.data()));
             });
 
@@ -1039,7 +1039,7 @@ const CloudSync = (function () {
                         submissionsUpdated = true;
                         return;
                     }
-                    // Submission conflict resolution — see docs/CLOUD_SYNC_SETUP.md.
+                    // Submission conflict resolution — see docs/FIREBASE_SETUP.md.
                     // Returns true if cloud was applied; false if local submission was kept.
                     const cloudApplied = applyCloudSubmission(change.doc.id, _deserializeSubmissionFromFirestore(change.doc.data()));
                     submissionsUpdated = true;
@@ -1381,7 +1381,7 @@ const CloudSync = (function () {
                 '(2) Firebase console → Authentication → Settings → Authorised Domains ' +
                 'includes ' + blockedDomain + ' (Step 7), ' +
                 'and (3) the <meta name="referrer" content="no-referrer-when-downgrade"> ' +
-                'tag is present in index.html. See docs/CLOUD_SYNC_SETUP.md for instructions.';
+                'tag is present in index.html. See docs/FIREBASE_SETUP.md for instructions.';
         }
         return messages[code] || 'Authentication error (' + code + '). Check the browser console.';
     }
@@ -1389,7 +1389,7 @@ const CloudSync = (function () {
     function getSyncErrorMessage(e) {
         const code = e && (e.code || '');
         const messages = {
-            'permission-denied': 'Firestore permission denied. Check your security rules (see docs/CLOUD_SYNC_SETUP.md).',
+            'permission-denied': 'Firestore permission denied. Check your security rules (see docs/FIREBASE_SETUP.md).',
             'failed-precondition': 'Firestore database not found. Create one in the Firebase console.',
             'unavailable': 'Firestore service unavailable. Check your internet connection.',
             'unauthenticated': 'Please sign out and sign in again.',

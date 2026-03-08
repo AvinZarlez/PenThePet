@@ -1313,6 +1313,20 @@ class Game {
         this.submittedScore = score;
         this.submittedWalls = wallPositions;
 
+        // Track analytics event
+        if (typeof Analytics !== 'undefined') {
+            const isPerfect = score >= this.goalAreaSize;
+            Analytics.trackLevelCompleted(
+                this.currentDate,
+                score,
+                this.goalAreaSize,
+                wallPositions.length,
+                this.elapsedSeconds,
+                isPerfect,
+                this.hintsUsed.length
+            );
+        }
+
         // Update the submit button text
         this.updatePennedStatus(true);
         // Disable the reset button after submission
@@ -2062,6 +2076,9 @@ class Game {
             this.hintsUsed.push(CONSTANTS.HINT_CHECKED);
             if (this.currentDate) {
                 this.saveHintsUsed(this.currentDate);
+                if (typeof Analytics !== 'undefined') {
+                    Analytics.trackHintUsed(this.currentDate, CONSTANTS.HINT_CHECKED);
+                }
             }
             this.updateAreaSizeDisplay();
 
@@ -2074,6 +2091,9 @@ class Game {
             this.hintsUsed.push(CONSTANTS.HINT_TARGET);
             if (this.currentDate) {
                 this.saveHintsUsed(this.currentDate);
+                if (typeof Analytics !== 'undefined') {
+                    Analytics.trackHintUsed(this.currentDate, CONSTANTS.HINT_TARGET);
+                }
             }
             this.updateAreaSizeDisplay();
 
