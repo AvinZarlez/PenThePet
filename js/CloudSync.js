@@ -99,6 +99,7 @@ const CloudSync = (function () {
     let isSyncing = false;
     let username = null;
     let gameTesters = [];
+    let localDebugEnabled = false;
 
     /** Dates whose local cookie was overwritten by cloud data since the last sync event. */
     const _pendingCloudOverwrites = new Set();
@@ -143,11 +144,31 @@ const CloudSync = (function () {
     }
 
     /**
+     * Check for a local debug flag file (debug.flag).
+     * If the file exists (HTTP 200), debug mode is enabled regardless of
+     * Firebase auth state.  The file is git-ignored so it can be created
+     * locally without being committed.
+     */
+    async function checkLocalDebugFlag() {
+        localDebugEnabled = false;
+        try {
+            const response = await fetch('debug.flag');
+            if (response.ok) {
+                localDebugEnabled = true;
+                console.info('CloudSync: debug.flag found — debug mode enabled locally.');
+            }
+        } catch {
+            // File not present or fetch failed; local debug stays disabled
+        }
+    }
+
+    /**
      * Returns true when the currently signed-in user's Firebase UID appears
-     * in the game-testers list.
+     * in the game-testers list, OR when the local debug flag file is present.
      * @returns {boolean}
      */
     function isGameTester() {
+        if (localDebugEnabled) return true;
         if (!currentUser) return false;
         return gameTesters.includes(currentUser.uid);
     }
@@ -194,6 +215,7 @@ const CloudSync = (function () {
      */
     async function init() {
         await loadGameTesters();
+        await checkLocalDebugFlag();
         updateDebugOptionVisibility(); // hide debug option until tester status confirmed
 
         if (!isConfigured()) {
