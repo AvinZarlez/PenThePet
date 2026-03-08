@@ -1325,6 +1325,52 @@ const CloudSync = (function () {
         }
     }
 
+    /**
+     * Called by the Download My Data button.
+     * Fetches all Firestore documents for the current user and triggers a
+     * browser download of a JSON file containing all their cloud data.
+     */
+    async function handleDownloadMyData() {
+        if (!db || !currentUser) return;
+        try {
+            const collRef = db
+                .collection('users')
+                .doc(currentUser.uid)
+                .collection(COLLECTION_NAME);
+            const snapshot = await collRef.get();
+
+            const docs = {};
+            snapshot.forEach(function (doc) {
+                docs[doc.id] = doc.data();
+            });
+
+            const exportData = {
+                exportedAt: new Date().toISOString(),
+                account: {
+                    uid: currentUser.uid,
+                    email: currentUser.email || null,
+                    username: username || null,
+                },
+                data: docs,
+            };
+
+            const blob = new Blob(
+                [JSON.stringify(exportData, null, 2)],
+                { type: 'application/json' }
+            );
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'PenThePet-my-data.json';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        } catch (e) {
+            console.error('CloudSync: Failed to download data:', e);
+        }
+    }
+
     /** Called by the Save Changes button in the edit profile modal. */
     async function handleSaveProfile() {
         clearProfileError();
@@ -1444,6 +1490,7 @@ const CloudSync = (function () {
         handleLinkWithGoogle: handleLinkWithGoogle,
         handleSignOut: handleSignOut,
         handleDeleteAllCloudData: handleDeleteAllCloudData,
+        handleDownloadMyData: handleDownloadMyData,
         handleSaveProfile: handleSaveProfile,
         // Returns (and clears) the set of dates overwritten by cloud data since the
         // last call.  Used by main.js to show the "cloud data loaded" notification.

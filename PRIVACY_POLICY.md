@@ -73,7 +73,10 @@ cookies:
 If you are located in the European Economic Area (EEA) or the United Kingdom, you
 have the following rights regarding your personal data:
 
-- **Right of access** — you can request a copy of the data we hold about you.
+- **Right of access** — you can download a copy of all cloud data we hold about
+  you at any time using the
+  ☰ Menu → Options → ☁️ Account → 📥 Download My Data button. The file is a
+  JSON export of your puzzle submissions, timer states, and settings.
 - **Right to erasure** — you can delete your cloud data at any time from the
   Options menu (☰ Menu → Options → ☁️ Account → 🗑️ Delete All Cloud Data),
   which removes all Firestore records associated with your account.
