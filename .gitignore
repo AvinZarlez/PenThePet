@@ -49,4 +49,7 @@ tmp/
 *.tmp
 *.log
 
+# Local debug flag — create this file to enable debug mode without cloud auth
+debug.flag
+
 node_modules/

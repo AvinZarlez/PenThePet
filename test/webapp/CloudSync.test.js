@@ -217,6 +217,29 @@ describe('CloudSync', () => {
         });
     });
 
+    describe('local debug flag (debug.flag)', () => {
+        test('should enable isGameTester when debug.flag is present', async () => {
+            global.fetch = jest.fn((url) => {
+                if (url === 'debug.flag') return Promise.resolve({ ok: true });
+                return Promise.resolve({ ok: false });
+            });
+            await CloudSync.init();
+            expect(CloudSync.isGameTester()).toBe(true);
+        });
+
+        test('should not enable isGameTester when debug.flag is absent', async () => {
+            global.fetch = jest.fn(() => Promise.resolve({ ok: false }));
+            await CloudSync.init();
+            expect(CloudSync.isGameTester()).toBe(false);
+        });
+
+        test('should not throw and should not enable isGameTester when debug.flag fetch throws', async () => {
+            global.fetch = jest.fn(() => Promise.reject(new Error('network error')));
+            await expect(CloudSync.init()).resolves.toBeUndefined();
+            expect(CloudSync.isGameTester()).toBe(false);
+        });
+    });
+
     describe('cloudsync:synced DOM event', () => {
         test('document can receive cloudsync:synced event without error', () => {
             // Verify the custom event can be created and dispatched; listeners
