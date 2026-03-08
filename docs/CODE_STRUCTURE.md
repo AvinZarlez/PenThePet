@@ -7,7 +7,7 @@ PenThePet/
 ├── index.html              # Main HTML (structure only — no inline styles/scripts)
 ├── assets/                 # SVG tile images and paw icon
 ├── css/
-│   ├── base.css            # Global reset, container, typography, buttons, footer, responsive
+│   ├── base.css            # Design tokens (:root CSS variables), global reset, container, typography, buttons, footer, responsive
 │   ├── game.css            # Game board, controls, grid, cells, sidebar, debug section
 │   ├── modals.css          # Modal overlay, animations, shared modal content styles
 │   └── menu.css            # Menu modal, calendar/level selector, cloud sync UI
@@ -143,6 +143,7 @@ Tile descriptions use `descriptionKey` in `tileData.js` (e.g. `descriptionKey: '
 - **New preference:** `CookieUtils.setCookie('key', value, 365)` / `CookieUtils.getCookie('key')`
 - **New string / translation:** Add a key to `js/i18n.js` → `LANGUAGES.en`. To add a new language, copy the `en` block, translate, add to `LANGUAGE_OPTIONS`.
 - **New CSS:** tile cursor/hover → `css/game.css`; new modal → `css/modals.css` or `css/menu.css`
+- **Retheme colours:** All colour and sizing design tokens are CSS custom properties in the `:root` block at the top of `css/base.css`. Changing those variables updates the entire game UI.
 - **Configuration changes:** Edit `js/constants.js` first, then `js/config.js` if needed
 
 ## 📦 Deployment
