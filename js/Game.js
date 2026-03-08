@@ -1313,6 +1313,21 @@ class Game {
         this.submittedScore = score;
         this.submittedWalls = wallPositions;
 
+        // Track analytics event
+        if (typeof Analytics !== 'undefined') {
+            const isPerfect = score >= this.goalAreaSize;
+            Analytics.trackLevelCompleted(
+                this.currentDate,
+                score,
+                this.goalAreaSize,
+                wallPositions.length,
+                this.elapsedSeconds,
+                isPerfect,
+                this.hintsUsed.includes(CONSTANTS.HINT_CHECKED),
+                this.hintsUsed.includes(CONSTANTS.HINT_TARGET)
+            );
+        }
+
         // Update the submit button text
         this.updatePennedStatus(true);
         // Disable the reset button after submission

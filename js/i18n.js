@@ -206,6 +206,7 @@ const LANGUAGES = {
         about_credits_1: 'Made by <a href="https://www.AvinZarlez.com" target="_blank" rel="noopener noreferrer">Avin Zarlez</a>',
         about_view_github: 'View this project on GitHub',
         about_copyright: '© 2026 Pen the Pet',
+        about_privacy_policy: 'Privacy Policy',
 
         // ── Options Modal ─────────────────────────────────────────────────
         options_title: 'Options',
@@ -222,6 +223,10 @@ const LANGUAGES = {
         options_signed_in_as: 'Signed in as:',
         options_edit_profile: '✏️ Edit Username / Email',
         options_sign_out: 'Sign Out',
+        options_delete_cloud_data: '🗑️ Delete Account & Cloud Data',
+        options_delete_cloud_data_confirm: 'Delete your account and all cloud data? This cannot be undone',
+        options_delete_requires_reauth: 'For security, please sign in again and then immediately press "Delete Account & Cloud Data".',
+        options_download_my_data: '📥 Download My Data',
 
         // ── Cloud Sync Bar ────────────────────────────────────────────────
         cloud_sync_sign_in_btn: '☁️ Sign In to Sync',
@@ -471,6 +476,7 @@ const LANGUAGES = {
         about_credits_1: 'Creado por <a href="https://www.AvinZarlez.com" target="_blank" rel="noopener noreferrer">Avin Zarlez</a>',
         about_view_github: 'Ver este proyecto en GitHub',
         about_copyright: '© 2026 Encierra a la Mascota',
+        about_privacy_policy: 'Política de privacidad',
 
         // ── Options Modal ─────────────────────────────────────────────────
         options_title: 'Opciones',
@@ -487,6 +493,10 @@ const LANGUAGES = {
         options_signed_in_as: 'Sesión iniciada como:',
         options_edit_profile: '✏️ Editar nombre / correo',
         options_sign_out: 'Cerrar sesión',
+        options_delete_cloud_data: '🗑️ Eliminar cuenta y datos en la nube',
+        options_delete_cloud_data_confirm: '¿Eliminar tu cuenta y todos los datos en la nube? Esto no se puede deshacer',
+        options_delete_requires_reauth: 'Por seguridad, vuelve a iniciar sesión y luego pulsa "Eliminar cuenta y datos en la nube" de inmediato.',
+        options_download_my_data: '📥 Descargar mis datos',
 
         // ── Cloud Sync Bar ────────────────────────────────────────────────
         cloud_sync_sign_in_btn: '☁️ Iniciar sesión para sincronizar',

@@ -537,7 +537,7 @@ const CloudSync = (function () {
 
     /**
      * Apply a cloud timer state to the local cookie.
-     * Conflict rule B: BOTH IN-PROGRESS → HIGHEST ELAPSED WINS. See docs/CLOUD_SYNC_SETUP.md.
+     * Conflict rule B: BOTH IN-PROGRESS → HIGHEST ELAPSED WINS. See docs/FIREBASE_SETUP.md.
      * @param {string} docId - Firestore doc ID (e.g. 'timer_2026-01-01')
      * @param {Object} data - {elapsed: number}
      */
@@ -645,7 +645,7 @@ const CloudSync = (function () {
      * Applies schema migration then resolves the conflict.
      * Hints are part of the submission document — no separate hints cookie is needed.
      *
-     * Conflict rules (see docs/CLOUD_SYNC_SETUP.md for the full rule table):
+     * Conflict rules (see docs/FIREBASE_SETUP.md for the full rule table):
      *   C. LOCAL IN-PROGRESS, CLOUD SUBMITTED → cloud submission always wins.
      *   D. LOCAL SUBMITTED, CLOUD IN-PROGRESS → local keeps; local uploaded to cloud.
      *   E. BOTH SUBMITTED → HIGHER SCORE WINS; TIEBREAK BY EARLIEST SUBMISSION TIMESTAMP.
@@ -814,7 +814,7 @@ const CloudSync = (function () {
 
     /**
      * Download all cloud submissions and merge into local cookies.
-     * Conflict resolution rules: see docs/CLOUD_SYNC_SETUP.md.
+     * Conflict resolution rules: see docs/FIREBASE_SETUP.md.
      *
      * When the realtime listener is active and a full sync was completed within
      * CONSTANTS.CLOUD_SYNC_CACHE_TTL_SECONDS, the expensive Firestore download
@@ -868,7 +868,7 @@ const CloudSync = (function () {
                     applyCloudProgressState(doc.id, doc.data());
                     return;
                 }
-                // Submission conflict resolution — see docs/CLOUD_SYNC_SETUP.md
+                // Submission conflict resolution — see docs/FIREBASE_SETUP.md
                 applyCloudSubmission(doc.id, _deserializeSubmissionFromFirestore(doc.data()));
             });
 
@@ -1039,7 +1039,7 @@ const CloudSync = (function () {
                         submissionsUpdated = true;
                         return;
                     }
-                    // Submission conflict resolution — see docs/CLOUD_SYNC_SETUP.md.
+                    // Submission conflict resolution — see docs/FIREBASE_SETUP.md.
                     // Returns true if cloud was applied; false if local submission was kept.
                     const cloudApplied = applyCloudSubmission(change.doc.id, _deserializeSubmissionFromFirestore(change.doc.data()));
                     submissionsUpdated = true;
@@ -1311,6 +1311,86 @@ const CloudSync = (function () {
         }
     }
 
+    /** Called by the Delete All Cloud Data button. */
+    async function handleDeleteAllCloudData() {
+        const msg = typeof I18N !== 'undefined'
+            ? I18N.t('options_delete_cloud_data_confirm')
+            : 'Delete your account and all cloud data? This cannot be undone';
+        if (!window.confirm(msg)) return;
+        try {
+            await deleteAllSubmissions();
+        } catch (e) {
+            console.error('CloudSync: Failed to delete Firestore data:', e);
+            return;
+        }
+        try {
+            await currentUser.delete();
+        } catch (e) {
+            if (e && e.code === 'auth/requires-recent-login') {
+                // Firebase requires a fresh sign-in before deleting an account.
+                // Sign the user out so they can re-authenticate and try again.
+                console.warn('CloudSync: Re-auth required to delete account — signing out');
+                try {
+                    await signOut();
+                } catch (signOutErr) {
+                    console.error('CloudSync: Sign out failed during re-auth flow:', signOutErr);
+                }
+                alert(typeof I18N !== 'undefined'
+                    ? I18N.t('options_delete_requires_reauth')
+                    : 'Please sign in again and then delete your account immediately after signing in.'
+                );
+            } else {
+                console.error('CloudSync: Failed to delete account:', e);
+            }
+        }
+    }
+
+    /**
+     * Called by the Download My Data button.
+     * Fetches all Firestore documents for the current user and triggers a
+     * browser download of a JSON file containing all their cloud data.
+     */
+    async function handleDownloadMyData() {
+        if (!db || !currentUser) return;
+        try {
+            const collRef = db
+                .collection('users')
+                .doc(currentUser.uid)
+                .collection(COLLECTION_NAME);
+            const snapshot = await collRef.get();
+
+            const docs = {};
+            snapshot.forEach(function (doc) {
+                docs[doc.id] = doc.data();
+            });
+
+            const exportData = {
+                exportedAt: new Date().toISOString(),
+                account: {
+                    uid: currentUser.uid,
+                    email: currentUser.email || null,
+                    username: username || null,
+                },
+                data: docs,
+            };
+
+            const blob = new Blob(
+                [JSON.stringify(exportData, null, 2)],
+                { type: 'application/json' }
+            );
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'PenThePet-my-data.json';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        } catch (e) {
+            console.error('CloudSync: Failed to download data:', e);
+        }
+    }
+
     /** Called by the Save Changes button in the edit profile modal. */
     async function handleSaveProfile() {
         clearProfileError();
@@ -1361,7 +1441,7 @@ const CloudSync = (function () {
             'auth/operation-not-allowed': 'This sign-in method is not enabled in the Firebase console.',
             'auth/invalid-api-key': 'Invalid Firebase API key. Check firebase-config.js.',
             'auth/configuration-not-found': 'Firebase Authentication is not configured. Enable it in the Firebase console.',
-            'auth/requires-recent-login': 'Please sign out and sign in again before changing your email.',
+            'auth/requires-recent-login': 'For security, please sign out and sign in again before performing this action.',
             'auth/expired-action-code': 'The sign-in link has expired. Please request a new one.',
             'auth/invalid-action-code': 'The sign-in link is invalid or has already been used.',
             'auth/popup-closed-by-user': 'Sign-in cancelled. Please try again.',
@@ -1381,7 +1461,7 @@ const CloudSync = (function () {
                 '(2) Firebase console → Authentication → Settings → Authorised Domains ' +
                 'includes ' + blockedDomain + ' (Step 7), ' +
                 'and (3) the <meta name="referrer" content="no-referrer-when-downgrade"> ' +
-                'tag is present in index.html. See docs/CLOUD_SYNC_SETUP.md for instructions.';
+                'tag is present in index.html. See docs/FIREBASE_SETUP.md for instructions.';
         }
         return messages[code] || 'Authentication error (' + code + '). Check the browser console.';
     }
@@ -1389,7 +1469,7 @@ const CloudSync = (function () {
     function getSyncErrorMessage(e) {
         const code = e && (e.code || '');
         const messages = {
-            'permission-denied': 'Firestore permission denied. Check your security rules (see docs/CLOUD_SYNC_SETUP.md).',
+            'permission-denied': 'Firestore permission denied. Check your security rules (see docs/FIREBASE_SETUP.md).',
             'failed-precondition': 'Firestore database not found. Create one in the Firebase console.',
             'unavailable': 'Firestore service unavailable. Check your internet connection.',
             'unauthenticated': 'Please sign out and sign in again.',
@@ -1429,6 +1509,8 @@ const CloudSync = (function () {
         handleSignInWithGoogle: handleSignInWithGoogle,
         handleLinkWithGoogle: handleLinkWithGoogle,
         handleSignOut: handleSignOut,
+        handleDeleteAllCloudData: handleDeleteAllCloudData,
+        handleDownloadMyData: handleDownloadMyData,
         handleSaveProfile: handleSaveProfile,
         // Returns (and clears) the set of dates overwritten by cloud data since the
         // last call.  Used by main.js to show the "cloud data loaded" notification.

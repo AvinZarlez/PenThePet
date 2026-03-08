@@ -238,7 +238,7 @@ async function initGame() {
         // Full reload: submission appeared, disappeared, or data changed.
         // Timer-only refresh: update the timer display in-place without interrupting
         //   an in-progress game (avoids wiping wall placements or resetting the overlay).
-        // See docs/CLOUD_SYNC_SETUP.md for the full sync trigger table.
+        // See docs/FIREBASE_SETUP.md for the full sync trigger table.
         document.addEventListener('cloudsync:synced', async function () {
             if (!menu || !game || !game.currentDate) return;
 
@@ -293,10 +293,25 @@ async function initGame() {
             }
         });
     }
+
+    // Initialise analytics (no-ops if measurementId is not configured).
+    // Must run after CloudSync.init() which calls firebase.initializeApp().
+    if (typeof Analytics !== 'undefined') {
+        Analytics.init();
+        Analytics.trackLevelLoaded(mapData.date, game.isSubmitted);
+    }
 }
 
 // Start the game when the DOM is fully loaded
 window.addEventListener('DOMContentLoaded', () => {
+    // Register a global error handler to track unexpected JS errors via analytics.
+    // Errors from cross-origin scripts are intentionally excluded (message is "Script error.").
+    window.addEventListener('error', function (event) {
+        if (typeof Analytics !== 'undefined' && event.message !== 'Script error.') {
+            Analytics.trackError(event.message, event.filename || 'unknown');
+        }
+    });
+
     // Load saved language preference and apply translated strings to the DOM
     I18N.loadFromCookie();
 

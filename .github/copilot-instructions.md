@@ -43,6 +43,6 @@ Tests: `test/webapp/` (browser components), `test/generation/` (map generation).
 - [docs/DEVELOPMENT.md](../docs/DEVELOPMENT.md) — dev setup, workflow, CI/CD
 - [docs/MAP_GENERATION.md](../docs/MAP_GENERATION.md) — generation algorithm and commands
 - [docs/TILE_SYSTEM.md](../docs/TILE_SYSTEM.md) — tile properties and how to add tile types
-- [docs/CLOUD_SYNC_SETUP.md](../docs/CLOUD_SYNC_SETUP.md) — Firebase cloud sync setup
+- [docs/FIREBASE_SETUP.md](../docs/FIREBASE_SETUP.md) — Firebase cloud sync and analytics setup
 
 Keep docs in sync when making code changes.

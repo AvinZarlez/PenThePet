@@ -77,7 +77,7 @@ All cookie operations go through `CookieUtils`. Currently stored:
 
 All cookies expire after 1 year, path `/`, SameSite `Lax`.
 
-See [CLOUD_SYNC_SETUP.md](CLOUD_SYNC_SETUP.md) for the Firestore mapping and schema versioning details.
+See [FIREBASE_SETUP.md](FIREBASE_SETUP.md) for the Firestore mapping and schema versioning details.
 
 ## 🌐 Localization
 

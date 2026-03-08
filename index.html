@@ -257,6 +257,7 @@
                 <h3 data-i18n="about_credits_heading"></h3>
                 <p data-i18n-html="about_credits_1"></p>
                 <p><a id="githubProjectLink" href="https://github.com/AvinZarlez/penthepet" target="_blank" rel="noopener noreferrer" data-i18n="about_view_github"></a></p>
+                <p><a href="PRIVACY_POLICY.md" target="_blank" rel="noopener noreferrer" data-i18n="about_privacy_policy"></a></p>
                 <p data-i18n="about_copyright"></p>
             </div>
         </div>
@@ -311,6 +312,8 @@
                     <div class="options-account-buttons">
                         <button class="options-account-btn" data-i18n="options_edit_profile" onclick="CloudSync.openEditProfileModal()"></button>
                         <button class="options-account-btn options-account-signout" data-i18n="options_sign_out" onclick="CloudSync.handleSignOut()"></button>
+                        <button class="options-account-btn" data-i18n="options_download_my_data" onclick="CloudSync.handleDownloadMyData()"></button>
+                        <button class="options-account-btn options-account-delete" data-i18n="options_delete_cloud_data" onclick="CloudSync.handleDeleteAllCloudData()"></button>
                     </div>
                 </div>
             </div>
@@ -376,12 +379,13 @@
         </div>
     </div>
 
-    <!-- Firebase SDK (compat) — loaded only when needed; CloudSync gracefully no-ops if missing -->
+    <!-- Firebase SDK (compat) — loaded only when needed; CloudSync/Analytics gracefully no-op if missing -->
     <script src="https://www.gstatic.com/firebasejs/11.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/11.7.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/11.7.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/11.7.1/firebase-analytics-compat.js"></script>
 
-    <!-- Game Scripts (Load in order: constants -> config -> types -> utils -> pathfinding -> grid -> firebase-config -> migration -> cloud -> game -> menu -> main) -->
+    <!-- Game Scripts (Load in order: constants -> config -> types -> utils -> pathfinding -> grid -> firebase-config -> migration -> cloud -> analytics -> game -> menu -> main) -->
     <script src="js/constants.js"></script>
     <script src="js/config.js"></script>
     <script src="js/tileData.js"></script>
@@ -394,6 +398,7 @@
     <script src="js/firebase-config.js"></script>
     <script src="js/CloudMigration.js"></script>
     <script src="js/CloudSync.js"></script>
+    <script src="js/Analytics.js"></script>
     <script src="js/Game.js"></script>
     <script src="js/Menu.js"></script>
     <script src="js/main.js"></script>
