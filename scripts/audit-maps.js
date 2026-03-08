@@ -7,6 +7,7 @@
 
 const path = require('path');
 const MapValidator = require('../js/MapValidator.js');
+const { parseCompactMap, parseCompactSolution } = require('../js/Grid.js');
 const { readAllMaps } = require('./lib/mapUtils.js');
 
 function auditMaps() {
@@ -31,10 +32,13 @@ function auditMaps() {
         console.log(`\nChecking ${date} - "${mapData.mapName}" (Day ${mapData.dayNumber})`);
         console.log(`  Size: ${mapData.size}x${mapData.size}, Goal: ${mapData.goal}, Walls: ${mapData.maxWalls}`);
         
-        const validation = MapValidator.validate(mapData.map, {
+        const map2d = parseCompactMap(mapData.map, mapData.size);
+        const optimalSolution = parseCompactSolution(mapData.optimalSolution || []);
+        const validation = MapValidator.validate(map2d, {
             goalArea: mapData.goal,
             optimalWallCount: mapData.maxWalls,
-            optimalSolution: mapData.optimalSolution || []
+            optimalSolution,
+            maxWalls: mapData.maxWalls
         });
         
         if (!validation.valid) {

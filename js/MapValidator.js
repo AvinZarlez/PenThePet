@@ -68,12 +68,18 @@ class MapValidator {
             }
         }
         
-        // 7. At least one star tile must exist in the map
+        // 7. No score-modifying tiles adjacent to home (they are always penned, not an interesting choice)
+        const adjScoreTiles = this._scoreModifyingTilesAdjacentToHome(map);
+        if (adjScoreTiles.length > 0) {
+            errors.push(`Score-modifying tiles adjacent to home at: ${adjScoreTiles.map(([r, c]) => `(${r},${c})`).join(', ')}`);
+        }
+
+        // 8. At least one star tile must exist in the map
         if (!this._hasAtLeastOneStar(map)) {
             errors.push('Map has no star tiles - at least one star is required');
         }
         
-        // 8. At least one bee tile must exist in the map
+        // 9. At least one bee tile must exist in the map
         if (!this._hasAtLeastOneBee(map)) {
             errors.push('Map has no bee tiles - at least one bee is required');
         }
@@ -151,6 +157,60 @@ class MapValidator {
      */
     static _allNonEdgeTilesReachableViaInterior(map) {
         return PathfindingUtils.allNonEdgeTilesReachableViaInterior(map);
+    }
+
+    /**
+     * Find score-modifying tiles (e.g. stars, bees) that are orthogonally adjacent to home.
+     * Such tiles are always penned regardless of wall placement and offer no strategic choice.
+     * Score-modifying tiles are identified as passable tiles with a score other than 0 or 1.
+     * @private
+     * @param {Array} map - 2D array of tile type strings
+     * @returns {Array<Array<number>>} Array of [row, col] positions of adjacent score-modifying tiles
+     */
+    static _scoreModifyingTilesAdjacentToHome(map) {
+        const rows = map.length;
+        const cols = map[0].length;
+        const [homeR, homeC] = MapValidator._findHomePosition(map);
+        if (homeR === -1) return [];
+
+        const adjacent = [];
+        const dirs = [[-1, 0], [1, 0], [0, -1], [0, 1]];
+        for (const [dr, dc] of dirs) {
+            const r = homeR + dr, c = homeC + dc;
+            if (r >= 0 && r < rows && c >= 0 && c < cols && MapValidator._isScoreModifyingTile(map[r][c])) {
+                adjacent.push([r, c]);
+            }
+        }
+        return adjacent;
+    }
+
+    /**
+     * Returns true if the tile is a score-modifying tile (score is not 0 or 1).
+     * Stars (+3) and bees (-3) are score-modifying; grass, water, home, etc. are not.
+     * @param {string} tile - Tile type string
+     * @returns {boolean}
+     */
+    static _isScoreModifyingTile(tile) {
+        const _tileData = typeof TILE_DATA !== 'undefined' ? TILE_DATA : {};
+        const d = _tileData[tile];
+        return d ? (d.score !== 0 && d.score !== 1) : false;
+    }
+
+    /**
+     * Find the [row, col] position of the home tile in a 2D map array.
+     * Returns [-1, -1] if no home tile is found.
+     * @param {Array} map - 2D array of tile type strings
+     * @returns {Array<number>} [row, col] or [-1, -1]
+     */
+    static _findHomePosition(map) {
+        const rows = map.length;
+        const cols = map[0].length;
+        for (let r = 0; r < rows; r++) {
+            for (let c = 0; c < cols; c++) {
+                if (map[r][c] === 'home') return [r, c];
+            }
+        }
+        return [-1, -1];
     }
 
     /**

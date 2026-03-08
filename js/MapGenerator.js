@@ -66,6 +66,7 @@ class MapGenerator {
                 map = this._generateRandomMap();
                 this._fixAdjacentHoles(map);
                 this._enforceMaxPerLevel(map);
+                this._removeScoreModifyingTilesAdjacentToHome(map);
                 this._placeHoles(map);
                 if (this._validateMap(map)) {
                     // Calculate optimal goal for this map
@@ -393,6 +394,28 @@ class MapGenerator {
     }
 
     /**
+     * Remove score-modifying tiles (e.g. stars, bees) that are orthogonally adjacent to home.
+     * Such tiles are always penned regardless of wall placement, so they offer no strategic choice.
+     * Replaced with 'grass'. Delegates tile and home detection to MapValidator helpers.
+     * @private
+     * @param {Array} map - 2D array of tile types (modified in place)
+     */
+    _removeScoreModifyingTilesAdjacentToHome(map) {
+        const rows = map.length;
+        const cols = map[0].length;
+        const [homeR, homeC] = MapValidator._findHomePosition(map);
+        if (homeR === -1) return;
+
+        const dirs = [[-1, 0], [1, 0], [0, -1], [0, 1]];
+        for (const [dr, dc] of dirs) {
+            const r = homeR + dr, c = homeC + dc;
+            if (r >= 0 && r < rows && c >= 0 && c < cols && MapValidator._isScoreModifyingTile(map[r][c])) {
+                map[r][c] = 'grass';
+            }
+        }
+    }
+
+    /**
      * Enforce maxPerLevel limits from TILE_DATA.
      * For each tile type that has a maxPerLevel property, if the count exceeds
      * the limit, excess tiles are replaced with 'grass' (or 'water' for
@@ -463,12 +486,7 @@ class MapGenerator {
         if (Math.random() > 0.40) return;
 
         // Find home position
-        let homeR = Math.floor(rows / 2), homeC = Math.floor(cols / 2);
-        for (let r = 0; r < rows; r++) {
-            for (let c = 0; c < cols; c++) {
-                if (map[r][c] === 'home') { homeR = r; homeC = c; }
-            }
-        }
+        const [homeR, homeC] = MapValidator._findHomePosition(map);
 
         // Find interior grass tiles that create a detour when blocked.
         // Score each candidate by its natural impact, then try reinforcement.
@@ -476,7 +494,7 @@ class MapGenerator {
         for (let r = 1; r < rows - 1; r++) {
             for (let c = 1; c < cols - 1; c++) {
                 if (map[r][c] !== 'grass') continue;
-                if (Math.abs(r - homeR) <= 1 && Math.abs(c - homeC) <= 1) continue;
+                if (homeR !== -1 && Math.abs(r - homeR) <= 1 && Math.abs(c - homeC) <= 1) continue;
 
                 // Temporarily place hole and measure impact
                 map[r][c] = 'hole';

@@ -41,6 +41,7 @@ All maps must pass `MapValidator` checks:
 4. **Strategic placement** — at least one optimal wall is on a non-edge tile
 5. **No adjacent holes** — fillable tiles (holes) cannot be orthogonally adjacent; one is replaced with grass
 6. **Hole bypass check** — if the pet can get around an empty hole with ≤5 extra steps compared to walking through a filled hole, the hole is replaced with water. Uses BFS shortest-path comparison to ensure accuracy.
+7. **No score-modifying tiles adjacent to home** — stars and bees directly next to home are always penned regardless of wall placement, so they offer no strategic choice. Such tiles are replaced with grass during generation.
 
 ## Map Data Format
 
@@ -112,6 +113,10 @@ node scripts/audit-maps.js   # validates all maps in maps/ directory
 ```text
 MapGenerator.generate()
   → _generateRandomMap()
+  → _fixAdjacentHoles()
+  → _enforceMaxPerLevel()
+  → _removeScoreModifyingTilesAdjacentToHome()   [NEW: replace adjacent stars/bees with grass]
+  → _placeHoles()
   → _validateMap() [BFS]
   → calculateGoal()
       → MILPSolver.solveMap() [Node.js wrapper]
@@ -128,6 +133,7 @@ MapGenerator.generate()
 - Home can reach edge initially; no fallbacks — generation throws on failure
 - Compact format: tile string (`g`/`w`/`h`) + flat solution array `[r,c,r,c,…]`
 - No map generation in the browser — browser is checker only
+- Maps for today and the past are **frozen** — never regenerate or edit them; only fix future maps
 
 ---
 
