@@ -101,6 +101,7 @@ const CloudSync = (function () {
     let username = null;
     let gameTesters = [];
     let localDebugEnabled = false;
+    let lastSyncTime = null;
 
     /** Dates whose local cookie was overwritten by cloud data since the last sync event. */
     const _pendingCloudOverwrites = new Set();
@@ -814,9 +815,29 @@ const CloudSync = (function () {
     /**
      * Download all cloud submissions and merge into local cookies.
      * Conflict resolution rules: see docs/CLOUD_SYNC_SETUP.md.
+     *
+     * When the realtime listener is active and a full sync was completed within
+     * CONSTANTS.CLOUD_SYNC_CACHE_TTL_SECONDS, the expensive Firestore download
+     * is skipped.  The realtime listener keeps cookies up to date in the
+     * background, so callers (e.g. the level selector) get a fast no-op rather
+     * than waiting for a redundant round-trip.
      */
     async function syncFromCloud() {
         if (!db || !currentUser) return;
+
+        // Use cached data when a recent sync already populated local cookies AND
+        // the realtime listener is keeping them current.
+        const ttlMs = CONSTANTS.CLOUD_SYNC_CACHE_TTL_SECONDS * 1000;
+        if (ttlMs > 0 &&
+            lastSyncTime !== null &&
+            unsubscribeListener !== null &&
+            (Date.now() - lastSyncTime) < ttlMs) {
+            // Notify callers that sync is "done" — cookies are already fresh.
+            if (typeof document !== 'undefined') {
+                document.dispatchEvent(new CustomEvent('cloudsync:synced'));
+            }
+            return;
+        }
 
         try {
             // Guard our own writes so the realtime listener ignores them.
@@ -853,6 +874,9 @@ const CloudSync = (function () {
 
             // Upload any local-only data that the cloud does not yet have.
             await uploadLocalSubmissions();
+
+            // Record successful sync time for cache invalidation checks.
+            lastSyncTime = Date.now();
 
             updateSyncStatus('synced');
 
@@ -1418,6 +1442,8 @@ const CloudSync = (function () {
         // Exposed for unit testing of Firestore serialization.
         _serializeSubmissionForFirestore: _serializeSubmissionForFirestore,
         _deserializeSubmissionFromFirestore: _deserializeSubmissionFromFirestore,
+        // Exposed for unit testing of sync cache.
+        _resetSyncCache: function () { lastSyncTime = null; },
     };
 })();
 

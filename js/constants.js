@@ -97,6 +97,16 @@ const CONSTANTS = {
         { value: 'Pacific/Auckland',      label: 'New Zealand (NZST, UTC+12)'        },
     ],
 
+    // Cloud sync caching
+    /**
+     * Seconds after a successful sync during which subsequent syncNow() calls
+     * skip the full Firestore download and use local cookies instead.
+     * The realtime listener keeps data current; this avoids redundant network
+     * round-trips when the user rapidly opens/closes the level selector.
+     * Set to 0 to disable caching (always fetch from cloud).
+     */
+    CLOUD_SYNC_CACHE_TTL_SECONDS: 300,
+
     // Level selector UI text
     LEVEL_SELECTOR_LOADING_TEXT: 'Loading...',
     LEVEL_SELECTOR_SYNC_STATUS_UNKNOWN: '???',
