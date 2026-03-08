@@ -504,16 +504,6 @@
     color: var(--text-on-accent);
 }
 
-.options-account-signout {
-    border-color: var(--border-default);
-    color: var(--text-secondary);
-}
-
-.options-account-signout:hover {
-    background: var(--surface-hover);
-    color: var(--text-primary);
-}
-
 .options-account-delete {
     border-color: var(--error-border);
     color: var(--error-text);
