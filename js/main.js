@@ -312,11 +312,15 @@ window.addEventListener('DOMContentLoaded', () => {
         });
         langSelector.value = I18N.getLanguage();
         langSelector.addEventListener('change', () => {
+            // Persist the chosen language to cookie (and cloud), then reload so
+            // every piece of text — tile descriptions, overlays, etc. — is
+            // re-rendered from scratch in the selected language without needing
+            // individual update hooks.
             I18N.setLanguage(langSelector.value);
-            // Sync language preference to cloud when signed in
             if (typeof CloudSync !== 'undefined' && CloudSync.isConfigured() && CloudSync.isLoggedIn()) {
                 CloudSync.saveSettings({ lang: langSelector.value });
             }
+            window.location.reload();
         });
     }
 

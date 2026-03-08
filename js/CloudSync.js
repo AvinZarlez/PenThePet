@@ -886,7 +886,14 @@ const CloudSync = (function () {
             CookieUtils.setCookie('neverShowTarget', settings.neverShowTarget, 365);
         }
         if (settings.lang !== undefined && typeof I18N !== 'undefined') {
+            const prevLang = I18N.getLanguage();
             I18N.setLanguage(settings.lang);
+            // If the language actually changed, reload so all text re-renders
+            // correctly (same reason as the user-facing selector).
+            if (typeof window !== 'undefined' && I18N.getLanguage() !== prevLang) {
+                window.location.reload();
+                return;
+            }
         }
         if (settings.username !== undefined) {
             username = settings.username;
