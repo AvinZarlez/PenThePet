@@ -15,17 +15,17 @@ Pen the Pet is a free, browser-based daily logic puzzle game created and operate
 If you play the game on the official deployment, we use **Firebase Analytics** to
 collect a small set of anonymous, aggregated usage statistics. These events contain:
 
-| What we record | Why |
-|---|---|
-| Which puzzle date was opened | Know which puzzles are being played |
-| Whether the puzzle was already completed when opened | Understand return-visit behaviour |
-| Submitted score and optimal score | Measure difficulty and score distribution |
-| Number of walls placed | Understand player strategy |
-| Time taken to submit (seconds) | Understand how long puzzles take |
-| Whether the solution was perfect | Track perfect-completion rate |
-| Whether the "check if optimal" hint was used | Signal puzzle difficulty |
-| Whether the "reveal target score" hint was used | Signal puzzle difficulty |
-| Unhandled JavaScript error message and source file | Detect bugs in production |
+| What we record                                       | Why                                       |
+| ---------------------------------------------------- | ----------------------------------------- |
+| Which puzzle date was opened                         | Know which puzzles are being played       |
+| Whether the puzzle was already completed when opened | Understand return-visit behaviour         |
+| Submitted score and optimal score                    | Measure difficulty and score distribution |
+| Number of walls placed                               | Understand player strategy                |
+| Time taken to submit (seconds)                       | Understand how long puzzles take          |
+| Whether the solution was perfect                     | Track perfect-completion rate             |
+| Whether the "check if optimal" hint was used         | Signal puzzle difficulty                  |
+| Whether the "reveal target score" hint was used      | Signal puzzle difficulty                  |
+| Unhandled JavaScript error message and source file   | Detect bugs in production                 |
 
 **No personally-identifiable information (PII) is ever logged.** There are no user
 IDs, email addresses, IP addresses, names, or device fingerprints in any analytics
@@ -33,6 +33,8 @@ event.
 
 Analytics events are stored in Google's Firebase servers in accordance with
 [Google's Privacy Policy](https://policies.google.com/privacy).
+
+Because analytics data is fully anonymous (no user ID is attached), it does not qualify as personal data and cannot be attributed to or deleted for a specific individual.
 
 ### Cloud Sync (Optional, Logged-In Users Only)
 
@@ -67,32 +69,16 @@ cookies:
 - We do **not** use advertising networks or cross-site tracking.
 - We do **not** use third-party analytics beyond Firebase (a Google product).
 
-## Your Rights Under GDPR
-
-If you are located in the European Economic Area (EEA) or the United Kingdom, you
-have the following rights regarding your personal data:
-
-- **Right of access** — you can request a copy of the data we hold about you.
-- **Right to erasure** — you can delete your cloud data at any time from the
-  Options menu, which removes all Firestore records associated with your account.
-- **Right to object** — analytics are anonymous and cannot be linked to you, but
-  you can block them entirely using browser privacy settings, a content blocker, or
-  Firefox's Enhanced Tracking Protection.
-
-Because analytics data is fully anonymous (no user ID is attached), it does not
-qualify as personal data under GDPR and cannot be attributed to or deleted for a
-specific individual.
-
 ## Third-Party Services
 
 We use the following third-party services:
 
-| Service | Purpose | Privacy Policy |
-|---|---|---|
-| Firebase Analytics (Google) | Anonymous usage statistics | [policies.google.com/privacy](https://policies.google.com/privacy) |
-| Firebase Authentication (Google) | Optional account sign-in | [policies.google.com/privacy](https://policies.google.com/privacy) |
-| Firebase Firestore (Google) | Optional cross-device sync | [policies.google.com/privacy](https://policies.google.com/privacy) |
-| GitHub Pages | Hosting | [docs.github.com/en/site-policy/privacy-policies](https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement) |
+| Service                          | Purpose                    | Privacy Policy                                                                                                                              |
+| -------------------------------- | -------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| Firebase Analytics (Google)      | Anonymous usage statistics | [policies.google.com/privacy](https://policies.google.com/privacy)                                                                          |
+| Firebase Authentication (Google) | Optional account sign-in   | [policies.google.com/privacy](https://policies.google.com/privacy)                                                                          |
+| Firebase Firestore (Google)      | Optional cross-device sync | [policies.google.com/privacy](https://policies.google.com/privacy)                                                                          |
+| GitHub Pages                     | Hosting                    | [docs.github.com/en/site-policy/privacy-policies](https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement) |
 
 ## Changes to This Policy
 
