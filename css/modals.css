@@ -178,6 +178,10 @@
     line-height: 1.4;
 }
 
+.option-item label {
+    color: var(--text-secondary);
+}
+
 .option-help {
     display: block;
     color: var(--text-muted);
