@@ -720,6 +720,60 @@ describe('updateScoreScreen() — percentage display', () => {
 });
 
 // ------------------------------------------------------------------
+// displayRoamingArea — always shows submitted score
+// ------------------------------------------------------------------
+describe('displayRoamingArea() — always shows submitted score', () => {
+    let game;
+
+    beforeEach(() => {
+        setupDOM();
+        jest.useFakeTimers();
+        game = createGame();
+        game.goalAreaSize = 10;
+        game.isSubmitted = true;
+        game.submittedScore = 7;
+        game.submittedWalls = [[1, 1]];
+        // optimalSolution differs from submittedWalls, so addOptimalSolutionToggle
+        // will run its toggle-button branch and update the metric label
+        game.optimalSolution = [[2, 2]];
+        game.elapsedSeconds = 60;
+        // Simulate the state that caused the bug: dataset.areaSize reflects the
+        // optimal (goal) score when the player was viewing the optimal solution,
+        // but the result screen must still show the player's submitted score.
+        const statusBtn = document.getElementById('pennedStatus');
+        statusBtn.dataset.interactive = 'true';
+        statusBtn.dataset.areaSize = '10'; // would be 100% — the buggy value
+    });
+
+    afterEach(() => {
+        jest.useRealTimers();
+    });
+
+    test('shows the submitted score, not the dataset areaSize, when already submitted', () => {
+        game.displayRoamingArea();
+        const el = document.getElementById('roamAreaPercentage');
+        // Should show 7/10 = 70%, not 100% from the dataset
+        expect(el.textContent).toBe('70% of goal (7/10)');
+    });
+
+    test('metric label always shows "Your Solution Score" when viewing optimal', () => {
+        // Preconditions: isSubmitted=true and optimalSolution set (from beforeEach)
+        // so addOptimalSolutionToggle() will run and update the metric label
+        game.viewingOptimal = true;
+        game.displayRoamingArea();
+        const metricLabel = document.querySelector('.metric-label');
+        expect(metricLabel.textContent).toBe('Your Solution Score');
+    });
+
+    test('metric label always shows "Your Solution Score" when viewing own solution', () => {
+        game.viewingOptimal = false;
+        game.displayRoamingArea();
+        const metricLabel = document.querySelector('.metric-label');
+        expect(metricLabel.textContent).toBe('Your Solution Score');
+    });
+});
+
+// ------------------------------------------------------------------
 // buildShareText
 // ------------------------------------------------------------------
 describe('buildShareText()', () => {

@@ -113,7 +113,6 @@ const LANGUAGES = {
         // ── Roam Viewer Sidebar ───────────────────────────────────────────
         viewer_header: 'Pet Containment Summary',
         metric_label_yours: 'Your Solution Score',
-        metric_label_optimal: 'Optimal Result Score',
         metric_label_roaming: 'Roaming Area Score',
         metric_helper: 'yellow tiles counted',
         btn_copy_score: '📋 Copy Score',
@@ -379,7 +378,6 @@ const LANGUAGES = {
         // ── Roam Viewer Sidebar ───────────────────────────────────────────
         viewer_header: 'Resumen de contención de la mascota',
         metric_label_yours: 'Puntuación de tu solución',
-        metric_label_optimal: 'Puntuación del resultado óptimo',
         metric_label_roaming: 'Puntuación del área de deambulación',
         metric_helper: 'casillas amarillas contadas',
         btn_copy_score: '📋 Copiar puntuación',
