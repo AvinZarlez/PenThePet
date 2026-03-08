@@ -30,7 +30,7 @@ const LANGUAGES = {
 
         // ── Page ──────────────────────────────────────────────────────────
         page_title: 'Pen the Pet - A Logic Puzzle Game',
-        subtitle: 'A Logic Puzzle Game About Fencing',
+        subtitle: 'A Logic Puzzle Game About Fencing In Your Pet',
 
         // ── Map Info ──────────────────────────────────────────────────────
         label_day: 'Day:',
@@ -296,7 +296,7 @@ const LANGUAGES = {
 
         // ── Page ──────────────────────────────────────────────────────────
         page_title: 'Encierra a la Mascota - Un Juego de Lógica',
-        subtitle: 'Un juego de lógica sobre cercas',
+        subtitle: 'Un juego de puzles lógico sobre esgrima con tu mascota',
 
         // ── Map Info ──────────────────────────────────────────────────────
         label_day: 'Día:',
