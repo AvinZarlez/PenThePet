@@ -179,6 +179,7 @@ class Menu {
         this.game.submittedScore = null;
         this.game.submittedWalls = null;
         this.game.viewingOptimal = false;
+        this.game.hintsUsed = [];
 
         // Reset the grid to its initial state
         this.game.grid.reset();
