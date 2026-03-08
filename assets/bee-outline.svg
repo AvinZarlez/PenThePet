@@ -1,18 +1,26 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 50 50">
-  <!-- Red silhouette outline for bee, scaled 1.35x from center (25,25) -->
-  <!-- Head -->
-  <circle cx="25" cy="15.6" r="6.8" fill="#CC0000"/>
-  <!-- Antennae tips (cy raised slightly from mathematical 2.1 to avoid top-edge clipping) -->
-  <circle cx="16.9" cy="3.0" r="2.0" fill="#CC0000"/>
-  <circle cx="33.1" cy="3.0" r="2.0" fill="#CC0000"/>
-  <!-- Antennae lines -->
-  <line x1="22.3" y1="10.2" x2="16.9" y2="3.0" stroke="#CC0000" stroke-width="1.5" stroke-linecap="round"/>
-  <line x1="27.7" y1="10.2" x2="33.1" y2="3.0" stroke="#CC0000" stroke-width="1.5" stroke-linecap="round"/>
-  <!-- Wings -->
-  <ellipse cx="12.9" cy="21.0" rx="8.1" ry="5.4" fill="#CC000066" transform="rotate(-20,12.9,21.0)"/>
-  <ellipse cx="37.2" cy="21.0" rx="8.1" ry="5.4" fill="#CC000066" transform="rotate(20,37.2,21.0)"/>
-  <!-- Body -->
-  <ellipse cx="25" cy="29.1" rx="13.5" ry="10.8" fill="#CC0000"/>
-  <!-- Stinger -->
-  <polygon points="25,39.9 22.3,45.3 27.7,45.3" fill="#CC0000"/>
+  <!-- Beehive (skep) icon — reddish tones, used as bee-tile background indicator -->
+  <defs>
+    <clipPath id="hc">
+      <path d="M25,7 C16,7 8,17 8,29 C8,38 14,44 25,44 C36,44 42,38 42,29 C42,17 34,7 25,7 Z"/>
+    </clipPath>
+  </defs>
+  <!-- Main dome body -->
+  <path d="M25,7 C16,7 8,17 8,29 C8,38 14,44 25,44 C36,44 42,38 42,29 C42,17 34,7 25,7 Z" fill="#CC2211"/>
+  <!-- Horizontal coil ridges (clipped inside hive outline) -->
+  <g clip-path="url(#hc)">
+    <line x1="0" y1="14" x2="50" y2="14" stroke="#AA1800" stroke-width="1.5"/>
+    <line x1="0" y1="20" x2="50" y2="20" stroke="#AA1800" stroke-width="1.5"/>
+    <line x1="0" y1="26" x2="50" y2="26" stroke="#AA1800" stroke-width="1.5"/>
+    <line x1="0" y1="32" x2="50" y2="32" stroke="#AA1800" stroke-width="1.5"/>
+    <line x1="0" y1="38" x2="50" y2="38" stroke="#AA1800" stroke-width="1.5"/>
+    <!-- Left highlight for depth -->
+    <path d="M12,14 Q10,28 12,40" stroke="#FF6655" stroke-width="3" fill="none" opacity="0.2" stroke-linecap="round"/>
+  </g>
+  <!-- Top finial/knob -->
+  <circle cx="25" cy="8" r="3" fill="#AA1800"/>
+  <!-- Base platform -->
+  <rect x="7" y="43" width="36" height="5" rx="2" fill="#AA1800"/>
+  <!-- Entrance hole -->
+  <ellipse cx="25" cy="46" rx="5.5" ry="2.5" fill="#330500"/>
 </svg>
