@@ -697,6 +697,7 @@ describe('Menu', () => {
             game.submittedWalls = [[1, 2], [3, 4]];
             game.viewingOptimal = true;
             game.wallCount = 2;
+            game.hintsUsed = ['checked', 'target'];
 
             menu.resetCurrentLevel();
 
@@ -705,6 +706,7 @@ describe('Menu', () => {
             expect(game.submittedScore).toBe(null);
             expect(game.submittedWalls).toBe(null);
             expect(game.viewingOptimal).toBe(false);
+            expect(game.hintsUsed).toEqual([]);
             expect(game.grid.reset).toHaveBeenCalled();
             expect(game.wallCount).toBe(0);
             expect(game.render).toHaveBeenCalled();
