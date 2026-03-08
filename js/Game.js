@@ -1273,8 +1273,11 @@ class Game {
                 this.handleSubmission(areaCount);
             }
 
+            // Always show the player's submitted score, never the optimal score
+            const scoreToDisplay = this.isSubmitted ? this.submittedScore : areaCount;
+
             // Update the score screen display
-            this.updateScoreScreen(areaCount);
+            this.updateScoreScreen(scoreToDisplay);
 
             if (viewerPanel) {
                 viewerPanel.classList.add('active');
@@ -1524,10 +1527,10 @@ class Game {
         // Update button text based on current state
         toggleBtn.textContent = this.viewingOptimal ? I18N.t('solution_toggle_view_yours') : I18N.t('solution_toggle_view_optimal');
 
-        // Update the metric label to show which solution is being viewed
+        // Always show the player's score label, regardless of which solution is being viewed
         const metricLabel = document.querySelector('.metric-label');
         if (metricLabel) {
-            metricLabel.textContent = this.viewingOptimal ? I18N.t('metric_label_optimal') : I18N.t('metric_label_yours');
+            metricLabel.textContent = I18N.t('metric_label_yours');
         }
     }
 
