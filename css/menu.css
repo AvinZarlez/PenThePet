@@ -514,6 +514,16 @@
     color: var(--text-primary);
 }
 
+.options-account-delete {
+    border-color: var(--error-border);
+    color: var(--error-text);
+}
+
+.options-account-delete:hover {
+    background: var(--error-bg);
+    color: var(--error-text);
+}
+
 /* Sync error modal */
 .sync-error-details {
     background: var(--error-bg);

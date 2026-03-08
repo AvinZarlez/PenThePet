@@ -34,8 +34,6 @@ event.
 Analytics events are stored in Google's Firebase servers in accordance with
 [Google's Privacy Policy](https://policies.google.com/privacy).
 
-Because analytics data is fully anonymous (no user ID is attached), it does not qualify as personal data and cannot be attributed to or deleted for a specific individual.
-
 ### Cloud Sync (Optional, Logged-In Users Only)
 
 Cloud sync is an **opt-in feature**. If you choose to sign in:
@@ -47,7 +45,8 @@ Cloud sync is an **opt-in feature**. If you choose to sign in:
 - Your email address is used by Firebase for authentication only and is not visible
   to us in any analytics or log data.
 - You can delete all your cloud data at any time from the Options menu
-  (Options → ☁️ Account → Delete all cloud data).
+  (☰ Menu → Options → ☁️ Account → 🗑️ Delete All Cloud Data). Deleting your
+  cloud data also signs you out.
 
 ### Cookies (Local Storage Only)
 
@@ -68,6 +67,23 @@ cookies:
   purposes.
 - We do **not** use advertising networks or cross-site tracking.
 - We do **not** use third-party analytics beyond Firebase (a Google product).
+
+## Your Rights Under GDPR
+
+If you are located in the European Economic Area (EEA) or the United Kingdom, you
+have the following rights regarding your personal data:
+
+- **Right of access** — you can request a copy of the data we hold about you.
+- **Right to erasure** — you can delete your cloud data at any time from the
+  Options menu (☰ Menu → Options → ☁️ Account → 🗑️ Delete All Cloud Data),
+  which removes all Firestore records associated with your account.
+- **Right to object** — analytics are anonymous and cannot be linked to you, but
+  you can block them entirely using browser privacy settings, a content blocker, or
+  Firefox's Enhanced Tracking Protection.
+
+Because analytics data is fully anonymous (no user ID is attached), it does not
+qualify as personal data under GDPR and cannot be attributed to or deleted for a
+specific individual.
 
 ## Third-Party Services
 

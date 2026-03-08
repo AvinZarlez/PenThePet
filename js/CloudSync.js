@@ -1311,6 +1311,20 @@ const CloudSync = (function () {
         }
     }
 
+    /** Called by the Delete All Cloud Data button. */
+    async function handleDeleteAllCloudData() {
+        const msg = typeof I18N !== 'undefined'
+            ? I18N.t('options_delete_cloud_data_confirm')
+            : 'Delete all your cloud data? This cannot be undone.';
+        if (!window.confirm(msg)) return;
+        try {
+            await deleteAllSubmissions();
+            await signOut();
+        } catch (e) {
+            console.error('CloudSync: Failed to delete cloud data:', e);
+        }
+    }
+
     /** Called by the Save Changes button in the edit profile modal. */
     async function handleSaveProfile() {
         clearProfileError();
@@ -1429,6 +1443,7 @@ const CloudSync = (function () {
         handleSignInWithGoogle: handleSignInWithGoogle,
         handleLinkWithGoogle: handleLinkWithGoogle,
         handleSignOut: handleSignOut,
+        handleDeleteAllCloudData: handleDeleteAllCloudData,
         handleSaveProfile: handleSaveProfile,
         // Returns (and clears) the set of dates overwritten by cloud data since the
         // last call.  Used by main.js to show the "cloud data loaded" notification.
