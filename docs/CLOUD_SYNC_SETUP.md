@@ -11,7 +11,7 @@ Once enabled:
 
 - Submissions you make on one device automatically appear on all your
   other signed-in devices.
-- Settings (pet type, hint preferences) are synced when you sign in on a new device.
+- Settings (pet type, hint preferences, language) are synced when you sign in on a new device.
 - Each user's data is stored privately; no one else can read or write it.
 
 Cloud sync is powered by **Firebase** — Google's free serverless backend.
@@ -399,17 +399,17 @@ D. **Local has a submission, cloud is in-progress** — the local submission win
 
 E. **Both submitted** — the **higher score wins** (higher score = better result). Both sides are updated to that version's data (score, wall placements, solve time, submission timestamp, and `hintsUsed`). If scores are equal, the **earlier submission timestamp** breaks the tie (first completed solve is kept).
 
-   > **Note on field names:** `timestamp` = when the puzzle was submitted (wall-clock time the entry was saved). `time` = how many seconds the user spent solving the puzzle. Only `timestamp` is used for tiebreaking.
+> **Note on field names:** `timestamp` = when the puzzle was submitted (wall-clock time the entry was saved). `time` = how many seconds the user spent solving the puzzle. Only `timestamp` is used for tiebreaking.
 
 When cloud data wins the conflict and overwrites local data (rules C and E-cloud-wins), the
 `applyCloudDataToLocal()` function ensures **all fields** from the cloud document are copied to
-the local cookie — not just the fields that were compared — so nothing is lost.  A
+the local cookie — not just the fields that were compared — so nothing is lost. A
 "☁️ Updated level data loaded from cloud" notification is shown for the currently displayed level.
 
-| Data type                                                        | Rule                    | Rationale                                                                                                                                                                     |
-| ---------------------------------------------------------------- | ----------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Submissions** (`YYYY-MM-DD`)                                   | **See rules A–E above** | Submitted result always beats in-progress; when both are submitted, higher score wins; same score → first submitted is kept. `hintsUsed` travels with the winning submission. |
-| **Settings** (`selectedPet`, `hintsDisabled`, `neverShowTarget`) | **Cloud wins**          | The cloud holds the user's most recently saved preference from any signed-in device.                                                                                          |
+| Data type                                                        | Rule                     | Rationale                                                                                                                                                                     |
+| ---------------------------------------------------------------- | ------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Submissions** (`YYYY-MM-DD`)                                   | **See rules A–E above**  | Submitted result always beats in-progress; when both are submitted, higher score wins; same score → first submitted is kept. `hintsUsed` travels with the winning submission. |
+| **Settings** (`selectedPet`, `hintsDisabled`, `neverShowTarget`) | **Cloud wins**           | The cloud holds the user's most recently saved preference from any signed-in device.                                                                                          |
 | **Timer** (`timer_YYYY-MM-DD`)                                   | **Highest elapsed wins** | The timer should never go backwards. Whichever device has made the most progress keeps that value.                                                                            |
 
 > **Offline play then sign-in example:** You submit three puzzles while offline.

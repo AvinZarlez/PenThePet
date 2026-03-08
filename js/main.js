@@ -69,12 +69,12 @@ function showNoMapError() {
     if (container) {
         container.innerHTML = `
             <h1><span aria-hidden="true">🐾</span> Pen the Pet</h1>
-            <p class="subtitle">A Logic Puzzle Game About Fencing</p>
+            <p class="subtitle">${I18N.t('subtitle')}</p>
             
             <div class="error-message">
-                <h2>No Map Available</h2>
-                <p>Sorry, there is no puzzle available for today (${DateUtils.getTodayDate()}).</p>
-                <p>Please check back tomorrow for a new puzzle!</p>
+                <h2>${I18N.t('no_map_title')}</h2>
+                <p>${I18N.t('no_map_text', { date: DateUtils.getTodayDate() })}</p>
+                <p>${I18N.t('no_map_check_back')}</p>
             </div>
             
             <footer>
@@ -263,7 +263,7 @@ async function initGame() {
                 // Notify the user when cloud data overwrote the current level's local data.
                 if (cloudOverwrites.has(game.currentDate) &&
                     game && typeof game.showNotification === 'function') {
-                    game.showNotification('☁️ Updated level data loaded from cloud');
+                    game.showNotification(I18N.t('cloud_data_loaded'));
                 }
                 return;
             }
@@ -296,7 +296,39 @@ async function initGame() {
 }
 
 // Start the game when the DOM is fully loaded
-window.addEventListener('DOMContentLoaded', initGame);
+window.addEventListener('DOMContentLoaded', () => {
+    // Load saved language preference and apply translated strings to the DOM
+    I18N.loadFromCookie();
+
+    // Populate language selector options from LANGUAGE_OPTIONS
+    const langSelector = document.getElementById('languageSelector');
+    if (langSelector) {
+        langSelector.innerHTML = '';
+        LANGUAGE_OPTIONS.forEach(opt => {
+            const option = document.createElement('option');
+            option.value = opt.value;
+            option.textContent = opt.label;
+            langSelector.appendChild(option);
+        });
+        langSelector.value = I18N.getLanguage();
+        langSelector.addEventListener('change', () => {
+            // Persist the chosen language to cookie (and cloud), then reload so
+            // every piece of text — tile descriptions, overlays, etc. — is
+            // re-rendered from scratch in the selected language without needing
+            // individual update hooks.
+            I18N.setLanguage(langSelector.value);
+            if (typeof CloudSync !== 'undefined' && CloudSync.isConfigured() && CloudSync.isLoggedIn()) {
+                CloudSync.saveSettings({ lang: langSelector.value });
+            }
+            window.location.reload();
+        });
+    }
+
+    // Apply translated strings to static HTML elements
+    I18N._applyToDOM();
+
+    initGame();
+});
 
 // Export for use in Node.js testing
 if (typeof module !== 'undefined' && module.exports) {

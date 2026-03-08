@@ -19,6 +19,7 @@
  *   selectedPet              settings.selectedPet (part of settings doc)
  *   hintsDisabled            settings.hintsDisabled (part of settings doc)
  *   neverShowTarget          settings.neverShowTarget (part of settings doc)
+ *   lang                     settings.lang        (UI language preference)
  *
  * Cookies NOT synced to cloud (intentional):
  *   currentLevel   — transient UI state (which puzzle is open); device-local
@@ -70,7 +71,7 @@
  *      timestamp (tiebreak needed but unavailable), cloud is used as a safe
  *      default.
  *
- * Settings (selectedPet, hintsDisabled, neverShowTarget, username): CLOUD WINS always.
+ * Settings (selectedPet, hintsDisabled, neverShowTarget, lang, username): CLOUD WINS always.
  *
  * When cloud data overwrites local data (rules C and E-cloud-wins), the
  * `applyCloudDataToLocal()` helper writes the winning data to the local
@@ -307,15 +308,15 @@ const CloudSync = (function () {
         if (!el) return;
         el.style.display = 'inline-block';
         if (state === 'syncing') {
-            el.textContent = '🔄 Syncing…';
+            el.textContent = I18N.t('cloud_sync_syncing');
             el.title = 'Syncing with cloud';
             el.className = 'cloud-sync-status syncing';
         } else if (state === 'synced') {
-            el.textContent = '☁️ Synced';
+            el.textContent = I18N.t('cloud_sync_synced');
             el.title = 'All data synced to cloud';
             el.className = 'cloud-sync-status synced';
         } else if (state === 'error') {
-            el.textContent = '⚠️ Sync error';
+            el.textContent = I18N.t('cloud_sync_error');
             el.title = errorMsg || 'Sync failed';
             el.className = 'cloud-sync-status error';
             if (errorMsg) {
@@ -884,6 +885,16 @@ const CloudSync = (function () {
         if (settings.neverShowTarget !== undefined) {
             CookieUtils.setCookie('neverShowTarget', settings.neverShowTarget, 365);
         }
+        if (settings.lang !== undefined && typeof I18N !== 'undefined') {
+            const prevLang = I18N.getLanguage();
+            I18N.setLanguage(settings.lang);
+            // If the language actually changed, reload so all text re-renders
+            // correctly (same reason as the user-facing selector).
+            if (typeof window !== 'undefined' && I18N.getLanguage() !== prevLang) {
+                window.location.reload();
+                return;
+            }
+        }
         if (settings.username !== undefined) {
             username = settings.username;
             updateAuthUI(currentUser);
@@ -947,11 +958,13 @@ const CloudSync = (function () {
         const selectedPet = CookieUtils.getCookie('selectedPet');
         const hintsDisabled = CookieUtils.getCookie('hintsDisabled');
         const neverShowTarget = CookieUtils.getCookie('neverShowTarget');
-        if (selectedPet || hintsDisabled !== null || neverShowTarget !== null) {
+        const lang = CookieUtils.getCookie('lang');
+        if (selectedPet || hintsDisabled !== null || neverShowTarget !== null || lang) {
             const settings = {};
             if (selectedPet) settings.selectedPet = selectedPet;
             if (hintsDisabled !== null) settings.hintsDisabled = hintsDisabled;
             if (neverShowTarget !== null) settings.neverShowTarget = neverShowTarget;
+            if (lang) settings.lang = lang;
             try {
                 const docRef = db
                     .collection('users')

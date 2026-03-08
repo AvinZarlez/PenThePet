@@ -310,7 +310,7 @@ class Menu {
     _showLevelListLoading() {
         const levelList = document.getElementById('levelList');
         if (!levelList) return;
-        levelList.innerHTML = `<p class="level-list-loading">${CONSTANTS.LEVEL_SELECTOR_LOADING_TEXT}</p>`;
+        levelList.innerHTML = `<p class="level-list-loading">${I18N.t('level_selector_loading')}</p>`;
     }
 
     /**
@@ -355,7 +355,7 @@ class Menu {
         // "Go To Today" button
         const todayBtn = document.createElement('button');
         todayBtn.className = 'calendar-today-btn';
-        todayBtn.textContent = 'Go To Today';
+        todayBtn.textContent = I18N.t('calendar_go_to_today');
         todayBtn.addEventListener('click', () => {
             const todayMonth = today.substring(0, 7);
             if (monthGroups[todayMonth]) {
@@ -373,16 +373,16 @@ class Menu {
 
         const prevBtn = document.createElement('button');
         prevBtn.className = 'calendar-nav-btn';
-        prevBtn.textContent = '‹';
-        prevBtn.setAttribute('aria-label', 'Previous month');
+        prevBtn.textContent = I18N.t('calendar_prev');
+        prevBtn.setAttribute('aria-label', I18N.t('calendar_prev_aria'));
 
         const monthLabel = document.createElement('span');
         monthLabel.className = 'calendar-month-label';
 
         const nextBtn = document.createElement('button');
         nextBtn.className = 'calendar-nav-btn';
-        nextBtn.textContent = '›';
-        nextBtn.setAttribute('aria-label', 'Next month');
+        nextBtn.textContent = I18N.t('calendar_next');
+        nextBtn.setAttribute('aria-label', I18N.t('calendar_next_aria'));
 
         nav.appendChild(prevBtn);
         nav.appendChild(monthLabel);
@@ -504,7 +504,7 @@ class Menu {
                 let statusHtml = '';
                 if (this._isSyncing) {
                     // Show unknown badge while cloud sync is in progress
-                    statusHtml = `<span class="calendar-status calendar-status-syncing">${CONSTANTS.LEVEL_SELECTOR_SYNC_STATUS_UNKNOWN}</span>`;
+                    statusHtml = `<span class="calendar-status calendar-status-syncing">${I18N.t('level_selector_sync_unknown')}</span>`;
                 } else if (submission) {
                     const metGoal = submission.score >= mapData.goal;
                     statusHtml = `<span class="calendar-status">${metGoal ? '🏆' : '✓'}</span>`;
@@ -512,7 +512,7 @@ class Menu {
 
                 cell.innerHTML = `
                     <span class="calendar-day-num">${day}</span>
-                    <span class="calendar-level-num">Day ${mapData.dayNumber}</span>
+                    <span class="calendar-level-num">${I18N.t('calendar_day_label', { dayNumber: mapData.dayNumber })}</span>
                     <span class="calendar-level-name">${mapData.mapName}</span>
                     ${statusHtml}
                 `;
@@ -670,7 +670,7 @@ class Menu {
         if (!container || container.children.length > 0) return;
 
         for (const [, data] of Object.entries(TILE_DATA)) {
-            if (!data.description) continue;
+            if (!data.descriptionKey) continue;
 
             const row = document.createElement('div');
             row.className = 'tile-desc-row';
@@ -691,7 +691,7 @@ class Menu {
 
             const text = document.createElement('span');
             text.className = 'tile-desc-text';
-            text.textContent = data.description;
+            text.textContent = I18N.t(data.descriptionKey);
 
             row.appendChild(icon);
             row.appendChild(text);

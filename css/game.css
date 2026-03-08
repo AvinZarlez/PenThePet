@@ -38,7 +38,34 @@
     transform: scale(1.05);
 }
 
-/* ========== Map Info Display ========== */
+/* ========== Language Selector ========== */
+.language-selector-container {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    z-index: 100;
+}
+
+.language-selector {
+    padding: 6px 10px;
+    border: 2px solid #667eea;
+    border-radius: 8px;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    color: #333;
+    font-size: 0.85em;
+    font-weight: bold;
+    cursor: pointer;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.language-selector:hover,
+.language-selector:focus {
+    border-color: #764ba2;
+    box-shadow: 0 2px 6px rgba(102, 126, 234, 0.3);
+    outline: none;
+}
+
+
 .map-info {
     display: flex;
     justify-content: center;

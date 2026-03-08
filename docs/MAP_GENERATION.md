@@ -20,14 +20,14 @@ The Python MILP solver (`scripts/solver/solve.py`, powered by PuLP + CBC):
 
 **Wall budget:** `maxWalls = floor(size × 0.75)`
 
-| Size | maxWalls |
-|------|----------|
-| 7×7  | 5        |
-| 9×9  | 6        |
-| 11×11 | 8       |
-| 13×13 | 9       |
-| 15×15 | 11      |
-| 17×17 | 12      |
+| Size  | maxWalls |
+| ----- | -------- |
+| 7×7   | 5        |
+| 9×9   | 6        |
+| 11×11 | 8        |
+| 13×13 | 9        |
+| 15×15 | 11       |
+| 17×17 | 12       |
 
 **Retry logic:** Up to 1000 attempts per map. If all fail, throws an error (no fallbacks).
 
@@ -93,19 +93,19 @@ node scripts/audit-maps.js   # validates all maps in maps/ directory
 
 ## Key Files
 
-| File | Role |
-|---|---|
-| `js/constants.js` | `maxWallsForSize()`, `TILE_DISTRIBUTION`, size limits |
-| `js/Grid.js` | `parseCompactMap()`, `parseCompactSolution()` |
-| `js/MapValidator.js` | Quality validation rules |
-| `js/MapGenerator.js` | Map generation logic (Node.js only, not browser) |
-| `js/PathfindingUtils.js` | BFS pathfinding for penning/connectivity checks |
-| `js/wordList.js` | Random words for map names |
-| `scripts/solver/MILPSolver.js` | Node.js wrapper calling Python solver |
-| `scripts/solver/solve.py` | Python MILP solver (PuLP + CBC) |
-| `scripts/generate-map.js` | CLI entry point (single, batch, or fresh) |
-| `scripts/lib/mapUtils.js` | Date helpers, size parsing, DB validation/fix |
-| `scripts/audit-maps.js` | Validates all maps in `maps/` against MapValidator |
+| File                           | Role                                                  |
+| ------------------------------ | ----------------------------------------------------- |
+| `js/constants.js`              | `maxWallsForSize()`, `TILE_DISTRIBUTION`, size limits |
+| `js/Grid.js`                   | `parseCompactMap()`, `parseCompactSolution()`         |
+| `js/MapValidator.js`           | Quality validation rules                              |
+| `js/MapGenerator.js`           | Map generation logic (Node.js only, not browser)      |
+| `js/PathfindingUtils.js`       | BFS pathfinding for penning/connectivity checks       |
+| `js/wordList.js`               | Random words for map names                            |
+| `scripts/solver/MILPSolver.js` | Node.js wrapper calling Python solver                 |
+| `scripts/solver/solve.py`      | Python MILP solver (PuLP + CBC)                       |
+| `scripts/generate-map.js`      | CLI entry point (single, batch, or fresh)             |
+| `scripts/lib/mapUtils.js`      | Date helpers, size parsing, DB validation/fix         |
+| `scripts/audit-maps.js`        | Validates all maps in `maps/` against MapValidator    |
 
 ## Generation Flow
 

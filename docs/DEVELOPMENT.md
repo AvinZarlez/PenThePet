@@ -35,6 +35,18 @@ python3 -m http.server 8080   # start local server
 
 See [TILE_SYSTEM.md](TILE_SYSTEM.md). In short: add one entry to `js/tileData.js` and an SVG asset — everything else is automatic.
 
+### Add or Edit a User-Facing String
+
+All strings live in `js/i18n.js` under `LANGUAGES.en`. To change visible text:
+
+1. Find or add the key in `LANGUAGES.en`.
+2. In HTML, reference it via `data-i18n="key"` (leave the element content empty).
+3. In JavaScript, call `I18N.t('key', { param: value })`.
+
+To add a new language, copy the `en` block, translate the values, and add an entry to `LANGUAGE_OPTIONS`. Missing keys fall back to English automatically.
+
+> **Rule:** No English text should ever appear as HTML text content or as a JavaScript string literal in the game code. If you can read it in the source, it must come from `i18n.js`.
+
 ### Generate New Daily Maps
 
 ```bash
@@ -53,9 +65,9 @@ Edit `js/constants.js`, regenerate maps if needed (`--fresh`), run `npm test`.
 **Browser console:**
 
 ```javascript
-window.game              // Game instance
-window.game.grid.tiles   // Current tile layout
-window.game.render()     // Force re-render
+window.game; // Game instance
+window.game.grid.tiles; // Current tile layout
+window.game.render(); // Force re-render
 ```
 
 Use DevTools (F12) → Sources to set breakpoints. Check Network tab for 404s on map files.
@@ -92,14 +104,14 @@ Use **relative paths** in HTML (`js/main.js` not `/js/main.js`) — absolute pat
 
 ## Troubleshooting
 
-| Problem | Fix |
-|---|---|
-| Module not found in tests | `rm -rf node_modules && npm install` |
+| Problem                             | Fix                                                                     |
+| ----------------------------------- | ----------------------------------------------------------------------- |
+| Module not found in tests           | `rm -rf node_modules && npm install`                                    |
 | Game loads locally but not on Pages | Check for absolute paths, case-sensitive filenames, committed map files |
-| Tests timeout | Use smaller maps in tests (`size = 5`); set `jest.setTimeout(30000)` |
-| Coverage below threshold | Run `npm test -- --coverage`, find uncovered lines, add tests |
-| ESLint errors | `npm run lint:fix` |
-| Map generation fails | Check Python/PuLP install; verify tile distribution sums to ~1.0 |
+| Tests timeout                       | Use smaller maps in tests (`size = 5`); set `jest.setTimeout(30000)`    |
+| Coverage below threshold            | Run `npm test -- --coverage`, find uncovered lines, add tests           |
+| ESLint errors                       | `npm run lint:fix`                                                      |
+| Map generation fails                | Check Python/PuLP install; verify tile distribution sums to ~1.0        |
 
 ## VS Code Setup
 

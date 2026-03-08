@@ -926,11 +926,11 @@ class Game {
 
                 // Change button text based on submission state
                 if (this.isSubmitted) {
-                    statusElement.innerHTML = '<span class="submit-label">View Result</span>';
-                    statusElement.title = `View your submitted score (${yellowTileCount} tiles)`;
+                    statusElement.innerHTML = `<span class="submit-label">${I18N.t('status_view_result')}</span>`;
+                    statusElement.title = I18N.t('status_view_submitted', { count: yellowTileCount });
                 } else {
-                    statusElement.innerHTML = '<span class="submit-label">Submit</span><span class="submit-check">✓</span>';
-                    statusElement.title = `Pet is penned! Click to submit your score (${yellowTileCount} tiles)`;
+                    statusElement.innerHTML = `<span class="submit-label">${I18N.t('status_submit')}</span><span class="submit-check">✓</span>`;
+                    statusElement.title = I18N.t('status_penned_submit', { count: yellowTileCount });
                 }
                 statusElement.className = 'penned-status penned';
                 statusElement.disabled = false;
@@ -939,16 +939,16 @@ class Game {
             } else {
                 // If submitted, still allow viewing result even if not currently penned
                 if (this.isSubmitted && this.submittedScore) {
-                    statusElement.innerHTML = '<span class="submit-label">View Result</span>';
+                    statusElement.innerHTML = `<span class="submit-label">${I18N.t('status_view_result')}</span>`;
                     statusElement.className = 'penned-status submitted';
-                    statusElement.title = 'View your submitted score';
+                    statusElement.title = I18N.t('status_view_submitted_simple');
                     statusElement.disabled = false;
                     statusElement.dataset.interactive = 'true';
                     statusElement.dataset.areaSize = this.submittedScore;
                 } else {
-                    statusElement.innerHTML = '<span class="submit-label">Unsolved</span><span class="submit-check">✗</span>';
+                    statusElement.innerHTML = `<span class="submit-label">${I18N.t('status_unsolved')}</span><span class="submit-check">✗</span>`;
                     statusElement.className = 'penned-status not-penned';
-                    statusElement.title = 'Pet can still escape - keep building walls!';
+                    statusElement.title = I18N.t('status_cant_escape');
                     statusElement.disabled = true;
                     statusElement.dataset.interactive = 'false';
                     statusElement.dataset.areaSize = '0';
@@ -976,11 +976,13 @@ class Game {
                 // Display area size based on hints used
                 if (hasTarget) {
                     // Target revealed: show "areaSize / goal"
-                    areaSizeElement.textContent = `${areaSize} / ${this.goalAreaSize}`;
+                    areaSizeElement.textContent = I18N.t('area_size_with_goal', { areaSize, goalAreaSize: this.goalAreaSize });
                 } else {
                     if (hasChecked) {
                         // Checked: show area size with "?" if not optimal
-                        areaSizeElement.textContent = areaSize < this.goalAreaSize ? `${areaSize} <` : `${areaSize} ✅` ;
+                        areaSizeElement.textContent = areaSize < this.goalAreaSize
+                            ? I18N.t('area_size_below_goal', { areaSize })
+                            : I18N.t('area_size_at_goal', { areaSize });
                     }
                     else {
                         areaSizeElement.textContent = areaSize.toString();
@@ -998,7 +1000,7 @@ class Game {
                     }
                 }
             } else {
-                areaSizeElement.textContent = '∞';
+                areaSizeElement.textContent = I18N.t('area_size_infinity');
                 areaSizeDisplay.classList.remove('penned-yellow', 'penned-green');
             }
         }
@@ -1094,13 +1096,13 @@ class Game {
         banner.style.display = '';
         const label = banner.querySelector('.best-state-label');
         if (this.bestScore === null) {
-            if (label) label.textContent = 'Best So Far: None';
+            if (label) label.textContent = I18N.t('best_so_far_none');
             banner.disabled = true;
-            banner.title = 'Pen the pet to record your best score';
+            banner.title = I18N.t('best_so_far_title_none');
         } else {
-            if (label) label.textContent = `Best So Far: ${this.bestScore}`;
+            if (label) label.textContent = I18N.t('best_so_far', { score: this.bestScore });
             banner.disabled = false;
-            banner.title = 'Click to restore your best wall placement';
+            banner.title = I18N.t('best_so_far_title');
         }
     }
 
@@ -1343,7 +1345,7 @@ class Game {
         const percentageElement = document.getElementById('roamAreaPercentage');
         if (percentageElement && goalScoreNum > 0) {
             const pct = Math.round((userScoreNum / goalScoreNum) * 100);
-            percentageElement.textContent = `${pct}% of goal (${userScoreNum}/${goalScoreNum})`;
+            percentageElement.textContent = I18N.t('pct_of_goal', { pct, userScore: userScoreNum, goalScore: goalScoreNum });
         }
 
         // Update the helper text to show optimal score
@@ -1351,9 +1353,9 @@ class Game {
         if (helperElement) {
             const timeStr = this._formatTime(this.elapsedSeconds);
             if (isPerfect) {
-                helperElement.innerHTML = `<strong>PERFECT!</strong><br>You achieved the optimal score of ${goalScoreNum}!<br>Time: ${timeStr}`;
+                helperElement.innerHTML = I18N.t('perfect_score', { goalScore: goalScoreNum, time: timeStr });
             } else {
-                helperElement.innerHTML = `Your score<br>Optimal: ${goalScoreNum} tiles<br>Time: ${timeStr}`;
+                helperElement.innerHTML = I18N.t('your_score_info', { goalScore: goalScoreNum, time: timeStr });
             }
         }
 
@@ -1380,23 +1382,23 @@ class Game {
         const mapName = mapNameEl ? mapNameEl.textContent : '';
 
         const dateLine = mapName
-            ? `Day ${dayNum} - ${mapName} - ${displayDate}`
-            : `Day ${dayNum} - ${displayDate}`;
+            ? I18N.t('share_day_map_date', { day: dayNum, mapName, date: displayDate })
+            : I18N.t('share_day_date', { day: dayNum, date: displayDate });
 
         const lines = [
-            `Pen The Pet ${this.petEmoji}`,
+            I18N.t('share_title', { emoji: this.petEmoji }),
             dateLine,
-            `Score: ${pct}% - Time: ${timeStr}`,
+            I18N.t('share_score_line', { pct, time: timeStr }),
         ];
 
         // Add hints used line if any hints were used
         if (this.hintsUsed.length > 0) {
             const hintLabels = {
-                [CONSTANTS.HINT_CHECKED]: 'checked for optimal',
-                [CONSTANTS.HINT_TARGET]: 'revealed target',
+                [CONSTANTS.HINT_CHECKED]: I18N.t('share_hint_checked'),
+                [CONSTANTS.HINT_TARGET]: I18N.t('share_hint_target'),
             };
             const hintsStr = this.hintsUsed.map(h => hintLabels[h] || h).join(', ');
-            lines.push(`Hints used: ${hintsStr}`);
+            lines.push(I18N.t('share_hints_line', { hints: hintsStr }));
         }
 
         return lines.join('\n');
@@ -1413,9 +1415,9 @@ class Game {
         const text = this.buildShareText();
         if (navigator.clipboard && navigator.clipboard.writeText) {
             navigator.clipboard.writeText(text).then(() => {
-                this._flashShareButton(btn, '✓ Copied!');
+                this._flashShareButton(btn, I18N.t('copied_success'));
             }).catch(() => {
-                this._flashShareButton(btn, '✗ Failed');
+                this._flashShareButton(btn, I18N.t('copied_failed'));
             });
         } else {
             // Fallback for environments without Clipboard API
@@ -1427,9 +1429,9 @@ class Game {
             ta.select();
             try {
                 document.execCommand('copy');
-                this._flashShareButton(btn, '✓ Copied!');
+                this._flashShareButton(btn, I18N.t('copied_success'));
             } catch {
-                this._flashShareButton(btn, '✗ Failed');
+                this._flashShareButton(btn, I18N.t('copied_failed'));
             }
             document.body.removeChild(ta);
         }
@@ -1470,7 +1472,7 @@ class Game {
                 const msg = document.createElement('span');
                 msg.id = 'optimalSolutionMsg';
                 msg.className = 'optimal-solution-msg';
-                msg.textContent = '⭐ Your solution is optimal!';
+                msg.textContent = I18N.t('solution_is_optimal_star');
                 const exitBtn = document.getElementById('exitViewer');
                 if (exitBtn) {
                     footer.insertBefore(msg, exitBtn);
@@ -1482,7 +1484,7 @@ class Game {
             // Update the metric label
             const metricLabel = document.querySelector('.metric-label');
             if (metricLabel) {
-                metricLabel.textContent = 'Your Solution Score';
+                metricLabel.textContent = I18N.t('metric_label_yours');
             }
             return;
         }
@@ -1520,12 +1522,12 @@ class Game {
         }
 
         // Update button text based on current state
-        toggleBtn.textContent = this.viewingOptimal ? 'View Your Solution' : 'View Optimal Result';
+        toggleBtn.textContent = this.viewingOptimal ? I18N.t('solution_toggle_view_yours') : I18N.t('solution_toggle_view_optimal');
 
         // Update the metric label to show which solution is being viewed
         const metricLabel = document.querySelector('.metric-label');
         if (metricLabel) {
-            metricLabel.textContent = this.viewingOptimal ? 'Optimal Result Score' : 'Your Solution Score';
+            metricLabel.textContent = this.viewingOptimal ? I18N.t('metric_label_optimal') : I18N.t('metric_label_yours');
         }
     }
 
@@ -1593,7 +1595,7 @@ class Game {
 
         // If the submitted solution matches the optimal, just show a confirmation message
         if (this.isSolutionOptimal()) {
-            viewLabel.textContent = '⭐ Your solution is optimal!';
+            viewLabel.textContent = I18N.t('solution_is_optimal_star');
             toggleBtn.style.display = 'none';
             toggleBar.classList.remove('viewing-optimal');
             return;
@@ -1601,12 +1603,12 @@ class Game {
 
         toggleBtn.style.display = 'inline-block';
         if (this.viewingOptimal) {
-            viewLabel.textContent = 'Viewing: Optimal Result';
-            toggleBtn.textContent = 'View Your Solution';
+            viewLabel.textContent = I18N.t('solution_viewing_optimal');
+            toggleBtn.textContent = I18N.t('solution_toggle_view_yours');
             toggleBar.classList.add('viewing-optimal');
         } else {
-            viewLabel.textContent = 'Viewing: Your Solution';
-            toggleBtn.textContent = 'View Optimal Result';
+            viewLabel.textContent = I18N.t('solution_viewing_yours');
+            toggleBtn.textContent = I18N.t('solution_toggle_view_optimal');
             toggleBar.classList.remove('viewing-optimal');
         }
     }
@@ -1755,7 +1757,7 @@ class Game {
     updateLegend() {
         const homeLegend = document.getElementById('homeLegend');
         if (homeLegend) {
-            homeLegend.textContent = `Home ${this.petEmoji}`;
+            homeLegend.textContent = I18N.t('home_label', { emoji: this.petEmoji });
         }
     }
 
@@ -1765,7 +1767,7 @@ class Game {
     updateWallCounter() {
         const counterElement = document.getElementById('wallCounter');
         if (counterElement) {
-            counterElement.textContent = `${this.wallCount} / ${this.maxWalls}`;
+            counterElement.textContent = I18N.t('walls_counter', { wallCount: this.wallCount, maxWalls: this.maxWalls });
         }
     }
 
@@ -1988,28 +1990,28 @@ class Game {
         if (hasTarget) {
             // Target already revealed — show disabled button with target score
             hintBtn.disabled = true;
-            hintBtn.title = 'Target already revealed';
-            hintBtn.querySelector('.hint-check-label').textContent = `Optimal is ${this.goalAreaSize}`;
+            hintBtn.title = I18N.t('hint_target_revealed_title');
+            hintBtn.querySelector('.hint-check-label').textContent = I18N.t('hint_optimal_label', { score: this.goalAreaSize });
         } else if (hasChecked) {
             // Already checked — offer to reveal target (if allowed) or show disabled label
             if (this.neverShowTarget) {
                 // Cannot reveal target — show disabled button with optimal/not-optimal text
                 hintBtn.disabled = true;
-                hintBtn.title = 'Target reveal is disabled in options';
+                hintBtn.title = I18N.t('hint_target_disabled_title');
                 const areaSize = isPenned ? this.calculateScore() : null;
                 const isOptimal = areaSize !== null && areaSize >= this.goalAreaSize;
-                hintBtn.querySelector('.hint-check-label').textContent = isOptimal ? 'Optimal' : 'Not Optimal';
+                hintBtn.querySelector('.hint-check-label').textContent = isOptimal ? I18N.t('hint_optimal') : I18N.t('hint_not_optimal');
             } else {
                 // Can reveal target
                 hintBtn.disabled = !isPenned;
-                hintBtn.title = isPenned ? 'Reveal the target score' : 'Pen the pet first';
-                hintBtn.querySelector('.hint-check-label').textContent = 'Reveal Target';
+                hintBtn.title = isPenned ? I18N.t('hint_reveal_title_penned') : I18N.t('hint_reveal_title_not_penned');
+                hintBtn.querySelector('.hint-check-label').textContent = I18N.t('hint_reveal_target');
             }
         } else {
             // First time — show "Check if Optimal"
             hintBtn.disabled = !isPenned;
-            hintBtn.title = isPenned ? 'Check if your solution is optimal' : 'Pen the pet first to check your solution';
-            hintBtn.querySelector('.hint-check-label').textContent = 'Check if Optimal';
+            hintBtn.title = isPenned ? I18N.t('hint_check_title_penned') : I18N.t('hint_check_title_not_penned');
+            hintBtn.querySelector('.hint-check-label').textContent = I18N.t('hint_check_label');
         }
 
         this._updateHintUsedDisplay();
@@ -2029,9 +2031,9 @@ class Game {
         }
 
         const parts = [];
-        if (this.hintsUsed.includes(CONSTANTS.HINT_CHECKED)) parts.push('checked for optimal');
-        if (this.hintsUsed.includes(CONSTANTS.HINT_TARGET)) parts.push('revealed target');
-        display.textContent = `Hint used: ${parts.join(', ')}`;
+        if (this.hintsUsed.includes(CONSTANTS.HINT_CHECKED)) parts.push(I18N.t('share_hint_checked'));
+        if (this.hintsUsed.includes(CONSTANTS.HINT_TARGET)) parts.push(I18N.t('share_hint_target'));
+        display.textContent = I18N.t('hint_used_display', { hints: parts.join(', ') });
         display.style.display = '';
     }
 
@@ -2061,8 +2063,8 @@ class Game {
             this.updateAreaSizeDisplay();
 
             const msg = isOptimal
-                ? 'Your solution is optimal! 🎉'
-                : 'A more optimal solution exists.';
+                ? I18N.t('hint_optimal_notification')
+                : I18N.t('hint_not_optimal_notification');
             this._showNotification(msg);
         } else if (!this.neverShowTarget) {
             // Second press: reveal target
@@ -2296,18 +2298,18 @@ class Game {
         if (this.isTimerLocked) {
             timerBtn.disabled = true;
             timerBtn.classList.remove('paused');
-            timerBtn.title = 'Timer locked after submission';
-            if (timerIcon) timerIcon.textContent = '⏱';
+            timerBtn.title = I18N.t('timer_locked_title');
+            if (timerIcon) timerIcon.textContent = I18N.t('timer_locked_icon');
         } else if (this.isPaused) {
             timerBtn.disabled = true;
             timerBtn.classList.add('paused');
-            timerBtn.title = 'Click Resume to continue';
-            if (timerIcon) timerIcon.textContent = '▶';
+            timerBtn.title = I18N.t('timer_resume_title');
+            if (timerIcon) timerIcon.textContent = I18N.t('timer_play_icon');
         } else {
             timerBtn.disabled = false;
             timerBtn.classList.remove('paused');
-            timerBtn.title = 'Pause timer';
-            if (timerIcon) timerIcon.textContent = '⏸';
+            timerBtn.title = I18N.t('timer_pause_title');
+            if (timerIcon) timerIcon.textContent = I18N.t('timer_pause_icon');
         }
     }
 
@@ -2335,14 +2337,14 @@ class Game {
         const overlay = document.getElementById('pauseOverlay');
         if (overlay) {
             const pauseTitle = document.getElementById('pauseTitle');
-            if (pauseTitle) pauseTitle.textContent = this.isReadyPending ? 'Ready?' : 'Pause';
+            if (pauseTitle) pauseTitle.textContent = this.isReadyPending ? I18N.t('ready_title') : I18N.t('pause_title');
             const pauseTime = document.getElementById('pauseTime');
             if (pauseTime) {
                 pauseTime.textContent = this._formatTime(this.elapsedSeconds);
                 pauseTime.style.visibility = this.elapsedSeconds > 0 ? 'visible' : 'hidden';
             }
             const resumeBtn = document.getElementById('resumeBtn');
-            if (resumeBtn) resumeBtn.textContent = this.elapsedSeconds > 0 ? '▶ Resume' : '▶ Begin';
+            if (resumeBtn) resumeBtn.textContent = this.elapsedSeconds > 0 ? I18N.t('btn_resume') : I18N.t('btn_begin');
             overlay.style.display = 'flex';
         }
         for (const selector of Game.PAUSE_HIDDEN_SELECTORS) {

@@ -50,6 +50,13 @@ global.FILLED_SCORE_MAP = tileDataModule.FILLED_SCORE_MAP;
 global.CONSTANTS = require('../js/constants.js');
 global.CONFIG = require('../js/config.js');
 global.CookieUtils = require('../js/CookieUtils.js');
+
+// Load i18n module (depends on CookieUtils)
+const i18nModule = require('../js/i18n.js');
+global.I18N = i18nModule.I18N;
+global.LANGUAGES = i18nModule.LANGUAGES;
+global.LANGUAGE_OPTIONS = i18nModule.LANGUAGE_OPTIONS;
+
 global.CloudMigration = require('../js/CloudMigration.js');
 global.FIREBASE_CONFIG = require('../js/firebase-config.js');
 global.CloudSync = require('../js/CloudSync.js');

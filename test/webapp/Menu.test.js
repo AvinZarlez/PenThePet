@@ -182,7 +182,7 @@ describe('Menu', () => {
             menu.openInstructions();
             const container = document.getElementById('tileDescriptions');
             const rows = container.querySelectorAll('.tile-desc-row');
-            const tilesWithDesc = Object.values(TILE_DATA).filter(d => d.description);
+            const tilesWithDesc = Object.values(TILE_DATA).filter(d => d.descriptionKey);
             expect(rows.length).toBe(tilesWithDesc.length);
         });
 
@@ -191,7 +191,7 @@ describe('Menu', () => {
             menu.openInstructions();
             const container = document.getElementById('tileDescriptions');
             const rows = container.querySelectorAll('.tile-desc-row');
-            const tilesWithDesc = Object.values(TILE_DATA).filter(d => d.description);
+            const tilesWithDesc = Object.values(TILE_DATA).filter(d => d.descriptionKey);
             expect(rows.length).toBe(tilesWithDesc.length);
         });
 

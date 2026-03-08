@@ -50,16 +50,16 @@ player instructions, and the Python solver read from `js/tileData.js` automatica
 
 ## Current Tile Types
 
-| Tile  | Score | Wall Placeable | Blocks Movement | Generation Chance  |
-| ----- | ----- | -------------- | --------------- | ------------------ |
-| Grass | 1     | ✅             | ❌              | 65%                |
-| Water | 0     | ❌             | ✅              | 30%                |
-| Star  | 3     | ❌             | ❌              | 5%                 |
-| Bee   | -3    | ❌             | ❌              | 3%                 |
-| Hole  | 0     | ✅             | ✅              | 3%                 |
-| Filled Hole | 1 | ❌          | ❌              | Wall-placed only   |
-| Home  | 1     | ❌             | ❌              | Placed at center   |
-| Wall  | 0     | ❌             | ✅              | Player-placed only |
+| Tile        | Score | Wall Placeable | Blocks Movement | Generation Chance  |
+| ----------- | ----- | -------------- | --------------- | ------------------ |
+| Grass       | 1     | ✅             | ❌              | 65%                |
+| Water       | 0     | ❌             | ✅              | 30%                |
+| Star        | 3     | ❌             | ❌              | 5%                 |
+| Bee         | -3    | ❌             | ❌              | 3%                 |
+| Hole        | 0     | ✅             | ✅              | 3%                 |
+| Filled Hole | 1     | ❌             | ❌              | Wall-placed only   |
+| Home        | 1     | ❌             | ❌              | Placed at center   |
+| Wall        | 0     | ❌             | ✅              | Player-placed only |
 
 ### Fillable Tiles
 
