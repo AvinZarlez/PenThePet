@@ -206,6 +206,7 @@ const LANGUAGES = {
         about_credits_1: 'Made by <a href="https://www.AvinZarlez.com" target="_blank" rel="noopener noreferrer">Avin Zarlez</a>',
         about_view_github: 'View this project on GitHub',
         about_copyright: '© 2026 Pen the Pet',
+        about_privacy_policy: 'Privacy Policy',
 
         // ── Options Modal ─────────────────────────────────────────────────
         options_title: 'Options',
@@ -471,6 +472,7 @@ const LANGUAGES = {
         about_credits_1: 'Creado por <a href="https://www.AvinZarlez.com" target="_blank" rel="noopener noreferrer">Avin Zarlez</a>',
         about_view_github: 'Ver este proyecto en GitHub',
         about_copyright: '© 2026 Encierra a la Mascota',
+        about_privacy_policy: 'Política de privacidad',
 
         // ── Options Modal ─────────────────────────────────────────────────
         options_title: 'Opciones',

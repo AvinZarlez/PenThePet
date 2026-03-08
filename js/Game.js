@@ -1323,7 +1323,8 @@ class Game {
                 wallPositions.length,
                 this.elapsedSeconds,
                 isPerfect,
-                this.hintsUsed.length
+                this.hintsUsed.includes(CONSTANTS.HINT_CHECKED),
+                this.hintsUsed.includes(CONSTANTS.HINT_TARGET)
             );
         }
 
@@ -2076,9 +2077,6 @@ class Game {
             this.hintsUsed.push(CONSTANTS.HINT_CHECKED);
             if (this.currentDate) {
                 this.saveHintsUsed(this.currentDate);
-                if (typeof Analytics !== 'undefined') {
-                    Analytics.trackHintUsed(this.currentDate, CONSTANTS.HINT_CHECKED);
-                }
             }
             this.updateAreaSizeDisplay();
 
@@ -2091,9 +2089,6 @@ class Game {
             this.hintsUsed.push(CONSTANTS.HINT_TARGET);
             if (this.currentDate) {
                 this.saveHintsUsed(this.currentDate);
-                if (typeof Analytics !== 'undefined') {
-                    Analytics.trackHintUsed(this.currentDate, CONSTANTS.HINT_TARGET);
-                }
             }
             this.updateAreaSizeDisplay();
 

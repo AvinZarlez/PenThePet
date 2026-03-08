@@ -22,8 +22,7 @@ Anonymous, privacy-preserving usage events are sent to Firebase Analytics:
 | Event | When logged | Why it's useful |
 |---|---|---|
 | `level_loaded` | Player opens a puzzle | Daily active player proxy |
-| `level_completed` | Player submits their solution | Completion rate, score distribution, perfect-score rate, time-to-solve |
-| `hint_used` | Player uses the hint button | Difficulty signal |
+| `level_completed` | Player submits their solution | Completion rate, score distribution, perfect-score rate, time-to-solve, hint usage |
 | `js_error` | An unhandled JavaScript error occurs | Catch regressions in production |
 
 No user IDs, email addresses, or personally-identifiable information are ever
@@ -497,8 +496,7 @@ If you want to enable **analytics only** (without cloud sync):
 | Event | Parameters | Description |
 |---|---|---|
 | `level_loaded` | `puzzle_date`, `already_completed` | Player opened a puzzle |
-| `level_completed` | `puzzle_date`, `score`, `goal_score`, `walls_used`, `elapsed_seconds`, `is_perfect`, `hints_used_count` | Player submitted a solution |
-| `hint_used` | `puzzle_date`, `hint_type` | Player pressed the hint button |
+| `level_completed` | `puzzle_date`, `score`, `goal_score`, `walls_used`, `elapsed_seconds`, `is_perfect`, `check_used`, `reveal_used` | Player submitted a solution |
 | `js_error` | `error_message`, `error_source` | An unhandled JavaScript error occurred |
 
 ## Firebase Free Tier Limits

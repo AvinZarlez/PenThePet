@@ -59,30 +59,20 @@ describe('Analytics', () => {
     describe('trackLevelCompleted()', () => {
         test('should not throw when analytics is not initialised', () => {
             expect(() =>
-                Analytics.trackLevelCompleted('2026-01-01', 8, 10, 5, 120, false, 0)
+                Analytics.trackLevelCompleted('2026-01-01', 8, 10, 5, 120, false, false, false)
             ).not.toThrow();
         });
 
         test('should not throw for a perfect score', () => {
             expect(() =>
-                Analytics.trackLevelCompleted('2026-01-01', 10, 10, 4, 60, true, 0)
+                Analytics.trackLevelCompleted('2026-01-01', 10, 10, 4, 60, true, false, false)
             ).not.toThrow();
         });
 
         test('should not throw when hints were used', () => {
             expect(() =>
-                Analytics.trackLevelCompleted('2026-02-15', 10, 10, 3, 300, true, 2)
+                Analytics.trackLevelCompleted('2026-02-15', 10, 10, 3, 300, true, true, true)
             ).not.toThrow();
-        });
-    });
-
-    describe('trackHintUsed()', () => {
-        test('should not throw when analytics is not initialised', () => {
-            expect(() => Analytics.trackHintUsed('2026-01-01', 'checked')).not.toThrow();
-        });
-
-        test('should not throw for target hint type', () => {
-            expect(() => Analytics.trackHintUsed('2026-01-01', 'target')).not.toThrow();
         });
     });
 
@@ -131,7 +121,7 @@ describe('Analytics', () => {
         });
 
         test('trackLevelCompleted calls logEvent with correct params', () => {
-            Analytics.trackLevelCompleted('2026-01-01', 8, 10, 5, 120, false, 1);
+            Analytics.trackLevelCompleted('2026-01-01', 8, 10, 5, 120, false, false, false);
             expect(mockLogEvent).toHaveBeenCalledWith('level_completed', {
                 puzzle_date: '2026-01-01',
                 score: 8,
@@ -139,12 +129,13 @@ describe('Analytics', () => {
                 walls_used: 5,
                 elapsed_seconds: 120,
                 is_perfect: false,
-                hints_used_count: 1,
+                check_used: false,
+                reveal_used: false,
             });
         });
 
         test('trackLevelCompleted marks perfect score correctly', () => {
-            Analytics.trackLevelCompleted('2026-03-01', 10, 10, 3, 60, true, 0);
+            Analytics.trackLevelCompleted('2026-03-01', 10, 10, 3, 60, true, false, false);
             expect(mockLogEvent).toHaveBeenCalledWith('level_completed', expect.objectContaining({
                 is_perfect: true,
                 score: 10,
@@ -152,12 +143,12 @@ describe('Analytics', () => {
             }));
         });
 
-        test('trackHintUsed calls logEvent with correct params', () => {
-            Analytics.trackHintUsed('2026-01-01', 'checked');
-            expect(mockLogEvent).toHaveBeenCalledWith('hint_used', {
-                puzzle_date: '2026-01-01',
-                hint_type: 'checked',
-            });
+        test('trackLevelCompleted includes check_used and reveal_used booleans', () => {
+            Analytics.trackLevelCompleted('2026-01-01', 8, 10, 5, 120, false, true, true);
+            expect(mockLogEvent).toHaveBeenCalledWith('level_completed', expect.objectContaining({
+                check_used: true,
+                reveal_used: true,
+            }));
         });
 
         test('trackError calls logEvent with correct params', () => {

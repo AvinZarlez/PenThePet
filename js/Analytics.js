@@ -11,8 +11,8 @@
  * Events tracked (useful for development):
  *   level_loaded     — player opened a puzzle (daily active-user proxy)
  *   level_completed  — player submitted their solution (completion rate,
- *                      score distribution, perfect-score rate, time-to-solve)
- *   hint_used        — player used a hint (difficulty signal)
+ *                      score distribution, perfect-score rate, time-to-solve,
+ *                      hint usage)
  *   js_error         — an unhandled JavaScript error occurred
  *
  * To enable analytics on your fork see docs/FIREBASE_SETUP.md.
@@ -75,6 +75,7 @@ const Analytics = (() => {
     /**
      * Track when a puzzle level is loaded / opened.
      * Used as a daily active-user proxy: one event per level load.
+     * Note: counts device-sessions, not unique users (analytics are anonymous).
      * @param {string} date - Puzzle date string (YYYY-MM-DD)
      * @param {boolean} alreadyCompleted - Whether the user had already submitted this level
      */
@@ -87,15 +88,18 @@ const Analytics = (() => {
 
     /**
      * Track when a player submits their solution.
+     * Hint usage is captured here (not as separate events) so all
+     * submission data lives in one event.
      * @param {string} date - Puzzle date string (YYYY-MM-DD)
      * @param {number} score - Player's submitted score
      * @param {number} goalScore - Optimal / target score for this puzzle
      * @param {number} wallsUsed - Number of walls the player placed
      * @param {number} elapsedSeconds - Time taken (in seconds) to solve
      * @param {boolean} isPerfect - Whether the player achieved the optimal score
-     * @param {number} hintsUsedCount - Number of hints used during this attempt
+     * @param {boolean} checkUsed - Whether the player used the "check if optimal" hint
+     * @param {boolean} revealUsed - Whether the player used the "reveal target score" hint
      */
-    function trackLevelCompleted(date, score, goalScore, wallsUsed, elapsedSeconds, isPerfect, hintsUsedCount) {
+    function trackLevelCompleted(date, score, goalScore, wallsUsed, elapsedSeconds, isPerfect, checkUsed, revealUsed) {
         _logEvent('level_completed', {
             puzzle_date: date,
             score: score,
@@ -103,19 +107,8 @@ const Analytics = (() => {
             walls_used: wallsUsed,
             elapsed_seconds: elapsedSeconds,
             is_perfect: !!isPerfect,
-            hints_used_count: hintsUsedCount,
-        });
-    }
-
-    /**
-     * Track when a player uses a hint.
-     * @param {string} date - Puzzle date string (YYYY-MM-DD)
-     * @param {string} hintType - Hint type identifier (e.g. CONSTANTS.HINT_CHECKED)
-     */
-    function trackHintUsed(date, hintType) {
-        _logEvent('hint_used', {
-            puzzle_date: date,
-            hint_type: hintType,
+            check_used: !!checkUsed,
+            reveal_used: !!revealUsed,
         });
     }
 
@@ -138,7 +131,6 @@ const Analytics = (() => {
         init,
         trackLevelLoaded,
         trackLevelCompleted,
-        trackHintUsed,
         trackError,
     };
 })();
