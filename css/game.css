@@ -489,6 +489,7 @@
     height: 60%;
     pointer-events: none;
     transform-origin: center center;
+    opacity: 0.75;
 }
 
 /* Path overlay - emoji/text */
