@@ -224,7 +224,7 @@ const LANGUAGES = {
         options_edit_profile: '✏️ Edit Username / Email',
         options_sign_out: 'Sign Out',
         options_delete_cloud_data: '🗑️ Delete All Cloud Data',
-        options_delete_cloud_data_confirm: 'Delete all your cloud data? This cannot be undone. You will be signed out.',
+        options_delete_cloud_data_confirm: 'Delete all your cloud data? This cannot be undone. You will be signed out',
 
         // ── Cloud Sync Bar ────────────────────────────────────────────────
         cloud_sync_sign_in_btn: '☁️ Sign In to Sync',
@@ -492,7 +492,7 @@ const LANGUAGES = {
         options_edit_profile: '✏️ Editar nombre / correo',
         options_sign_out: 'Cerrar sesión',
         options_delete_cloud_data: '🗑️ Eliminar todos los datos en la nube',
-        options_delete_cloud_data_confirm: '¿Eliminar todos tus datos en la nube? Esto no se puede deshacer. Se cerrará tu sesión.',
+        options_delete_cloud_data_confirm: '¿Eliminar todos tus datos en la nube? Esto no se puede deshacer. Se cerrará tu sesión',
 
         // ── Cloud Sync Bar ────────────────────────────────────────────────
         cloud_sync_sign_in_btn: '☁️ Iniciar sesión para sincronizar',

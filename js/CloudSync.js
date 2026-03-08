@@ -1315,7 +1315,7 @@ const CloudSync = (function () {
     async function handleDeleteAllCloudData() {
         const msg = typeof I18N !== 'undefined'
             ? I18N.t('options_delete_cloud_data_confirm')
-            : 'Delete all your cloud data? This cannot be undone.';
+            : 'Delete all your cloud data? This cannot be undone. You will be signed out';
         if (!window.confirm(msg)) return;
         try {
             await deleteAllSubmissions();
