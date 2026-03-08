@@ -29,11 +29,16 @@
     --accent-glow-strong: rgba(124, 139, 239, 0.55);
 
     /* --- Typography --- */
-    --text-primary:    #dde0f0;   /* replaces #333 */
-    --text-secondary:  #8a90b3;   /* replaces #666 */
-    --text-muted:      #5a6087;   /* replaces #999 / #ccc */
+    --text-primary:    #eceef8;   /* near-white headings & primary content */
+    --text-secondary:  #a8aece;   /* secondary labels, subtitles */
+    --text-muted:      #7e87b0;   /* helper text, placeholders, day-headers */
     --text-on-accent:  #ffffff;
-    --text-on-surface: #c5c9e0;   /* text on standard controls */
+    --text-on-surface: #cdd0e8;   /* text on standard controls */
+
+    /* --- Links --- */
+    --link-color:      #9aabf7;   /* unvisited — lighter than accent, legible on dark */
+    --link-visited:    #c8a8f8;   /* visited — soft lavender, distinct from unvisited */
+    --link-hover:      #bccbff;   /* hover — brightest, draws the eye */
 
     /* --- Borders --- */
     --border-subtle:   #272c3f;   /* very soft, dividers */
@@ -156,6 +161,22 @@ h1 {
     color: var(--text-secondary);
     margin-bottom: 20px;
     font-size: 0.9em;
+}
+
+/* ========== Links ========== */
+a {
+    color: var(--link-color);
+    text-decoration: underline;
+}
+
+a:visited {
+    color: var(--link-visited);
+}
+
+a:hover,
+a:focus {
+    color: var(--link-hover);
+    outline-offset: 2px;
 }
 
 /* ========== Generic Button Styles ========== */
