@@ -17,11 +17,20 @@ let menu;
  */
 async function loadTodayMap() {
     try {
-        const today = DateUtils.getTodayDate();
+        // Determine today's date using the user's saved timezone preference.
+        const timezone = CookieUtils.getCookie('timezone') || CONSTANTS.DEFAULT_TIMEZONE;
+        const today = DateUtils.getTodayDate(timezone);
         const currentYear = parseInt(today.substring(0, 4));
 
-        // Always load this year's map file; also load the saved level's year if different
-        const savedLevel = CookieUtils.getCookie('currentLevel');
+        // On the first visit of a new calendar day, bypass the saved level cookie so
+        // the user always opens today's puzzle rather than whatever they last played.
+        const lastVisitDate = CookieUtils.getCookie('lastVisitDate');
+        const isFirstVisitToday = lastVisitDate !== today;
+        CookieUtils.setCookie('lastVisitDate', today, 2);
+
+        // Always load this year's map file; also load the saved level's year if different.
+        // Skip the saved level on the first visit of the day (load today instead).
+        const savedLevel = isFirstVisitToday ? null : CookieUtils.getCookie('currentLevel');
         const yearsToLoad = new Set([currentYear]);
         if (savedLevel) {
             yearsToLoad.add(parseInt(savedLevel.substring(0, 4)));

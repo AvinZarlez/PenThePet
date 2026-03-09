@@ -29,8 +29,9 @@ describe('loadTodayMap()', () => {
     beforeEach(() => {
         // Store original so we can restore after each test
         originalGetTodayDate = DateUtils.getTodayDate;
-        // Clear any currentLevel cookie between tests
+        // Clear relevant cookies between tests
         document.cookie = 'currentLevel=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/';
+        document.cookie = 'lastVisitDate=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/';
     });
 
     afterEach(() => {
@@ -82,8 +83,10 @@ describe('loadTodayMap()', () => {
         expect(result).toBeNull();
     });
 
-    test('uses cookie-selected level when it exists in the database', async () => {
+    test('uses cookie-selected level when it exists in the database (same-day return visit)', async () => {
         DateUtils.getTodayDate = () => '2026-03-01';
+        // Simulate a same-day return visit: lastVisitDate matches today
+        document.cookie = 'lastVisitDate=2026-03-01; path=/';
         document.cookie = 'currentLevel=2026-02-28; path=/';
         global.fetch = makeFetch({
             '2026-03-01': { date: '2026-03-01', dayNumber: 2 },
@@ -104,6 +107,33 @@ describe('loadTodayMap()', () => {
         const result = await loadTodayMap();
         // Cookie level not found → falls back to today
         expect(result).toEqual({ date: '2026-03-01', dayNumber: 1 });
+    });
+
+    test('ignores cookie-selected level on first visit of the day (no lastVisitDate cookie)', async () => {
+        DateUtils.getTodayDate = () => '2026-03-01';
+        document.cookie = 'currentLevel=2026-02-28; path=/';
+        // No lastVisitDate cookie → first visit today
+        global.fetch = makeFetch({
+            '2026-03-01': { date: '2026-03-01', dayNumber: 2 },
+            '2026-02-28': { date: '2026-02-28', dayNumber: 1 },
+        });
+
+        const result = await loadTodayMap();
+        expect(result).toEqual({ date: '2026-03-01', dayNumber: 2 });
+    });
+
+    test('ignores cookie-selected level when lastVisitDate is from a previous day', async () => {
+        DateUtils.getTodayDate = () => '2026-03-02';
+        document.cookie = 'lastVisitDate=2026-03-01; path=/';
+        document.cookie = 'currentLevel=2026-01-15; path=/';
+        global.fetch = makeFetch({
+            '2026-03-02': { date: '2026-03-02', dayNumber: 3 },
+            '2026-03-01': { date: '2026-03-01', dayNumber: 2 },
+            '2026-01-15': { date: '2026-01-15', dayNumber: 1 },
+        });
+
+        const result = await loadTodayMap();
+        expect(result).toEqual({ date: '2026-03-02', dayNumber: 3 });
     });
 
     test('returns null when fetch fails', async () => {
