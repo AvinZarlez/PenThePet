@@ -235,22 +235,6 @@
     white-space: nowrap;
 }
 
-.cloud-sync-signout-btn {
-    background: none;
-    border: 1px solid var(--border-default);
-    color: var(--text-secondary);
-    padding: 2px 10px;
-    border-radius: 12px;
-    cursor: pointer;
-    font-size: 0.8em;
-    height: auto;
-}
-
-.cloud-sync-signout-btn:hover {
-    border-color: var(--border-strong);
-    color: var(--text-primary);
-}
-
 .cloud-sync-status {
     font-size: 0.8em;
     padding: 2px 8px;
