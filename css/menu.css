@@ -233,12 +233,14 @@
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+    display: block;
 }
 
 .cloud-sync-status {
     font-size: 0.8em;
     padding: 2px 8px;
     border-radius: 10px;
+    display: block;
 }
 
 .cloud-sync-status.synced {
