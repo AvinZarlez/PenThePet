@@ -230,7 +230,6 @@ const LANGUAGES = {
 
         // ── Cloud Sync Bar ────────────────────────────────────────────────
         cloud_sync_sign_in_btn: '☁️ Sign In to Sync',
-        cloud_sync_sign_out_btn: 'Sign Out',
         cloud_sync_syncing: '🔄 Syncing…',
         cloud_sync_synced: '☁️ Synced',
         cloud_sync_error: '⚠️ Sync error',
@@ -500,7 +499,6 @@ const LANGUAGES = {
 
         // ── Cloud Sync Bar ────────────────────────────────────────────────
         cloud_sync_sign_in_btn: '☁️ Iniciar sesión para sincronizar',
-        cloud_sync_sign_out_btn: 'Cerrar sesión',
         cloud_sync_syncing: '🔄 Sincronizando…',
         cloud_sync_synced: '☁️ Sincronizado',
         cloud_sync_error: '⚠️ Error de sincronización',
