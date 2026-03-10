@@ -165,18 +165,29 @@ describe('loadTodayMap()', () => {
  * changes its submission state (e.g. first login on a new device that had
  * no local cookies).  It is intentionally a no-op when there is no change
  * so that mid-puzzle wall placements are not discarded unnecessarily.
+ *
+ * When mapsDatabase is not yet loaded (level selector was never opened),
+ * the handler falls back to window.location.reload() so the page re-renders
+ * with the cloud-synced cookie state.
  */
 describe('cloudsync:synced event handler logic', () => {
     // Re-implement the same conditional that main.js uses so we can test it
     // in isolation without needing to trigger the full initGame() flow.
-    function simulateSyncHandler(game, menu) {
+    // reloadFn mirrors window.location.reload() and is injectable for testing.
+    function simulateSyncHandler(game, menu, reloadFn = () => {}) {
         if (!menu || !game || !game.currentDate) return;
-        if (!menu.mapsDatabase || !menu.mapsDatabase[game.currentDate]) return;
 
         const hadSubmission = game.isSubmitted;
         const hasSubmissionNow = game.loadSubmission(game.currentDate) !== null;
-        if (hadSubmission !== hasSubmissionNow) {
-            menu.loadLevel(menu.mapsDatabase[game.currentDate]);
+        const submissionStateChanged = hadSubmission !== hasSubmissionNow;
+
+        if (submissionStateChanged) {
+            if (menu.mapsDatabase && menu.mapsDatabase[game.currentDate]) {
+                menu.loadLevel(menu.mapsDatabase[game.currentDate]);
+            } else {
+                reloadFn();
+            }
+            return;
         }
     }
 
@@ -184,6 +195,7 @@ describe('cloudsync:synced event handler logic', () => {
 
     test('calls loadLevel when submission appears after sync (new-device login)', () => {
         const loadLevel = jest.fn();
+        const reload = jest.fn();
         const game = {
             currentDate: '2026-03-01',
             isSubmitted: false,
@@ -194,13 +206,15 @@ describe('cloudsync:synced event handler logic', () => {
             loadLevel,
         };
 
-        simulateSyncHandler(game, menu);
+        simulateSyncHandler(game, menu, reload);
 
         expect(loadLevel).toHaveBeenCalledWith(MAP_DATA);
+        expect(reload).not.toHaveBeenCalled();
     });
 
     test('does not call loadLevel when submission state is unchanged (already submitted)', () => {
         const loadLevel = jest.fn();
+        const reload = jest.fn();
         const game = {
             currentDate: '2026-03-01',
             isSubmitted: true,
@@ -211,13 +225,15 @@ describe('cloudsync:synced event handler logic', () => {
             loadLevel,
         };
 
-        simulateSyncHandler(game, menu);
+        simulateSyncHandler(game, menu, reload);
 
         expect(loadLevel).not.toHaveBeenCalled();
+        expect(reload).not.toHaveBeenCalled();
     });
 
     test('does not call loadLevel when submission state is unchanged (not submitted)', () => {
         const loadLevel = jest.fn();
+        const reload = jest.fn();
         const game = {
             currentDate: '2026-03-01',
             isSubmitted: false,
@@ -228,9 +244,10 @@ describe('cloudsync:synced event handler logic', () => {
             loadLevel,
         };
 
-        simulateSyncHandler(game, menu);
+        simulateSyncHandler(game, menu, reload);
 
         expect(loadLevel).not.toHaveBeenCalled();
+        expect(reload).not.toHaveBeenCalled();
     });
 
     test('does nothing when game is not initialised', () => {
@@ -238,8 +255,32 @@ describe('cloudsync:synced event handler logic', () => {
         expect(() => simulateSyncHandler(null, {})).not.toThrow();
     });
 
-    test('does nothing when current level is not in mapsDatabase', () => {
+    test('reloads page when mapsDatabase is null (level selector never opened)', () => {
+        // This is the primary bug scenario: user clears browser data, reloads,
+        // logs into cloud sync — mapsDatabase is null because they haven't opened
+        // the level selector.  The submission cookie was already written by the
+        // sync; we must reload so the page renders the submitted state.
         const loadLevel = jest.fn();
+        const reload = jest.fn();
+        const game = {
+            currentDate: '2026-03-01',
+            isSubmitted: false,
+            loadSubmission: jest.fn(() => ({ score: 5, walls: [] })),
+        };
+        const menu = {
+            mapsDatabase: null,
+            loadLevel,
+        };
+
+        simulateSyncHandler(game, menu, reload);
+
+        expect(reload).toHaveBeenCalled();
+        expect(loadLevel).not.toHaveBeenCalled();
+    });
+
+    test('reloads page when current level is not in mapsDatabase', () => {
+        const loadLevel = jest.fn();
+        const reload = jest.fn();
         const game = {
             currentDate: '2026-03-01',
             isSubmitted: false,
@@ -250,8 +291,9 @@ describe('cloudsync:synced event handler logic', () => {
             loadLevel,
         };
 
-        simulateSyncHandler(game, menu);
+        simulateSyncHandler(game, menu, reload);
 
+        expect(reload).toHaveBeenCalled();
         expect(loadLevel).not.toHaveBeenCalled();
     });
 });
