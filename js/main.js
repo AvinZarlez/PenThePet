@@ -268,11 +268,18 @@ async function initGame() {
             if (submissionStateChanged || submissionDataChanged) {
                 if (menu.mapsDatabase && menu.mapsDatabase[game.currentDate]) {
                     await menu.loadLevel(menu.mapsDatabase[game.currentDate]);
-                }
-                // Notify the user when cloud data overwrote the current level's local data.
-                if (cloudOverwrites.has(game.currentDate) &&
-                    game && typeof game.showNotification === 'function') {
-                    game.showNotification(I18N.t('cloud_data_loaded'));
+                    // Only notify when existing submission data changed (score/time).
+                    // Going from non-submitted → submitted is visually obvious from the
+                    // board reload — no notification needed for that transition.
+                    if (submissionDataChanged && cloudOverwrites.has(game.currentDate) &&
+                        game && typeof game.showNotification === 'function') {
+                        game.showNotification(I18N.t('cloud_data_loaded'));
+                    }
+                } else {
+                    // mapsDatabase not yet loaded (level selector never opened).
+                    // The submission cookie has already been updated by the sync;
+                    // reload the page so the level re-renders with the correct state.
+                    window.location.reload();
                 }
                 return;
             }
