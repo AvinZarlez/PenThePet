@@ -253,6 +253,38 @@ describe('CloudSync', () => {
         });
     });
 
+    describe('updateAuthUI() sync status', () => {
+        beforeEach(() => {
+            document.body.innerHTML = `
+                <button id="cloudSyncLoginBtn" style="display: inline-block;"></button>
+                <div id="cloudSyncUserInfo" style="display: none;"></div>
+                <span id="cloudSyncUserEmail"></span>
+                <span id="cloudSyncStatus" style="display: none;"></span>
+            `;
+        });
+
+        test('does not show synced status before sync completes when user signs in', () => {
+            // _updateAuthUI is called when auth state changes (user signs in).
+            // It must NOT show "synced" at that point — sync hasn't run yet.
+            CloudSync._updateAuthUI({ email: 'user@example.com' });
+            const statusEl = document.getElementById('cloudSyncStatus');
+            expect(statusEl.classList.contains('synced')).toBe(false);
+        });
+
+        test('makes user info visible and hides login button when user signs in', () => {
+            CloudSync._updateAuthUI({ email: 'user@example.com' });
+            expect(document.getElementById('cloudSyncLoginBtn').style.display).toBe('none');
+            expect(document.getElementById('cloudSyncUserInfo').style.display).toBe('flex');
+        });
+
+        test('hides user info and shows login button when user signs out', () => {
+            CloudSync._updateAuthUI(null);
+            expect(document.getElementById('cloudSyncLoginBtn').style.display).toBe('inline-block');
+            expect(document.getElementById('cloudSyncUserInfo').style.display).toBe('none');
+            expect(document.getElementById('cloudSyncStatus').style.display).toBe('none');
+        });
+    });
+
     describe('showSyncErrorPopup() / updateSyncStatus error', () => {
         beforeEach(() => {
             document.body.innerHTML = `
