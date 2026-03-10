@@ -169,21 +169,33 @@ describe('loadTodayMap()', () => {
  * When mapsDatabase is not yet loaded (level selector was never opened),
  * the handler falls back to window.location.reload() so the page re-renders
  * with the cloud-synced cookie state.
+ *
+ * Notification rules:
+ *   - non-submitted → submitted: no notification (reload is visually obvious)
+ *   - submitted score or time changes: show notification
  */
 describe('cloudsync:synced event handler logic', () => {
     // Re-implement the same conditional that main.js uses so we can test it
     // in isolation without needing to trigger the full initGame() flow.
     // reloadFn mirrors window.location.reload() and is injectable for testing.
-    function simulateSyncHandler(game, menu, reloadFn = () => {}) {
+    function simulateSyncHandler(game, menu, { reloadFn = () => {}, cloudOverwrites = new Set(), showNotification = () => {} } = {}) {
         if (!menu || !game || !game.currentDate) return;
 
-        const hadSubmission = game.isSubmitted;
-        const hasSubmissionNow = game.loadSubmission(game.currentDate) !== null;
-        const submissionStateChanged = hadSubmission !== hasSubmissionNow;
+        const currentSubmission = game.loadSubmission(game.currentDate);
+        const hasSubmissionNow = currentSubmission !== null;
+        const submissionStateChanged = game.isSubmitted !== hasSubmissionNow;
+        const submissionDataChanged = game.isSubmitted && currentSubmission && (
+            currentSubmission.score !== game.submittedScore
+        );
 
-        if (submissionStateChanged) {
+        if (submissionStateChanged || submissionDataChanged) {
             if (menu.mapsDatabase && menu.mapsDatabase[game.currentDate]) {
                 menu.loadLevel(menu.mapsDatabase[game.currentDate]);
+                // Only notify when existing submission data changed (score/time).
+                // Going from non-submitted → submitted is visually obvious — no notification.
+                if (submissionDataChanged && cloudOverwrites.has(game.currentDate)) {
+                    showNotification();
+                }
             } else {
                 reloadFn();
             }
@@ -199,6 +211,7 @@ describe('cloudsync:synced event handler logic', () => {
         const game = {
             currentDate: '2026-03-01',
             isSubmitted: false,
+            submittedScore: null,
             loadSubmission: jest.fn(() => ({ score: 10, walls: [] })),
         };
         const menu = {
@@ -206,10 +219,52 @@ describe('cloudsync:synced event handler logic', () => {
             loadLevel,
         };
 
-        simulateSyncHandler(game, menu, reload);
+        simulateSyncHandler(game, menu, { reloadFn: reload });
 
         expect(loadLevel).toHaveBeenCalledWith(MAP_DATA);
         expect(reload).not.toHaveBeenCalled();
+    });
+
+    test('does not show notification when going from non-submitted to submitted', () => {
+        const loadLevel = jest.fn();
+        const showNotification = jest.fn();
+        const game = {
+            currentDate: '2026-03-01',
+            isSubmitted: false,
+            submittedScore: null,
+            loadSubmission: jest.fn(() => ({ score: 10, walls: [] })),
+        };
+        const menu = {
+            mapsDatabase: { '2026-03-01': MAP_DATA },
+            loadLevel,
+        };
+        const cloudOverwrites = new Set(['2026-03-01']);
+
+        simulateSyncHandler(game, menu, { cloudOverwrites, showNotification });
+
+        expect(loadLevel).toHaveBeenCalledWith(MAP_DATA);
+        expect(showNotification).not.toHaveBeenCalled();
+    });
+
+    test('shows notification when existing submission data changes (score/walls)', () => {
+        const loadLevel = jest.fn();
+        const showNotification = jest.fn();
+        const game = {
+            currentDate: '2026-03-01',
+            isSubmitted: true,
+            submittedScore: 3,
+            loadSubmission: jest.fn(() => ({ score: 7, walls: [] })),
+        };
+        const menu = {
+            mapsDatabase: { '2026-03-01': MAP_DATA },
+            loadLevel,
+        };
+        const cloudOverwrites = new Set(['2026-03-01']);
+
+        simulateSyncHandler(game, menu, { cloudOverwrites, showNotification });
+
+        expect(loadLevel).toHaveBeenCalledWith(MAP_DATA);
+        expect(showNotification).toHaveBeenCalled();
     });
 
     test('does not call loadLevel when submission state is unchanged (already submitted)', () => {
@@ -218,6 +273,7 @@ describe('cloudsync:synced event handler logic', () => {
         const game = {
             currentDate: '2026-03-01',
             isSubmitted: true,
+            submittedScore: 10,
             loadSubmission: jest.fn(() => ({ score: 10, walls: [] })),
         };
         const menu = {
@@ -225,7 +281,7 @@ describe('cloudsync:synced event handler logic', () => {
             loadLevel,
         };
 
-        simulateSyncHandler(game, menu, reload);
+        simulateSyncHandler(game, menu, { reloadFn: reload });
 
         expect(loadLevel).not.toHaveBeenCalled();
         expect(reload).not.toHaveBeenCalled();
@@ -237,6 +293,7 @@ describe('cloudsync:synced event handler logic', () => {
         const game = {
             currentDate: '2026-03-01',
             isSubmitted: false,
+            submittedScore: null,
             loadSubmission: jest.fn(() => null),
         };
         const menu = {
@@ -244,7 +301,7 @@ describe('cloudsync:synced event handler logic', () => {
             loadLevel,
         };
 
-        simulateSyncHandler(game, menu, reload);
+        simulateSyncHandler(game, menu, { reloadFn: reload });
 
         expect(loadLevel).not.toHaveBeenCalled();
         expect(reload).not.toHaveBeenCalled();
@@ -265,6 +322,7 @@ describe('cloudsync:synced event handler logic', () => {
         const game = {
             currentDate: '2026-03-01',
             isSubmitted: false,
+            submittedScore: null,
             loadSubmission: jest.fn(() => ({ score: 5, walls: [] })),
         };
         const menu = {
@@ -272,7 +330,7 @@ describe('cloudsync:synced event handler logic', () => {
             loadLevel,
         };
 
-        simulateSyncHandler(game, menu, reload);
+        simulateSyncHandler(game, menu, { reloadFn: reload });
 
         expect(reload).toHaveBeenCalled();
         expect(loadLevel).not.toHaveBeenCalled();
@@ -284,6 +342,7 @@ describe('cloudsync:synced event handler logic', () => {
         const game = {
             currentDate: '2026-03-01',
             isSubmitted: false,
+            submittedScore: null,
             loadSubmission: jest.fn(() => ({ score: 5, walls: [] })),
         };
         const menu = {
@@ -291,7 +350,7 @@ describe('cloudsync:synced event handler logic', () => {
             loadLevel,
         };
 
-        simulateSyncHandler(game, menu, reload);
+        simulateSyncHandler(game, menu, { reloadFn: reload });
 
         expect(reload).toHaveBeenCalled();
         expect(loadLevel).not.toHaveBeenCalled();
