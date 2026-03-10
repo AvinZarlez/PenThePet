@@ -225,6 +225,7 @@
     gap: 8px;
     flex-wrap: wrap;
     font-size: 0.85em;
+    flex-direction: column;
 }
 
 .cloud-sync-email {
