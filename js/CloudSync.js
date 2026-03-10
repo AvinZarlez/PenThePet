@@ -278,7 +278,6 @@ const CloudSync = (function () {
             if (loginBtn) loginBtn.style.display = 'none';
             if (userInfo) userInfo.style.display = 'flex';
             if (userEmail) userEmail.textContent = username || user.email;
-            updateSyncStatus('synced');
         } else {
             username = null;
             if (loginBtn) loginBtn.style.display = 'inline-block';
@@ -1526,6 +1525,8 @@ const CloudSync = (function () {
         _deserializeSubmissionFromFirestore: _deserializeSubmissionFromFirestore,
         // Exposed for unit testing of sync cache.
         _resetSyncCache: function () { lastSyncTime = null; },
+        // Exposed for unit testing of auth UI state.
+        _updateAuthUI: updateAuthUI,
     };
 })();
 
