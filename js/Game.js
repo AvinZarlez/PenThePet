@@ -1330,8 +1330,9 @@ class Game {
 
         // Update the submit button text
         this.updatePennedStatus(true);
-        // Disable the reset button after submission
+        // Hide the reset and hint buttons after submission
         this.updateResetButton();
+        this.updateHintButton();
 
         // Show solution toggle bar if optimal solution is available
         this.updateSolutionToggleBar();

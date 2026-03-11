@@ -282,7 +282,7 @@
             <div class="modal-section">
                 <!-- Two-column: Visuals | Hints -->
                 <div class="options-two-col">
-                    <!-- Left column: Visuals + Time Zone -->
+                    <!-- Left column: Visuals -->
                     <div class="options-col">
                         <h3 class="options-group-label" data-i18n="options_visuals_label"></h3>
                         <div class="option-item">
@@ -290,13 +290,6 @@
                             <select id="modalPetType">
                                 <!-- Options populated dynamically from CONSTANTS.ANIMAL_OPTIONS -->
                             </select>
-                        </div>
-                        <div class="option-item">
-                            <label for="modalTimezone" data-i18n="options_timezone_label"></label>
-                            <select id="modalTimezone">
-                                <!-- Options populated dynamically from CONSTANTS.TIMEZONE_OPTIONS -->
-                            </select>
-                            <small class="option-help" data-i18n="options_timezone_help"></small>
                         </div>
                     </div>
                     <!-- Right column: Hints -->
@@ -317,22 +310,29 @@
                     </div>
                 </div>
 
-                <!-- Full-width: Localization -->
-                <hr class="options-divider">
-                <div class="options-full-section">
-                    <h3 class="options-group-label" data-i18n="options_localization_label"></h3>
-                    <div class="option-item">
-                        <label for="modalLanguage" data-i18n="options_language_label"></label>
-                        <select id="modalLanguage">
-                            <!-- Options populated dynamically from LANGUAGE_OPTIONS -->
-                        </select>
+                <!-- Full-width: Localization (two-col inside) -->
+                <div class="options-full-section options-section-gap">
+                    <h3 class="options-group-label options-group-label-wide" data-i18n="options_localization_label"></h3>
+                    <div class="options-two-col">
+                        <div class="option-item">
+                            <label for="modalTimezone" data-i18n="options_timezone_label"></label>
+                            <select id="modalTimezone">
+                                <!-- Options populated dynamically from CONSTANTS.TIMEZONE_OPTIONS -->
+                            </select>
+                            <small class="option-help" data-i18n="options_timezone_help"></small>
+                        </div>
+                        <div class="option-item">
+                            <label for="modalLanguage" data-i18n="options_language_label"></label>
+                            <select id="modalLanguage">
+                                <!-- Options populated dynamically from LANGUAGE_OPTIONS -->
+                            </select>
+                        </div>
                     </div>
                 </div>
             </div>
 
             <!-- Full-width: Accounts -->
-            <hr class="options-divider">
-            <div id="optionsAccountSection" class="modal-section options-account-section" style="display: none;">
+            <div id="optionsAccountSection" class="modal-section options-account-section options-section-gap" style="display: none;">
                 <h3 data-i18n="options_account_heading"></h3>
                 <div id="optionsAccountSignedOut">
                     <button class="options-account-btn" data-i18n="options_sign_in_to_sync" onclick="CloudSync.openAuthModal()"></button>

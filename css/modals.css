@@ -209,10 +209,15 @@
     font-weight: bold;
     margin: 0 0 4px;
     padding-bottom: 4px;
-    border-bottom: 1px solid var(--border-subtle);
 }
 
-/* Full-width section within the options modal (Localization, Accounts) */
+/* Wide label spans both columns inside a full-width section */
+.options-group-label-wide {
+    width: 100%;
+}
+
+/* Full-width section within the options modal (Localization, Accounts).
+ * Top margin creates whitespace separation from the preceding section. */
 .options-full-section {
     display: flex;
     flex-direction: column;
@@ -220,10 +225,9 @@
     margin-top: 4px;
 }
 
-.options-divider {
-    border: none;
-    border-top: 1px solid var(--border-default);
-    margin: 16px 0 0;
+/* Extra whitespace gap before a new logical section (replaces <hr>) */
+.options-section-gap {
+    margin-top: 28px;
 }
 
 /* ========== Responsive Styles ========== */

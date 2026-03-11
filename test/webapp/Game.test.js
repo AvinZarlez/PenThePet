@@ -1756,6 +1756,22 @@ describe('Game — Best State', () => {
             // Banner should now be hidden
             expect(banner.style.display).toBe('none');
         });
+
+        test('hides the hint button when submission is made', () => {
+            game.currentDate = '2026-01-01';
+            game.isSubmitted = false;
+            game.hintsDisabled = false;
+            // Ensure hint button is visible first
+            game.updateHintButton();
+            const hintBtn = document.getElementById('hintCheckBtn');
+            expect(hintBtn.style.display).not.toBe('none');
+
+            // Submit the puzzle
+            game.handleSubmission(5);
+
+            // Hint button should now be hidden
+            expect(hintBtn.style.display).toBe('none');
+        });
     });
 
     describe('_checkAndUpdateBestState()', () => {
