@@ -183,17 +183,24 @@ const LANGUAGES = {
         instructions_scoring_5: 'You can only submit once per puzzle - plan carefully!',
         instructions_scoring_6: 'After submission, you can view the optimal solution to compare',
         instructions_hints_heading: 'Hint System',
-        instructions_hints_1: 'When a pet is penned, you can press the <strong>Check if Optimal</strong> button to tell you whether your current score is the optimal solution.',
+        instructions_hints_1_prefix: 'When a pet is penned, you can press the ',
+        instructions_hints_1_strong: 'Check if Optimal',
+        instructions_hints_1_suffix: ' button to tell you whether your current score is the optimal solution.',
         instructions_hints_2: 'The score display will be yellow 🟡 if below `<` the optimal score. It will turn green 🟢 when the correct answer is found `✅`.',
-        instructions_hints_3: 'If enabled, after checking the first hint, you can get further help by pressing <strong>Reveal Target</strong> to see the optimal solution alongside your current score.',
-        instructions_hints_4: 'You can disable hints entirely from the <strong>Options</strong> menu.',
+        instructions_hints_3_prefix: 'If enabled, after checking the first hint, you can get further help by pressing ',
+        instructions_hints_3_strong: 'Reveal Target',
+        instructions_hints_3_suffix: ' to see the optimal solution alongside your current score.',
+        instructions_hints_4_prefix: 'You can disable hints entirely from the ',
+        instructions_hints_4_strong: 'Options',
+        instructions_hints_4_suffix: ' menu.',
         instructions_options_heading: 'Options',
         instructions_options_text: 'You can customize your pet type and hint preferences in the Options menu. Your preferences are saved automatically.',
 
         // ── About Modal ───────────────────────────────────────────────────
         about_title: 'About Pen the Pet',
         about_close_aria: 'Close about',
-        about_description_1: '<strong>Pen the Pet</strong> is a logic puzzle game where you fence in your pet by strategically placing walls to create the largest enclosed area.',
+        about_description_1_strong: 'Pen the Pet',
+        about_description_1_body: ' is a logic puzzle game where you fence in your pet by strategically placing walls to create the largest enclosed area.',
         about_description_2: 'Each day features a new hand-crafted puzzle with a unique layout and challenge.',
         about_features_heading: 'Features',
         about_features_1: 'Daily puzzles with unique maps',
@@ -202,9 +209,12 @@ const LANGUAGES = {
         about_features_4: 'Accessible keyboard navigation',
         about_features_5: 'Mobile-friendly design',
         about_feedback_heading: 'Feedback',
-        about_feedback_text: 'Found a bug or have a feature idea? <a id="githubIssuesLink" href="{repoUrl}/issues" target="_blank" rel="noopener noreferrer">Open an issue on GitHub</a> — all feedback is welcome!',
+        about_feedback_prefix: 'Found a bug or have a feature idea? ',
+        about_feedback_link: 'Open an issue on GitHub',
+        about_feedback_suffix: ' — all feedback is welcome!',
         about_credits_heading: 'Credits',
-        about_credits_1: 'Made by <a href="https://www.AvinZarlez.com" target="_blank" rel="noopener noreferrer">Avin Zarlez</a>',
+        about_credits_1_prefix: 'Made by ',
+        about_credits_1_link: 'Avin Zarlez',
         about_view_github: 'View this project on GitHub',
         about_copyright: '© 2026 Pen the Pet',
         about_privacy_policy: 'Privacy Policy',
@@ -268,7 +278,9 @@ const LANGUAGES = {
         sync_error_title: '⚠️ Sync Error',
         sync_error_close_aria: 'Close sync error',
         sync_error_text: 'There was an error syncing your data with the cloud:',
-        sync_error_contact_html: 'Please <a id="syncErrorIssueLink" href="{repoUrl}/issues" target="_blank" rel="noopener noreferrer">submit an issue on GitHub</a> with the error details above to help us fix it.',
+        sync_error_contact_prefix: 'Please ',
+        sync_error_contact_link: 'submit an issue on GitHub',
+        sync_error_contact_suffix: ' with the error details above to help us fix it.',
 
         // ── Debug Section ─────────────────────────────────────────────────
         debug_heading: '🛠️ Debug Tools',
@@ -458,17 +470,24 @@ const LANGUAGES = {
         instructions_scoring_5: 'Solo puedes enviar una vez por rompecabezas — ¡planea con cuidado!',
         instructions_scoring_6: 'Tras el envío, puedes ver la solución óptima para comparar',
         instructions_hints_heading: 'Sistema de pistas',
-        instructions_hints_1: 'Cuando la mascota está encerrada, puedes pulsar el botón <strong>Verificar si es óptimo</strong> para saber si tu puntuación actual es la solución óptima.',
+        instructions_hints_1_prefix: 'Cuando la mascota está encerrada, puedes pulsar el botón ',
+        instructions_hints_1_strong: 'Verificar si es óptimo',
+        instructions_hints_1_suffix: ' para saber si tu puntuación actual es la solución óptima.',
         instructions_hints_2: 'La puntuación será amarilla 🟡 si está por debajo `<` de la puntuación óptima. Se volverá verde 🟢 cuando encuentres la respuesta correcta `✅`.',
-        instructions_hints_3: 'Si está habilitado, tras comprobar la primera pista, puedes obtener más ayuda pulsando <strong>Revelar objetivo</strong> para ver la solución óptima junto a tu puntuación actual.',
-        instructions_hints_4: 'Puedes desactivar las pistas completamente desde el menú de <strong>Opciones</strong>.',
+        instructions_hints_3_prefix: 'Si está habilitado, tras comprobar la primera pista, puedes obtener más ayuda pulsando ',
+        instructions_hints_3_strong: 'Revelar objetivo',
+        instructions_hints_3_suffix: ' para ver la solución óptima junto a tu puntuación actual.',
+        instructions_hints_4_prefix: 'Puedes desactivar las pistas completamente desde el menú de ',
+        instructions_hints_4_strong: 'Opciones',
+        instructions_hints_4_suffix: '.',
         instructions_options_heading: 'Opciones',
         instructions_options_text: 'Puedes personalizar el tipo de mascota y las preferencias de pistas en el menú de Opciones. Tus preferencias se guardan automáticamente.',
 
         // ── About Modal ───────────────────────────────────────────────────
         about_title: 'Acerca de Encierra a la Mascota',
         about_close_aria: 'Cerrar acerca de',
-        about_description_1: '<strong>Encierra a la Mascota</strong> es un juego de lógica en el que cercas a tu mascota colocando muros estratégicamente para crear el área cercada más grande.',
+        about_description_1_strong: 'Encierra a la Mascota',
+        about_description_1_body: ' es un juego de lógica en el que cercas a tu mascota colocando muros estratégicamente para crear el área cercada más grande.',
         about_description_2: 'Cada día presenta un nuevo rompecabezas con un diseño y desafío únicos.',
         about_features_heading: 'Características',
         about_features_1: 'Rompecabezas diarios con mapas únicos',
@@ -477,9 +496,12 @@ const LANGUAGES = {
         about_features_4: 'Navegación accesible por teclado',
         about_features_5: 'Diseño adaptado a móviles',
         about_feedback_heading: 'Comentarios',
-        about_feedback_text: '¿Encontraste un error o tienes una idea? <a id="githubIssuesLink" href="{repoUrl}/issues" target="_blank" rel="noopener noreferrer">Abre un problema en GitHub</a> — ¡todos los comentarios son bienvenidos!',
+        about_feedback_prefix: '¿Encontraste un error o tienes una idea? ',
+        about_feedback_link: 'Abre un problema en GitHub',
+        about_feedback_suffix: ' — ¡todos los comentarios son bienvenidos!',
         about_credits_heading: 'Créditos',
-        about_credits_1: 'Creado por <a href="https://www.AvinZarlez.com" target="_blank" rel="noopener noreferrer">Avin Zarlez</a>',
+        about_credits_1_prefix: 'Creado por ',
+        about_credits_1_link: 'Avin Zarlez',
         about_view_github: 'Ver este proyecto en GitHub',
         about_copyright: '© 2026 Encierra a la Mascota',
         about_privacy_policy: 'Política de privacidad',
@@ -543,7 +565,9 @@ const LANGUAGES = {
         sync_error_title: '⚠️ Error de sincronización',
         sync_error_close_aria: 'Cerrar error de sincronización',
         sync_error_text: 'Se produjo un error al sincronizar tus datos con la nube:',
-        sync_error_contact_html: 'Por favor, <a id="syncErrorIssueLink" href="{repoUrl}/issues" target="_blank" rel="noopener noreferrer">abre un problema en GitHub</a> con los detalles del error para ayudarnos a solucionarlo.',
+        sync_error_contact_prefix: 'Por favor, ',
+        sync_error_contact_link: 'abre un problema en GitHub',
+        sync_error_contact_suffix: ' con los detalles del error para ayudarnos a solucionarlo.',
 
         // ── Debug Section ─────────────────────────────────────────────────
         debug_heading: '🛠️ Herramientas de depuración',
@@ -581,12 +605,26 @@ const LANGUAGES = {
  * Usage:
  *   I18N.t('some_key')                   // plain string lookup
  *   I18N.t('walls_counter', { wallCount: 3, maxWalls: 9 })  // with params
- *   I18N.setLanguage('en')               // switch language + update DOM
+ *   I18N.setLanguage('en')               // switch language (triggers page reload)
  *   I18N.getLanguage()                   // returns current language code
  */
 const I18N = {
     /** @type {string} Currently active language code. */
     _lang: 'en',
+
+    /**
+     * Sanitize a translation key coming from external sources (e.g. DOM attributes)
+     * to ensure it only contains safe identifier characters.
+     * This prevents untrusted data from influencing the lookup beyond selecting
+     * among the fixed set of known translation keys.
+     * @param {string|null} rawKey
+     * @returns {string}
+     */
+    sanitizeKey(rawKey) {
+        if (typeof rawKey !== 'string') return '';
+        // Allow only ASCII letters, digits and underscore. Strip everything else.
+        return rawKey.replace(/[^A-Za-z0-9_]/g, '');
+    },
 
     /**
      * Return the translated string for key in the current language.
@@ -646,35 +684,34 @@ const I18N = {
     },
 
     /**
-     * Update every DOM element that carries a data-i18n-* attribute.
-     * Called automatically by setLanguage(); call manually after DOM load.
+     * Update every DOM element that carries a data-i18n-* attribute with its
+     * translated plain-text string. Called once on page load from main.js.
      */
-    _applyToDOM() {
+    applyTranslations() {
         if (typeof document === 'undefined') return;
 
         // textContent
         document.querySelectorAll('[data-i18n]').forEach(el => {
-            el.textContent = this.t(el.getAttribute('data-i18n'));
-        });
-
-        // innerHTML (for strings that contain markup)
-        document.querySelectorAll('[data-i18n-html]').forEach(el => {
-            el.innerHTML = this.t(el.getAttribute('data-i18n-html'), { repoUrl: (typeof CONSTANTS !== 'undefined' ? CONSTANTS.REPO_URL : '') });
+            const key = this.sanitizeKey(el.getAttribute('data-i18n'));
+            el.textContent = this.t(key);
         });
 
         // title attribute
         document.querySelectorAll('[data-i18n-title]').forEach(el => {
-            el.title = this.t(el.getAttribute('data-i18n-title'));
+            const key = this.sanitizeKey(el.getAttribute('data-i18n-title'));
+            el.title = this.t(key);
         });
 
         // aria-label attribute
         document.querySelectorAll('[data-i18n-aria]').forEach(el => {
-            el.setAttribute('aria-label', this.t(el.getAttribute('data-i18n-aria')));
+            const key = this.sanitizeKey(el.getAttribute('data-i18n-aria'));
+            el.setAttribute('aria-label', this.t(key));
         });
 
         // placeholder attribute
         document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
-            el.placeholder = this.t(el.getAttribute('data-i18n-placeholder'));
+            const key = this.sanitizeKey(el.getAttribute('data-i18n-placeholder'));
+            el.placeholder = this.t(key);
         });
 
         // page title
