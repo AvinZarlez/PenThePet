@@ -993,14 +993,37 @@
         gap: 6px;
     }
 
+    /* Stack label above value so each gets the full container width */
+    .wall-counter,
+    .area-size-display {
+        flex-direction: column;
+        padding: 4px 6px;
+        height: auto;
+        min-height: var(--ctrl-height);
+        gap: 2px;
+        overflow: hidden;
+    }
+
     .counter-label {
-        font-size: 0.75em;
+        font-size: clamp(7px, 2.5vw, 0.75em);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 100%;
+    }
+
+    .counter-value {
+        min-width: unset;
     }
 
     .footer-main {
         flex-direction: column;
         align-items: flex-start;
         gap: 10px;
+    }
+
+    .language-selector-container {
+        align-self: flex-end;
     }
 }
 
@@ -1057,8 +1080,9 @@
     flex-direction: row;
     align-items: center;
     justify-content: center;
-    padding: 0 20px;
-    height: var(--ctrl-height);
+    padding: 8px 20px;
+    min-height: var(--ctrl-height);
+    height: auto;
     width: var(--ctrl-hint-w, 195px);
     flex-shrink: 0;
     background: linear-gradient(135deg, var(--ctrl-bg-start) 0%, var(--ctrl-bg-end) 100%);
@@ -1069,7 +1093,8 @@
     transition: all 0.3s ease;
     color: var(--text-on-surface);
     cursor: pointer;
-    white-space: nowrap;
+    overflow-wrap: break-word;
+    word-break: break-word;
 }
 
 .hint-check-btn:not(:disabled):hover {
@@ -1116,8 +1141,9 @@
 }
 
 .best-state-banner {
-    padding: 0 16px;
-    height: var(--ctrl-height);
+    padding: 8px 16px;
+    min-height: var(--ctrl-height);
+    height: auto;
     width: 100%;
     background: linear-gradient(135deg, var(--ctrl-bg-start) 0%, var(--ctrl-bg-end) 100%);
     border-radius: 8px;
@@ -1131,7 +1157,8 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    white-space: nowrap;
+    overflow-wrap: break-word;
+    word-break: break-word;
 }
 
 .best-state-banner:not(:disabled) {
