@@ -110,6 +110,30 @@ describe('I18N.t()', () => {
     });
 });
 
+describe('I18N.sanitizeKey()', () => {
+    test('should return the key unchanged when it contains only valid characters', () => {
+        expect(I18N.sanitizeKey('status_unsolved')).toBe('status_unsolved');
+        expect(I18N.sanitizeKey('about_description_1_strong')).toBe('about_description_1_strong');
+    });
+
+    test('should strip characters that are not ASCII letters, digits or underscore', () => {
+        expect(I18N.sanitizeKey('bad-key')).toBe('badkey');
+        expect(I18N.sanitizeKey('key.with.dots')).toBe('keywithdots');
+        expect(I18N.sanitizeKey('<script>alert(1)</script>')).toBe('scriptalert1script');
+        expect(I18N.sanitizeKey('key space')).toBe('keyspace');
+    });
+
+    test('should return an empty string for non-string input', () => {
+        expect(I18N.sanitizeKey(null)).toBe('');
+        expect(I18N.sanitizeKey(undefined)).toBe('');
+        expect(I18N.sanitizeKey(42)).toBe('');
+    });
+
+    test('should return an empty string for an empty string input', () => {
+        expect(I18N.sanitizeKey('')).toBe('');
+    });
+});
+
 describe('I18N.getLanguage()', () => {
     test('should return en by default', () => {
         expect(I18N.getLanguage()).toBe('en');
@@ -173,7 +197,7 @@ describe('I18N._applyToDOM()', () => {
     beforeEach(() => {
         document.body.innerHTML = `
             <span id="a" data-i18n="status_unsolved">Unsolved</span>
-            <div id="b" data-i18n-html="about_description_1"></div>
+            <p id="b"><strong data-i18n="about_description_1_strong"></strong><span data-i18n="about_description_1_body"></span></p>
             <button id="c" data-i18n-title="timer_pause_title" title="Pause timer"></button>
             <button id="d" data-i18n-aria="hint_check_aria" aria-label="Check if optimal"></button>
             <input id="e" data-i18n-placeholder="edit_profile_username_placeholder" placeholder="Your display name">
@@ -185,10 +209,12 @@ describe('I18N._applyToDOM()', () => {
         expect(document.getElementById('a').textContent).toBe('Unsolved');
     });
 
-    test('should update innerHTML for data-i18n-html elements', () => {
+    test('should populate split strong+body text for about_description_1', () => {
         I18N._applyToDOM();
-        const inner = document.getElementById('b').innerHTML;
-        expect(inner).toContain('Pen the Pet');
+        const strong = document.querySelector('#b strong');
+        const body = document.querySelector('#b span');
+        expect(strong.textContent).toBe('Pen the Pet');
+        expect(body.textContent).toContain('logic puzzle game');
     });
 
     test('should update title for data-i18n-title elements', () => {
@@ -204,6 +230,16 @@ describe('I18N._applyToDOM()', () => {
     test('should update placeholder for data-i18n-placeholder elements', () => {
         I18N._applyToDOM();
         expect(document.getElementById('e').placeholder).toBe('Your display name');
+    });
+
+    test('should sanitize malicious data-i18n attribute value and fall back to key', () => {
+        document.body.innerHTML = '<span id="x" data-i18n="<img src=x onerror=alert(1)>">original</span>';
+        I18N._applyToDOM();
+        // After stripping non-identifier chars the key becomes 'imgsrcxonerroralert1'
+        // which is not a known key, so t() returns it unchanged (key fallback)
+        const text = document.getElementById('x').textContent;
+        expect(text).not.toContain('<');
+        expect(text).not.toContain('>');
     });
 });
 
