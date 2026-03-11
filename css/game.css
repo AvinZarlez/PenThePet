@@ -38,12 +38,41 @@
     transform: scale(1.05);
 }
 
-/* ========== Language Selector ========== */
-.language-selector-container {
+/* ========== Instructions Shortcut Button ========== */
+.instructions-shortcut-btn {
     position: absolute;
     top: 20px;
     left: 20px;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--accent-start) 0%, var(--accent-end) 100%);
+    color: var(--text-on-accent);
+    font-size: 1.5em;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 4px 10px var(--accent-glow);
+    transition: transform 0.2s, box-shadow 0.2s;
     z-index: 100;
+    padding: 0;
+}
+
+.instructions-shortcut-btn:hover {
+    transform: scale(1.1);
+    box-shadow: 0 6px 15px var(--accent-glow-strong);
+}
+
+.instructions-shortcut-btn:active {
+    transform: scale(1.05);
+}
+
+/* ========== Language Selector (footer) ========== */
+.language-selector-container {
+    flex-shrink: 0;
 }
 
 .language-selector {
@@ -97,21 +126,65 @@
     font-size: 1em;
 }
 
-/* ========== Controls Bar ========== */
-.controls {
+/* ========== Controls Layout ========== */
+/*
+ * --ctrl-side-w  : fixed width for left/right side elements (wall counter, area size,
+ *                  reset button, best-so-far button) — sized to fit max content.
+ * --ctrl-center-h: height for the prominent centre buttons (timer, submit) —
+ *                  slightly taller than standard --ctrl-height to draw attention.
+ * --ctrl-center-w: shared width for both centre buttons so they always match.
+ */
+
+.controls-top,
+.controls-bottom {
+    display: grid;
+    grid-template-columns: var(--ctrl-side-w, 210px) 1fr var(--ctrl-side-w, 210px);
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+/* Left-column items fill their fixed-width cell */
+.controls-top .wall-counter,
+.controls-top .area-size-display,
+.controls-bottom #resetBtn,
+.controls-bottom .best-state-wrapper {
+    width: 100%;
+}
+
+/* Centre-column items are horizontally centred within the flexible column */
+.controls-top #timerBtn,
+.controls-bottom #pennedStatus {
+    justify-self: center;
+    width: var(--ctrl-center-w, 160px);
+    height: var(--ctrl-center-h, 56px);
+}
+
+/* Right-column items align to the end of their cell */
+.controls-top .area-size-display {
+    justify-self: end;
+}
+.controls-bottom .best-state-wrapper {
+    justify-self: end;
+    display: flex;
+    justify-content: flex-end;
+}
+
+/* Hints row: hint button + hint-used text, centered on page */
+.controls-hints {
     display: flex;
     justify-content: center;
-    align-items: center;
-    gap: 15px;
-    margin-bottom: 20px;
-    flex-wrap: wrap;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 10px;
+    min-height: 0;
 }
 
 /* ========== Reset Button ========== */
 #resetBtn {
     padding: 0 20px;
     font-size: 1em;
-    min-width: 100px;
+    height: var(--ctrl-height);
     background: linear-gradient(135deg, var(--ctrl-bg-start) 0%, var(--ctrl-bg-end) 100%);
     color: var(--text-on-surface);
     border: 2px solid var(--ctrl-border);
@@ -139,7 +212,6 @@
     border-radius: 8px;
     font-weight: bold;
     border: 2px solid var(--ctrl-border);
-    min-width: 100px;
     justify-content: center;
 }
 
@@ -154,7 +226,6 @@
     border-radius: 8px;
     font-weight: bold;
     border: 2px solid var(--ctrl-border);
-    min-width: 100px;
     justify-content: center;
     transition: background 0.3s ease, border-color 0.3s ease;
 }
@@ -187,15 +258,15 @@
     align-items: center;
     gap: 8px;
     padding: 0 16px;
-    height: var(--ctrl-height);
+    /* height and width come from the grid column rules above */
     background: linear-gradient(135deg, var(--ctrl-bg-start) 0%, var(--ctrl-bg-end) 100%);
     color: var(--text-on-surface);
     border: 2px solid var(--ctrl-border);
     border-radius: 8px;
+    font-size: 1em;
     font-weight: bold;
     cursor: pointer;
     transition: all 0.2s ease;
-    min-width: 100px;
     justify-content: center;
 }
 
@@ -623,18 +694,17 @@
 /* ========== Penned Status Indicator ========== */
 .penned-status {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     align-items: center;
     justify-content: center;
-    padding: 0 20px;
-    height: var(--ctrl-height);
+    gap: 6px;
+    padding: 0 16px;
+    /* height and width come from the grid column rules above */
     background: linear-gradient(135deg, var(--ctrl-bg-start) 0%, var(--ctrl-bg-end) 100%);
     border-radius: 8px;
+    font-size: 1em;
     font-weight: bold;
     border: 2px solid var(--ctrl-border);
-    /* 1.1em instead of the original 1.5em so the button fits within --ctrl-height */
-    font-size: 1.1em;
-    min-width: 100px;
     transition: all 0.3s ease;
     color: var(--text-on-surface);
 }
@@ -667,9 +737,9 @@
     color: var(--error-text);
 }
 
-/* Remove count from submit button - now shown in area size display */
+/* Submit button label and check icon — single line, uniform size */
 .submit-label {
-    font-size: 0.65em;
+    font-size: 1em;
 }
 
 .submit-check {
@@ -900,15 +970,35 @@
 
 /* ========== Responsive Styles ========== */
 @media (max-width: 768px) {
-    .controls {
-        flex-direction: column;
-        gap: 10px;
+    :root {
+        --ctrl-side-w: 140px;
+        --ctrl-center-w: 130px;
+        --ctrl-center-h: 50px;
+        --ctrl-hint-w: 150px;
+    }
+}
+
+@media (max-width: 500px) {
+    :root {
+        --ctrl-side-w: 110px;
+        --ctrl-center-w: 110px;
+        --ctrl-center-h: 48px;
+        --ctrl-hint-w: 120px;
     }
 
-    .wall-counter,
-    .area-size-display {
-        width: 100%;
-        max-width: 300px;
+    .controls-top,
+    .controls-bottom {
+        gap: 6px;
+    }
+
+    .counter-label {
+        font-size: 0.75em;
+    }
+
+    .footer-main {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
     }
 }
 
@@ -962,20 +1052,22 @@
 /* ========== Hint Check Button ========== */
 .hint-check-btn {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     align-items: center;
     justify-content: center;
     padding: 0 20px;
     height: var(--ctrl-height);
+    width: var(--ctrl-hint-w, 195px);
+    flex-shrink: 0;
     background: linear-gradient(135deg, var(--ctrl-bg-start) 0%, var(--ctrl-bg-end) 100%);
     border-radius: 8px;
+    font-size: 1em;
     font-weight: bold;
     border: 2px solid var(--ctrl-border);
-    font-size: 0.9em;
-    min-width: 100px;
     transition: all 0.3s ease;
     color: var(--text-on-surface);
     cursor: pointer;
+    white-space: nowrap;
 }
 
 .hint-check-btn:not(:disabled):hover {
@@ -995,29 +1087,27 @@
 
 /* ========== Hint Used Display ========== */
 .hint-used-display {
-    text-align: center;
     font-size: 0.85em;
     color: var(--text-secondary);
-    margin-top: 4px;
-    margin-bottom: 4px;
+    line-height: 1.4;
+    display: flex;
+    align-items: center;
+    padding: 4px 0;
 }
 
 /* ========== Best State Banner ========== */
 .best-state-wrapper {
-    display: flex;
-    justify-content: center;
-    margin: 4px 0;
+    /* Wrapper occupies its grid cell; keeps space even when banner is hidden */
 }
 
 .best-state-banner {
     padding: 0 16px;
     height: var(--ctrl-height);
-    min-width: 200px;
-    max-width: 400px;
+    width: 100%;
     background: linear-gradient(135deg, var(--ctrl-bg-start) 0%, var(--ctrl-bg-end) 100%);
     border-radius: 8px;
     border: 2px solid var(--ctrl-border);
-    font-size: 0.95em;
+    font-size: 1em;
     font-weight: bold;
     color: var(--text-on-surface);
     text-align: center;
@@ -1026,6 +1116,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    white-space: nowrap;
 }
 
 .best-state-banner:not(:disabled) {

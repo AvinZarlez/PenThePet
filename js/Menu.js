@@ -34,6 +34,12 @@ class Menu {
             menuBtn.addEventListener('click', () => this.openMenu());
         }
 
+        // Instructions shortcut button (direct access without opening menu first)
+        const instrShortcutBtn = document.getElementById('instrShortcutBtn');
+        if (instrShortcutBtn) {
+            instrShortcutBtn.addEventListener('click', () => this.openInstructions());
+        }
+
         // Menu option buttons
         const levelSelectorBtn = document.getElementById('levelSelectorBtn');
         const instructionsBtn = document.getElementById('instructionsBtn');
@@ -86,7 +92,7 @@ class Menu {
         const modalHintsDisabled = document.getElementById('modalHintsDisabled');
         const modalNeverShowTarget = document.getElementById('modalNeverShowTarget');
         const modalTimezone = document.getElementById('modalTimezone');
-        const debugModeCheckbox = document.getElementById('debugModeCheckbox');
+        const modalLanguage = document.getElementById('modalLanguage');
 
         if (modalPetType) {
             modalPetType.addEventListener('change', (e) => {
@@ -130,11 +136,13 @@ class Menu {
             });
         }
 
-        if (debugModeCheckbox) {
-            debugModeCheckbox.addEventListener('change', (e) => {
-                const enabled = e.target.checked;
-                this._saveDebugModeToCookie(enabled);
-                this.updateDebugToolsVisibility(enabled);
+        if (modalLanguage) {
+            modalLanguage.addEventListener('change', (e) => {
+                I18N.setLanguage(e.target.value);
+                if (typeof CloudSync !== 'undefined' && CloudSync.isConfigured() && CloudSync.isLoggedIn()) {
+                    CloudSync.saveSettings({ lang: e.target.value });
+                }
+                window.location.reload();
             });
         }
 
@@ -729,12 +737,15 @@ class Menu {
         // Populate timezone options
         this.populateModalTimezoneOptions();
 
+        // Populate language options
+        this.populateModalLanguageOptions();
+
         // Set current values
         const modalPetType = document.getElementById('modalPetType');
         const modalHintsDisabled = document.getElementById('modalHintsDisabled');
         const modalNeverShowTarget = document.getElementById('modalNeverShowTarget');
         const modalTimezone = document.getElementById('modalTimezone');
-        const debugModeCheckbox = document.getElementById('debugModeCheckbox');
+        const modalLanguage = document.getElementById('modalLanguage');
 
         if (modalPetType) {
             modalPetType.value = this.game.petEmoji;
@@ -750,8 +761,8 @@ class Menu {
         if (modalTimezone) {
             modalTimezone.value = this._loadTimezoneFromCookie();
         }
-        if (debugModeCheckbox) {
-            debugModeCheckbox.checked = this._loadDebugModeFromCookie();
+        if (modalLanguage) {
+            modalLanguage.value = (typeof I18N !== 'undefined') ? I18N.getLanguage() : 'en';
         }
 
         const optionsModal = document.getElementById('optionsModal');
@@ -791,6 +802,24 @@ class Menu {
             option.value = tz.value;
             option.textContent = tz.label;
             modalTimezone.appendChild(option);
+        });
+    }
+
+    /**
+     * Populate language options in the modal language selector
+     */
+    populateModalLanguageOptions() {
+        const modalLanguage = document.getElementById('modalLanguage');
+        if (!modalLanguage) return;
+
+        modalLanguage.innerHTML = '';
+
+        const languageOptions = (typeof LANGUAGE_OPTIONS !== 'undefined') ? LANGUAGE_OPTIONS : [];
+        languageOptions.forEach(opt => {
+            const option = document.createElement('option');
+            option.value = opt.value;
+            option.textContent = opt.label;
+            modalLanguage.appendChild(option);
         });
     }
 

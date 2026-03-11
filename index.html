@@ -30,12 +30,8 @@
         <!-- Menu Button -->
         <button id="menuBtn" class="menu-btn" data-i18n-aria="btn_menu_open" aria-label="Open menu">☰</button>
 
-        <!-- Language Selector -->
-        <div class="language-selector-container">
-            <select id="languageSelector" class="language-selector" data-i18n-aria="language_aria" aria-label="Select language">
-                <option value="en">English</option>
-            </select>
-        </div>
+        <!-- Instructions Shortcut Button -->
+        <button id="instrShortcutBtn" class="instructions-shortcut-btn" data-i18n-aria="btn_instructions_shortcut_aria" aria-label="Open instructions">?</button>
 
         <!-- Cloud Sync UI (hidden until Firebase is configured) -->
         <div id="cloudSyncBar" class="cloud-sync-bar">
@@ -76,31 +72,20 @@
             </div>
         </div>
 
-        <div class="controls">
-            <button id="resetBtn" data-i18n="btn_reset"></button>
+        <!-- Top Controls Row: Walls Placed | Timer/Pause | Area Size -->
+        <div class="controls-top">
             <div class="wall-counter">
                 <span class="counter-label" data-i18n="label_walls_placed"></span>
                 <span id="wallCounter" class="counter-value">0 / 9</span>
-            </div>
-            <div class="area-size-display">
-                <span class="counter-label" data-i18n="label_area_size"></span>
-                <span id="areaSize" class="counter-value">∞</span>
             </div>
             <button id="timerBtn" class="timer-btn" data-i18n-title="timer_pause_title" data-i18n-aria="timer_pause_aria" title="Pause timer" aria-label="Pause timer">
                 <span id="timerValue" class="timer-value">00:00</span>
                 <span id="timerIcon" class="timer-icon" aria-hidden="true">⏸</span>
             </button>
-            <button id="hintCheckBtn" class="hint-check-btn" style="display: none;" disabled
-                    data-i18n-title="hint_check_title_disabled" data-i18n-aria="hint_check_aria"
-                    title="Pen the pet first to check your solution" aria-label="Check if optimal">
-                <span class="hint-check-label" data-i18n="hint_check_label"></span>
-            </button>
-            <button class="penned-status not-penned" id="pennedStatus"
-                    data-i18n-title="status_cant_escape"
-                    title="Pet can still escape - keep building walls!"
-                    data-interactive="false">
-                <span class="submit-label" data-i18n="status_unsolved"></span><span class="submit-check">✗</span>
-            </button>
+            <div class="area-size-display">
+                <span class="counter-label" data-i18n="label_area_size"></span>
+                <span id="areaSize" class="counter-value">∞</span>
+            </div>
         </div>
 
         <div id="notification" class="notification"></div>
@@ -130,12 +115,30 @@
             <div id="grid" class="grid"></div>
         </div>
 
-        <div id="hintUsedDisplay" class="hint-used-display" style="display: none;"></div>
-
-        <div class="best-state-wrapper">
-            <button id="bestStateBanner" class="best-state-banner" disabled style="display: none;">
-                <span class="best-state-label" data-i18n="best_so_far_none"></span>
+        <!-- Bottom Controls Row: Reset | Submit | Best So Far -->
+        <div class="controls-bottom">
+            <button id="resetBtn" data-i18n="btn_reset"></button>
+            <button class="penned-status not-penned" id="pennedStatus"
+                    data-i18n-title="status_cant_escape"
+                    title="Pet can still escape - keep building walls!"
+                    data-interactive="false">
+                <span class="submit-label" data-i18n="status_unsolved"></span><span class="submit-check">✗</span>
             </button>
+            <div class="best-state-wrapper">
+                <button id="bestStateBanner" class="best-state-banner" disabled style="display: none;">
+                    <span class="best-state-label" data-i18n="best_so_far_none"></span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Hints Row: Hint Button + Hints Used Text (centered) -->
+        <div class="controls-hints">
+            <button id="hintCheckBtn" class="hint-check-btn" style="display: none;" disabled
+                    data-i18n-title="hint_check_title_disabled" data-i18n-aria="hint_check_aria"
+                    title="Pen the pet first to check your solution" aria-label="Check if optimal">
+                <span class="hint-check-label" data-i18n="hint_check_label"></span>
+            </button>
+            <div id="hintUsedDisplay" class="hint-used-display" style="display: none;"></div>
         </div>
 
         <div class="debug-section" style="display: none;">
@@ -158,8 +161,17 @@
         </div>
 
         <footer>
-            <p data-i18n-html="about_credits_1"></p>
-            <p><a id="githubFooterLink" href="https://github.com/AvinZarlez/penthepet" target="_blank" rel="noopener noreferrer" data-i18n="footer_view_github"></a></p>
+            <div class="footer-main">
+                <div class="footer-text">
+                    <p data-i18n-html="about_credits_1"></p>
+                    <p><a id="githubFooterLink" href="https://github.com/AvinZarlez/penthepet" target="_blank" rel="noopener noreferrer" data-i18n="footer_view_github"></a></p>
+                </div>
+                <div class="language-selector-container">
+                    <select id="languageSelector" class="language-selector" data-i18n-aria="language_aria" aria-label="Select language">
+                        <option value="en">English</option>
+                    </select>
+                </div>
+            </div>
         </footer>
     </div>
 
@@ -268,39 +280,49 @@
             <button class="modal-close" data-i18n-aria="options_close_aria" aria-label="Close options">&times;</button>
             <h2 data-i18n="options_title"></h2>
             <div class="modal-section">
-                <div class="option-item">
-                    <label for="modalPetType" data-i18n="options_pet_type_label"></label>
-                    <select id="modalPetType">
-                        <!-- Options populated dynamically from CONSTANTS.ANIMAL_OPTIONS -->
-                    </select>
-                </div>
-                <div class="option-item">
-                    <label for="modalHintsDisabled">
-                        <input type="checkbox" id="modalHintsDisabled">
-                        <span data-i18n="options_hints_disabled_label"></span>
-                    </label>
-                </div>
-                <div class="option-item" id="neverShowTargetOptionItem">
-                    <label for="modalNeverShowTarget">
-                        <input type="checkbox" id="modalNeverShowTarget">
-                        <span data-i18n="options_never_show_target_label"></span>
-                    </label>
-                </div>
-                <div class="option-item">
-                    <label for="modalTimezone" data-i18n="options_timezone_label"></label>
-                    <select id="modalTimezone">
-                        <!-- Options populated dynamically from CONSTANTS.TIMEZONE_OPTIONS -->
-                    </select>
-                    <small class="option-help" data-i18n="options_timezone_help"></small>
-                </div>
-                <div class="option-item" id="debugModeOptionItem" style="display: none;">
-                    <label for="debugModeCheckbox">
-                        <input type="checkbox" id="debugModeCheckbox">
-                        <span data-i18n="options_debug_mode_label"></span>
-                    </label>
-                    <small class="option-help" data-i18n="options_debug_mode_help"></small>
+                <div class="options-two-col">
+                    <!-- Left column: Visuals + Time Zone -->
+                    <div class="options-col">
+                        <h3 class="options-group-label" data-i18n="options_visuals_label"></h3>
+                        <div class="option-item">
+                            <label for="modalPetType" data-i18n="options_pet_type_label"></label>
+                            <select id="modalPetType">
+                                <!-- Options populated dynamically from CONSTANTS.ANIMAL_OPTIONS -->
+                            </select>
+                        </div>
+                        <div class="option-item">
+                            <label for="modalTimezone" data-i18n="options_timezone_label"></label>
+                            <select id="modalTimezone">
+                                <!-- Options populated dynamically from CONSTANTS.TIMEZONE_OPTIONS -->
+                            </select>
+                            <small class="option-help" data-i18n="options_timezone_help"></small>
+                        </div>
+                    </div>
+                    <!-- Right column: Hints + Language -->
+                    <div class="options-col">
+                        <h3 class="options-group-label" data-i18n="options_hints_label"></h3>
+                        <div class="option-item">
+                            <label for="modalHintsDisabled">
+                                <input type="checkbox" id="modalHintsDisabled">
+                                <span data-i18n="options_hints_disabled_label"></span>
+                            </label>
+                        </div>
+                        <div class="option-item" id="neverShowTargetOptionItem">
+                            <label for="modalNeverShowTarget">
+                                <input type="checkbox" id="modalNeverShowTarget">
+                                <span data-i18n="options_never_show_target_label"></span>
+                            </label>
+                        </div>
+                        <div class="option-item">
+                            <label for="modalLanguage" data-i18n="options_language_label"></label>
+                            <select id="modalLanguage">
+                                <!-- Options populated dynamically from LANGUAGE_OPTIONS -->
+                            </select>
+                        </div>
+                    </div>
                 </div>
             </div>
+            <hr class="options-divider">
             <div id="optionsAccountSection" class="modal-section options-account-section" style="display: none;">
                 <h3 data-i18n="options_account_heading"></h3>
                 <div id="optionsAccountSignedOut">

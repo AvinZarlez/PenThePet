@@ -55,6 +55,16 @@
     /* --- Uniform control-bar height --- */
     --ctrl-height:     44px;
 
+    /* --- Control layout dimensions --- */
+    /* Fixed width for left/right paired elements (wall counter, area size, reset, best-so-far).
+     * Sized to accommodate the widest possible content across all languages. */
+    --ctrl-side-w:     210px;
+    /* Width and height for the prominent centre buttons (timer, submit). */
+    --ctrl-center-w:   160px;
+    --ctrl-center-h:   56px;
+    /* Fixed width for the hint check button. */
+    --ctrl-hint-w:     195px;
+
     /* --- Error / Red --- */
     --error-start:     #c43c30;
     --error-end:       #9e2820;
@@ -239,10 +249,20 @@ button:active {
 
 /* ========== Footer ========== */
 footer {
-    text-align: center;
     color: var(--text-secondary);
     font-size: 0.8em;
     margin-top: 20px;
+}
+
+.footer-main {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+}
+
+.footer-text {
+    text-align: left;
 }
 
 /* ========== Responsive Styles ========== */
