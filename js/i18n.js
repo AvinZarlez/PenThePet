@@ -589,6 +589,20 @@ const I18N = {
     _lang: 'en',
 
     /**
+     * Sanitize a translation key coming from external sources (e.g. DOM attributes)
+     * to ensure it only contains safe identifier characters.
+     * This prevents untrusted data from influencing the lookup beyond selecting
+     * among the fixed set of known translation keys.
+     * @param {string|null} rawKey
+     * @returns {string}
+     */
+    sanitizeKey(rawKey) {
+        if (typeof rawKey !== 'string') return '';
+        // Allow only ASCII letters, digits and underscore. Strip everything else.
+        return rawKey.replace(/[^A-Za-z0-9_]/g, '');
+    },
+
+    /**
      * Return the translated string for key in the current language.
      * Falls back to 'en' if the key is missing in the active language.
      * Template parameters written as {name} are replaced by params.name.
@@ -654,27 +668,32 @@ const I18N = {
 
         // textContent
         document.querySelectorAll('[data-i18n]').forEach(el => {
-            el.textContent = this.t(el.getAttribute('data-i18n'));
+            const key = this.sanitizeKey(el.getAttribute('data-i18n'));
+            el.textContent = this.t(key);
         });
 
         // innerHTML (for strings that contain markup)
         document.querySelectorAll('[data-i18n-html]').forEach(el => {
-            el.innerHTML = this.t(el.getAttribute('data-i18n-html'), { repoUrl: (typeof CONSTANTS !== 'undefined' ? CONSTANTS.REPO_URL : '') });
+            const key = this.sanitizeKey(el.getAttribute('data-i18n-html'));
+            el.innerHTML = this.t(key, { repoUrl: (typeof CONSTANTS !== 'undefined' ? CONSTANTS.REPO_URL : '') });
         });
 
         // title attribute
         document.querySelectorAll('[data-i18n-title]').forEach(el => {
-            el.title = this.t(el.getAttribute('data-i18n-title'));
+            const key = this.sanitizeKey(el.getAttribute('data-i18n-title'));
+            el.title = this.t(key);
         });
 
         // aria-label attribute
         document.querySelectorAll('[data-i18n-aria]').forEach(el => {
-            el.setAttribute('aria-label', this.t(el.getAttribute('data-i18n-aria')));
+            const key = this.sanitizeKey(el.getAttribute('data-i18n-aria'));
+            el.setAttribute('aria-label', this.t(key));
         });
 
         // placeholder attribute
         document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
-            el.placeholder = this.t(el.getAttribute('data-i18n-placeholder'));
+            const key = this.sanitizeKey(el.getAttribute('data-i18n-placeholder'));
+            el.placeholder = this.t(key);
         });
 
         // page title
