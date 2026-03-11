@@ -605,7 +605,7 @@ const LANGUAGES = {
  * Usage:
  *   I18N.t('some_key')                   // plain string lookup
  *   I18N.t('walls_counter', { wallCount: 3, maxWalls: 9 })  // with params
- *   I18N.setLanguage('en')               // switch language + update DOM
+ *   I18N.setLanguage('en')               // switch language (triggers page reload)
  *   I18N.getLanguage()                   // returns current language code
  */
 const I18N = {
@@ -684,10 +684,10 @@ const I18N = {
     },
 
     /**
-     * Update every DOM element that carries a data-i18n-* attribute.
-     * Called automatically by setLanguage(); call manually after DOM load.
+     * Update every DOM element that carries a data-i18n-* attribute with its
+     * translated plain-text string. Called once on page load from main.js.
      */
-    _applyToDOM() {
+    applyTranslations() {
         if (typeof document === 'undefined') return;
 
         // textContent

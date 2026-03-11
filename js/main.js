@@ -356,7 +356,7 @@ window.addEventListener('DOMContentLoaded', () => {
     }
 
     // Apply translated strings to static HTML elements
-    I18N._applyToDOM();
+    I18N.applyTranslations();
 
     initGame();
 });

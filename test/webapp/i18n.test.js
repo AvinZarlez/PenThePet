@@ -193,7 +193,7 @@ describe('I18N.loadFromCookie()', () => {
     });
 });
 
-describe('I18N._applyToDOM()', () => {
+describe('I18N.applyTranslations()', () => {
     beforeEach(() => {
         document.body.innerHTML = `
             <span id="a" data-i18n="status_unsolved">Unsolved</span>
@@ -205,12 +205,12 @@ describe('I18N._applyToDOM()', () => {
     });
 
     test('should update textContent for data-i18n elements', () => {
-        I18N._applyToDOM();
+        I18N.applyTranslations();
         expect(document.getElementById('a').textContent).toBe('Unsolved');
     });
 
     test('should populate split strong+body text for about_description_1', () => {
-        I18N._applyToDOM();
+        I18N.applyTranslations();
         const strong = document.querySelector('#b strong');
         const body = document.querySelector('#b span');
         expect(strong.textContent).toBe('Pen the Pet');
@@ -218,23 +218,23 @@ describe('I18N._applyToDOM()', () => {
     });
 
     test('should update title for data-i18n-title elements', () => {
-        I18N._applyToDOM();
+        I18N.applyTranslations();
         expect(document.getElementById('c').title).toBe('Pause timer');
     });
 
     test('should update aria-label for data-i18n-aria elements', () => {
-        I18N._applyToDOM();
+        I18N.applyTranslations();
         expect(document.getElementById('d').getAttribute('aria-label')).toBe('Check if optimal');
     });
 
     test('should update placeholder for data-i18n-placeholder elements', () => {
-        I18N._applyToDOM();
+        I18N.applyTranslations();
         expect(document.getElementById('e').placeholder).toBe('Your display name');
     });
 
     test('should sanitize malicious data-i18n attribute value and fall back to key', () => {
         document.body.innerHTML = '<span id="x" data-i18n="<img src=x onerror=alert(1)>">original</span>';
-        I18N._applyToDOM();
+        I18N.applyTranslations();
         // After stripping non-identifier chars the key becomes 'imgsrcxonerroralert1'
         // which is not a known key, so t() returns it unchanged (key fallback)
         const text = document.getElementById('x').textContent;
