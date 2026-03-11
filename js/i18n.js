@@ -73,6 +73,7 @@ const LANGUAGES = {
         hint_not_optimal: 'Not Optimal',
         hint_optimal_label: 'Optimal is {score}',
         hint_used_display: 'Hint used: {hints}',
+        hint_used_heading: 'Hints used:',
         hint_optimal_notification: 'Your solution is optimal! 🎉',
 
         // ── Penned Status Button ───────────────────────────────────────────
@@ -213,6 +214,7 @@ const LANGUAGES = {
         options_close_aria: 'Close options',
         options_visuals_label: 'Visuals',
         options_hints_label: 'Hints',
+        options_localization_label: 'Localization',
         options_pet_type_label: 'Pet Type:',
         options_hints_disabled_label: 'Disable hints',
         options_never_show_target_label: 'Never show target',
@@ -346,6 +348,7 @@ const LANGUAGES = {
         hint_not_optimal: 'No óptimo',
         hint_optimal_label: 'Óptimo es {score}',
         hint_used_display: 'Pista usada: {hints}',
+        hint_used_heading: 'Pistas usadas:',
         hint_optimal_notification: '¡Tu solución es óptima! 🎉',
 
         // ── Penned Status Button ───────────────────────────────────────────
@@ -486,6 +489,7 @@ const LANGUAGES = {
         options_close_aria: 'Cerrar opciones',
         options_visuals_label: 'Visuales',
         options_hints_label: 'Pistas',
+        options_localization_label: 'Localización',
         options_pet_type_label: 'Tipo de mascota:',
         options_hints_disabled_label: 'Desactivar pistas',
         options_never_show_target_label: 'Nunca mostrar objetivo',

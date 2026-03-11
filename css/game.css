@@ -1091,8 +1091,21 @@
     color: var(--text-secondary);
     line-height: 1.4;
     display: flex;
-    align-items: center;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
     padding: 4px 0;
+}
+
+.hint-used-label {
+    font-weight: bold;
+    margin-bottom: 2px;
+}
+
+.hint-used-list {
+    list-style: disc;
+    margin: 0;
+    padding-left: 18px;
 }
 
 /* ========== Best State Banner ========== */

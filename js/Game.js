@@ -1132,6 +1132,9 @@ class Game {
     updateResetButton() {
         const resetBtn = document.getElementById('resetBtn');
         if (resetBtn) {
+            // Hide the button entirely after submission so the left column stays
+            // tidy; the grid column still occupies space via the wrapper/layout.
+            resetBtn.style.visibility = this.isSubmitted ? 'hidden' : '';
             resetBtn.disabled = this.isSubmitted;
         }
     }
@@ -1992,9 +1995,10 @@ class Game {
         const hintBtn = document.getElementById('hintCheckBtn');
         if (!hintBtn) return;
 
-        // Hide entirely if hints are disabled
-        if (this.hintsDisabled) {
+        // Hide entirely if hints are disabled or puzzle is submitted
+        if (this.hintsDisabled || this.isSubmitted) {
             hintBtn.style.display = 'none';
+            this._updateHintUsedDisplay();
             return;
         }
 
@@ -2037,6 +2041,7 @@ class Game {
 
     /**
      * Update the "Hint used" display below the grid.
+     * Renders one bullet-point line per hint used.
      */
     _updateHintUsedDisplay() {
         const display = document.getElementById('hintUsedDisplay');
@@ -2044,14 +2049,29 @@ class Game {
 
         if (this.hintsUsed.length === 0) {
             display.style.display = 'none';
-            display.textContent = '';
+            display.innerHTML = '';
             return;
         }
 
         const parts = [];
         if (this.hintsUsed.includes(CONSTANTS.HINT_CHECKED)) parts.push(I18N.t('share_hint_checked'));
         if (this.hintsUsed.includes(CONSTANTS.HINT_TARGET)) parts.push(I18N.t('share_hint_target'));
-        display.textContent = I18N.t('hint_used_display', { hints: parts.join(', ') });
+
+        const label = document.createElement('span');
+        label.className = 'hint-used-label';
+        label.textContent = I18N.t('hint_used_heading');
+
+        const list = document.createElement('ul');
+        list.className = 'hint-used-list';
+        parts.forEach(text => {
+            const li = document.createElement('li');
+            li.textContent = text;
+            list.appendChild(li);
+        });
+
+        display.innerHTML = '';
+        display.appendChild(label);
+        display.appendChild(list);
         display.style.display = '';
     }
 
@@ -2400,13 +2420,13 @@ class Game {
  * @type {string[]}
  */
 Game.PAUSE_HIDDEN_SELECTORS = [
-    '.controls',
+    '.controls-top',
+    '.controls-bottom',
+    '.controls-hints',
     '.grid-container',
     '#notification',
     '#solutionToggleBar',
     '#roamSpaceViewer',
-    '.best-state-wrapper',
-    '#hintUsedDisplay',
 ];
 
 // Export for use in other modules

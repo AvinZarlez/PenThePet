@@ -280,6 +280,7 @@
             <button class="modal-close" data-i18n-aria="options_close_aria" aria-label="Close options">&times;</button>
             <h2 data-i18n="options_title"></h2>
             <div class="modal-section">
+                <!-- Two-column: Visuals | Hints -->
                 <div class="options-two-col">
                     <!-- Left column: Visuals + Time Zone -->
                     <div class="options-col">
@@ -298,7 +299,7 @@
                             <small class="option-help" data-i18n="options_timezone_help"></small>
                         </div>
                     </div>
-                    <!-- Right column: Hints + Language -->
+                    <!-- Right column: Hints -->
                     <div class="options-col">
                         <h3 class="options-group-label" data-i18n="options_hints_label"></h3>
                         <div class="option-item">
@@ -313,15 +314,23 @@
                                 <span data-i18n="options_never_show_target_label"></span>
                             </label>
                         </div>
-                        <div class="option-item">
-                            <label for="modalLanguage" data-i18n="options_language_label"></label>
-                            <select id="modalLanguage">
-                                <!-- Options populated dynamically from LANGUAGE_OPTIONS -->
-                            </select>
-                        </div>
+                    </div>
+                </div>
+
+                <!-- Full-width: Localization -->
+                <hr class="options-divider">
+                <div class="options-full-section">
+                    <h3 class="options-group-label" data-i18n="options_localization_label"></h3>
+                    <div class="option-item">
+                        <label for="modalLanguage" data-i18n="options_language_label"></label>
+                        <select id="modalLanguage">
+                            <!-- Options populated dynamically from LANGUAGE_OPTIONS -->
+                        </select>
                     </div>
                 </div>
             </div>
+
+            <!-- Full-width: Accounts -->
             <hr class="options-divider">
             <div id="optionsAccountSection" class="modal-section options-account-section" style="display: none;">
                 <h3 data-i18n="options_account_heading"></h3>

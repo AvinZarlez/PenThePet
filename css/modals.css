@@ -212,6 +212,14 @@
     border-bottom: 1px solid var(--border-subtle);
 }
 
+/* Full-width section within the options modal (Localization, Accounts) */
+.options-full-section {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 4px;
+}
+
 .options-divider {
     border: none;
     border-top: 1px solid var(--border-default);
