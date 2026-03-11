@@ -46,10 +46,6 @@ These are not rendered in the game grid. They are used for the browser tab and w
 | Icon    | `assets/icon.svg`     | 100×100 px | Web-app icon (`<link rel="apple-touch-icon">`)|
 | Favicon | `assets/favicon.svg`  | 32×32 px   | Browser tab icon (`<link rel="icon">`)        |
 
-## Game Screenshot
-
-The screenshot below shows asset overlaps in practice: wall tiles (brown fence), penned grass (yellow), penned home tile, unpenned star tiles on grass, and water tiles.
-
 ## Design Guidelines
 
 - **Style**: Cartoony, hand-drawn look fitting an indie puzzle game aesthetic.
