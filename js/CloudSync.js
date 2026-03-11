@@ -178,11 +178,15 @@ const CloudSync = (function () {
 
     /**
      * Show or hide the debug section automatically based on tester status.
-     * Debug tools are enabled for game testers and local debug flag users
-     * without requiring a manual checkbox toggle.
+     * Debug tools are enabled automatically when the user is a confirmed game
+     * tester (via Firebase UID in game-testers.json) or when the local debug
+     * flag file (debug.flag) is present — no manual checkbox toggle needed.
+     * isGameTester() covers both cases.
      * Called whenever auth state or username changes.
      */
     function updateDebugOptionVisibility() {
+        // isGameTester() returns true for both Firebase-authenticated testers
+        // and local debug.flag file users (localDebugEnabled).
         const allowed = isGameTester();
 
         // Auto-enable debug tools for testers; hide for everyone else.

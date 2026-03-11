@@ -27,6 +27,7 @@ function setupDOM() {
             <input type="checkbox" id="debugModeCheckbox">
         </div>
         <button class="modal-close"></button>
+        <button id="instrShortcutBtn"></button>
         <button id="levelSelectorBtn"></button>
         <button id="instructionsBtn"></button>
         <button id="aboutBtn"></button>
@@ -174,6 +175,13 @@ describe('Menu', () => {
 
         test('should open instructions modal', () => {
             menu.openInstructions();
+            const instructionsModal = document.getElementById('instructionsModal');
+            expect(instructionsModal.classList.contains('show')).toBe(true);
+        });
+
+        test('instructions shortcut button should open instructions modal directly', () => {
+            const instrBtn = document.getElementById('instrShortcutBtn');
+            instrBtn.click();
             const instructionsModal = document.getElementById('instructionsModal');
             expect(instructionsModal.classList.contains('show')).toBe(true);
         });
@@ -450,6 +458,20 @@ describe('Menu', () => {
             menu.openOptions();
             
             expect(modalPetType.children.length).toBeGreaterThan(0);
+        });
+
+        test('should populate language options via populateModalLanguageOptions', () => {
+            // Add the language selector element to the DOM
+            const modalLanguage = document.createElement('select');
+            modalLanguage.id = 'modalLanguage';
+            document.getElementById('optionsModal').appendChild(modalLanguage);
+
+            menu.populateModalLanguageOptions();
+
+            expect(modalLanguage.children.length).toBe(LANGUAGE_OPTIONS.length);
+            expect(modalLanguage.children.length).toBeGreaterThan(0);
+            // First option should match the first LANGUAGE_OPTIONS entry
+            expect(modalLanguage.children[0].value).toBe(LANGUAGE_OPTIONS[0].value);
         });
 
         test('should handle empty level list', async () => {
