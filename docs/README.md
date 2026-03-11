@@ -17,6 +17,10 @@ All project documentation lives here. Each file covers a single topic — pick w
 | [DEBUGGING_BRANCHES.md](DEBUGGING_BRANCHES.md) | How to test branches before merging (GitHub Pages, local, Codespaces)                            |
 | [FIREBASE_SETUP.md](FIREBASE_SETUP.md)     | How to enable optional cloud sync and analytics with Firebase                                    |
 
+## 📊 Reports
+
+Point-in-time analysis reports about levels, performance, and design decisions — see **[reports/](reports/README.md)** for the full index.
+
 ## 🤖 For AI Coding Agents
 
 Agent instructions live in [.github/copilot-instructions.md](../.github/copilot-instructions.md).

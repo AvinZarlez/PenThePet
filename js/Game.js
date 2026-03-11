@@ -184,7 +184,7 @@ class Game {
     _addPawOverlays(cell, tileType, angle) {
         const pawAssets = getPawOverlay(tileType);
         for (const asset of pawAssets) {
-            if (asset.endsWith('.svg')) {
+            if (/\.(svg|png|jpe?g|webp|gif)$/i.test(asset)) {
                 const paw = document.createElement('img');
                 paw.src = `assets/${asset}`;
                 paw.alt = '';
@@ -241,7 +241,7 @@ class Game {
             for (let i = 1; i < assetList.length; i++) {
                 const asset = assetList[i];
                 const isTopLayer = isLastFloating && i === assetList.length - 1;
-                if (asset.endsWith('.svg')) {
+                if (/\.(svg|png|jpe?g|webp|gif)$/i.test(asset)) {
                     const overlay = document.createElement('img');
                     overlay.src = `assets/${asset}`;
                     overlay.alt = '';

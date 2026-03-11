@@ -31,3 +31,4 @@ Rules:
 | Date | Title | Description |
 |------|-------|-------------|
 | 2026-03-08 | [Level Analysis](./2026-03-08-Level-Analysis.md) | Breakdown of all 365 levels across hole usage, size distribution, bees, stars, and goal statistics. |
+| 2026-03-11 | [Raster Asset Migration](./2026-03-11-Raster-Asset-Migration.md) | Analysis of switching from SVG to raster (PNG) art assets: format choice, tile-size math, recommended dimensions, required code changes, and overlay centering behavior. |
