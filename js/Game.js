@@ -175,6 +175,31 @@ class Game {
     }
 
     /**
+     * Create a single asset overlay element — either an <img> for image files or a
+     * <span> for emoji/text strings. Used by _createCellElement and _addPawOverlays.
+     * @private
+     * @param {string} asset - Asset filename (e.g. 'star.png') or emoji/text string
+     * @param {string} imageClass - CSS class(es) to apply when the asset is an image file
+     * @param {string} emojiClass - CSS class(es) to apply when the asset is emoji/text
+     * @returns {HTMLElement} The created <img> or <span> element
+     */
+    _createAssetOverlay(asset, imageClass, emojiClass) {
+        if (/\.(svg|png|jpe?g|webp|gif)$/i.test(asset)) {
+            const img = document.createElement('img');
+            img.src = `assets/${asset}`;
+            img.alt = '';
+            img.className = imageClass;
+            img.setAttribute('aria-hidden', 'true');
+            return img;
+        }
+        const span = document.createElement('span');
+        span.className = emojiClass;
+        span.textContent = asset;
+        span.setAttribute('aria-hidden', 'true');
+        return span;
+    }
+
+    /**
      * Append paw-overlay DOM elements to a cell for a given tile and rotation angle.
      * @private
      * @param {HTMLElement} cell - The cell element to append paw overlays to
@@ -184,21 +209,11 @@ class Game {
     _addPawOverlays(cell, tileType, angle) {
         const pawAssets = getPawOverlay(tileType);
         for (const asset of pawAssets) {
-            if (asset.endsWith('.svg')) {
-                const paw = document.createElement('img');
-                paw.src = `assets/${asset}`;
-                paw.alt = '';
-                paw.className = 'paw-overlay';
-                paw.setAttribute('aria-hidden', 'true');
-                paw.style.transform = `translate(-50%, -50%) rotate(${angle}deg)`;
-                cell.appendChild(paw);
-            } else {
-                const emojiSpan = document.createElement('span');
-                emojiSpan.className = 'paw-overlay-emoji';
-                emojiSpan.textContent = asset;
-                emojiSpan.setAttribute('aria-hidden', 'true');
-                cell.appendChild(emojiSpan);
+            const el = this._createAssetOverlay(asset, 'paw-overlay', 'paw-overlay-emoji');
+            if (el.tagName === 'IMG') {
+                el.style.transform = `translate(-50%, -50%) rotate(${angle}deg)`;
             }
+            cell.appendChild(el);
         }
     }
 
@@ -241,21 +256,9 @@ class Game {
             for (let i = 1; i < assetList.length; i++) {
                 const asset = assetList[i];
                 const isTopLayer = isLastFloating && i === assetList.length - 1;
-                if (asset.endsWith('.svg')) {
-                    const overlay = document.createElement('img');
-                    overlay.src = `assets/${asset}`;
-                    overlay.alt = '';
-                    overlay.className = isTopLayer ? 'tile-overlay tile-overlay-float' : 'tile-overlay';
-                    overlay.setAttribute('aria-hidden', 'true');
-                    cell.appendChild(overlay);
-                } else {
-                    // Treat as emoji / text overlay
-                    const emojiSpan = document.createElement('span');
-                    emojiSpan.className = isTopLayer ? 'tile-overlay-emoji tile-overlay-float' : 'tile-overlay-emoji';
-                    emojiSpan.textContent = asset;
-                    emojiSpan.setAttribute('aria-hidden', 'true');
-                    cell.appendChild(emojiSpan);
-                }
+                const imageClass = isTopLayer ? 'tile-overlay tile-overlay-float' : 'tile-overlay';
+                const emojiClass = isTopLayer ? 'tile-overlay-emoji tile-overlay-float' : 'tile-overlay-emoji';
+                cell.appendChild(this._createAssetOverlay(asset, imageClass, emojiClass));
             }
         }
 

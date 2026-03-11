@@ -490,6 +490,7 @@
     pointer-events: none;
     transform-origin: center center;
     opacity: 0.75;
+    object-fit: contain;
 }
 
 /* Path overlay - emoji/text */
@@ -522,6 +523,7 @@
     height: 70%;
     pointer-events: none;
     transform: translate(-50%, -50%);
+    object-fit: contain;
 }
 
 /* Floating animation for top-layer tile overlays (e.g. star, bee) */
