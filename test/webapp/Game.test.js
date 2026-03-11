@@ -17,8 +17,15 @@ function setupDOM() {
                 <button id="resumeBtn" class="resume-btn">&#9654; Resume</button>
             </div>
         </div>
-        <div class="controls">
-            <button id="resetBtn">Reset</button>
+        <div class="controls-top">
+            <div class="wall-counter"><span id="wallCounter">0 / 9</span></div>
+            <button id="timerBtn" class="timer-btn">
+                <span id="timerValue" class="timer-value">00:00</span>
+                <span id="timerIcon" class="timer-icon">⏸</span>
+            </button>
+            <div class="area-size-display">
+                <span id="areaSize">∞</span>
+            </div>
         </div>
         <div class="map-info">
             <span id="mapDay">42</span>
@@ -27,16 +34,22 @@ function setupDOM() {
         <div class="grid-container">
             <div id="grid" class="grid"></div>
         </div>
-        <button id="timerBtn" class="timer-btn">
-            <span id="timerValue" class="timer-value">00:00</span>
-            <span id="timerIcon" class="timer-icon">⏸</span>
-        </button>
-        <button id="pennedStatus" class="penned-status not-penned" data-interactive="false">
-            <span class="submit-label">Unsolved</span><span class="submit-check">✗</span>
-        </button>
-        <span id="wallCounter">0 / 9</span>
-        <div class="area-size-display">
-            <span id="areaSize">∞</span>
+        <div class="controls-bottom">
+            <button id="resetBtn">Reset</button>
+            <button id="pennedStatus" class="penned-status not-penned" data-interactive="false">
+                <span class="submit-label">Unsolved</span><span class="submit-check">✗</span>
+            </button>
+            <div class="best-state-wrapper">
+                <button id="bestStateBanner" class="best-state-banner" disabled style="display: none;">
+                    <span class="best-state-label">Best So Far: None</span>
+                </button>
+            </div>
+        </div>
+        <div class="controls-hints">
+            <button id="hintCheckBtn" class="hint-check-btn" style="display: none;" disabled>
+                <span class="hint-check-label">Check if Optimal</span>
+            </button>
+            <div id="hintUsedDisplay" class="hint-used-display" style="display: none;"></div>
         </div>
         <div id="notification" class="notification"></div>
         <div id="solutionToggleBar" style="display: none;">
@@ -57,10 +70,6 @@ function setupDOM() {
                 </footer>
             </article>
         </aside>
-        <div id="hintUsedDisplay" class="hint-used-display" style="display: none;"></div>
-        <button id="bestStateBanner" class="best-state-banner" disabled style="display: none;">
-            <span class="best-state-label">Best So Far: None</span>
-        </button>
     `;
 }
 
@@ -254,7 +263,9 @@ describe('Game — Timer', () => {
             game.isSubmitted = false;
             game.initTimerForDate('2026-01-01');
             game.pauseTimer();
-            expect(document.querySelector('.controls').style.display).toBe('none');
+            expect(document.querySelector('.controls-top').style.display).toBe('none');
+            expect(document.querySelector('.controls-bottom').style.display).toBe('none');
+            expect(document.querySelector('.controls-hints').style.display).toBe('none');
             expect(document.querySelector('.grid-container').style.display).toBe('none');
         });
     });
@@ -280,7 +291,9 @@ describe('Game — Timer', () => {
             game.initTimerForDate('2026-01-01');
             game.pauseTimer();
             game.resumeTimer();
-            expect(document.querySelector('.controls').style.display).toBe('');
+            expect(document.querySelector('.controls-top').style.display).toBe('');
+            expect(document.querySelector('.controls-bottom').style.display).toBe('');
+            expect(document.querySelector('.controls-hints').style.display).toBe('');
             expect(document.querySelector('.grid-container').style.display).toBe('');
         });
 
@@ -1743,6 +1756,22 @@ describe('Game — Best State', () => {
             // Banner should now be hidden
             expect(banner.style.display).toBe('none');
         });
+
+        test('hides the hint button when submission is made', () => {
+            game.currentDate = '2026-01-01';
+            game.isSubmitted = false;
+            game.hintsDisabled = false;
+            // Ensure hint button is visible first
+            game.updateHintButton();
+            const hintBtn = document.getElementById('hintCheckBtn');
+            expect(hintBtn.style.display).not.toBe('none');
+
+            // Submit the puzzle
+            game.handleSubmission(5);
+
+            // Hint button should now be hidden
+            expect(hintBtn.style.display).toBe('none');
+        });
     });
 
     describe('_checkAndUpdateBestState()', () => {
@@ -1845,6 +1874,80 @@ describe('Game — Best State', () => {
             }), 1);
             game.initTimerForDate('2026-01-01');
             expect(game.bestScore).toBe(8);
+        });
+    });
+});
+
+describe('Game — Reset & Hint button visibility after submission', () => {
+    let game;
+
+    beforeEach(() => {
+        setupDOM();
+        document.cookie.split(';').forEach((c) => {
+            document.cookie = c.trim().split('=')[0] + '=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/';
+        });
+        game = createGame();
+    });
+
+    describe('updateResetButton()', () => {
+        test('reset button is visible when not submitted', () => {
+            game.isSubmitted = false;
+            game.updateResetButton();
+            const resetBtn = document.getElementById('resetBtn');
+            expect(resetBtn.style.visibility).not.toBe('hidden');
+            expect(resetBtn.disabled).toBe(false);
+        });
+
+        test('reset button is hidden when submitted', () => {
+            game.isSubmitted = true;
+            game.updateResetButton();
+            const resetBtn = document.getElementById('resetBtn');
+            expect(resetBtn.style.visibility).toBe('hidden');
+            expect(resetBtn.disabled).toBe(true);
+        });
+    });
+
+    describe('updateHintButton() after submission', () => {
+        test('hint button is hidden when submitted', () => {
+            game.isSubmitted = true;
+            game.hintsDisabled = false;
+            game.updateHintButton();
+            const hintBtn = document.getElementById('hintCheckBtn');
+            expect(hintBtn.style.display).toBe('none');
+        });
+
+        test('hint button is visible when not submitted and not disabled', () => {
+            game.isSubmitted = false;
+            game.hintsDisabled = false;
+            game.updateHintButton();
+            const hintBtn = document.getElementById('hintCheckBtn');
+            expect(hintBtn.style.display).not.toBe('none');
+        });
+    });
+
+    describe('_updateHintUsedDisplay() bullet points', () => {
+        test('renders one bullet per hint used', () => {
+            game.hintsUsed = [CONSTANTS.HINT_CHECKED];
+            game._updateHintUsedDisplay();
+            const display = document.getElementById('hintUsedDisplay');
+            expect(display.style.display).not.toBe('none');
+            const items = display.querySelectorAll('.hint-used-list li');
+            expect(items.length).toBe(1);
+        });
+
+        test('renders two bullets when both hints used', () => {
+            game.hintsUsed = [CONSTANTS.HINT_CHECKED, CONSTANTS.HINT_TARGET];
+            game._updateHintUsedDisplay();
+            const display = document.getElementById('hintUsedDisplay');
+            const items = display.querySelectorAll('.hint-used-list li');
+            expect(items.length).toBe(2);
+        });
+
+        test('hides display when no hints used', () => {
+            game.hintsUsed = [];
+            game._updateHintUsedDisplay();
+            const display = document.getElementById('hintUsedDisplay');
+            expect(display.style.display).toBe('none');
         });
     });
 });

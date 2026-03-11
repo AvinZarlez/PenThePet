@@ -189,8 +189,53 @@
     margin-top: 5px;
 }
 
+/* ========== Two-column Options Layout ========== */
+.options-two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px 30px;
+    align-items: start;
+}
+
+.options-col {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.options-group-label {
+    color: var(--accent);
+    font-size: 1em;
+    font-weight: bold;
+    margin: 0 0 4px;
+    padding-bottom: 4px;
+}
+
+/* Wide label spans both columns inside a full-width section */
+.options-group-label-wide {
+    width: 100%;
+}
+
+/* Full-width section within the options modal (Localization, Accounts).
+ * Top margin creates whitespace separation from the preceding section. */
+.options-full-section {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 4px;
+}
+
+/* Extra whitespace gap before a new logical section (replaces <hr>) */
+.options-section-gap {
+    margin-top: 28px;
+}
+
 /* ========== Responsive Styles ========== */
 @media (max-width: 768px) {
+    .options-two-col {
+        grid-template-columns: 1fr;
+    }
+
     .options-content {
         flex-direction: column;
         align-items: stretch;

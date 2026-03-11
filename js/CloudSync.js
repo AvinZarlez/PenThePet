@@ -177,34 +177,22 @@ const CloudSync = (function () {
     }
 
     /**
-     * Show or hide the debug mode option in the Options modal and enforce
-     * debug mode off for non-testers.
+     * Show or hide the debug section automatically based on tester status.
+     * Debug tools are enabled automatically when the user is a confirmed game
+     * tester (via Firebase UID in game-testers.json) or when the local debug
+     * flag file (debug.flag) is present — no manual checkbox toggle needed.
+     * isGameTester() covers both cases.
      * Called whenever auth state or username changes.
      */
     function updateDebugOptionVisibility() {
+        // isGameTester() returns true for both Firebase-authenticated testers
+        // and local debug.flag file users (localDebugEnabled).
         const allowed = isGameTester();
-        const cookiesAvailable = typeof CookieUtils !== 'undefined';
 
-        const debugOptionItem = document.getElementById('debugModeOptionItem');
-        if (debugOptionItem) {
-            debugOptionItem.style.display = allowed ? '' : 'none';
-        }
-
-        // Force debug off for non-testers; restore saved preference for testers
-        const debugEnabled = allowed && cookiesAvailable &&
-            CookieUtils.getCookie('debugMode') === 'true';
-
-        if (!allowed && cookiesAvailable) {
-            CookieUtils.setCookie('debugMode', 'false', 365);
-        }
-
+        // Auto-enable debug tools for testers; hide for everyone else.
         const debugSection = document.querySelector('.debug-section');
         if (debugSection) {
-            debugSection.style.display = debugEnabled ? 'block' : 'none';
-        }
-        const debugModeCheckbox = document.getElementById('debugModeCheckbox');
-        if (debugModeCheckbox) {
-            debugModeCheckbox.checked = debugEnabled;
+            debugSection.style.display = allowed ? 'block' : 'none';
         }
     }
 

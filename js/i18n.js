@@ -73,6 +73,7 @@ const LANGUAGES = {
         hint_not_optimal: 'Not Optimal',
         hint_optimal_label: 'Optimal is {score}',
         hint_used_display: 'Hint used: {hints}',
+        hint_used_heading: 'Hints used:',
         hint_optimal_notification: 'Your solution is optimal! 🎉',
 
         // ── Penned Status Button ───────────────────────────────────────────
@@ -211,13 +212,18 @@ const LANGUAGES = {
         // ── Options Modal ─────────────────────────────────────────────────
         options_title: 'Options',
         options_close_aria: 'Close options',
+        options_visuals_label: 'Visuals',
+        options_hints_label: 'Hints',
+        options_localization_label: 'Localization',
         options_pet_type_label: 'Pet Type:',
         options_hints_disabled_label: 'Disable hints',
         options_never_show_target_label: 'Never show target',
         options_timezone_label: 'Time Zone:',
         options_timezone_help: "Used to determine which puzzle is today's",
+        options_language_label: 'Language:',
         options_debug_mode_label: 'Enable Debug Mode',
         options_debug_mode_help: 'Shows debug tools at the bottom of the page',
+        btn_instructions_shortcut_aria: 'Open instructions',
         options_account_heading: '☁️ Account',
         options_sign_in_to_sync: 'Sign In to Sync',
         options_signed_in_as: 'Signed in as:',
@@ -342,6 +348,7 @@ const LANGUAGES = {
         hint_not_optimal: 'No óptimo',
         hint_optimal_label: 'Óptimo es {score}',
         hint_used_display: 'Pista usada: {hints}',
+        hint_used_heading: 'Pistas usadas:',
         hint_optimal_notification: '¡Tu solución es óptima! 🎉',
 
         // ── Penned Status Button ───────────────────────────────────────────
@@ -480,13 +487,18 @@ const LANGUAGES = {
         // ── Options Modal ─────────────────────────────────────────────────
         options_title: 'Opciones',
         options_close_aria: 'Cerrar opciones',
+        options_visuals_label: 'Visuales',
+        options_hints_label: 'Pistas',
+        options_localization_label: 'Localización',
         options_pet_type_label: 'Tipo de mascota:',
         options_hints_disabled_label: 'Desactivar pistas',
         options_never_show_target_label: 'Nunca mostrar objetivo',
         options_timezone_label: 'Zona horaria:',
         options_timezone_help: 'Se usa para determinar cuál es el rompecabezas de hoy',
+        options_language_label: 'Idioma:',
         options_debug_mode_label: 'Activar modo de depuración',
         options_debug_mode_help: 'Muestra herramientas de depuración al final de la página',
+        btn_instructions_shortcut_aria: 'Abrir instrucciones',
         options_account_heading: '☁️ Cuenta',
         options_sign_in_to_sync: 'Iniciar sesión para sincronizar',
         options_signed_in_as: 'Sesión iniciada como:',
