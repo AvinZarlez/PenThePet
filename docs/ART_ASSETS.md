@@ -2,10 +2,6 @@
 
 All game art assets are stored in the `assets/` folder at the project root. These are SVG files used as tile backgrounds and overlays in the game grid.
 
-## Spritesheet
-
-![Art asset spritesheet](images/spritesheet.png)
-
 ## Asset Inventory
 
 ### Base Tile Backgrounds
@@ -53,8 +49,6 @@ These are not rendered in the game grid. They are used for the browser tab and w
 ## Game Screenshot
 
 The screenshot below shows asset overlaps in practice: wall tiles (brown fence), penned grass (yellow), penned home tile, unpenned star tiles on grass, and water tiles.
-
-![Game screenshot showing asset overlaps](images/game-example.png)
 
 ## Design Guidelines
 
