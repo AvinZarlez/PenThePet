@@ -333,6 +333,11 @@ class Game {
             this.render();
             this.updateWallCounter();
         } else {
+            // Non-clickable tile — show an informational tooltip thought bubble
+            const cell = this.gridElement.querySelector(`[data-row="${row}"][data-col="${col}"]`);
+            if (cell) {
+                this._showTileTooltip(cell, currentTileType);
+            }
             return;
         }
 
@@ -892,6 +897,44 @@ class Game {
         setTimeout(() => {
             if (popup.parentNode) {
                 popup.parentNode.removeChild(popup);
+            }
+        }, durationMs);
+    }
+
+    /**
+     * Show a floating thought-bubble tooltip on a non-clickable tile when tapped.
+     * Displays the tile's description text. The tooltip fades in, floats up, and
+     * disappears automatically. Any existing tooltip on the same cell is removed first.
+     * @private
+     * @param {HTMLElement} cell - The cell element to attach the tooltip to
+     * @param {string} tileType - The tile type name (key in TILE_DATA)
+     */
+    _showTileTooltip(cell, tileType) {
+        // Remove any existing tooltip on this cell so rapid taps don't stack
+        const existing = cell.querySelector('.tile-tooltip');
+        if (existing) {
+            existing.remove();
+        }
+
+        const tileInfo = TILE_DATA[tileType];
+        if (!tileInfo || !tileInfo.descriptionKey) {
+            return;
+        }
+        const text = I18N.t(tileInfo.descriptionKey);
+        if (!text) {
+            return;
+        }
+
+        const tooltip = document.createElement('span');
+        tooltip.className = 'tile-tooltip';
+        tooltip.textContent = text;
+        tooltip.setAttribute('aria-hidden', 'true');
+        const durationMs = CONSTANTS.TILE_TOOLTIP_DURATION_MS;
+        tooltip.style.setProperty('--tile-tooltip-duration', `${durationMs}ms`);
+        cell.appendChild(tooltip);
+        setTimeout(() => {
+            if (tooltip.parentNode) {
+                tooltip.parentNode.removeChild(tooltip);
             }
         }, durationMs);
     }
