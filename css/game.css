@@ -183,7 +183,7 @@
 /* ========== Reset Button ========== */
 #resetBtn {
     padding: 0 20px;
-    font-size: 1em;
+    font-size: 0.75em;
     height: var(--ctrl-height);
     background: linear-gradient(135deg, var(--ctrl-bg-start) 0%, var(--ctrl-bg-end) 100%);
     color: var(--text-on-surface);
@@ -204,29 +204,33 @@
 /* ========== Wall Counter ========== */
 .wall-counter {
     display: flex;
+    flex-direction: column;
     align-items: center;
-    gap: 8px;
-    padding: 0 20px;
+    gap: 2px;
+    padding: 4px 8px;
     height: var(--ctrl-height);
     background: linear-gradient(135deg, var(--ctrl-bg-start) 0%, var(--ctrl-bg-end) 100%);
     border-radius: 8px;
     font-weight: bold;
     border: 2px solid var(--ctrl-border);
     justify-content: center;
+    overflow: hidden;
 }
 
 /* ========== Area Size Display ========== */
 .area-size-display {
     display: flex;
+    flex-direction: column;
     align-items: center;
-    gap: 8px;
-    padding: 0 20px;
+    gap: 2px;
+    padding: 4px 8px;
     height: var(--ctrl-height);
     background: linear-gradient(135deg, var(--ctrl-bg-start) 0%, var(--ctrl-bg-end) 100%);
     border-radius: 8px;
     font-weight: bold;
     border: 2px solid var(--ctrl-border);
     justify-content: center;
+    overflow: hidden;
     transition: background 0.3s ease, border-color 0.3s ease;
 }
 
@@ -242,13 +246,16 @@
 
 .counter-label {
     color: var(--text-on-surface);
-    font-size: 0.95em;
+    font-size: 0.75em;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
 }
 
 .counter-value {
     color: var(--accent);
-    font-size: 1.1em;
-    min-width: 50px;
+    font-size: 0.95em;
     text-align: center;
 }
 
@@ -993,37 +1000,8 @@
         gap: 6px;
     }
 
-    /* Stack label above value so each gets the full container width */
-    .wall-counter,
-    .area-size-display {
-        flex-direction: column;
-        padding: 4px 6px;
-        height: auto;
-        min-height: var(--ctrl-height);
-        gap: 2px;
-        overflow: hidden;
-    }
-
     .counter-label {
         font-size: clamp(7px, 2.5vw, 0.75em);
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        max-width: 100%;
-    }
-
-    .counter-value {
-        min-width: unset;
-    }
-
-    .footer-main {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 10px;
-    }
-
-    .language-selector-container {
-        align-self: flex-end;
     }
 }
 
@@ -1080,9 +1058,8 @@
     flex-direction: row;
     align-items: center;
     justify-content: center;
-    padding: 8px 20px;
-    min-height: var(--ctrl-height);
-    height: auto;
+    padding: 0 20px;
+    height: var(--ctrl-height);
     width: var(--ctrl-hint-w, 195px);
     flex-shrink: 0;
     background: linear-gradient(135deg, var(--ctrl-bg-start) 0%, var(--ctrl-bg-end) 100%);
@@ -1093,8 +1070,9 @@
     transition: all 0.3s ease;
     color: var(--text-on-surface);
     cursor: pointer;
-    overflow-wrap: break-word;
-    word-break: break-word;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .hint-check-btn:not(:disabled):hover {
@@ -1141,14 +1119,13 @@
 }
 
 .best-state-banner {
-    padding: 8px 16px;
-    min-height: var(--ctrl-height);
-    height: auto;
+    padding: 0 12px;
+    height: var(--ctrl-height);
     width: 100%;
     background: linear-gradient(135deg, var(--ctrl-bg-start) 0%, var(--ctrl-bg-end) 100%);
     border-radius: 8px;
     border: 2px solid var(--ctrl-border);
-    font-size: 1em;
+    font-size: 0.75em;
     font-weight: bold;
     color: var(--text-on-surface);
     text-align: center;
@@ -1157,8 +1134,9 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    overflow-wrap: break-word;
-    word-break: break-word;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
 }
 
 .best-state-banner:not(:disabled) {

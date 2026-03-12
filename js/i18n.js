@@ -41,7 +41,7 @@ const LANGUAGES = {
         btn_reset: 'Reset',
         btn_menu_open: 'Open menu',
         label_walls_placed: 'Walls Placed:',
-        label_area_size: 'Area Size:',
+        label_area_size: 'Score:',
 
         // ── Timer ─────────────────────────────────────────────────────────
         timer_pause_title: 'Pause timer',
@@ -328,7 +328,7 @@ const LANGUAGES = {
         btn_reset: 'Reiniciar',
         btn_menu_open: 'Abrir menú',
         label_walls_placed: 'Muros colocados:',
-        label_area_size: 'Tamaño del área:',
+        label_area_size: 'Puntuación:',
 
         // ── Timer ─────────────────────────────────────────────────────────
         timer_pause_title: 'Pausar temporizador',
