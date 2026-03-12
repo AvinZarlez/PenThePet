@@ -41,7 +41,7 @@ const LANGUAGES = {
         btn_reset: 'Reset',
         btn_menu_open: 'Open menu',
         label_walls_placed: 'Walls Placed:',
-        label_area_size: 'Score:',
+        label_score: 'Score:',
 
         // ── Timer ─────────────────────────────────────────────────────────
         timer_pause_title: 'Pause timer',
@@ -85,11 +85,11 @@ const LANGUAGES = {
         status_penned_submit: 'Pet is penned! Click to submit your score ({count} tiles)',
         status_cant_escape: 'Pet can still escape - keep building walls!',
 
-        // ── Area Size Display ─────────────────────────────────────────────
-        area_size_with_goal: '{areaSize} / {goalAreaSize}',
-        area_size_below_goal: '{areaSize} <',
-        area_size_at_goal: '{areaSize} ✅',
-        area_size_infinity: '∞',
+        // ── Score Display ─────────────────────────────────────────────────
+        score_with_goal: '{score} / {goalScore}',
+        score_below_goal: '{score} <',
+        score_at_goal: '{score} ✅',
+        score_infinity: '∞',
 
         // ── Best State Banner ─────────────────────────────────────────────
         best_so_far_none: 'Best So Far: None',
@@ -328,7 +328,7 @@ const LANGUAGES = {
         btn_reset: 'Reiniciar',
         btn_menu_open: 'Abrir menú',
         label_walls_placed: 'Muros colocados:',
-        label_area_size: 'Puntuación:',
+        label_score: 'Puntuación:',
 
         // ── Timer ─────────────────────────────────────────────────────────
         timer_pause_title: 'Pausar temporizador',
@@ -372,11 +372,11 @@ const LANGUAGES = {
         status_penned_submit: '¡Mascota encerrada! Haz clic para enviar tu puntuación ({count} casillas)',
         status_cant_escape: 'La mascota aún puede escapar - ¡sigue construyendo muros!',
 
-        // ── Area Size Display ─────────────────────────────────────────────
-        area_size_with_goal: '{areaSize} / {goalAreaSize}',
-        area_size_below_goal: '{areaSize} <',
-        area_size_at_goal: '{areaSize} ✅',
-        area_size_infinity: '∞',
+        // ── Score Display ─────────────────────────────────────────────────
+        score_with_goal: '{score} / {goalScore}',
+        score_below_goal: '{score} <',
+        score_at_goal: '{score} ✅',
+        score_infinity: '∞',
 
         // ── Best State Banner ─────────────────────────────────────────────
         best_so_far_none: 'Mejor hasta ahora: Ninguno',

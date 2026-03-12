@@ -2,7 +2,7 @@
  * Game Styles
  *
  * Styles for the main game view: menu button, map info header,
- * game controls (reset, wall counter, area size, penned status),
+ * game controls (reset, wall counter, score, penned status),
  * solution toggle bar, notification toast, grid, cells,
  * roaming area viewer sidebar, and debug tools section.
  */
@@ -128,17 +128,16 @@
 
 /* ========== Controls Layout ========== */
 /*
- * --ctrl-side-w  : fixed width for left/right side elements (wall counter, area size,
+ * --ctrl-side-w  : fixed width for left/right side elements (wall counter, score,
  *                  reset button, best-so-far button) — sized to fit max content.
- * --ctrl-center-h: height for the prominent centre buttons (timer, submit) —
- *                  slightly taller than standard --ctrl-height to draw attention.
+ * --ctrl-center-h: height for the Submit button — slightly taller than --ctrl-height.
  * --ctrl-center-w: shared width for both centre buttons so they always match.
  */
 
 .controls-top,
 .controls-bottom {
     display: grid;
-    grid-template-columns: var(--ctrl-side-w, 210px) 1fr var(--ctrl-side-w, 210px);
+    grid-template-columns: var(--ctrl-side-w, 214px) 1fr var(--ctrl-side-w, 214px);
     align-items: center;
     gap: 10px;
     margin-bottom: 10px;
@@ -146,14 +145,19 @@
 
 /* Left-column items fill their fixed-width cell */
 .controls-top .wall-counter,
-.controls-top .area-size-display,
+.controls-top .score-display,
 .controls-bottom #resetBtn,
 .controls-bottom .best-state-wrapper {
     width: 100%;
 }
 
-/* Centre-column items are horizontally centred within the flexible column */
-.controls-top #timerBtn,
+/* Timer is centred at standard --ctrl-height; Submit stays slightly taller */
+.controls-top #timerBtn {
+    justify-self: center;
+    width: var(--ctrl-center-w, 160px);
+    height: var(--ctrl-height);
+}
+
 .controls-bottom #pennedStatus {
     justify-self: center;
     width: var(--ctrl-center-w, 160px);
@@ -161,7 +165,7 @@
 }
 
 /* Right-column items align to the end of their cell */
-.controls-top .area-size-display {
+.controls-top .score-display {
     justify-self: end;
 }
 .controls-bottom .best-state-wrapper {
@@ -180,14 +184,27 @@
     min-height: 0;
 }
 
+/* ========== Shared Side-Control Panel ========== */
+/*
+ * Base styles shared by .wall-counter, .score-display, #resetBtn, and .best-state-banner.
+ * Each element adds only what is unique to it (padding, direction, etc.).
+ */
+.ctrl-panel {
+    height: var(--ctrl-height);
+    background: linear-gradient(135deg, var(--ctrl-bg-start) 0%, var(--ctrl-bg-end) 100%);
+    border-radius: 8px;
+    font-size: 0.75em;
+    font-weight: bold;
+    border: 2px solid var(--ctrl-border);
+    color: var(--text-on-surface);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
 /* ========== Reset Button ========== */
 #resetBtn {
     padding: 0 20px;
-    font-size: 0.75em;
-    height: var(--ctrl-height);
-    background: linear-gradient(135deg, var(--ctrl-bg-start) 0%, var(--ctrl-bg-end) 100%);
-    color: var(--text-on-surface);
-    border: 2px solid var(--ctrl-border);
 }
 
 #resetBtn:hover:not(:disabled) {
@@ -203,41 +220,25 @@
 
 /* ========== Wall Counter ========== */
 .wall-counter {
-    display: flex;
     flex-direction: column;
-    align-items: center;
     gap: 2px;
     padding: 4px 8px;
-    height: var(--ctrl-height);
-    background: linear-gradient(135deg, var(--ctrl-bg-start) 0%, var(--ctrl-bg-end) 100%);
-    border-radius: 8px;
-    font-weight: bold;
-    border: 2px solid var(--ctrl-border);
-    justify-content: center;
 }
 
-/* ========== Area Size Display ========== */
-.area-size-display {
-    display: flex;
+/* ========== Score Display ========== */
+.score-display {
     flex-direction: column;
-    align-items: center;
     gap: 2px;
     padding: 4px 8px;
-    height: var(--ctrl-height);
-    background: linear-gradient(135deg, var(--ctrl-bg-start) 0%, var(--ctrl-bg-end) 100%);
-    border-radius: 8px;
-    font-weight: bold;
-    border: 2px solid var(--ctrl-border);
-    justify-content: center;
     transition: background 0.3s ease, border-color 0.3s ease;
 }
 
-.area-size-display.penned-yellow {
+.score-display.penned-yellow {
     background: linear-gradient(135deg, var(--penned-yellow-start) 0%, var(--penned-yellow-end) 100%);
     border-color: var(--penned-yellow-border);
 }
 
-.area-size-display.penned-green {
+.score-display.penned-green {
     background: linear-gradient(135deg, var(--penned-green-start) 0%, var(--penned-green-end) 100%);
     border-color: var(--penned-green-border);
 }
@@ -980,7 +981,8 @@
     :root {
         --ctrl-side-w: 140px;
         --ctrl-center-w: 130px;
-        --ctrl-center-h: 50px;
+        --ctrl-height: 46px;
+        --ctrl-center-h: 54px;
         --ctrl-hint-w: 150px;
     }
 }
@@ -989,7 +991,8 @@
     :root {
         --ctrl-side-w: 110px;
         --ctrl-center-w: 110px;
-        --ctrl-center-h: 48px;
+        --ctrl-height: 44px;
+        --ctrl-center-h: 52px;
         --ctrl-hint-w: 120px;
     }
 
@@ -1117,24 +1120,21 @@
 }
 
 .best-state-banner {
-    padding: 0 16px;
-    height: var(--ctrl-height);
+    padding: 0 20px;
     width: 100%;
-    background: linear-gradient(135deg, var(--ctrl-bg-start) 0%, var(--ctrl-bg-end) 100%);
-    border-radius: 8px;
-    border: 2px solid var(--ctrl-border);
-    font-size: 0.75em;
-    font-weight: bold;
-    color: var(--text-on-surface);
     text-align: center;
     transition: all 0.3s ease;
     cursor: not-allowed;
-    display: flex;
-    align-items: center;
-    justify-content: center;
     overflow: hidden;
     white-space: nowrap;
+}
+
+/* Ensure the inner text span participates in ellipsis clipping */
+.best-state-label {
+    overflow: hidden;
     text-overflow: ellipsis;
+    white-space: nowrap;
+    min-width: 0;
 }
 
 .best-state-banner:not(:disabled) {

@@ -53,12 +53,12 @@
     --ctrl-border:     #363b58;
 
     /* --- Uniform control-bar height --- */
-    --ctrl-height:     44px;
+    --ctrl-height:     50px;
 
     /* --- Control layout dimensions --- */
-    /* Fixed width for left/right paired elements (wall counter, area size, reset, best-so-far).
+    /* Fixed width for left/right paired elements (wall counter, score, reset, best-so-far).
      * Sized to accommodate the widest possible content across all languages. */
-    --ctrl-side-w:     210px;
+    --ctrl-side-w:     214px;
     /* Width and height for the prominent centre buttons (timer, submit). */
     --ctrl-center-w:   160px;
     --ctrl-center-h:   56px;
@@ -96,7 +96,7 @@
     --info-border:     #2e78c8;
     --info-glow:       rgba(43, 120, 200, 0.30);
 
-    /* --- Penned area states (area-size-display) --- */
+    /* --- Penned area states (score-display) --- */
     --penned-yellow-start:  #2a2400;
     --penned-yellow-end:    #1e1a00;
     --penned-yellow-border: #9a7a00;

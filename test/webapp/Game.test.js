@@ -23,8 +23,8 @@ function setupDOM() {
                 <span id="timerValue" class="timer-value">00:00</span>
                 <span id="timerIcon" class="timer-icon">⏸</span>
             </button>
-            <div class="area-size-display">
-                <span id="areaSize">∞</span>
+            <div class="score-display">
+                <span id="scoreValue">∞</span>
             </div>
         </div>
         <div class="map-info">
@@ -750,19 +750,19 @@ describe('displayRoamingArea() — always shows submitted score', () => {
         // will run its toggle-button branch and update the metric label
         game.optimalSolution = [[2, 2]];
         game.elapsedSeconds = 60;
-        // Simulate the state that caused the bug: dataset.areaSize reflects the
+        // Simulate the state that caused the bug: dataset.score reflects the
         // optimal (goal) score when the player was viewing the optimal solution,
         // but the result screen must still show the player's submitted score.
         const statusBtn = document.getElementById('pennedStatus');
         statusBtn.dataset.interactive = 'true';
-        statusBtn.dataset.areaSize = '10'; // would be 100% — the buggy value
+        statusBtn.dataset.score = '10'; // would be 100% — the buggy value
     });
 
     afterEach(() => {
         jest.useRealTimers();
     });
 
-    test('shows the submitted score, not the dataset areaSize, when already submitted', () => {
+    test('shows the submitted score, not the dataset score, when already submitted', () => {
         game.displayRoamingArea();
         const el = document.getElementById('roamAreaPercentage');
         // Should show 7/10 = 70%, not 100% from the dataset
