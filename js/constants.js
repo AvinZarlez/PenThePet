@@ -31,7 +31,7 @@ const CONSTANTS = {
     // Map generation
     MAX_GENERATION_ATTEMPTS: 100,  // Maximum attempts to generate a valid map
     WEAK_HOLE_THRESHOLD: 4,        // Holes must force a detour of more than this many steps
-    
+
     // Tile distribution (probabilities should sum to 1.0)
     TILE_DISTRIBUTION: {
         grass: 0.7,             // 70% chance of grass tiles
@@ -65,9 +65,9 @@ const CONSTANTS = {
     // UI timings
     SHARE_BUTTON_FLASH_MS: 2000,      // How long the "Copied!" label shows on the share button (ms)
     PENNED_ANIMATION_DELAY_MS: 50,    // Delay between BFS wave steps in the penned-area animation (ms)
-    PAW_ANIMATION_DELAY_MS: 80,       // Delay between each paw step in the escape-path animation (ms)
-    PAW_FADE_OUT_DELAY_MS: 1000,      // How long each paw stays visible before it starts to fade out (ms)
-    PAW_FADE_OUT_DURATION_MS: 300,    // Duration of each paw's fade-out animation (ms)
+    PAW_ANIMATION_DELAY_MS: 200,       // Delay between each paw step in the escape-path animation (ms)
+    PAW_FADE_OUT_DELAY_MS: 600,      // How long each paw stays visible before it starts to fade out (ms)
+    PAW_FADE_OUT_DURATION_MS: 400,    // Duration of each paw's fade-out animation (ms)
     SCORE_POPUP_DURATION_MS: 1800,    // Duration of score modifier popup float animation (ms)
     TILE_TOOLTIP_DURATION_MS: 2500,   // Duration of tile tooltip thought bubble float animation (ms)
     PET_WANDER_STEP_MS: 600,          // Delay between each pet wander step when penned (ms)
