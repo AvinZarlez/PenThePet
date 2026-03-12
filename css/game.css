@@ -2,7 +2,7 @@
  * Game Styles
  *
  * Styles for the main game view: menu button, map info header,
- * game controls (reset, wall counter, area size, penned status),
+ * game controls (reset, wall counter, score, penned status),
  * solution toggle bar, notification toast, grid, cells,
  * roaming area viewer sidebar, and debug tools section.
  */
@@ -128,17 +128,16 @@
 
 /* ========== Controls Layout ========== */
 /*
- * --ctrl-side-w  : fixed width for left/right side elements (wall counter, area size,
+ * --ctrl-side-w  : fixed width for left/right side elements (wall counter, score,
  *                  reset button, best-so-far button) — sized to fit max content.
- * --ctrl-center-h: height for the prominent centre buttons (timer, submit) —
- *                  slightly taller than standard --ctrl-height to draw attention.
+ * --ctrl-center-h: height for the Submit button — slightly taller than --ctrl-height.
  * --ctrl-center-w: shared width for both centre buttons so they always match.
  */
 
 .controls-top,
 .controls-bottom {
     display: grid;
-    grid-template-columns: var(--ctrl-side-w, 210px) 1fr var(--ctrl-side-w, 210px);
+    grid-template-columns: var(--ctrl-side-w, 214px) 1fr var(--ctrl-side-w, 214px);
     align-items: center;
     gap: 10px;
     margin-bottom: 10px;
@@ -146,14 +145,19 @@
 
 /* Left-column items fill their fixed-width cell */
 .controls-top .wall-counter,
-.controls-top .area-size-display,
+.controls-top .score-display,
 .controls-bottom #resetBtn,
 .controls-bottom .best-state-wrapper {
     width: 100%;
 }
 
-/* Centre-column items are horizontally centred within the flexible column */
-.controls-top #timerBtn,
+/* Timer is centred at standard --ctrl-height; Submit stays slightly taller */
+.controls-top #timerBtn {
+    justify-self: center;
+    width: var(--ctrl-center-w, 160px);
+    height: var(--ctrl-height);
+}
+
 .controls-bottom #pennedStatus {
     justify-self: center;
     width: var(--ctrl-center-w, 160px);
@@ -161,9 +165,10 @@
 }
 
 /* Right-column items align to the end of their cell */
-.controls-top .area-size-display {
+.controls-top .score-display {
     justify-self: end;
 }
+
 .controls-bottom .best-state-wrapper {
     justify-self: end;
     display: flex;
@@ -180,14 +185,27 @@
     min-height: 0;
 }
 
-/* ========== Reset Button ========== */
-#resetBtn {
-    padding: 0 20px;
-    font-size: 1em;
+/* ========== Shared Side-Control Panel ========== */
+/*
+ * Base styles shared by .wall-counter, .score-display, #resetBtn, and .best-state-banner.
+ * Each element adds only what is unique to it (padding, direction, etc.).
+ */
+.ctrl-panel {
     height: var(--ctrl-height);
     background: linear-gradient(135deg, var(--ctrl-bg-start) 0%, var(--ctrl-bg-end) 100%);
-    color: var(--text-on-surface);
+    border-radius: 8px;
+    font-size: 0.75em;
+    font-weight: bold;
     border: 2px solid var(--ctrl-border);
+    color: var(--text-on-surface);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* ========== Reset Button ========== */
+#resetBtn {
+    padding: 0 16px;
 }
 
 #resetBtn:hover:not(:disabled) {
@@ -203,52 +221,41 @@
 
 /* ========== Wall Counter ========== */
 .wall-counter {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 0 20px;
-    height: var(--ctrl-height);
-    background: linear-gradient(135deg, var(--ctrl-bg-start) 0%, var(--ctrl-bg-end) 100%);
-    border-radius: 8px;
-    font-weight: bold;
-    border: 2px solid var(--ctrl-border);
-    justify-content: center;
+    flex-direction: column;
+    gap: 2px;
+    padding: 4px 8px;
 }
 
-/* ========== Area Size Display ========== */
-.area-size-display {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 0 20px;
-    height: var(--ctrl-height);
-    background: linear-gradient(135deg, var(--ctrl-bg-start) 0%, var(--ctrl-bg-end) 100%);
-    border-radius: 8px;
-    font-weight: bold;
-    border: 2px solid var(--ctrl-border);
-    justify-content: center;
+/* ========== Score Display ========== */
+.score-display {
+    flex-direction: column;
+    gap: 2px;
+    padding: 4px 8px;
     transition: background 0.3s ease, border-color 0.3s ease;
 }
 
-.area-size-display.penned-yellow {
+.score-display.penned-yellow {
     background: linear-gradient(135deg, var(--penned-yellow-start) 0%, var(--penned-yellow-end) 100%);
     border-color: var(--penned-yellow-border);
 }
 
-.area-size-display.penned-green {
+.score-display.penned-green {
     background: linear-gradient(135deg, var(--penned-green-start) 0%, var(--penned-green-end) 100%);
     border-color: var(--penned-green-border);
 }
 
 .counter-label {
     color: var(--text-on-surface);
-    font-size: 0.95em;
+    font-size: 0.75em;
+    white-space: wrap;
+    overflow: hidden;
+    text-overflow: clip;
+    max-width: 100%;
 }
 
 .counter-value {
     color: var(--accent);
-    font-size: 1.1em;
-    min-width: 50px;
+    font-size: 0.95em;
     text-align: center;
 }
 
@@ -482,8 +489,13 @@
 
 /* Brief fade-in when a cell becomes part of the penned area */
 @keyframes pennedReveal {
-    from { opacity: 0.4; }
-    to   { opacity: 1;   }
+    from {
+        opacity: 0.4;
+    }
+
+    to {
+        opacity: 1;
+    }
 }
 
 .cell.penned {
@@ -599,15 +611,41 @@
 
 /* Floating animation for top-layer tile overlays (e.g. star, bee) */
 @keyframes tileFloat {
-    0%   { transform: translate(-50%, -50%); }
-    15%  { transform: translate(calc(-50% + 3px), calc(-50% - 4px)); }
-    25%  { transform: translate(-50%, -50%); }
-    40%  { transform: translate(calc(-50% - 3px), calc(-50% + 4px)); }
-    50%  { transform: translate(-50%, -50%); }
-    65%  { transform: translate(calc(-50% - 3px), calc(-50% - 4px)); }
-    75%  { transform: translate(-50%, -50%); }
-    90%  { transform: translate(calc(-50% + 3px), calc(-50% + 4px)); }
-    100% { transform: translate(-50%, -50%); }
+    0% {
+        transform: translate(-50%, -50%);
+    }
+
+    15% {
+        transform: translate(calc(-50% + 3px), calc(-50% - 4px));
+    }
+
+    25% {
+        transform: translate(-50%, -50%);
+    }
+
+    40% {
+        transform: translate(calc(-50% - 3px), calc(-50% + 4px));
+    }
+
+    50% {
+        transform: translate(-50%, -50%);
+    }
+
+    65% {
+        transform: translate(calc(-50% - 3px), calc(-50% - 4px));
+    }
+
+    75% {
+        transform: translate(-50%, -50%);
+    }
+
+    90% {
+        transform: translate(calc(-50% + 3px), calc(-50% + 4px));
+    }
+
+    100% {
+        transform: translate(-50%, -50%);
+    }
 }
 
 .cell .tile-overlay-float {
@@ -616,10 +654,25 @@
 
 /* Score modifier popup — fades in, floats up, fades out when a tile becomes penned */
 @keyframes scorePopupFloat {
-    0%   { opacity: 0;   transform: translateX(-50%) translateY(0); }
-    15%  { opacity: 1;   transform: translateX(-50%) translateY(-30%); }
-    75%  { opacity: 1;   transform: translateX(-50%) translateY(-160%); }
-    100% { opacity: 0;   transform: translateX(-50%) translateY(-220%); }
+    0% {
+        opacity: 0;
+        transform: translateX(-50%) translateY(0);
+    }
+
+    15% {
+        opacity: 1;
+        transform: translateX(-50%) translateY(-30%);
+    }
+
+    75% {
+        opacity: 1;
+        transform: translateX(-50%) translateY(-160%);
+    }
+
+    100% {
+        opacity: 0;
+        transform: translateX(-50%) translateY(-220%);
+    }
 }
 
 .cell .score-popup {
@@ -631,13 +684,13 @@
     font-size: clamp(0.75em, calc(var(--cell-size, 50px) / 22), 1.3em);
     pointer-events: none;
     z-index: 20;
-    white-space: nowrap;
+    white-space: wrap;
     animation: scorePopupFloat var(--score-popup-duration, 1.8s) ease-out forwards;
     text-shadow:
         -1px -1px 0 #000,
-         1px -1px 0 #000,
-        -1px  1px 0 #000,
-         1px  1px 0 #000;
+        1px -1px 0 #000,
+        -1px 1px 0 #000,
+        1px 1px 0 #000;
 }
 
 .cell .score-popup.positive {
@@ -665,10 +718,8 @@
     position: absolute;
     top: 0;
     left: 0;
-    transform: translate(
-        calc(var(--grid-padding, 3px) + var(--pet-col, 0) * (var(--cell-size, 50px) + var(--grid-gap, 3px)) + var(--cell-size, 50px) / 2 - 50%),
-        calc(var(--grid-padding, 3px) + var(--pet-row, 0) * (var(--cell-size, 50px) + var(--grid-gap, 3px)) + var(--cell-size, 50px) / 2 - 50%)
-    );
+    transform: translate(calc(var(--grid-padding, 3px) + var(--pet-col, 0) * (var(--cell-size, 50px) + var(--grid-gap, 3px)) + var(--cell-size, 50px) / 2 - 50%),
+            calc(var(--grid-padding, 3px) + var(--pet-row, 0) * (var(--cell-size, 50px) + var(--grid-gap, 3px)) + var(--cell-size, 50px) / 2 - 50%));
     font-size: clamp(8px, calc(var(--cell-size, 50px) * 0.65), 36px);
     line-height: 1;
     pointer-events: none;
@@ -806,7 +857,7 @@
     color: var(--warning-text);
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.4);
     margin: 10px 0;
-    white-space: nowrap;
+    white-space: wrap;
 }
 
 .metric-helper {
@@ -948,7 +999,7 @@
 }
 
 .debug-item button {
-    padding: 0 20px;
+    padding: 0 16px;
     height: var(--ctrl-height);
     background: linear-gradient(135deg, var(--debug-btn-start) 0%, var(--debug-btn-end) 100%);
     color: var(--text-on-accent);
@@ -975,7 +1026,8 @@
     :root {
         --ctrl-side-w: 140px;
         --ctrl-center-w: 130px;
-        --ctrl-center-h: 50px;
+        --ctrl-height: 46px;
+        --ctrl-center-h: 54px;
         --ctrl-hint-w: 150px;
     }
 }
@@ -984,7 +1036,8 @@
     :root {
         --ctrl-side-w: 110px;
         --ctrl-center-w: 110px;
-        --ctrl-center-h: 48px;
+        --ctrl-height: 44px;
+        --ctrl-center-h: 52px;
         --ctrl-hint-w: 120px;
     }
 
@@ -994,13 +1047,7 @@
     }
 
     .counter-label {
-        font-size: 0.75em;
-    }
-
-    .footer-main {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 10px;
+        font-size: clamp(7px, 2.5vw, 0.75em);
     }
 }
 
@@ -1057,19 +1104,21 @@
     flex-direction: row;
     align-items: center;
     justify-content: center;
-    padding: 0 20px;
+    padding: 0 16px;
     height: var(--ctrl-height);
     width: var(--ctrl-hint-w, 195px);
     flex-shrink: 0;
     background: linear-gradient(135deg, var(--ctrl-bg-start) 0%, var(--ctrl-bg-end) 100%);
     border-radius: 8px;
-    font-size: 1em;
+    font-size: 0.75em;
     font-weight: bold;
     border: 2px solid var(--ctrl-border);
     transition: all 0.3s ease;
     color: var(--text-on-surface);
     cursor: pointer;
-    white-space: nowrap;
+    white-space: wrap;
+    overflow: hidden;
+    text-overflow: clip;
 }
 
 .hint-check-btn:not(:disabled):hover {
@@ -1117,21 +1166,20 @@
 
 .best-state-banner {
     padding: 0 16px;
-    height: var(--ctrl-height);
     width: 100%;
-    background: linear-gradient(135deg, var(--ctrl-bg-start) 0%, var(--ctrl-bg-end) 100%);
-    border-radius: 8px;
-    border: 2px solid var(--ctrl-border);
-    font-size: 1em;
-    font-weight: bold;
-    color: var(--text-on-surface);
     text-align: center;
     transition: all 0.3s ease;
     cursor: not-allowed;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    white-space: nowrap;
+    overflow: hidden;
+    white-space: wrap;
+}
+
+/* Ensure the inner text span participates in ellipsis clipping */
+.best-state-label {
+    overflow: hidden;
+    text-overflow: clip;
+    white-space: wrap;
+    min-width: 0;
 }
 
 .best-state-banner:not(:disabled) {

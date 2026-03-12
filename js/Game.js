@@ -938,7 +938,7 @@ class Game {
                 statusElement.className = 'penned-status penned';
                 statusElement.disabled = false;
                 statusElement.dataset.interactive = 'true';
-                statusElement.dataset.areaSize = yellowTileCount;
+                statusElement.dataset.score = yellowTileCount;
             } else {
                 // If submitted, still allow viewing result even if not currently penned
                 if (this.isSubmitted && this.submittedScore) {
@@ -947,64 +947,64 @@ class Game {
                     statusElement.title = I18N.t('status_view_submitted_simple');
                     statusElement.disabled = false;
                     statusElement.dataset.interactive = 'true';
-                    statusElement.dataset.areaSize = this.submittedScore;
+                    statusElement.dataset.score = this.submittedScore;
                 } else {
                     statusElement.innerHTML = `<span class="submit-label">${I18N.t('status_unsolved')}</span><span class="submit-check">✗</span>`;
                     statusElement.className = 'penned-status not-penned';
                     statusElement.title = I18N.t('status_cant_escape');
                     statusElement.disabled = true;
                     statusElement.dataset.interactive = 'false';
-                    statusElement.dataset.areaSize = '0';
+                    statusElement.dataset.score = '0';
                 }
             }
         }
     }
 
     /**
-     * Update the area size display with current area size and goal coloring
+     * Update the score display with current score and goal coloring
      */
     updateAreaSizeDisplay() {
-        const areaSizeElement = document.getElementById('areaSize');
-        const areaSizeDisplay = areaSizeElement ? areaSizeElement.parentElement : null;
+        const scoreEl = document.getElementById('scoreValue');
+        const scoreDisplay = scoreEl ? scoreEl.parentElement : null;
 
-        if (areaSizeElement && areaSizeDisplay) {
+        if (scoreEl && scoreDisplay) {
             const pathInfo = this.calculatePath();
             const isPenned = !pathInfo.hasPath;
 
             if (isPenned) {
-                const areaSize = this.calculateScore();
+                const score = this.calculateScore();
                 const hasChecked = this.hintsUsed.includes(CONSTANTS.HINT_CHECKED);
                 const hasTarget = this.hintsUsed.includes(CONSTANTS.HINT_TARGET);
 
-                // Display area size based on hints used
+                // Display score based on hints used
                 if (hasTarget) {
-                    // Target revealed: show "areaSize / goal"
-                    areaSizeElement.textContent = I18N.t('area_size_with_goal', { areaSize, goalAreaSize: this.goalAreaSize });
+                    // Target revealed: show "score / goal"
+                    scoreEl.textContent = I18N.t('score_with_goal', { score, goalScore: this.goalAreaSize });
                 } else {
                     if (hasChecked) {
-                        // Checked: show area size with "?" if not optimal
-                        areaSizeElement.textContent = areaSize < this.goalAreaSize
-                            ? I18N.t('area_size_below_goal', { areaSize })
-                            : I18N.t('area_size_at_goal', { areaSize });
+                        // Checked: show score with "<" if not optimal
+                        scoreEl.textContent = score < this.goalAreaSize
+                            ? I18N.t('score_below_goal', { score })
+                            : I18N.t('score_at_goal', { score });
                     }
                     else {
-                        areaSizeElement.textContent = areaSize.toString();
+                        scoreEl.textContent = score.toString();
                     }
                 }
 
                 // Apply color if user has checked or revealed target
-                areaSizeDisplay.classList.remove('penned-yellow', 'penned-green');
+                scoreDisplay.classList.remove('penned-yellow', 'penned-green');
 
                 if (hasChecked || hasTarget) {
-                    if (areaSize < this.goalAreaSize) {
-                        areaSizeDisplay.classList.add('penned-yellow');
+                    if (score < this.goalAreaSize) {
+                        scoreDisplay.classList.add('penned-yellow');
                     } else {
-                        areaSizeDisplay.classList.add('penned-green');
+                        scoreDisplay.classList.add('penned-green');
                     }
                 }
             } else {
-                areaSizeElement.textContent = I18N.t('area_size_infinity');
-                areaSizeDisplay.classList.remove('penned-yellow', 'penned-green');
+                scoreEl.textContent = I18N.t('score_infinity');
+                scoreDisplay.classList.remove('penned-yellow', 'penned-green');
             }
         }
         this.updateHintButton();
@@ -1263,12 +1263,12 @@ class Game {
     }
 
     /**
-     * Display the roaming area viewer with the current area size
+     * Display the roaming area viewer with the current score
      */
     displayRoamingArea() {
         const statusBtn = document.getElementById('pennedStatus');
         if (statusBtn && statusBtn.dataset.interactive === 'true') {
-            const areaCount = parseInt(statusBtn.dataset.areaSize || '0');
+            const areaCount = parseInt(statusBtn.dataset.score || '0');
             const viewerPanel = document.getElementById('roamSpaceViewer');
 
             // If not yet submitted, save the submission

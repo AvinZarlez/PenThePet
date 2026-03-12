@@ -74,7 +74,7 @@
 
         <!-- Top Controls Row: Walls Placed | Timer/Pause | Area Size -->
         <div class="controls-top">
-            <div class="wall-counter">
+            <div class="wall-counter ctrl-panel">
                 <span class="counter-label" data-i18n="label_walls_placed"></span>
                 <span id="wallCounter" class="counter-value">0 / 9</span>
             </div>
@@ -82,9 +82,9 @@
                 <span id="timerValue" class="timer-value">00:00</span>
                 <span id="timerIcon" class="timer-icon" aria-hidden="true">⏸</span>
             </button>
-            <div class="area-size-display">
-                <span class="counter-label" data-i18n="label_area_size"></span>
-                <span id="areaSize" class="counter-value">∞</span>
+            <div class="score-display ctrl-panel">
+                <span class="counter-label" data-i18n="label_score"></span>
+                <span id="scoreValue" class="counter-value">∞</span>
             </div>
         </div>
 
@@ -117,7 +117,7 @@
 
         <!-- Bottom Controls Row: Reset | Submit | Best So Far -->
         <div class="controls-bottom">
-            <button id="resetBtn" data-i18n="btn_reset"></button>
+            <button id="resetBtn" class="ctrl-panel" data-i18n="btn_reset"></button>
             <button class="penned-status not-penned" id="pennedStatus"
                     data-i18n-title="status_cant_escape"
                     title="Pet can still escape - keep building walls!"
@@ -125,7 +125,7 @@
                 <span class="submit-label" data-i18n="status_unsolved"></span><span class="submit-check">✗</span>
             </button>
             <div class="best-state-wrapper">
-                <button id="bestStateBanner" class="best-state-banner" disabled style="display: none;">
+                <button id="bestStateBanner" class="best-state-banner ctrl-panel" disabled style="display: none;">
                     <span class="best-state-label" data-i18n="best_so_far_none"></span>
                 </button>
             </div>

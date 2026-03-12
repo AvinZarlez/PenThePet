@@ -23,8 +23,8 @@ function setupDOM() {
                 <span id="timerValue" class="timer-value">00:00</span>
                 <span id="timerIcon" class="timer-icon">⏸</span>
             </button>
-            <div class="area-size-display">
-                <span id="areaSize">∞</span>
+            <div class="score-display">
+                <span id="scoreValue">∞</span>
             </div>
         </div>
         <div class="map-info">
@@ -41,7 +41,7 @@ function setupDOM() {
             </button>
             <div class="best-state-wrapper">
                 <button id="bestStateBanner" class="best-state-banner" disabled style="display: none;">
-                    <span class="best-state-label">Best So Far: None</span>
+                    <span class="best-state-label">Pet Not Penned</span>
                 </button>
             </div>
         </div>
@@ -750,19 +750,19 @@ describe('displayRoamingArea() — always shows submitted score', () => {
         // will run its toggle-button branch and update the metric label
         game.optimalSolution = [[2, 2]];
         game.elapsedSeconds = 60;
-        // Simulate the state that caused the bug: dataset.areaSize reflects the
+        // Simulate the state that caused the bug: dataset.score reflects the
         // optimal (goal) score when the player was viewing the optimal solution,
         // but the result screen must still show the player's submitted score.
         const statusBtn = document.getElementById('pennedStatus');
         statusBtn.dataset.interactive = 'true';
-        statusBtn.dataset.areaSize = '10'; // would be 100% — the buggy value
+        statusBtn.dataset.score = '10'; // would be 100% — the buggy value
     });
 
     afterEach(() => {
         jest.useRealTimers();
     });
 
-    test('shows the submitted score, not the dataset areaSize, when already submitted', () => {
+    test('shows the submitted score, not the dataset score, when already submitted', () => {
         game.displayRoamingArea();
         const el = document.getElementById('roamAreaPercentage');
         // Should show 7/10 = 70%, not 100% from the dataset
@@ -1709,14 +1709,14 @@ describe('Game — Best State', () => {
     });
 
     describe('updateBestStateBanner()', () => {
-        test('shows "Best So Far: None" with disabled button when bestScore is null', () => {
+        test('shows "Pet Not Penned" with disabled button when bestScore is null', () => {
             game.isSubmitted = false;
             game.bestScore = null;
             game.updateBestStateBanner();
             const banner = document.getElementById('bestStateBanner');
             expect(banner.style.display).not.toBe('none');
             expect(banner.disabled).toBe(true);
-            expect(banner.querySelector('.best-state-label').textContent).toBe('Best So Far: None');
+            expect(banner.querySelector('.best-state-label').textContent).toBe('Pet Not Penned');
         });
 
         test('shows score and enables button when bestScore is set', () => {

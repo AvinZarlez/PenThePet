@@ -75,7 +75,7 @@ describe('I18N.t()', () => {
     });
 
     test('should substitute multiple params', () => {
-        const result = I18N.t('area_size_with_goal', { areaSize: 10, goalAreaSize: 15 });
+        const result = I18N.t('score_with_goal', { score: 10, goalScore: 15 });
         expect(result).toBe('10 / 15');
     });
 
