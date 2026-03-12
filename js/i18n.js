@@ -123,7 +123,7 @@ const LANGUAGES = {
         // ── Score / Metrics ───────────────────────────────────────────────
         pct_of_goal: '{pct}% of goal ({userScore}/{goalScore})',
         perfect_score: '<strong>PERFECT!</strong><br>You achieved the optimal score of {goalScore}!<br>Time: {time}',
-        your_score_info: 'The optimal score was {goalScore} tiles. Time: {time}',
+        your_score_info: 'The optimal score was {goalScore} tiles.<br>Time: {time}',
 
         // ── Share Text ────────────────────────────────────────────────────
         share_title: 'Pen The Pet {emoji}',
@@ -409,7 +409,7 @@ const LANGUAGES = {
         // ── Score / Metrics ───────────────────────────────────────────────
         pct_of_goal: '{pct}% del objetivo ({userScore}/{goalScore})',
         perfect_score: '<strong>¡PERFECTO!</strong><br>¡Lograste la puntuación óptima de {goalScore}!<br>Tiempo: {time}',
-        your_score_info: 'La puntuación óptima fue {goalScore} casillas. Tiempo: {time}',
+        your_score_info: 'La puntuación óptima fue {goalScore} casillas.<br>Tiempo: {time}',
 
         // ── Share Text ────────────────────────────────────────────────────
         share_title: 'Encierra a la Mascota {emoji}',
