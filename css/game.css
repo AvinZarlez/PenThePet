@@ -490,7 +490,7 @@
 /* Brief fade-in when a cell becomes part of the penned area */
 @keyframes pennedReveal {
     from {
-        opacity: 0.4;
+        opacity: 0.1;
     }
 
     to {
@@ -506,6 +506,19 @@
 .cell .paw-overlay,
 .cell .paw-overlay-emoji {
     animation: pennedReveal 0.15s ease-out;
+}
+
+/* Fade-out animation for paw removal */
+@keyframes pawFadeOut {
+    to {
+        opacity: 0;
+    }
+}
+
+.cell .paw-overlay.paw-fading,
+.cell .paw-overlay-emoji.paw-fading {
+    /* Duration must match PAW_FADE_OUT_DURATION_MS in constants.js */
+    animation: pawFadeOut 0.4s ease-in forwards;
 }
 
 .cell:hover {

@@ -991,11 +991,12 @@ describe('Game — Paw Animation', () => {
         expect(cell.querySelectorAll('.paw-overlay, .paw-overlay-emoji').length).toBeGreaterThan(0);
     });
 
-    test('all path tiles have paw overlays after animation completes', () => {
+    test('all path tiles have paw overlays after walk-in animation completes', () => {
         game = createOpenGame();
         const pathInfo = game.calculatePath();
         game.render();
-        jest.runAllTimers();
+        // Advance time until all paws have appeared but none have started to fade yet
+        jest.advanceTimersByTime(CONSTANTS.PAW_FADE_OUT_DELAY_MS - 1);
         for (const coordKey of pathInfo.path) {
             const [row, col] = coordKey.split(',').map(Number);
             const tileType = game.grid.getTile(row, col);
@@ -1005,6 +1006,66 @@ describe('Game — Paw Animation', () => {
             if (expectedPaws > 0) {
                 expect(cell.querySelectorAll('.paw-overlay, .paw-overlay-emoji').length).toBeGreaterThan(0);
             }
+        }
+    });
+
+    test('first paw gets paw-fading class after PAW_FADE_OUT_DELAY_MS', () => {
+        game = createOpenGame();
+        const pathInfo = game.calculatePath();
+        game.render();
+        // Advance to just after first paw becomes visible (step 0 at t=0)
+        jest.advanceTimersByTime(CONSTANTS.PAW_ANIMATION_DELAY_MS * 2);
+        const [row0, col0] = pathInfo.orderedPath[0].split(',').map(Number);
+        const cell0 = game.gridElement.querySelector(`[data-row="${row0}"][data-col="${col0}"]`);
+        // Paw should be present but not yet fading
+        const paws0 = cell0.querySelectorAll('.paw-overlay, .paw-overlay-emoji');
+        if (paws0.length > 0) {
+            expect(paws0[0].classList.contains('paw-fading')).toBe(false);
+        }
+        // Advance to trigger the fade-out on the first step (step 0 fades at PAW_FADE_OUT_DELAY_MS)
+        jest.advanceTimersByTime(CONSTANTS.PAW_FADE_OUT_DELAY_MS);
+        const pawsAfterFade = cell0.querySelectorAll('.paw-overlay, .paw-overlay-emoji');
+        if (pawsAfterFade.length > 0) {
+            expect(pawsAfterFade[0].classList.contains('paw-fading')).toBe(true);
+        }
+    });
+
+    test('first paw is removed after fade-out animation completes', () => {
+        game = createOpenGame();
+        const pathInfo = game.calculatePath();
+        game.render();
+        const [row0, col0] = pathInfo.orderedPath[0].split(',').map(Number);
+        const cell0 = game.gridElement.querySelector(`[data-row="${row0}"][data-col="${col0}"]`);
+        const tileType0 = game.grid.getTile(row0, col0);
+        const hasPaw = getPawOverlay(tileType0).length > 0;
+        if (hasPaw) {
+            // Paw should be present before fade
+            jest.advanceTimersByTime(CONSTANTS.PAW_ANIMATION_DELAY_MS * 2);
+            expect(cell0.querySelectorAll('.paw-overlay, .paw-overlay-emoji').length).toBeGreaterThan(0);
+            // Advance past fade delay + duration: paw should be removed from DOM
+            jest.advanceTimersByTime(CONSTANTS.PAW_FADE_OUT_DELAY_MS + CONSTANTS.PAW_FADE_OUT_DURATION_MS);
+            expect(cell0.querySelectorAll('.paw-overlay, .paw-overlay-emoji')).toHaveLength(0);
+        }
+    });
+
+    test('animation restarts after all paws have faded out', () => {
+        game = createOpenGame();
+        const pathInfo = game.calculatePath();
+        game.render();
+        const pathLen = pathInfo.orderedPath.length;
+        // Calculate when the whole first cycle ends and restart triggers
+        const restartTime = (pathLen - 1) * CONSTANTS.PAW_ANIMATION_DELAY_MS
+            + CONSTANTS.PAW_FADE_OUT_DELAY_MS
+            + CONSTANTS.PAW_FADE_OUT_DURATION_MS;
+        // Advance past restart, then a bit more so first paw of cycle 2 appears
+        jest.advanceTimersByTime(restartTime + CONSTANTS.PAW_ANIMATION_DELAY_MS + 1);
+        // The first step's paw should be visible again in cycle 2
+        const [row0, col0] = pathInfo.orderedPath[0].split(',').map(Number);
+        const tileType0 = game.grid.getTile(row0, col0);
+        const hasPaw = getPawOverlay(tileType0).length > 0;
+        if (hasPaw) {
+            const cell0 = game.gridElement.querySelector(`[data-row="${row0}"][data-col="${col0}"]`);
+            expect(cell0.querySelectorAll('.paw-overlay, .paw-overlay-emoji').length).toBeGreaterThan(0);
         }
     });
 
