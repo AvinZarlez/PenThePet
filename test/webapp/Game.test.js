@@ -41,7 +41,7 @@ function setupDOM() {
             </button>
             <div class="best-state-wrapper">
                 <button id="bestStateBanner" class="best-state-banner" disabled style="display: none;">
-                    <span class="best-state-label">Best So Far: None</span>
+                    <span class="best-state-label">Pet Not Penned</span>
                 </button>
             </div>
         </div>
@@ -1709,14 +1709,14 @@ describe('Game — Best State', () => {
     });
 
     describe('updateBestStateBanner()', () => {
-        test('shows "Best So Far: None" with disabled button when bestScore is null', () => {
+        test('shows "Pet Not Penned" with disabled button when bestScore is null', () => {
             game.isSubmitted = false;
             game.bestScore = null;
             game.updateBestStateBanner();
             const banner = document.getElementById('bestStateBanner');
             expect(banner.style.display).not.toBe('none');
             expect(banner.disabled).toBe(true);
-            expect(banner.querySelector('.best-state-label').textContent).toBe('Best So Far: None');
+            expect(banner.querySelector('.best-state-label').textContent).toBe('Pet Not Penned');
         });
 
         test('shows score and enables button when bestScore is set', () => {
