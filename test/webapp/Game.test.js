@@ -769,20 +769,20 @@ describe('displayRoamingArea() — always shows submitted score', () => {
         expect(el.textContent).toBe('70% of goal (7/10)');
     });
 
-    test('metric label always shows "Your Solution Score" when viewing optimal', () => {
-        // Preconditions: isSubmitted=true and optimalSolution set (from beforeEach)
-        // so addOptimalSolutionToggle() will run and update the metric label
+    test('metric label remains unchanged when viewing optimal', () => {
+        // The metric label is no longer updated by addOptimalSolutionToggle();
+        // the header shows "Your Solution's Score:" instead.
         game.viewingOptimal = true;
         game.displayRoamingArea();
         const metricLabel = document.querySelector('.metric-label');
-        expect(metricLabel.textContent).toBe('Your Solution Score');
+        expect(metricLabel.textContent).toBe('Roaming Area Score');
     });
 
-    test('metric label always shows "Your Solution Score" when viewing own solution', () => {
+    test('metric label remains unchanged when viewing own solution', () => {
         game.viewingOptimal = false;
         game.displayRoamingArea();
         const metricLabel = document.querySelector('.metric-label');
-        expect(metricLabel.textContent).toBe('Your Solution Score');
+        expect(metricLabel.textContent).toBe('Roaming Area Score');
     });
 });
 

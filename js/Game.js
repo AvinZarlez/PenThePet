@@ -1506,11 +1506,6 @@ class Game {
                 }
             }
 
-            // Update the metric label
-            const metricLabel = document.querySelector('.metric-label');
-            if (metricLabel) {
-                metricLabel.textContent = I18N.t('metric_label_yours');
-            }
             return;
         }
 
@@ -1548,12 +1543,6 @@ class Game {
 
         // Update button text based on current state
         toggleBtn.textContent = this.viewingOptimal ? I18N.t('solution_toggle_view_yours') : I18N.t('solution_toggle_view_optimal');
-
-        // Always show the player's score label, regardless of which solution is being viewed
-        const metricLabel = document.querySelector('.metric-label');
-        if (metricLabel) {
-            metricLabel.textContent = I18N.t('metric_label_yours');
-        }
     }
 
     /**
