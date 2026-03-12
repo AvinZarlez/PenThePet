@@ -59,7 +59,6 @@ function setupDOM() {
         <aside id="roamSpaceViewer" class="roam-viewer-sidebar">
             <article class="viewer-card">
                 <section class="metrics-display">
-                    <label class="metric-label">Roaming Area Score</label>
                     <output class="metric-value" id="roamAreaMetric">0</output>
                     <small class="metric-percentage" id="roamAreaPercentage"></small>
                     <small class="metric-helper"></small>
@@ -767,22 +766,6 @@ describe('displayRoamingArea() — always shows submitted score', () => {
         const el = document.getElementById('roamAreaPercentage');
         // Should show 7/10 = 70%, not 100% from the dataset
         expect(el.textContent).toBe('70% of goal (7/10)');
-    });
-
-    test('metric label always shows "Your Solution Score" when viewing optimal', () => {
-        // Preconditions: isSubmitted=true and optimalSolution set (from beforeEach)
-        // so addOptimalSolutionToggle() will run and update the metric label
-        game.viewingOptimal = true;
-        game.displayRoamingArea();
-        const metricLabel = document.querySelector('.metric-label');
-        expect(metricLabel.textContent).toBe('Your Solution Score');
-    });
-
-    test('metric label always shows "Your Solution Score" when viewing own solution', () => {
-        game.viewingOptimal = false;
-        game.displayRoamingArea();
-        const metricLabel = document.querySelector('.metric-label');
-        expect(metricLabel.textContent).toBe('Your Solution Score');
     });
 });
 

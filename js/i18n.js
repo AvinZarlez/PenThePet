@@ -112,9 +112,8 @@ const LANGUAGES = {
         solution_toggle_aria: 'Toggle between your solution and optimal result',
 
         // ── Roam Viewer Sidebar ───────────────────────────────────────────
-        viewer_header: 'Pet Containment Summary',
-        metric_label_yours: 'Your Solution Score',
-        metric_label_roaming: 'Roaming Area Score',
+        viewer_header: "Your Solution's Score:",
+        metric_label_yours: "Your Solution's Score:",
         metric_helper: 'yellow tiles counted',
         btn_copy_score: '📋 Copy Score',
         btn_back_to_game: 'Back to Game',
@@ -124,7 +123,7 @@ const LANGUAGES = {
         // ── Score / Metrics ───────────────────────────────────────────────
         pct_of_goal: '{pct}% of goal ({userScore}/{goalScore})',
         perfect_score: '<strong>PERFECT!</strong><br>You achieved the optimal score of {goalScore}!<br>Time: {time}',
-        your_score_info: 'Your score<br>Optimal: {goalScore} tiles<br>Time: {time}',
+        your_score_info: 'The optimal score was {goalScore} tiles.<br>Time: {time}',
 
         // ── Share Text ────────────────────────────────────────────────────
         share_title: 'Pen The Pet {emoji}',
@@ -399,9 +398,8 @@ const LANGUAGES = {
         solution_toggle_aria: 'Alternar entre tu solución y el resultado óptimo',
 
         // ── Roam Viewer Sidebar ───────────────────────────────────────────
-        viewer_header: 'Resumen de contención de la mascota',
-        metric_label_yours: 'Puntuación de tu solución',
-        metric_label_roaming: 'Puntuación del área de deambulación',
+        viewer_header: 'Puntuación de tu solución:',
+        metric_label_yours: 'Puntuación de tu solución:',
         metric_helper: 'casillas amarillas contadas',
         btn_copy_score: '📋 Copiar puntuación',
         btn_back_to_game: 'Volver al juego',
@@ -411,7 +409,7 @@ const LANGUAGES = {
         // ── Score / Metrics ───────────────────────────────────────────────
         pct_of_goal: '{pct}% del objetivo ({userScore}/{goalScore})',
         perfect_score: '<strong>¡PERFECTO!</strong><br>¡Lograste la puntuación óptima de {goalScore}!<br>Tiempo: {time}',
-        your_score_info: 'Tu puntuación<br>Óptimo: {goalScore} casillas<br>Tiempo: {time}',
+        your_score_info: 'La puntuación óptima fue {goalScore} casillas.<br>Tiempo: {time}',
 
         // ── Share Text ────────────────────────────────────────────────────
         share_title: 'Encierra a la Mascota {emoji}',

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -25,19 +26,20 @@
     <link rel="stylesheet" href="css/modals.css">
     <link rel="stylesheet" href="css/menu.css">
 </head>
+
 <body>
     <div class="container">
         <!-- Menu Button -->
         <button id="menuBtn" class="menu-btn" data-i18n-aria="btn_menu_open" aria-label="Open menu">☰</button>
 
         <!-- Instructions Shortcut Button -->
-        <button id="instrShortcutBtn" class="instructions-shortcut-btn" data-i18n-aria="btn_instructions_shortcut_aria" aria-label="Open instructions">?</button>
+        <button id="instrShortcutBtn" class="instructions-shortcut-btn" data-i18n-aria="btn_instructions_shortcut_aria"
+            aria-label="Open instructions">?</button>
 
         <!-- Cloud Sync UI (hidden until Firebase is configured) -->
         <div id="cloudSyncBar" class="cloud-sync-bar">
             <button id="cloudSyncLoginBtn" class="cloud-sync-login-btn" style="display: none;"
-                    data-i18n="cloud_sync_sign_in_btn"
-                    onclick="CloudSync.openAuthModal()"></button>
+                data-i18n="cloud_sync_sign_in_btn" onclick="CloudSync.openAuthModal()"></button>
             <div id="cloudSyncUserInfo" class="cloud-sync-user-info" style="display: none;">
                 <div id="cloudSyncUserEmail" class="cloud-sync-email"></div>
                 <div id="cloudSyncStatus" class="cloud-sync-status" style="display: none;"></div>
@@ -78,7 +80,8 @@
                 <span class="counter-label" data-i18n="label_walls_placed"></span>
                 <span id="wallCounter" class="counter-value">0 / 9</span>
             </div>
-            <button id="timerBtn" class="timer-btn" data-i18n-title="timer_pause_title" data-i18n-aria="timer_pause_aria" title="Pause timer" aria-label="Pause timer">
+            <button id="timerBtn" class="timer-btn" data-i18n-title="timer_pause_title"
+                data-i18n-aria="timer_pause_aria" title="Pause timer" aria-label="Pause timer">
                 <span id="timerValue" class="timer-value">00:00</span>
                 <span id="timerIcon" class="timer-icon" aria-hidden="true">⏸</span>
             </button>
@@ -92,14 +95,15 @@
 
         <div id="solutionToggleBar" class="solution-toggle-bar" style="display: none;">
             <span id="solutionViewLabel" class="solution-view-label" data-i18n="solution_viewing_yours"></span>
-            <button id="solutionToggleBtn" class="solution-toggle-btn" data-i18n-aria="solution_toggle_aria" aria-label="Toggle between your solution and optimal result" data-i18n="solution_toggle_view_optimal"></button>
+            <button id="solutionToggleBtn" class="solution-toggle-btn" data-i18n-aria="solution_toggle_aria"
+                aria-label="Toggle between your solution and optimal result"
+                data-i18n="solution_toggle_view_optimal"></button>
         </div>
 
         <aside id="roamSpaceViewer" class="roam-viewer-sidebar">
             <article class="viewer-card">
                 <header class="viewer-header" data-i18n="viewer_header"></header>
                 <section class="metrics-display">
-                    <label class="metric-label" data-i18n="metric_label_roaming"></label>
                     <output class="metric-value" id="roamAreaMetric">0</output>
                     <small class="metric-percentage" id="roamAreaPercentage"></small>
                     <small class="metric-helper" data-i18n="metric_helper"></small>
@@ -118,10 +122,8 @@
         <!-- Bottom Controls Row: Reset | Submit | Best So Far -->
         <div class="controls-bottom">
             <button id="resetBtn" class="ctrl-panel" data-i18n="btn_reset"></button>
-            <button class="penned-status not-penned" id="pennedStatus"
-                    data-i18n-title="status_cant_escape"
-                    title="Pet can still escape - keep building walls!"
-                    data-interactive="false">
+            <button class="penned-status not-penned" id="pennedStatus" data-i18n-title="status_cant_escape"
+                title="Pet can still escape - keep building walls!" data-interactive="false">
                 <span class="submit-label" data-i18n="status_unsolved"></span><span class="submit-check">✗</span>
             </button>
             <div class="best-state-wrapper">
@@ -134,8 +136,8 @@
         <!-- Hints Row: Hint Button + Hints Used Text (centered) -->
         <div class="controls-hints">
             <button id="hintCheckBtn" class="hint-check-btn" style="display: none;" disabled
-                    data-i18n-title="hint_check_title_disabled" data-i18n-aria="hint_check_aria"
-                    title="Pen the pet first to check your solution" aria-label="Check if optimal">
+                data-i18n-title="hint_check_title_disabled" data-i18n-aria="hint_check_aria"
+                title="Pen the pet first to check your solution" aria-label="Check if optimal">
                 <span class="hint-check-label" data-i18n="hint_check_label"></span>
             </button>
             <div id="hintUsedDisplay" class="hint-used-display" style="display: none;"></div>
@@ -163,11 +165,14 @@
         <footer>
             <div class="footer-main">
                 <div class="footer-text">
-                    <p><span data-i18n="about_credits_1_prefix"></span><a href="https://www.AvinZarlez.com" target="_blank" rel="noopener noreferrer" data-i18n="about_credits_1_link"></a></p>
-                    <p><a id="githubFooterLink" href="https://github.com/AvinZarlez/penthepet" target="_blank" rel="noopener noreferrer" data-i18n="footer_view_github"></a></p>
+                    <p><span data-i18n="about_credits_1_prefix"></span><a href="https://www.AvinZarlez.com"
+                            target="_blank" rel="noopener noreferrer" data-i18n="about_credits_1_link"></a></p>
+                    <p><a id="githubFooterLink" href="https://github.com/AvinZarlez/penthepet" target="_blank"
+                            rel="noopener noreferrer" data-i18n="footer_view_github"></a></p>
                 </div>
                 <div class="language-selector-container">
-                    <select id="languageSelector" class="language-selector" data-i18n-aria="language_aria" aria-label="Select language">
+                    <select id="languageSelector" class="language-selector" data-i18n-aria="language_aria"
+                        aria-label="Select language">
                         <option value="en">English</option>
                     </select>
                 </div>
@@ -192,7 +197,8 @@
     <!-- Level Selector Modal -->
     <div id="levelSelectorModal" class="modal">
         <div class="modal-content">
-            <button class="modal-close" data-i18n-aria="level_selector_close_aria" aria-label="Close level selector">&times;</button>
+            <button class="modal-close" data-i18n-aria="level_selector_close_aria"
+                aria-label="Close level selector">&times;</button>
             <h2 data-i18n="level_selector_title"></h2>
             <p class="modal-description" data-i18n="level_selector_description"></p>
             <div id="levelList" class="level-list">
@@ -204,7 +210,8 @@
     <!-- Instructions Modal -->
     <div id="instructionsModal" class="modal">
         <div class="modal-content">
-            <button class="modal-close" data-i18n-aria="instructions_close_aria" aria-label="Close instructions">&times;</button>
+            <button class="modal-close" data-i18n-aria="instructions_close_aria"
+                aria-label="Close instructions">&times;</button>
             <h2 data-i18n="instructions_title"></h2>
             <div class="modal-section">
                 <h3 data-i18n="instructions_objective_heading"></h3>
@@ -228,10 +235,16 @@
             <div class="modal-section">
                 <h3 data-i18n="instructions_hints_heading"></h3>
                 <ul>
-                    <li><span data-i18n="instructions_hints_1_prefix"></span><strong data-i18n="instructions_hints_1_strong"></strong><span data-i18n="instructions_hints_1_suffix"></span></li>
+                    <li><span data-i18n="instructions_hints_1_prefix"></span><strong
+                            data-i18n="instructions_hints_1_strong"></strong><span
+                            data-i18n="instructions_hints_1_suffix"></span></li>
                     <li data-i18n="instructions_hints_2"></li>
-                    <li><span data-i18n="instructions_hints_3_prefix"></span><strong data-i18n="instructions_hints_3_strong"></strong><span data-i18n="instructions_hints_3_suffix"></span></li>
-                    <li><span data-i18n="instructions_hints_4_prefix"></span><strong data-i18n="instructions_hints_4_strong"></strong><span data-i18n="instructions_hints_4_suffix"></span></li>
+                    <li><span data-i18n="instructions_hints_3_prefix"></span><strong
+                            data-i18n="instructions_hints_3_strong"></strong><span
+                            data-i18n="instructions_hints_3_suffix"></span></li>
+                    <li><span data-i18n="instructions_hints_4_prefix"></span><strong
+                            data-i18n="instructions_hints_4_strong"></strong><span
+                            data-i18n="instructions_hints_4_suffix"></span></li>
                 </ul>
             </div>
             <div class="modal-section">
@@ -247,7 +260,8 @@
             <button class="modal-close" data-i18n-aria="about_close_aria" aria-label="Close about">&times;</button>
             <h2 data-i18n="about_title"></h2>
             <div class="modal-section">
-                <p><strong data-i18n="about_description_1_strong"></strong><span data-i18n="about_description_1_body"></span></p>
+                <p><strong data-i18n="about_description_1_strong"></strong><span
+                        data-i18n="about_description_1_body"></span></p>
                 <p data-i18n="about_description_2"></p>
             </div>
             <div class="modal-section">
@@ -262,13 +276,18 @@
             </div>
             <div class="modal-section">
                 <h3 data-i18n="about_feedback_heading"></h3>
-                <p><span data-i18n="about_feedback_prefix"></span><a id="githubIssuesLink" href="https://github.com/AvinZarlez/penthepet/issues" target="_blank" rel="noopener noreferrer" data-i18n="about_feedback_link"></a><span data-i18n="about_feedback_suffix"></span></p>
+                <p><span data-i18n="about_feedback_prefix"></span><a id="githubIssuesLink"
+                        href="https://github.com/AvinZarlez/penthepet/issues" target="_blank" rel="noopener noreferrer"
+                        data-i18n="about_feedback_link"></a><span data-i18n="about_feedback_suffix"></span></p>
             </div>
             <div class="modal-section">
                 <h3 data-i18n="about_credits_heading"></h3>
-                <p><span data-i18n="about_credits_1_prefix"></span><a href="https://www.AvinZarlez.com" target="_blank" rel="noopener noreferrer" data-i18n="about_credits_1_link"></a></p>
-                <p><a id="githubProjectLink" href="https://github.com/AvinZarlez/penthepet" target="_blank" rel="noopener noreferrer" data-i18n="about_view_github"></a></p>
-                <p><a href="PRIVACY_POLICY.md" target="_blank" rel="noopener noreferrer" data-i18n="about_privacy_policy"></a></p>
+                <p><span data-i18n="about_credits_1_prefix"></span><a href="https://www.AvinZarlez.com" target="_blank"
+                        rel="noopener noreferrer" data-i18n="about_credits_1_link"></a></p>
+                <p><a id="githubProjectLink" href="https://github.com/AvinZarlez/penthepet" target="_blank"
+                        rel="noopener noreferrer" data-i18n="about_view_github"></a></p>
+                <p><a href="PRIVACY_POLICY.md" target="_blank" rel="noopener noreferrer"
+                        data-i18n="about_privacy_policy"></a></p>
                 <p data-i18n="about_copyright"></p>
             </div>
         </div>
@@ -312,7 +331,8 @@
 
                 <!-- Full-width: Localization (two-col inside) -->
                 <div class="options-full-section options-section-gap">
-                    <h3 class="options-group-label options-group-label-wide" data-i18n="options_localization_label"></h3>
+                    <h3 class="options-group-label options-group-label-wide" data-i18n="options_localization_label">
+                    </h3>
                     <div class="options-two-col">
                         <div class="option-item">
                             <label for="modalTimezone" data-i18n="options_timezone_label"></label>
@@ -332,18 +352,25 @@
             </div>
 
             <!-- Full-width: Accounts -->
-            <div id="optionsAccountSection" class="modal-section options-account-section options-section-gap" style="display: none;">
+            <div id="optionsAccountSection" class="modal-section options-account-section options-section-gap"
+                style="display: none;">
                 <h3 data-i18n="options_account_heading"></h3>
                 <div id="optionsAccountSignedOut">
-                    <button class="options-account-btn" data-i18n="options_sign_in_to_sync" onclick="CloudSync.openAuthModal()"></button>
+                    <button class="options-account-btn" data-i18n="options_sign_in_to_sync"
+                        onclick="CloudSync.openAuthModal()"></button>
                 </div>
                 <div id="optionsAccountSignedIn" style="display: none;">
-                    <p class="options-account-info"><span data-i18n="options_signed_in_as"></span> <strong id="optionsUsername"></strong></p>
+                    <p class="options-account-info"><span data-i18n="options_signed_in_as"></span> <strong
+                            id="optionsUsername"></strong></p>
                     <div class="options-account-buttons">
-                        <button class="options-account-btn" data-i18n="options_edit_profile" onclick="CloudSync.openEditProfileModal()"></button>
-                        <button class="options-account-btn" data-i18n="options_sign_out" onclick="CloudSync.handleSignOut()"></button>
-                        <button class="options-account-btn" data-i18n="options_download_my_data" onclick="CloudSync.handleDownloadMyData()"></button>
-                        <button class="options-account-btn options-account-delete" data-i18n="options_delete_cloud_data" onclick="CloudSync.handleDeleteAllCloudData()"></button>
+                        <button class="options-account-btn" data-i18n="options_edit_profile"
+                            onclick="CloudSync.openEditProfileModal()"></button>
+                        <button class="options-account-btn" data-i18n="options_sign_out"
+                            onclick="CloudSync.handleSignOut()"></button>
+                        <button class="options-account-btn" data-i18n="options_download_my_data"
+                            onclick="CloudSync.handleDownloadMyData()"></button>
+                        <button class="options-account-btn options-account-delete" data-i18n="options_delete_cloud_data"
+                            onclick="CloudSync.handleDeleteAllCloudData()"></button>
                     </div>
                 </div>
             </div>
@@ -353,26 +380,34 @@
     <!-- Edit Profile Modal -->
     <div id="editProfileModal" class="modal">
         <div class="modal-content cloud-sync-modal-content">
-            <button class="modal-close" data-i18n-aria="edit_profile_close_aria" aria-label="Close edit profile" onclick="CloudSync.closeEditProfileModal()">&times;</button>
+            <button class="modal-close" data-i18n-aria="edit_profile_close_aria" aria-label="Close edit profile"
+                onclick="CloudSync.closeEditProfileModal()">&times;</button>
             <h2 data-i18n="edit_profile_title"></h2>
             <p class="modal-description" data-i18n="edit_profile_description"></p>
             <div class="auth-form">
                 <label for="profileUsername" data-i18n="edit_profile_username_label"></label>
-                <input type="text" id="profileUsername" class="auth-input" data-i18n-placeholder="edit_profile_username_placeholder" placeholder="Your display name" autocomplete="username">
+                <input type="text" id="profileUsername" class="auth-input"
+                    data-i18n-placeholder="edit_profile_username_placeholder" placeholder="Your display name"
+                    autocomplete="username">
                 <label for="profileEmail" data-i18n="edit_profile_email_label"></label>
-                <input type="email" id="profileEmail" class="auth-input" data-i18n-placeholder="edit_profile_email_placeholder" placeholder="you@example.com" autocomplete="email">
+                <input type="email" id="profileEmail" class="auth-input"
+                    data-i18n-placeholder="edit_profile_email_placeholder" placeholder="you@example.com"
+                    autocomplete="email">
                 <div class="profile-linked-accounts">
                     <p class="profile-section-label" data-i18n="edit_profile_connected_heading"></p>
                     <div class="linked-account-row">
                         <span class="linked-account-name" data-i18n="edit_profile_google"></span>
-                        <button id="linkGoogleBtn" class="auth-btn auth-btn-secondary auth-btn-sm" data-i18n="edit_profile_connect" onclick="CloudSync.handleLinkWithGoogle()"></button>
+                        <button id="linkGoogleBtn" class="auth-btn auth-btn-secondary auth-btn-sm"
+                            data-i18n="edit_profile_connect" onclick="CloudSync.handleLinkWithGoogle()"></button>
                     </div>
                 </div>
                 <div id="profileError" class="auth-error" style="display: none;"></div>
                 <div id="profileSuccess" class="profile-success" style="display: none;"></div>
                 <div class="auth-buttons">
-                    <button id="profileSaveBtn" class="auth-btn auth-btn-primary" data-i18n="edit_profile_save" onclick="CloudSync.handleSaveProfile()"></button>
-                    <button class="auth-btn auth-btn-secondary" data-i18n="edit_profile_cancel" onclick="CloudSync.closeEditProfileModal()"></button>
+                    <button id="profileSaveBtn" class="auth-btn auth-btn-primary" data-i18n="edit_profile_save"
+                        onclick="CloudSync.handleSaveProfile()"></button>
+                    <button class="auth-btn auth-btn-secondary" data-i18n="edit_profile_cancel"
+                        onclick="CloudSync.closeEditProfileModal()"></button>
                 </div>
             </div>
         </div>
@@ -381,19 +416,25 @@
     <!-- Cloud Sync Auth Modal -->
     <div id="cloudSyncModal" class="modal">
         <div class="modal-content cloud-sync-modal-content">
-            <button class="modal-close" data-i18n-aria="cloud_sync_modal_close_aria" aria-label="Close sign in" onclick="CloudSync.closeAuthModal()">&times;</button>
+            <button class="modal-close" data-i18n-aria="cloud_sync_modal_close_aria" aria-label="Close sign in"
+                onclick="CloudSync.closeAuthModal()">&times;</button>
             <h2 data-i18n="cloud_sync_modal_title"></h2>
             <p class="modal-description" data-i18n="cloud_sync_modal_description"></p>
             <div class="auth-form">
-                <button id="authGoogleBtn" class="auth-oauth-btn auth-oauth-google" onclick="CloudSync.handleSignInWithGoogle()">
-                    <span class="auth-oauth-icon" aria-hidden="true">G</span> <span data-i18n="cloud_sync_sign_in_google"></span>
+                <button id="authGoogleBtn" class="auth-oauth-btn auth-oauth-google"
+                    onclick="CloudSync.handleSignInWithGoogle()">
+                    <span class="auth-oauth-icon" aria-hidden="true">G</span> <span
+                        data-i18n="cloud_sync_sign_in_google"></span>
                 </button>
                 <div class="auth-divider"><span data-i18n="cloud_sync_or_email"></span></div>
                 <label for="authEmailLink" data-i18n="cloud_sync_email_label"></label>
-                <input type="email" id="authEmailLink" class="auth-input" data-i18n-placeholder="cloud_sync_email_placeholder" placeholder="you@example.com" autocomplete="email">
+                <input type="email" id="authEmailLink" class="auth-input"
+                    data-i18n-placeholder="cloud_sync_email_placeholder" placeholder="you@example.com"
+                    autocomplete="email">
                 <div id="authLinkError" class="auth-error" style="display: none;"></div>
                 <div id="authLinkSuccess" class="profile-success" style="display: none;"></div>
-                <button id="authSendLinkBtn" class="auth-btn auth-btn-primary" data-i18n="cloud_sync_send_link" onclick="CloudSync.handleSendSignInLink()"></button>
+                <button id="authSendLinkBtn" class="auth-btn auth-btn-primary" data-i18n="cloud_sync_send_link"
+                    onclick="CloudSync.handleSendSignInLink()"></button>
             </div>
         </div>
     </div>
@@ -401,11 +442,14 @@
     <!-- Sync Error Modal -->
     <div id="syncErrorModal" class="modal">
         <div class="modal-content">
-            <button class="modal-close" data-i18n-aria="sync_error_close_aria" aria-label="Close sync error">&times;</button>
+            <button class="modal-close" data-i18n-aria="sync_error_close_aria"
+                aria-label="Close sync error">&times;</button>
             <h2 data-i18n="sync_error_title"></h2>
             <p data-i18n="sync_error_text"></p>
             <pre id="syncErrorMessage" class="sync-error-details"></pre>
-            <p><span data-i18n="sync_error_contact_prefix"></span><a id="syncErrorIssueLink" href="https://github.com/AvinZarlez/penthepet/issues" target="_blank" rel="noopener noreferrer" data-i18n="sync_error_contact_link"></a><span data-i18n="sync_error_contact_suffix"></span></p>
+            <p><span data-i18n="sync_error_contact_prefix"></span><a id="syncErrorIssueLink"
+                    href="https://github.com/AvinZarlez/penthepet/issues" target="_blank" rel="noopener noreferrer"
+                    data-i18n="sync_error_contact_link"></a><span data-i18n="sync_error_contact_suffix"></span></p>
         </div>
     </div>
 
@@ -433,4 +477,5 @@
     <script src="js/Menu.js"></script>
     <script src="js/main.js"></script>
 </body>
+
 </html>
