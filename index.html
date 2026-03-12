@@ -81,7 +81,7 @@
                 <span id="wallCounter" class="counter-value">0 / 9</span>
             </div>
             <button id="timerBtn" class="timer-btn" data-i18n-title="timer_pause_title"
-                data-i18n-aria="timer_pause_aria" title="Pause timer" aria-label="Pause timer">
+                data-i18n-aria="timer_pause_title" title="Pause timer" aria-label="Pause timer">
                 <span id="timerValue" class="timer-value">00:00</span>
                 <span id="timerIcon" class="timer-icon" aria-hidden="true">⏸</span>
             </button>
@@ -136,7 +136,7 @@
         <!-- Hints Row: Hint Button + Hints Used Text (centered) -->
         <div class="controls-hints">
             <button id="hintCheckBtn" class="hint-check-btn" style="display: none;" disabled
-                data-i18n-title="hint_check_title_disabled" data-i18n-aria="hint_check_aria"
+                data-i18n-title="hint_check_title_not_penned" data-i18n-aria="hint_check_label"
                 title="Pen the pet first to check your solution" aria-label="Check if optimal">
                 <span class="hint-check-label" data-i18n="hint_check_label"></span>
             </button>
@@ -236,14 +236,14 @@
                 <h3 data-i18n="instructions_hints_heading"></h3>
                 <ul>
                     <li><span data-i18n="instructions_hints_1_prefix"></span><strong
-                            data-i18n="instructions_hints_1_strong"></strong><span
+                            data-i18n="hint_check_label"></strong><span
                             data-i18n="instructions_hints_1_suffix"></span></li>
                     <li data-i18n="instructions_hints_2"></li>
                     <li><span data-i18n="instructions_hints_3_prefix"></span><strong
-                            data-i18n="instructions_hints_3_strong"></strong><span
+                            data-i18n="hint_reveal_target"></strong><span
                             data-i18n="instructions_hints_3_suffix"></span></li>
                     <li><span data-i18n="instructions_hints_4_prefix"></span><strong
-                            data-i18n="instructions_hints_4_strong"></strong><span
+                            data-i18n="options_title"></strong><span
                             data-i18n="instructions_hints_4_suffix"></span></li>
                 </ul>
             </div>
@@ -389,9 +389,9 @@
                 <input type="text" id="profileUsername" class="auth-input"
                     data-i18n-placeholder="edit_profile_username_placeholder" placeholder="Your display name"
                     autocomplete="username">
-                <label for="profileEmail" data-i18n="edit_profile_email_label"></label>
+                <label for="profileEmail" data-i18n="label_email"></label>
                 <input type="email" id="profileEmail" class="auth-input"
-                    data-i18n-placeholder="edit_profile_email_placeholder" placeholder="you@example.com"
+                    data-i18n-placeholder="placeholder_email" placeholder="you@example.com"
                     autocomplete="email">
                 <div class="profile-linked-accounts">
                     <p class="profile-section-label" data-i18n="edit_profile_connected_heading"></p>
@@ -427,9 +427,9 @@
                         data-i18n="cloud_sync_sign_in_google"></span>
                 </button>
                 <div class="auth-divider"><span data-i18n="cloud_sync_or_email"></span></div>
-                <label for="authEmailLink" data-i18n="cloud_sync_email_label"></label>
+                <label for="authEmailLink" data-i18n="label_email"></label>
                 <input type="email" id="authEmailLink" class="auth-input"
-                    data-i18n-placeholder="cloud_sync_email_placeholder" placeholder="you@example.com"
+                    data-i18n-placeholder="placeholder_email" placeholder="you@example.com"
                     autocomplete="email">
                 <div id="authLinkError" class="auth-error" style="display: none;"></div>
                 <div id="authLinkSuccess" class="profile-success" style="display: none;"></div>

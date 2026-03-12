@@ -45,7 +45,6 @@ const LANGUAGES = {
 
         // ── Timer ─────────────────────────────────────────────────────────
         timer_pause_title: 'Pause timer',
-        timer_pause_aria: 'Pause timer',
         timer_resume_title: 'Click Resume to continue',
         timer_locked_title: 'Timer locked after submission',
         timer_pause_icon: '⏸',
@@ -59,9 +58,7 @@ const LANGUAGES = {
         btn_begin: '▶ Begin',
 
         // ── Hint Button ───────────────────────────────────────────────────
-        hint_check_label: 'Check if Optimal',
-        hint_check_aria: 'Check if optimal',
-        hint_check_title_disabled: 'Pen the pet first to check your solution',
+        hint_check_label: 'Check if optimal',
         hint_check_title_penned: 'Check if your solution is optimal',
         hint_check_title_not_penned: 'Pen the pet first to check your solution',
         hint_reveal_target: 'Reveal Target',
@@ -113,7 +110,6 @@ const LANGUAGES = {
 
         // ── Roam Viewer Sidebar ───────────────────────────────────────────
         viewer_header: "Your Solution's Score:",
-        metric_label_yours: "Your Solution's Score:",
         metric_helper: 'yellow tiles counted',
         btn_copy_score: '📋 Copy Score',
         btn_back_to_game: 'Back to Game',
@@ -183,14 +179,11 @@ const LANGUAGES = {
         instructions_scoring_6: 'After submission, you can view the optimal solution to compare',
         instructions_hints_heading: 'Hint System',
         instructions_hints_1_prefix: 'When a pet is penned, you can press the ',
-        instructions_hints_1_strong: 'Check if Optimal',
         instructions_hints_1_suffix: ' button to tell you whether your current score is the optimal solution.',
         instructions_hints_2: 'The score display will be yellow 🟡 if below `<` the optimal score. It will turn green 🟢 when the correct answer is found `✅`.',
         instructions_hints_3_prefix: 'If enabled, after checking the first hint, you can get further help by pressing ',
-        instructions_hints_3_strong: 'Reveal Target',
         instructions_hints_3_suffix: ' to see the optimal solution alongside your current score.',
         instructions_hints_4_prefix: 'You can disable hints entirely from the ',
-        instructions_hints_4_strong: 'Options',
         instructions_hints_4_suffix: ' menu.',
         instructions_options_heading: 'Options',
         instructions_options_text: 'You can customize your pet type and hint preferences in the Options menu. Your preferences are saved automatically.',
@@ -249,14 +242,16 @@ const LANGUAGES = {
         cloud_sync_synced: '☁️ Synced',
         cloud_sync_error: '⚠️ Sync error',
 
+        // ── Shared Form Fields ────────────────────────────────────────────
+        label_email: 'Email',
+        placeholder_email: 'you@example.com',
+
         // ── Edit Profile Modal ────────────────────────────────────────────
         edit_profile_title: '✏️ Edit Profile',
         edit_profile_close_aria: 'Close edit profile',
         edit_profile_description: 'Update your username or email address',
         edit_profile_username_label: 'Username',
         edit_profile_username_placeholder: 'Your display name',
-        edit_profile_email_label: 'Email',
-        edit_profile_email_placeholder: 'you@example.com',
         edit_profile_connected_heading: 'Connected accounts',
         edit_profile_google: 'Google',
         edit_profile_connect: 'Connect',
@@ -269,8 +264,6 @@ const LANGUAGES = {
         cloud_sync_modal_description: 'Sign in to sync your puzzle progress across devices',
         cloud_sync_sign_in_google: 'Sign in with Google',
         cloud_sync_or_email: 'or use email link',
-        cloud_sync_email_label: 'Email',
-        cloud_sync_email_placeholder: 'you@example.com',
         cloud_sync_send_link: 'Send Sign-In Link',
 
         // ── Sync Error Modal ──────────────────────────────────────────────
@@ -331,7 +324,6 @@ const LANGUAGES = {
 
         // ── Timer ─────────────────────────────────────────────────────────
         timer_pause_title: 'Pausar temporizador',
-        timer_pause_aria: 'Pausar temporizador',
         timer_resume_title: 'Haz clic en Reanudar para continuar',
         timer_locked_title: 'Temporizador bloqueado tras el envío',
         timer_pause_icon: '⏸',
@@ -346,8 +338,6 @@ const LANGUAGES = {
 
         // ── Hint Button ───────────────────────────────────────────────────
         hint_check_label: 'Verificar si es óptimo',
-        hint_check_aria: 'Verificar si es óptimo',
-        hint_check_title_disabled: 'Primero encierra a la mascota para verificar tu solución',
         hint_check_title_penned: 'Verificar si tu solución es óptima',
         hint_check_title_not_penned: 'Primero encierra a la mascota para verificar tu solución',
         hint_reveal_target: 'Revelar objetivo',
@@ -399,7 +389,6 @@ const LANGUAGES = {
 
         // ── Roam Viewer Sidebar ───────────────────────────────────────────
         viewer_header: 'Puntuación de tu solución:',
-        metric_label_yours: 'Puntuación de tu solución:',
         metric_helper: 'casillas amarillas contadas',
         btn_copy_score: '📋 Copiar puntuación',
         btn_back_to_game: 'Volver al juego',
@@ -469,14 +458,11 @@ const LANGUAGES = {
         instructions_scoring_6: 'Tras el envío, puedes ver la solución óptima para comparar',
         instructions_hints_heading: 'Sistema de pistas',
         instructions_hints_1_prefix: 'Cuando la mascota está encerrada, puedes pulsar el botón ',
-        instructions_hints_1_strong: 'Verificar si es óptimo',
         instructions_hints_1_suffix: ' para saber si tu puntuación actual es la solución óptima.',
         instructions_hints_2: 'La puntuación será amarilla 🟡 si está por debajo `<` de la puntuación óptima. Se volverá verde 🟢 cuando encuentres la respuesta correcta `✅`.',
         instructions_hints_3_prefix: 'Si está habilitado, tras comprobar la primera pista, puedes obtener más ayuda pulsando ',
-        instructions_hints_3_strong: 'Revelar objetivo',
         instructions_hints_3_suffix: ' para ver la solución óptima junto a tu puntuación actual.',
         instructions_hints_4_prefix: 'Puedes desactivar las pistas completamente desde el menú de ',
-        instructions_hints_4_strong: 'Opciones',
         instructions_hints_4_suffix: '.',
         instructions_options_heading: 'Opciones',
         instructions_options_text: 'Puedes personalizar el tipo de mascota y las preferencias de pistas en el menú de Opciones. Tus preferencias se guardan automáticamente.',
@@ -535,14 +521,16 @@ const LANGUAGES = {
         cloud_sync_synced: '☁️ Sincronizado',
         cloud_sync_error: '⚠️ Error de sincronización',
 
+        // ── Shared Form Fields ────────────────────────────────────────────
+        label_email: 'Correo electrónico',
+        placeholder_email: 'tu@ejemplo.com',
+
         // ── Edit Profile Modal ────────────────────────────────────────────
         edit_profile_title: '✏️ Editar perfil',
         edit_profile_close_aria: 'Cerrar editar perfil',
         edit_profile_description: 'Actualiza tu nombre de usuario o dirección de correo',
         edit_profile_username_label: 'Nombre de usuario',
         edit_profile_username_placeholder: 'Tu nombre para mostrar',
-        edit_profile_email_label: 'Correo electrónico',
-        edit_profile_email_placeholder: 'tu@ejemplo.com',
         edit_profile_connected_heading: 'Cuentas conectadas',
         edit_profile_google: 'Google',
         edit_profile_connect: 'Conectar',
@@ -555,8 +543,6 @@ const LANGUAGES = {
         cloud_sync_modal_description: 'Inicia sesión para sincronizar tu progreso entre dispositivos',
         cloud_sync_sign_in_google: 'Iniciar sesión con Google',
         cloud_sync_or_email: 'o usa un enlace por correo',
-        cloud_sync_email_label: 'Correo electrónico',
-        cloud_sync_email_placeholder: 'tu@ejemplo.com',
         cloud_sync_send_link: 'Enviar enlace de inicio de sesión',
 
         // ── Sync Error Modal ──────────────────────────────────────────────

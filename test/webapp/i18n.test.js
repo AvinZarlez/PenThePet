@@ -199,7 +199,7 @@ describe('I18N.applyTranslations()', () => {
             <span id="a" data-i18n="status_unsolved">Unsolved</span>
             <p id="b"><strong data-i18n="about_description_1_strong"></strong><span data-i18n="about_description_1_body"></span></p>
             <button id="c" data-i18n-title="timer_pause_title" title="Pause timer"></button>
-            <button id="d" data-i18n-aria="hint_check_aria" aria-label="Check if optimal"></button>
+            <button id="d" data-i18n-aria="hint_check_label" aria-label="Check if optimal"></button>
             <input id="e" data-i18n-placeholder="edit_profile_username_placeholder" placeholder="Your display name">
         `;
     });
