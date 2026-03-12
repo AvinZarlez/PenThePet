@@ -643,23 +643,59 @@ class Game {
     /**
      * Animate paw prints appearing one step at a time along the escape path.
      * Each tile in the ordered path (from home to the grid edge) gets its paw
-     * overlay after an incremental delay, creating a "walking" effect.
+     * overlay after an incremental delay, creating a "walking" effect. After
+     * each paw has been visible for PAW_FADE_OUT_DELAY_MS it fades out and is
+     * removed. Once all paws have disappeared the animation loops from the start.
      * @param {Array<string>} orderedPath - Ordered array of "row,col" coordinate strings
      * @param {Map} directions - Map of coordinate strings to rotation angles
      */
     _animatePawPath(orderedPath, directions) {
         const delay = CONSTANTS.PAW_ANIMATION_DELAY_MS;
+        const fadeDelay = CONSTANTS.PAW_FADE_OUT_DELAY_MS;
+        const fadeDuration = CONSTANTS.PAW_FADE_OUT_DURATION_MS;
+
         orderedPath.forEach((coordKey, stepIndex) => {
             const [row, col] = coordKey.split(',').map(Number);
-            const timeoutId = setTimeout(() => {
+
+            // Show paw
+            const showId = setTimeout(() => {
                 const cell = this.gridElement.querySelector(`[data-row="${row}"][data-col="${col}"]`);
                 if (cell) {
                     const angle = directions && directions.has(coordKey) ? directions.get(coordKey) : 0;
                     this._addPawOverlays(cell, this.grid.getTile(row, col), angle);
                 }
             }, stepIndex * delay);
-            this._pawAnimationTimeouts.push(timeoutId);
+            this._pawAnimationTimeouts.push(showId);
+
+            // Start fading the paw out
+            const fadeId = setTimeout(() => {
+                const cell = this.gridElement.querySelector(`[data-row="${row}"][data-col="${col}"]`);
+                if (cell) {
+                    cell.querySelectorAll('.paw-overlay, .paw-overlay-emoji').forEach(el => {
+                        el.classList.add('paw-fading');
+                    });
+                }
+            }, stepIndex * delay + fadeDelay);
+            this._pawAnimationTimeouts.push(fadeId);
+
+            // Remove paw DOM elements after the fade-out animation completes
+            const removeId = setTimeout(() => {
+                const cell = this.gridElement.querySelector(`[data-row="${row}"][data-col="${col}"]`);
+                if (cell) {
+                    cell.querySelectorAll('.paw-overlay, .paw-overlay-emoji').forEach(el => el.remove());
+                }
+            }, stepIndex * delay + fadeDelay + fadeDuration);
+            this._pawAnimationTimeouts.push(removeId);
         });
+
+        // Restart the whole animation after every paw has faded out
+        if (orderedPath.length > 0) {
+            const restartDelay = (orderedPath.length - 1) * delay + fadeDelay + fadeDuration;
+            const restartId = setTimeout(() => {
+                this._animatePawPath(orderedPath, directions);
+            }, restartDelay);
+            this._pawAnimationTimeouts.push(restartId);
+        }
     }
 
     /**

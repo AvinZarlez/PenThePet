@@ -508,6 +508,19 @@
     animation: pennedReveal 0.15s ease-out;
 }
 
+/* Fade-out animation for paw removal */
+@keyframes pawFadeOut {
+    to {
+        opacity: 0;
+    }
+}
+
+.cell .paw-overlay.paw-fading,
+.cell .paw-overlay-emoji.paw-fading {
+    /* Duration must match PAW_FADE_OUT_DURATION_MS in constants.js */
+    animation: pawFadeOut 0.3s ease-in forwards;
+}
+
 .cell:hover {
     transform: scale(1.05);
     box-shadow: 0 3px 8px rgba(0, 0, 0, 0.4);
