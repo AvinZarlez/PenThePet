@@ -701,6 +701,51 @@
     color: #e8665a;
 }
 
+/* Tile tooltip thought bubble — fades in, floats up, fades out on tap of non-clickable tile */
+@keyframes tileTooltipFloat {
+    0% {
+        opacity: 0;
+        transform: translateX(-50%) translateY(0);
+    }
+
+    12% {
+        opacity: 1;
+        transform: translateX(-50%) translateY(-20%);
+    }
+
+    70% {
+        opacity: 1;
+        transform: translateX(-50%) translateY(-40%);
+    }
+
+    100% {
+        opacity: 0;
+        transform: translateX(-50%) translateY(-70%);
+    }
+}
+
+.cell .tile-tooltip {
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--surface-bg, #22253c);
+    color: var(--text-primary, #eceef8);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 10px;
+    padding: 5px 9px;
+    font-size: clamp(0.6em, calc(var(--cell-size, 50px) / 26), 0.85em);
+    font-weight: 600;
+    white-space: normal;
+    text-align: center;
+    width: max-content;
+    max-width: 180px;
+    pointer-events: none;
+    z-index: 25;
+    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.5);
+    animation: tileTooltipFloat var(--tile-tooltip-duration, 2.5s) ease-out forwards;
+}
+
 /* Emoji/text tile overlays */
 .cell .tile-overlay-emoji {
     position: absolute;

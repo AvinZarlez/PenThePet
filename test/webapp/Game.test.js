@@ -1933,4 +1933,134 @@ describe('Game — Reset & Hint button visibility after submission', () => {
             expect(display.style.display).toBe('none');
         });
     });
+
+    // ------------------------------------------------------------------
+    // _showTileTooltip
+    // ------------------------------------------------------------------
+    describe('_showTileTooltip()', () => {
+        test('appends a .tile-tooltip element to the cell', () => {
+            game.render();
+            const cell = game.gridElement.querySelector('[data-row="0"][data-col="0"]');
+            game._showTileTooltip(cell, 'water');
+            const tooltip = cell.querySelector('.tile-tooltip');
+            expect(tooltip).not.toBeNull();
+        });
+
+        test('tooltip text is the tile description', () => {
+            game.render();
+            const cell = game.gridElement.querySelector('[data-row="0"][data-col="0"]');
+            game._showTileTooltip(cell, 'star');
+            const tooltip = cell.querySelector('.tile-tooltip');
+            expect(tooltip.textContent).toBeTruthy();
+            expect(tooltip.textContent.length).toBeGreaterThan(0);
+        });
+
+        test('tooltip has aria-hidden="true"', () => {
+            game.render();
+            const cell = game.gridElement.querySelector('[data-row="0"][data-col="0"]');
+            game._showTileTooltip(cell, 'bee');
+            const tooltip = cell.querySelector('.tile-tooltip');
+            expect(tooltip.getAttribute('aria-hidden')).toBe('true');
+        });
+
+        test('removes existing tooltip on cell before adding a new one', () => {
+            game.render();
+            const cell = game.gridElement.querySelector('[data-row="0"][data-col="0"]');
+            game._showTileTooltip(cell, 'water');
+            game._showTileTooltip(cell, 'water');
+            const tooltips = cell.querySelectorAll('.tile-tooltip');
+            expect(tooltips.length).toBe(1);
+        });
+
+        test('tooltip registers auto-removal using TILE_TOOLTIP_DURATION_MS', () => {
+            const cell = document.createElement('div');
+            cell.className = 'cell';
+            document.body.appendChild(cell);
+
+            const spyTimeout = jest.spyOn(global, 'setTimeout');
+            game._showTileTooltip(cell, 'home');
+
+            // Verify a timeout was registered with the correct duration
+            const durations = spyTimeout.mock.calls.map(([, delay]) => delay);
+            expect(durations).toContain(CONSTANTS.TILE_TOOLTIP_DURATION_MS);
+
+            spyTimeout.mockRestore();
+            cell.remove();
+        });
+
+        test('does nothing for an unknown tile type', () => {
+            game.render();
+            const cell = game.gridElement.querySelector('[data-row="0"][data-col="0"]');
+            game._showTileTooltip(cell, 'nonexistent_tile');
+            expect(cell.querySelector('.tile-tooltip')).toBeNull();
+        });
+    });
+
+    // ------------------------------------------------------------------
+    // handleCellClick tooltip for non-clickable tiles
+    // ------------------------------------------------------------------
+    describe('handleCellClick() — tooltip for non-clickable tiles', () => {
+        test('clicking a water tile shows a tooltip', () => {
+            const tiles = Array.from({ length: 7 }, () => Array(7).fill('grass'));
+            tiles[3][3] = 'home';
+            tiles[0][0] = 'water';
+            game.grid.loadMap(tiles);
+            game.grid.saveInitialState();
+            game.render();
+            game.handleCellClick(0, 0);
+            const cell = game.gridElement.querySelector('[data-row="0"][data-col="0"]');
+            expect(cell.querySelector('.tile-tooltip')).not.toBeNull();
+        });
+
+        test('clicking a home tile shows a tooltip', () => {
+            game.render();
+            game.handleCellClick(3, 3);
+            const cell = game.gridElement.querySelector('[data-row="3"][data-col="3"]');
+            expect(cell.querySelector('.tile-tooltip')).not.toBeNull();
+        });
+
+        test('clicking a grass tile does NOT show a tooltip', () => {
+            game.render();
+            game.handleCellClick(0, 0);
+            const cell = game.gridElement.querySelector('[data-row="0"][data-col="0"]');
+            expect(cell.querySelector('.tile-tooltip')).toBeNull();
+        });
+
+        test('clicking a star tile shows a tooltip', () => {
+            const tiles = Array.from({ length: 7 }, () => Array(7).fill('grass'));
+            tiles[3][3] = 'home';
+            tiles[0][0] = 'star';
+            game.grid.loadMap(tiles);
+            game.grid.saveInitialState();
+            game.render();
+            game.handleCellClick(0, 0);
+            const cell = game.gridElement.querySelector('[data-row="0"][data-col="0"]');
+            expect(cell.querySelector('.tile-tooltip')).not.toBeNull();
+        });
+
+        test('clicking a bee tile shows a tooltip', () => {
+            const tiles = Array.from({ length: 7 }, () => Array(7).fill('grass'));
+            tiles[3][3] = 'home';
+            tiles[0][0] = 'bee';
+            game.grid.loadMap(tiles);
+            game.grid.saveInitialState();
+            game.render();
+            game.handleCellClick(0, 0);
+            const cell = game.gridElement.querySelector('[data-row="0"][data-col="0"]');
+            expect(cell.querySelector('.tile-tooltip')).not.toBeNull();
+        });
+
+        test('no tooltip shown when game is already submitted', () => {
+            const tiles = Array.from({ length: 7 }, () => Array(7).fill('grass'));
+            tiles[3][3] = 'home';
+            tiles[0][0] = 'water';
+            game.grid.loadMap(tiles);
+            game.grid.saveInitialState();
+            game.render();
+            game.isSubmitted = true;
+            game.handleCellClick(0, 0);
+            const cell = game.gridElement.querySelector('[data-row="0"][data-col="0"]');
+            expect(cell.querySelector('.tile-tooltip')).toBeNull();
+        });
+    });
 });
