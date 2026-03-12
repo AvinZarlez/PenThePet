@@ -92,7 +92,7 @@ const LANGUAGES = {
         score_infinity: '∞',
 
         // ── Best State Banner ─────────────────────────────────────────────
-        best_so_far_none: 'Best So Far: None',
+        best_so_far_none: 'Pet Not Penned',
         best_so_far: 'Best So Far: {score}',
         best_so_far_title_none: 'Pen the pet to record your best score',
         best_so_far_title: 'Click to restore your best wall placement',
@@ -379,7 +379,7 @@ const LANGUAGES = {
         score_infinity: '∞',
 
         // ── Best State Banner ─────────────────────────────────────────────
-        best_so_far_none: 'Mejor hasta ahora: Ninguno',
+        best_so_far_none: 'Mascota no encerrada',
         best_so_far: 'Mejor hasta ahora: {score}',
         best_so_far_title_none: 'Encierra a la mascota para registrar tu mejor puntuación',
         best_so_far_title: 'Haz clic para restaurar tu mejor colocación de muros',

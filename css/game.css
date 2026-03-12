@@ -168,6 +168,7 @@
 .controls-top .score-display {
     justify-self: end;
 }
+
 .controls-bottom .best-state-wrapper {
     justify-self: end;
     display: flex;
@@ -204,7 +205,7 @@
 
 /* ========== Reset Button ========== */
 #resetBtn {
-    padding: 0 20px;
+    padding: 0 16px;
 }
 
 #resetBtn:hover:not(:disabled) {
@@ -246,9 +247,9 @@
 .counter-label {
     color: var(--text-on-surface);
     font-size: 0.75em;
-    white-space: nowrap;
+    white-space: wrap;
     overflow: hidden;
-    text-overflow: ellipsis;
+    text-overflow: clip;
     max-width: 100%;
 }
 
@@ -488,8 +489,13 @@
 
 /* Brief fade-in when a cell becomes part of the penned area */
 @keyframes pennedReveal {
-    from { opacity: 0.4; }
-    to   { opacity: 1;   }
+    from {
+        opacity: 0.4;
+    }
+
+    to {
+        opacity: 1;
+    }
 }
 
 .cell.penned {
@@ -605,15 +611,41 @@
 
 /* Floating animation for top-layer tile overlays (e.g. star, bee) */
 @keyframes tileFloat {
-    0%   { transform: translate(-50%, -50%); }
-    15%  { transform: translate(calc(-50% + 3px), calc(-50% - 4px)); }
-    25%  { transform: translate(-50%, -50%); }
-    40%  { transform: translate(calc(-50% - 3px), calc(-50% + 4px)); }
-    50%  { transform: translate(-50%, -50%); }
-    65%  { transform: translate(calc(-50% - 3px), calc(-50% - 4px)); }
-    75%  { transform: translate(-50%, -50%); }
-    90%  { transform: translate(calc(-50% + 3px), calc(-50% + 4px)); }
-    100% { transform: translate(-50%, -50%); }
+    0% {
+        transform: translate(-50%, -50%);
+    }
+
+    15% {
+        transform: translate(calc(-50% + 3px), calc(-50% - 4px));
+    }
+
+    25% {
+        transform: translate(-50%, -50%);
+    }
+
+    40% {
+        transform: translate(calc(-50% - 3px), calc(-50% + 4px));
+    }
+
+    50% {
+        transform: translate(-50%, -50%);
+    }
+
+    65% {
+        transform: translate(calc(-50% - 3px), calc(-50% - 4px));
+    }
+
+    75% {
+        transform: translate(-50%, -50%);
+    }
+
+    90% {
+        transform: translate(calc(-50% + 3px), calc(-50% + 4px));
+    }
+
+    100% {
+        transform: translate(-50%, -50%);
+    }
 }
 
 .cell .tile-overlay-float {
@@ -622,10 +654,25 @@
 
 /* Score modifier popup — fades in, floats up, fades out when a tile becomes penned */
 @keyframes scorePopupFloat {
-    0%   { opacity: 0;   transform: translateX(-50%) translateY(0); }
-    15%  { opacity: 1;   transform: translateX(-50%) translateY(-30%); }
-    75%  { opacity: 1;   transform: translateX(-50%) translateY(-160%); }
-    100% { opacity: 0;   transform: translateX(-50%) translateY(-220%); }
+    0% {
+        opacity: 0;
+        transform: translateX(-50%) translateY(0);
+    }
+
+    15% {
+        opacity: 1;
+        transform: translateX(-50%) translateY(-30%);
+    }
+
+    75% {
+        opacity: 1;
+        transform: translateX(-50%) translateY(-160%);
+    }
+
+    100% {
+        opacity: 0;
+        transform: translateX(-50%) translateY(-220%);
+    }
 }
 
 .cell .score-popup {
@@ -637,13 +684,13 @@
     font-size: clamp(0.75em, calc(var(--cell-size, 50px) / 22), 1.3em);
     pointer-events: none;
     z-index: 20;
-    white-space: nowrap;
+    white-space: wrap;
     animation: scorePopupFloat var(--score-popup-duration, 1.8s) ease-out forwards;
     text-shadow:
         -1px -1px 0 #000,
-         1px -1px 0 #000,
-        -1px  1px 0 #000,
-         1px  1px 0 #000;
+        1px -1px 0 #000,
+        -1px 1px 0 #000,
+        1px 1px 0 #000;
 }
 
 .cell .score-popup.positive {
@@ -671,10 +718,8 @@
     position: absolute;
     top: 0;
     left: 0;
-    transform: translate(
-        calc(var(--grid-padding, 3px) + var(--pet-col, 0) * (var(--cell-size, 50px) + var(--grid-gap, 3px)) + var(--cell-size, 50px) / 2 - 50%),
-        calc(var(--grid-padding, 3px) + var(--pet-row, 0) * (var(--cell-size, 50px) + var(--grid-gap, 3px)) + var(--cell-size, 50px) / 2 - 50%)
-    );
+    transform: translate(calc(var(--grid-padding, 3px) + var(--pet-col, 0) * (var(--cell-size, 50px) + var(--grid-gap, 3px)) + var(--cell-size, 50px) / 2 - 50%),
+            calc(var(--grid-padding, 3px) + var(--pet-row, 0) * (var(--cell-size, 50px) + var(--grid-gap, 3px)) + var(--cell-size, 50px) / 2 - 50%));
     font-size: clamp(8px, calc(var(--cell-size, 50px) * 0.65), 36px);
     line-height: 1;
     pointer-events: none;
@@ -812,7 +857,7 @@
     color: var(--warning-text);
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.4);
     margin: 10px 0;
-    white-space: nowrap;
+    white-space: wrap;
 }
 
 .metric-helper {
@@ -954,7 +999,7 @@
 }
 
 .debug-item button {
-    padding: 0 20px;
+    padding: 0 16px;
     height: var(--ctrl-height);
     background: linear-gradient(135deg, var(--debug-btn-start) 0%, var(--debug-btn-end) 100%);
     color: var(--text-on-accent);
@@ -1059,7 +1104,7 @@
     flex-direction: row;
     align-items: center;
     justify-content: center;
-    padding: 0 20px;
+    padding: 0 16px;
     height: var(--ctrl-height);
     width: var(--ctrl-hint-w, 195px);
     flex-shrink: 0;
@@ -1071,9 +1116,9 @@
     transition: all 0.3s ease;
     color: var(--text-on-surface);
     cursor: pointer;
-    white-space: nowrap;
+    white-space: wrap;
     overflow: hidden;
-    text-overflow: ellipsis;
+    text-overflow: clip;
 }
 
 .hint-check-btn:not(:disabled):hover {
@@ -1120,20 +1165,20 @@
 }
 
 .best-state-banner {
-    padding: 0 20px;
+    padding: 0 16px;
     width: 100%;
     text-align: center;
     transition: all 0.3s ease;
     cursor: not-allowed;
     overflow: hidden;
-    white-space: nowrap;
+    white-space: wrap;
 }
 
 /* Ensure the inner text span participates in ellipsis clipping */
 .best-state-label {
     overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+    text-overflow: clip;
+    white-space: wrap;
     min-width: 0;
 }
 
