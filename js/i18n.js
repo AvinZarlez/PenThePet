@@ -114,7 +114,6 @@ const LANGUAGES = {
         // ── Roam Viewer Sidebar ───────────────────────────────────────────
         viewer_header: "Your Solution's Score:",
         metric_label_yours: "Your Solution's Score:",
-        metric_label_roaming: 'Roaming Area Score',
         metric_helper: 'yellow tiles counted',
         btn_copy_score: '📋 Copy Score',
         btn_back_to_game: 'Back to Game',
@@ -401,7 +400,6 @@ const LANGUAGES = {
         // ── Roam Viewer Sidebar ───────────────────────────────────────────
         viewer_header: 'Puntuación de tu solución:',
         metric_label_yours: 'Puntuación de tu solución:',
-        metric_label_roaming: 'Puntuación del área de deambulación',
         metric_helper: 'casillas amarillas contadas',
         btn_copy_score: '📋 Copiar puntuación',
         btn_back_to_game: 'Volver al juego',
