@@ -1595,17 +1595,6 @@ class Game {
     }
 
     /**
-     * Briefly change the share button label then restore it.
-     * @param {HTMLElement} btn
-     * @param {string} message
-     */
-    _flashShareButton(btn, message) {
-        const original = btn.textContent;
-        btn.textContent = message;
-        setTimeout(() => { btn.textContent = original; }, CONSTANTS.SHARE_BUTTON_FLASH_MS);
-    }
-
-    /**
      * Add toggle button to switch between user and optimal solutions
      */
     addOptimalSolutionToggle() {
@@ -2512,7 +2501,6 @@ Game.PAUSE_HIDDEN_SELECTORS = [
     '.controls-bottom',
     '.controls-hints',
     '.grid-container',
-    '#notification',
     '#solutionToggleBar',
     '#roamSpaceViewer',
 ];
