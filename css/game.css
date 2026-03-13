@@ -452,6 +452,20 @@
     opacity: 1;
 }
 
+/* ========== URL Parameter Error Banner ========== */
+.url-param-error {
+    background: linear-gradient(135deg, var(--error-start) 0%, var(--error-end) 100%);
+    color: var(--text-on-accent);
+    padding: 12px 20px;
+    border-radius: 8px;
+    font-weight: bold;
+    font-size: 0.95em;
+    text-align: center;
+    margin: 10px 0;
+    box-shadow: 0 4px 12px var(--error-glow);
+    border: 1px solid var(--error-border);
+}
+
 /* ========== Grid ========== */
 .grid-container {
     display: flex;

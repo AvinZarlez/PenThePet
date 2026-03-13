@@ -10,33 +10,189 @@
 let game;
 let menu;
 
+/** Regex matching a valid YYYY-MM-DD date string. */
+const DATE_PARAM_REGEX = /^\d{4}-\d{2}-\d{2}$/;
+
+/**
+ * Module-level holder for the URL parameter error message produced during
+ * the last loadTodayMap() call. Reset to null at the start of each call.
+ * Read by initGame() to show the persistent error banner.
+ */
+let _urlParamError = null;
+
+/**
+ * Read the `date` and `level` query-string parameters from the current URL.
+ * `date` takes priority: when both are present the caller should ignore `level`.
+ * Returns null fields when the parameters are absent.
+ *
+ * @param {string} [_searchOverride] - Optional search string for testing (e.g. '?date=2026-01-01')
+ * @returns {{ urlDate: string|null, urlLevel: string|null }}
+ */
+function getUrlParams(_searchOverride) {
+    const search = _searchOverride !== undefined
+        ? _searchOverride
+        : (typeof window !== 'undefined' && window.location ? window.location.search : '');
+    const params = new URLSearchParams(search);
+    return {
+        urlDate: params.get('date'),
+        urlLevel: params.get('level'),
+    };
+}
+
+/**
+ * Resolve the intended map entry and any error message from URL parameters.
+ * When resolution succeeds, `error` is null. On failure, `map` is null and the
+ * caller should fall back to the default (latest) level.
+ *
+ * @param {{ urlDate: string|null, urlLevel: string|null }} urlParams
+ * @param {Object} mapsDb - Full maps database keyed by date string
+ * @param {string} today  - Today's date in YYYY-MM-DD format
+ * @returns {{ map: Object|null, error: string|null }}
+ */
+function resolveMapFromUrlParams(urlParams, mapsDb, today) {
+    const { urlDate, urlLevel } = urlParams;
+
+    // Date takes priority over level when both are supplied.
+    if (urlDate !== null) {
+        return _resolveByDate(urlDate, mapsDb, today);
+    }
+    if (urlLevel !== null) {
+        return _resolveByLevel(urlLevel, mapsDb, today);
+    }
+    return { map: null, error: null };
+}
+
+/**
+ * @param {string} urlDate
+ * @param {Object} mapsDb
+ * @param {string} today
+ * @returns {{ map: Object|null, error: string|null }}
+ */
+function _resolveByDate(urlDate, mapsDb, today) {
+    try {
+        if (!DATE_PARAM_REGEX.test(urlDate)) {
+            return {
+                map: null,
+                error: I18N.t('url_param_invalid', { value: urlDate, param: 'date' }),
+            };
+        }
+        if (urlDate > today) {
+            return {
+                map: null,
+                error: I18N.t('url_param_future_date', { value: urlDate }),
+            };
+        }
+        if (!mapsDb[urlDate]) {
+            return {
+                map: null,
+                error: I18N.t('url_param_not_found', { value: urlDate }),
+            };
+        }
+        return { map: mapsDb[urlDate], error: null };
+    } catch (err) {
+        console.error('URL param: error resolving date', err);
+        return {
+            map: null,
+            error: I18N.t('url_param_error', { param: 'date' }),
+        };
+    }
+}
+
+/**
+ * @param {string} urlLevel
+ * @param {Object} mapsDb
+ * @param {string} today
+ * @returns {{ map: Object|null, error: string|null }}
+ */
+function _resolveByLevel(urlLevel, mapsDb, today) {
+    try {
+        const levelNum = parseInt(urlLevel, 10);
+        if (!/^\d+$/.test(urlLevel) || levelNum < 1) {
+            return {
+                map: null,
+                error: I18N.t('url_param_invalid', { value: urlLevel, param: 'level' }),
+            };
+        }
+        // Find the map with a matching dayNumber that is at or before today.
+        const match = Object.values(mapsDb).find(
+            m => m.dayNumber === levelNum && m.date <= today
+        );
+        if (!match) {
+            return {
+                map: null,
+                error: I18N.t('url_param_not_found', { value: urlLevel }),
+            };
+        }
+        return { map: match, error: null };
+    } catch (err) {
+        console.error('URL param: error resolving level', err);
+        return {
+            map: null,
+            error: I18N.t('url_param_error', { param: 'level' }),
+        };
+    }
+}
+
 /**
  * Load today's map from the database or from cookie selection.
  * Falls back to the latest available level if today's map doesn't exist.
+ *
+ * When URL parameters are present the function resolves the requested level
+ * without updating the lastVisitDate cookie (so the next regular visit still
+ * counts as the first visit of the day). Any error (future date, missing
+ * level, malformed param) is stored in the module-level _urlParamError
+ * variable and a fallback map is returned.
+ *
+ * @param {{ urlDate?: string|null, urlLevel?: string|null }} [_testUrlParams]
+ *   Optional URL params override used only in unit tests.
  * @returns {Promise<Object|null>} Map data or null if not found
  */
-async function loadTodayMap() {
+async function loadTodayMap(_testUrlParams) {
+    _urlParamError = null;
     try {
         // Determine today's date using the user's saved timezone preference.
         const timezone = CookieUtils.getCookie('timezone') || CONSTANTS.DEFAULT_TIMEZONE;
         const today = DateUtils.getTodayDate(timezone);
-        const currentYear = parseInt(today.substring(0, 4));
+        const currentYear = parseInt(today.substring(0, 4), 10);
 
-        // On the first visit of a new calendar day, bypass the saved level cookie so
-        // the user always opens today's puzzle rather than whatever they last played.
-        const lastVisitDate = CookieUtils.getCookie('lastVisitDate');
-        const isFirstVisitToday = lastVisitDate !== today;
-        CookieUtils.setCookie('lastVisitDate', today, 2);
+        // Read URL params (use test override when supplied).
+        const urlParams = _testUrlParams !== undefined
+            ? _testUrlParams
+            : getUrlParams();
+        const hasUrlParams = urlParams.urlDate !== null || urlParams.urlLevel !== null;
 
-        // Always load this year's map file; also load the saved level's year if different.
-        // Skip the saved level on the first visit of the day (load today instead).
-        const savedLevel = isFirstVisitToday ? null : CookieUtils.getCookie('currentLevel');
+        // Collect which year files to fetch.
         const yearsToLoad = new Set([currentYear]);
-        if (savedLevel) {
-            yearsToLoad.add(parseInt(savedLevel.substring(0, 4)));
+
+        // savedLevel is only used when there are no URL params.
+        let savedLevel = null;
+
+        if (hasUrlParams) {
+            // Do NOT update lastVisitDate when loading via URL param so that
+            // the next normal visit still treats it as the first visit of the day.
+            if (urlParams.urlDate && DATE_PARAM_REGEX.test(urlParams.urlDate)) {
+                // We know the year from the date string.
+                yearsToLoad.add(parseInt(urlParams.urlDate.substring(0, 4), 10));
+            } else if (urlParams.urlLevel) {
+                // We don't know the year, so load all years with map data.
+                for (let y = CONSTANTS.FIRST_MAP_YEAR; y <= currentYear; y++) {
+                    yearsToLoad.add(y);
+                }
+            }
+        } else {
+            // Normal flow: update the last-visit cookie and honour the cookie
+            // selection (unless it is the first visit of the day).
+            const lastVisitDate = CookieUtils.getCookie('lastVisitDate');
+            const isFirstVisitToday = lastVisitDate !== today;
+            CookieUtils.setCookie('lastVisitDate', today, 2);
+
+            savedLevel = isFirstVisitToday ? null : CookieUtils.getCookie('currentLevel');
+            if (savedLevel) {
+                yearsToLoad.add(parseInt(savedLevel.substring(0, 4), 10));
+            }
         }
 
-        // Load and merge maps from those years
+        // Load and merge maps from the required year files.
         const mapsDb = {};
         for (const year of yearsToLoad) {
             try {
@@ -47,7 +203,17 @@ async function loadTodayMap() {
             } catch { /* year file not found — skip */ }
         }
 
-        // Check if user has a selected level in cookie
+        // ── URL parameter resolution ──────────────────────────────────────
+        if (hasUrlParams) {
+            const { map, error } = resolveMapFromUrlParams(urlParams, mapsDb, today);
+            if (map) return map;
+            // Param was invalid/not found — record the error and fall through to
+            // the default resolution so the game still loads something playable.
+            _urlParamError = error;
+        }
+
+        // ── Default resolution (cookie → today → latest past) ─────────────
+        // Check cookie-selected level (set above when !hasUrlParams).
         if (savedLevel && mapsDb[savedLevel]) {
             return mapsDb[savedLevel];
         }
@@ -94,6 +260,19 @@ function showNoMapError() {
 }
 
 /**
+ * Show a persistent error banner for URL parameter problems.
+ * Uses the #urlParamError element (already in the DOM) so the game still loads.
+ * @param {string} message - The error message to display
+ */
+function showUrlParamError(message) {
+    const banner = document.getElementById('urlParamError');
+    if (banner) {
+        banner.textContent = message;
+        banner.style.display = 'block';
+    }
+}
+
+/**
  * Update the map info display with day number, map name, and date
  * @param {Object} mapData - The map data object
  */
@@ -119,12 +298,17 @@ function updateMapInfo(mapData) {
  * Initialize the game application
  */
 async function initGame() {
-    // Load today's map from database
+    // Load today's map from database (may set _urlParamError as a side-effect).
     const mapData = await loadTodayMap();
     
     if (!mapData) {
         showNoMapError();
         return;
+    }
+
+    // Show the URL param error banner if one was generated during map resolution.
+    if (_urlParamError) {
+        showUrlParamError(_urlParamError);
     }
     
     // Create game with the map size from database
@@ -363,6 +547,6 @@ window.addEventListener('DOMContentLoaded', () => {
 
 // Export for use in Node.js testing
 if (typeof module !== 'undefined' && module.exports) {
-    module.exports = { loadTodayMap };
+    module.exports = { loadTodayMap, resolveMapFromUrlParams };
 }
 
