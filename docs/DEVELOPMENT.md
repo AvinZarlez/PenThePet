@@ -60,25 +60,11 @@ node scripts/generate-map.js --fresh --count 10 --date 2026-03-01 --size 9
 
 You can deep-link directly to any puzzle by appending a query string to the page URL.
 
-**By date:**
+**By date:** `<game-url>/?date=2026-03-15`
 
-```
-<your-url>/?date=2026-03-15
-```
+**By level number (day number):** `<game-url>/?level=42`
 
-**By level number (day number):**
-
-```
-<your-url>/?level=42
-```
-
-**To always load today's level (ignores saved level cookies):**
-
-```
-<your-url>/?level=latest
-```
-
-**Rules:**
+**To always load today's level (ignores saved level cookies):** `<game-url>/?level=latest`
 
 - If both `date` and `level` are provided in the same URL, `date` takes priority and `level` is ignored.
 - `?level=latest` always loads today's puzzle, overriding any saved level in cookies.
