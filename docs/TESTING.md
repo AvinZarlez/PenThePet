@@ -31,15 +31,21 @@ npm run lint:markdown:fix             # Markdown linting
 
 ### Webapp Tests (`test/webapp/`)
 
-| File                       | What it tests                                                |
-| -------------------------- | ------------------------------------------------------------ |
-| `constants.test.js`        | CONSTANTS values, types, tile distribution sums              |
-| `wordList.test.js`         | Word list non-empty, no duplicates, helper functions         |
-| `PathfindingUtils.test.js` | `isPenned()`, `calculatePennedArea()`, edge cases            |
-| `Grid.test.js`             | Constructor, map loading, state management, tile get/set     |
-| `Menu.test.js`             | Modal open/close, cookie persistence, level loading, options |
-| `CookieUtils.test.js`      | Read/write cookies, emoji/JSON values, name collisions       |
-| `DateUtils.test.js`        | ISO date formatting, display formatting                      |
+| File                          | What it tests                                                |
+| ----------------------------- | ------------------------------------------------------------ |
+| `constants.test.js`           | CONSTANTS values, types, tile distribution sums              |
+| `wordList.test.js`            | Word list non-empty, no duplicates, helper functions         |
+| `CookieUtils.test.js`         | Read/write cookies, emoji/JSON values, name collisions       |
+| `DateUtils.test.js`           | ISO date formatting, display formatting                      |
+| `i18n.test.js`                | Language options, key existence, fallback to English         |
+| `PathfindingUtils.test.js`    | `isPenned()`, `calculatePennedArea()`, edge cases            |
+| `Grid.test.js`                | Constructor, map loading, state management, tile get/set     |
+| `Game.test.js`                | Initialization, wall placement, scoring, timer, submission   |
+| `Menu.test.js`                | Modal open/close, cookie persistence, level loading, options |
+| `CloudMigration.test.js`      | Schema migration, backward compatibility                     |
+| `CloudSync.test.js`           | Sign in/out, sync, conflict resolution, data operations      |
+| `Analytics.test.js`           | Event logging, graceful degradation when unconfigured        |
+| `main.test.js`                | `loadTodayMap`, `updateMapInfo`, map fallback logic          |
 
 ### Generation Tests (`test/generation/`)
 
@@ -47,12 +53,13 @@ npm run lint:markdown:fix             # Markdown linting
 | ----------------------- | -------------------------------------------------------------------------- |
 | `MapGenerator.test.js`  | Map size/structure, path validation, solver, retry logic                   |
 | `MapValidator.test.js`  | Quality validation rules                                                   |
+| `MILPSolver.test.js`    | Solver invocation, optimality, fill/no-fill scenarios                      |
 | `generate-maps.test.js` | `validateMapsDatabase`, `fixMapsDatabase`, `getNextDayNumber`              |
 | `generate-map.test.js`  | `parseSizeInput`, `getRandomSize`, `incrementDate`, `getNextAvailableDate` |
 
 ### Excluded from Coverage
 
-`js/main.js`, `js/Game.js`, `js/config.js`, `js/tileTypes.js` — UI/config files tested manually in browser.
+`js/main.js`, `js/Game.js`, `js/config.js`, `js/tileTypes.js`, `js/firebase-config.js`, `js/CloudSync.js` — excluded in `package.json` (`collectCoverageFrom`). These are either thin config/entry-point files or require a live Firebase environment.
 
 ## Writing Tests
 

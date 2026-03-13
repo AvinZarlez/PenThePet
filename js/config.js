@@ -34,7 +34,7 @@ const CONFIG = {
     gameplay: {
         allowWallRemoval: CONSTANTS.ALLOW_WALL_REMOVAL,  // If true, clicking walls removes them
         autoSaveState: CONSTANTS.AUTO_SAVE_STATE,        // If true, saves game state to localStorage
-        goalAreaSize: 10,                                 // Goal area size threshold (calculated during generation)
+        goalAreaSize: 10,                                 // Initial placeholder; overridden by mapData.goal on load
     },
 
     // Hint system

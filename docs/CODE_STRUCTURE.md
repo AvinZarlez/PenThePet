@@ -29,6 +29,7 @@ PenThePet/
 │   ├── firebase-config.js  # Firebase config (empty = cloud sync disabled)
 │   ├── CloudMigration.js   # Versioned schema migration for cloud submission data
 │   ├── CloudSync.js        # Optional cloud sync (Firebase Auth + Firestore)
+│   ├── Analytics.js        # Optional Firebase Analytics (anonymous events, no PII)
 │   └── main.js             # Entry point: loads map, initializes Game and Menu
 ├── scripts/
 │   ├── generate-map.js     # CLI entry point: single, batch, or fresh map generation
@@ -45,7 +46,7 @@ PenThePet/
 ```
 
 **Script loading order** in `index.html` (must not change):
-`constants.js → config.js → tileData.js → tileTypes.js → CookieUtils.js → i18n.js → DateUtils.js → PathfindingUtils.js → Grid.js → firebase-config.js → CloudMigration.js → CloudSync.js → Game.js → Menu.js → main.js`
+`constants.js → config.js → tileData.js → tileTypes.js → CookieUtils.js → i18n.js → DateUtils.js → PathfindingUtils.js → Grid.js → firebase-config.js → CloudMigration.js → CloudSync.js → Analytics.js → Game.js → Menu.js → main.js`
 
 ## 🎯 Key File Notes
 

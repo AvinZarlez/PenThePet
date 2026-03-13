@@ -41,11 +41,14 @@
 
 Access these from the **☰ Menu → Options**:
 
-| Option         | Description                                                                                                                                      |
-| -------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
-| **Pet Type**   | Choose from 26 animal emojis                                                                                                                     |
-| **Hint Mode**  | _Disabled_ — no hints. _Check Optimal_ — area turns yellow/green based on goal. _Reveal Target_ — shows your area vs. the goal (e.g., "8 / 11"). |
-| **Debug Mode** | Shows developer tools at the bottom of the page                                                                                                  |
+| Option           | Description                                                                                                                                      |
+| ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **Pet Type**     | Choose from 26 animal emojis                                                                                                                     |
+| **Hint Mode**    | _Disabled_ — no hints. _Check Optimal_ — area turns yellow/green based on goal. _Reveal Target_ — shows your area vs. the goal (e.g., "8 / 11"). |
+| **Timezone**     | Select your local timezone so the daily puzzle resets at midnight your time                                                                      |
+| **Language**     | Switch between supported UI languages (English, Español)                                                                                         |
+| **Account**      | Sign in with Google or email to sync your puzzle history across devices (optional, requires Firebase setup)                                      |
+| **Debug Mode**   | Shows developer tools at the bottom of the page                                                                                                  |
 
 ---
 

@@ -20,8 +20,7 @@ if (typeof TILE_DATA === 'undefined' && typeof require !== 'undefined') {
 
 /**
  * TILE_TYPES — built programmatically from TILE_DATA.
- * Each entry mirrors the TILE_DATA properties and adds a `clickable` flag
- * so existing rendering code can work unchanged.
+ * Each entry is a shallow copy of its TILE_DATA definition.
  */
 const TILE_TYPES = {};
 for (const [name, data] of Object.entries(TILE_DATA)) {
