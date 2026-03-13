@@ -56,6 +56,21 @@ node scripts/generate-map.js --size 7-17 --count 5  # 5 maps, random sizes
 node scripts/generate-map.js --fresh --count 10 --date 2026-03-01 --size 9
 ```
 
+### Load a Specific Level via URL Parameters
+
+You can deep-link directly to any puzzle by appending a query string to the page URL.
+
+**By date:** `<game-url>/?date=2026-03-15`
+
+**By level number (day number):** `<game-url>/?level=42`
+
+**To always load today's level (ignores saved level cookies):** `<game-url>/?level=latest`
+
+- If both `date` and `level` are provided in the same URL, `date` takes priority and `level` is ignored.
+- `?level=latest` always loads today's puzzle, overriding any saved level in cookies.
+- Loading via URL parameter does **not** update the "first visit of the day" cookie, so the next normal visit will still open today's puzzle as usual.
+- If the requested level is in the future, does not exist, or is malformed, a red error banner explains the problem and the latest available level loads instead.
+
 ### Change a Config Value
 
 Edit `js/constants.js`, regenerate maps if needed (`--fresh`), run `npm test`.

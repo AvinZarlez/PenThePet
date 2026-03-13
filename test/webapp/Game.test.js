@@ -827,6 +827,11 @@ describe('buildShareText()', () => {
         const text = game.buildShareText();
         expect(text).toContain('01:33');
     });
+
+    test('contains a URL with the date param for sharing', () => {
+        const text = game.buildShareText();
+        expect(text).toContain('?date=2026-03-01');
+    });
 });
 
 // ------------------------------------------------------------------

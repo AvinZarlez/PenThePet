@@ -1505,6 +1505,14 @@ class Game {
             lines.push(I18N.t('share_hints_line', { hints: hintsStr }));
         }
 
+        // Add the URL so recipients can jump directly to this puzzle.
+        // Use window.location.origin + pathname so it works on any deployment.
+        if (date && typeof window !== 'undefined' && window.location) {
+            const base = window.location.origin + window.location.pathname;
+            const url = `${base}?date=${date}`;
+            lines.push(I18N.t('share_url_line', { url }));
+        }
+
         return lines.join('\n');
     }
 

@@ -129,6 +129,13 @@ const LANGUAGES = {
         share_hints_line: 'Hints used: {hints}',
         share_hint_checked: 'checked for optimal',
         share_hint_target: 'revealed target',
+        share_url_line: 'Play: {url}',
+
+        // ── URL Parameter Errors ──────────────────────────────────────────
+        url_param_future_date: '"{value}" is in the future — loading the latest available level instead.',
+        url_param_not_found: '"{value}" does not exist — loading the latest available level instead.',
+        url_param_invalid: '"{value}" is not a valid {param} — loading the latest available level instead.',
+        url_param_error: 'Something went wrong loading {param} — loading the latest available level instead.',
 
         // ── Hint Notifications ────────────────────────────────────────────
         hint_not_optimal_notification: 'A more optimal solution exists.',
@@ -408,6 +415,13 @@ const LANGUAGES = {
         share_hints_line: 'Pistas usadas: {hints}',
         share_hint_checked: 'verificado como óptimo',
         share_hint_target: 'objetivo revelado',
+        share_url_line: 'Jugar: {url}',
+
+        // ── URL Parameter Errors ──────────────────────────────────────────
+        url_param_future_date: '"{value}" está en el futuro — cargando el último nivel disponible.',
+        url_param_not_found: '"{value}" no existe — cargando el último nivel disponible.',
+        url_param_invalid: '"{value}" no es un {param} válido — cargando el último nivel disponible.',
+        url_param_error: 'Algo salió mal al cargar {param} — cargando el último nivel disponible.',
 
         // ── Hint Notifications ────────────────────────────────────────────
         hint_not_optimal_notification: 'Existe una solución más óptima.',
