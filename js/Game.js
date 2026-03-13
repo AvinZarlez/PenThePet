@@ -20,7 +20,7 @@ class Game {
         this.lastFocusedCell = null;
 
         // Load pet emoji from cookie, or default to dog
-        this.petEmoji = this._loadPetFromCookie() || '🐶';
+        this.petEmoji = CookieUtils.getCookie('selectedPet') || '🐶';
 
         this.hintsDisabled = CONFIG.hints.disabled;
         this.neverShowTarget = CONFIG.hints.neverShowTarget;
@@ -1882,47 +1882,6 @@ class Game {
     }
 
     /**
-     * Load pet emoji from cookie
-     * @private
-     * @returns {string|null} Saved pet emoji or null if not found
-     */
-    _loadPetFromCookie() {
-        return CookieUtils.getCookie('selectedPet');
-    }
-
-    /**
-     * Save pet emoji to cookie
-     * @private
-     * @param {string} petEmoji - Pet emoji to save
-     */
-    _savePetToCookie(petEmoji) {
-        CookieUtils.setCookie('selectedPet', petEmoji, 365);
-    }
-
-    /**
-     * Helper method to get a cookie value.
-     * Delegates to CookieUtils for shared implementation.
-     * @private
-     * @param {string} name - Cookie name
-     * @returns {string|null} Cookie value or null
-     */
-    _getCookie(name) {
-        return CookieUtils.getCookie(name);
-    }
-
-    /**
-     * Helper method to set a cookie.
-     * Delegates to CookieUtils for shared implementation.
-     * @private
-     * @param {string} name - Cookie name
-     * @param {string} value - Cookie value
-     * @param {number} days - Expiration in days
-     */
-    _setCookie(name, value, days) {
-        CookieUtils.setCookie(name, value, days);
-    }
-
-    /**
      * Save submitted score and wall positions to cookie
      * Cookie name format: submission_YYYY-MM-DD
      * @param {string} dateString - Date of the puzzle
@@ -1939,7 +1898,7 @@ class Game {
             time: this.elapsedSeconds,
             hintsUsed: [...this.hintsUsed],
         };
-        this._setCookie(cookieName, JSON.stringify(submissionData), 365);
+        CookieUtils.setCookie(cookieName, JSON.stringify(submissionData), 365);
 
         // Sync to cloud if available
         if (typeof CloudSync !== 'undefined' && CloudSync.isConfigured() && CloudSync.isLoggedIn()) {
@@ -1954,7 +1913,7 @@ class Game {
      */
     loadSubmission(dateString) {
         const cookieName = `submission_${dateString}`;
-        const value = this._getCookie(cookieName);
+        const value = CookieUtils.getCookie(cookieName);
         if (value) {
             try {
                 const data = CloudMigration.migrateSubmission(JSON.parse(value));
@@ -2018,7 +1977,7 @@ class Game {
         // Merge hints into the cookie (hints are add-only)
         data.hintsUsed = [...this.hintsUsed];
         if (!data.__version) data.__version = CloudMigration.CURRENT_VERSION;
-        this._setCookie(cookieName, JSON.stringify(data), 365);
+        CookieUtils.setCookie(cookieName, JSON.stringify(data), 365);
 
         // Cloud sync if this level is formally submitted (has a score)
         if (typeof data.score === 'number' &&
