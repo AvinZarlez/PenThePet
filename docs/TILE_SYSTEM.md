@@ -18,12 +18,13 @@ myTile: {
     compactChar: 'm',
     numericId: 6,
     cssClass: 'my-tile',
-    description: 'My tile scores 2 points and cannot have walls placed on it.',
+    descriptionKey: 'my_tile_description',
     assets: ['my-tile.svg'],
     ariaLabel: (row, col) => `My tile at row ${row + 1}, column ${col + 1}.`,
 },
 ```
 
+1. Add a `my_tile_description` key to `js/i18n.js` under `LANGUAGES.en` with the player-facing description text.
 1. Add the SVG asset to `assets/` and a CSS rule for cursor/hover behavior.
 
 That's it — all derived lookup tables, rendering, generation, pathfinding, scoring,
@@ -41,7 +42,7 @@ player instructions, and the Python solver read from `js/tileData.js` automatica
 | `compactChar`    | string   | ✅       | Single character for compact map format                                      |
 | `numericId`      | number   | ✅       | Numeric value for solver map format                                          |
 | `cssClass`       | string   | ✅       | CSS class applied to the cell element                                        |
-| `description`    | string   | ❌       | Player-facing description shown in the instructions modal                    |
+| `descriptionKey` | string   | ❌       | `i18n.js` key for player-facing description shown in the instructions modal  |
 | `assets`         | string[] | ✅       | Ordered list of visual layers (SVGs as `<img>`, text/emoji as `<span>`)      |
 | `ariaLabel`      | function | ✅       | Function `(row, col) => string` for screen reader labels                     |
 | `enclosedAssets` | string[] | ❌       | Alternate asset list when tile is inside penned area. Falls back to `assets` |
@@ -80,7 +81,7 @@ js/tileData.js (single source of truth)
     ├── MapGenerator.js — tile distribution (chance), numeric conversion (TILE_TO_NUMERIC)
     ├── MILPSolver.js   — numeric↔string conversion (NUMERIC_TO_TILE)
     ├── Menu.js         — wall placement checks (isWallPlaceable),
-    │                     instructions rendering (description)
+    │                     instructions rendering (descriptionKey → I18N.t())
     ├── main.js         — wall placement checks (isWallPlaceable)
     ├── tileTypes.js    — compatibility wrapper (builds TILE_TYPES from TILE_DATA)
     └── solve.py        — reads tileData.js via Node.js subprocess
@@ -113,7 +114,7 @@ Built once at load time from `TILE_DATA`:
 
 ## Player Instructions
 
-The instructions modal's Gameplay section is **automatically generated** from `TILE_DATA`. Each tile with a `description` property is rendered as a row showing the tile's icon (from `assets`) and its description text. Adding a `description` to a new tile automatically includes it in the player instructions — no HTML changes needed.
+The instructions modal's Gameplay section is **automatically generated** from `TILE_DATA`. Each tile with a `descriptionKey` property is rendered as a row showing the tile's icon (from `assets`) and its description text (looked up from `i18n.js`). Adding a `descriptionKey` to a new tile (and a matching entry in `i18n.js`) automatically includes it in the player instructions — no HTML changes needed.
 
 ---
 

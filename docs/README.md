@@ -6,7 +6,6 @@ All project documentation lives here. Each file covers a single topic — pick w
 
 | Document                                       | Description                                                                                      |
 | ---------------------------------------------- | ------------------------------------------------------------------------------------------------ |
-| [HISTORY.md](HISTORY.md)                       | How and why this project was built (AI-assisted development experiment)                          |
 | [ARCHITECTURE.md](ARCHITECTURE.md)             | Design philosophy, technology choices, and technical trade-offs                                  |
 | [ART_ASSETS.md](ART_ASSETS.md)                 | Art asset inventory, sizes, design guidelines, and replacement instructions                      |
 | [CODE_STRUCTURE.md](CODE_STRUCTURE.md)         | Every code file in the project — what it does and how it connects                                |

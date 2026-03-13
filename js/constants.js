@@ -29,7 +29,7 @@ const CONSTANTS = {
     FIRST_MAP_YEAR: 2026,          // First year that has map data files in maps/
 
     // Map generation
-    MAX_GENERATION_ATTEMPTS: 100,  // Maximum attempts to generate a valid map
+    MAX_GENERATION_ATTEMPTS: 100,  // Inner-loop attempts per outer retry (outer limit is 1000 in generate())
     WEAK_HOLE_THRESHOLD: 4,        // Holes must force a detour of more than this many steps
 
     // Tile distribution (probabilities should sum to 1.0)

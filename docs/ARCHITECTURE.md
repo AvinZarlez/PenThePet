@@ -11,7 +11,7 @@
 
 **Vanilla JS (ES6+):** Modern browsers support ES6+ natively. Classes, arrow functions, and destructuring provide clean patterns without compilation.
 
-**No Build Tools:** Game is small (<10 JS files); script loading order managed in HTML; deployment is static file hosting.
+**No Build Tools:** Script loading order managed in HTML; deployment is static file hosting.
 
 **Module Pattern:** CommonJS (`module.exports` / `require()`) works in both browser (global scope via script order) and Node.js (Jest tests). Dual-mode files check for `module.exports` existence.
 
