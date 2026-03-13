@@ -1249,7 +1249,7 @@ class Game {
         // Share score button
         const shareScoreBtn = document.getElementById('shareScoreBtn');
         if (shareScoreBtn) {
-            shareScoreBtn.addEventListener('click', () => this._handleShareScore(shareScoreBtn));
+            shareScoreBtn.addEventListener('click', () => this._handleShareScore());
         }
 
         // Share level button (in the map-info banner)
@@ -1569,35 +1569,11 @@ class Game {
 
     /**
      * Handle the "Copy Score" button click: build share text with score, copy to
-     * clipboard, and give the user brief visual feedback on the button.
-     * @param {HTMLElement} btn - The share button element
+     * clipboard, and show a neutral toast notification as feedback.
      */
-    _handleShareScore(btn) {
+    _handleShareScore() {
         if (!this.isSubmitted) return;
-
-        const text = this.buildShareText({ includeLevel: true, includeScore: true });
-        if (navigator.clipboard && navigator.clipboard.writeText) {
-            navigator.clipboard.writeText(text).then(() => {
-                this._flashShareButton(btn, I18N.t('copied_success'));
-            }).catch(() => {
-                this._flashShareButton(btn, I18N.t('copied_failed'));
-            });
-        } else {
-            // Fallback for environments without Clipboard API
-            const ta = document.createElement('textarea');
-            ta.value = text;
-            ta.style.position = 'fixed';
-            ta.style.opacity = '0';
-            document.body.appendChild(ta);
-            ta.select();
-            try {
-                document.execCommand('copy');
-                this._flashShareButton(btn, I18N.t('copied_success'));
-            } catch {
-                this._flashShareButton(btn, I18N.t('copied_failed'));
-            }
-            document.body.removeChild(ta);
-        }
+        this._copyToClipboard(this.buildShareText({ includeLevel: true, includeScore: true }));
     }
 
     /**
