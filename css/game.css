@@ -478,7 +478,7 @@
     box-shadow: 0 5px 20px rgba(0, 0, 0, 0.4);
     opacity: 0;
     transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
-    z-index: 1000;
+    z-index: 2100;
     pointer-events: none;
 }
 
