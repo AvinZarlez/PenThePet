@@ -835,6 +835,75 @@ describe('buildShareText()', () => {
 });
 
 // ------------------------------------------------------------------
+// buildLevelShareText
+// ------------------------------------------------------------------
+describe('buildLevelShareText()', () => {
+    let game;
+
+    beforeEach(() => {
+        setupDOM();
+        jest.useFakeTimers();
+        game = createGame();
+        game.currentDate = '2026-03-01';
+        game.petEmoji = '🐶';
+    });
+
+    afterEach(() => {
+        jest.useRealTimers();
+    });
+
+    test('contains the pet emoji', () => {
+        const text = game.buildLevelShareText();
+        expect(text).toContain('🐶');
+    });
+
+    test('contains the day number from the DOM', () => {
+        const text = game.buildLevelShareText();
+        expect(text).toContain('Day 42');
+    });
+
+    test('contains the level name from the DOM', () => {
+        const text = game.buildLevelShareText();
+        expect(text).toContain('Squirrel Scramble');
+    });
+
+    test('day line format is Day X - NAME - Date when name is present', () => {
+        const text = game.buildLevelShareText();
+        expect(text).toContain('Day 42 - Squirrel Scramble -');
+    });
+
+    test('day line format is Day X - Date when name is absent', () => {
+        document.getElementById('mapName').textContent = '';
+        const text = game.buildLevelShareText();
+        expect(text).toContain('Day 42 -');
+        expect(text).not.toContain('Day 42 -  -');
+    });
+
+    test('does not contain score percentage', () => {
+        const text = game.buildLevelShareText();
+        expect(text).not.toContain('Score:');
+        expect(text).not.toContain('%');
+    });
+
+    test('does not contain hints line', () => {
+        const text = game.buildLevelShareText();
+        expect(text).not.toContain('Hints used');
+    });
+
+    test('contains a URL with the date param for sharing', () => {
+        const text = game.buildLevelShareText();
+        expect(text).toContain('?date=2026-03-01');
+    });
+
+    test('works when not yet submitted', () => {
+        game.isSubmitted = false;
+        const text = game.buildLevelShareText();
+        expect(text).toContain('🐶');
+        expect(text).toContain('?date=2026-03-01');
+    });
+});
+
+// ------------------------------------------------------------------
 // Penned-area animation
 // ------------------------------------------------------------------
 describe('Game — Penned Animation', () => {

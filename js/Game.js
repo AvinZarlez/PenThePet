@@ -1252,6 +1252,12 @@ class Game {
             shareScoreBtn.addEventListener('click', () => this._handleShareScore(shareScoreBtn));
         }
 
+        // Share level button (in the map-info banner)
+        const shareLevelBtn = document.getElementById('shareLevelBtn');
+        if (shareLevelBtn) {
+            shareLevelBtn.addEventListener('click', () => this._handleShareLevel(shareLevelBtn));
+        }
+
         // Hint check button
         const hintCheckBtn = document.getElementById('hintCheckBtn');
         if (hintCheckBtn) {
@@ -1468,6 +1474,40 @@ class Game {
     }
 
     /**
+     * Build shareable text for the current level (without score/hints).
+     * Suitable for sharing before or after completing the level.
+     * @returns {string} Formatted share text
+     */
+    buildLevelShareText() {
+        const date = this.currentDate || '';
+        const displayDate = date ? DateUtils.formatDate(date) : '';
+
+        // Day number and level name from the DOM (set by updateMapInfo)
+        const dayNumEl = document.getElementById('mapDay');
+        const dayNum = dayNumEl ? dayNumEl.textContent : '?';
+        const mapNameEl = document.getElementById('mapName');
+        const mapName = mapNameEl ? mapNameEl.textContent : '';
+
+        const dateLine = mapName
+            ? I18N.t('share_day_map_date', { day: dayNum, mapName, date: displayDate })
+            : I18N.t('share_day_date', { day: dayNum, date: displayDate });
+
+        const lines = [
+            I18N.t('share_title', { emoji: this.petEmoji }),
+            dateLine,
+        ];
+
+        // Add the URL so recipients can jump directly to this puzzle.
+        if (date && typeof window !== 'undefined' && window.location) {
+            const base = window.location.origin + window.location.pathname;
+            const url = `${base}?date=${date}`;
+            lines.push(I18N.t('share_url_line', { url }));
+        }
+
+        return lines.join('\n');
+    }
+
+    /**
      * Build the shareable score text for the current submission.
      * @returns {string} Formatted share text
      */
@@ -1525,6 +1565,37 @@ class Game {
         if (!this.isSubmitted) return;
 
         const text = this.buildShareText();
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(text).then(() => {
+                this._flashShareButton(btn, I18N.t('copied_success'));
+            }).catch(() => {
+                this._flashShareButton(btn, I18N.t('copied_failed'));
+            });
+        } else {
+            // Fallback for environments without Clipboard API
+            const ta = document.createElement('textarea');
+            ta.value = text;
+            ta.style.position = 'fixed';
+            ta.style.opacity = '0';
+            document.body.appendChild(ta);
+            ta.select();
+            try {
+                document.execCommand('copy');
+                this._flashShareButton(btn, I18N.t('copied_success'));
+            } catch {
+                this._flashShareButton(btn, I18N.t('copied_failed'));
+            }
+            document.body.removeChild(ta);
+        }
+    }
+
+    /**
+     * Handle the share level button click: build level share text (no score),
+     * copy to clipboard, and give the user brief visual feedback on the button.
+     * @param {HTMLElement} btn - The share level button element
+     */
+    _handleShareLevel(btn) {
+        const text = this.buildLevelShareText();
         if (navigator.clipboard && navigator.clipboard.writeText) {
             navigator.clipboard.writeText(text).then(() => {
                 this._flashShareButton(btn, I18N.t('copied_success'));

@@ -36,6 +36,7 @@ const LANGUAGES = {
         label_day: 'Day:',
         label_map: 'Map:',
         label_date: 'Date:',
+        btn_share_level_aria: 'Share level',
 
         // ── Controls Bar ──────────────────────────────────────────────────
         btn_reset: 'Reset',
@@ -322,6 +323,7 @@ const LANGUAGES = {
         label_day: 'Día:',
         label_map: 'Mapa:',
         label_date: 'Fecha:',
+        btn_share_level_aria: 'Compartir nivel',
 
         // ── Controls Bar ──────────────────────────────────────────────────
         btn_reset: 'Reiniciar',
