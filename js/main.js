@@ -106,6 +106,22 @@ function _resolveByDate(urlDate, mapsDb, today) {
  */
 function _resolveByLevel(urlLevel, mapsDb, today) {
     try {
+        // Special value: "latest" loads today's map, bypassing any saved cookie.
+        if (urlLevel === 'latest') {
+            if (mapsDb[today]) {
+                return { map: mapsDb[today], error: null };
+            }
+            // Fall back to the most recent past date if today is not in the DB.
+            const pastDates = Object.keys(mapsDb).filter(d => d <= today).sort();
+            if (pastDates.length > 0) {
+                return { map: mapsDb[pastDates[pastDates.length - 1]], error: null };
+            }
+            return {
+                map: null,
+                error: I18N.t('url_param_not_found', { value: urlLevel }),
+            };
+        }
+
         const levelNum = parseInt(urlLevel, 10);
         if (!/^\d+$/.test(urlLevel) || levelNum < 1) {
             return {

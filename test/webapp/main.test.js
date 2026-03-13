@@ -471,6 +471,28 @@ describe('URL parameter handling', () => {
             expect(result).toBeTruthy();
             expect(result.date).not.toBe('2027-06-01');
         });
+
+        test('level=latest loads today\'s map, ignoring saved cookie', async () => {
+            // Even with a saved level cookie pointing to an older date, latest should load today.
+            document.cookie = 'lastVisitDate=2026-03-01; path=/';
+            document.cookie = 'currentLevel=2026-01-01; path=/';
+            const result = await loadTodayMap({ urlDate: null, urlLevel: 'latest' });
+            expect(result).toEqual(DB['2026-03-01']);
+        });
+
+        test('level=latest does not update lastVisitDate cookie', async () => {
+            const setCookieSpy = jest.spyOn(CookieUtils, 'setCookie');
+            await loadTodayMap({ urlDate: null, urlLevel: 'latest' });
+            const lastVisitCalls = setCookieSpy.mock.calls.filter(c => c[0] === 'lastVisitDate');
+            expect(lastVisitCalls).toHaveLength(0);
+        });
+
+        test('level=latest falls back to most recent past date when today has no map', async () => {
+            DateUtils.getTodayDate = () => '2026-03-10'; // no map for this date
+            const result = await loadTodayMap({ urlDate: null, urlLevel: 'latest' });
+            // Should return 2026-03-01, the most recent past date in DB
+            expect(result).toEqual(DB['2026-03-01']);
+        });
     });
 
     describe('loadTodayMap with no URL params (normal flow)', () => {
@@ -573,6 +595,25 @@ describe('resolveMapFromUrlParams()', () => {
                 '2027-01-01': { date: '2027-01-01', dayNumber: 99 },
             };
             const result = resolveMapFromUrlParams({ urlDate: null, urlLevel: '99' }, futureDB, TODAY);
+            expect(result.map).toBeNull();
+            expect(result.error).toBeTruthy();
+        });
+
+        test('level=latest returns today\'s map', () => {
+            const result = resolveMapFromUrlParams({ urlDate: null, urlLevel: 'latest' }, DB, TODAY);
+            expect(result.map).toEqual(DB['2026-03-01']);
+            expect(result.error).toBeNull();
+        });
+
+        test('level=latest returns the most recent past date when today is not in DB', () => {
+            const result = resolveMapFromUrlParams({ urlDate: null, urlLevel: 'latest' }, DB, '2026-04-01');
+            // 2026-03-01 is the most recent date <= 2026-04-01
+            expect(result.map).toEqual(DB['2026-03-01']);
+            expect(result.error).toBeNull();
+        });
+
+        test('level=latest returns error when DB is empty', () => {
+            const result = resolveMapFromUrlParams({ urlDate: null, urlLevel: 'latest' }, {}, TODAY);
             expect(result.map).toBeNull();
             expect(result.error).toBeTruthy();
         });

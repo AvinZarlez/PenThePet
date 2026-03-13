@@ -63,18 +63,25 @@ You can deep-link directly to any puzzle by appending a query string to the page
 **By date:**
 
 ```
-https://avinzarlez.github.io/penthepet/?date=2026-03-15
+<your-url>/?date=2026-03-15
 ```
 
 **By level number (day number):**
 
 ```
-https://avinzarlez.github.io/penthepet/?level=42
+<your-url>/?level=42
+```
+
+**To always load today's level (ignores saved level cookies):**
+
+```
+<your-url>/?level=latest
 ```
 
 **Rules:**
 
 - If both `date` and `level` are provided in the same URL, `date` takes priority and `level` is ignored.
+- `?level=latest` always loads today's puzzle, overriding any saved level in cookies.
 - Loading via URL parameter does **not** update the "first visit of the day" cookie, so the next normal visit will still open today's puzzle as usual.
 - If the requested level is in the future, does not exist, or is malformed, a red error banner explains the problem and the latest available level loads instead.
 
