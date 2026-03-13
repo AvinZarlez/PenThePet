@@ -118,7 +118,7 @@ const LANGUAGES = {
         copied_failed: '✗ Failed',
 
         // ── Share / Tell Friends ──────────────────────────────────────────
-        btn_tell_friends: '📤 Tell Your Friends!',
+        btn_tell_friends: '📣 Tell Your Friends!',
 
         // ── Score / Metrics ───────────────────────────────────────────────
         pct_of_goal: '{pct}% of goal ({userScore}/{goalScore})',
@@ -408,7 +408,7 @@ const LANGUAGES = {
         copied_failed: '✗ Falló',
 
         // ── Share / Tell Friends ──────────────────────────────────────────
-        btn_tell_friends: '📤 ¡Cuéntales a tus amigos!',
+        btn_tell_friends: '📣 ¡Cuéntales a tus amigos!',
 
         // ── Score / Metrics ───────────────────────────────────────────────
         pct_of_goal: '{pct}% del objetivo ({userScore}/{goalScore})',
