@@ -62,6 +62,13 @@
                 <span class="map-info-label" data-i18n="label_date"></span>
                 <span id="mapDate" class="map-info-value">2026-02-06</span>
             </div>
+            <button id="shareLevelBtn" class="share-level-btn" data-i18n-aria="btn_share_level_aria" aria-label="Share level">
+                <svg class="share-level-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+                    <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/>
+                    <polyline points="16 6 12 2 8 6"/>
+                    <line x1="12" y1="2" x2="12" y2="15"/>
+                </svg>
+            </button>
         </div>
 
         <!-- URL parameter error banner (hidden by default, shown by main.js on invalid/future param) -->
@@ -275,6 +282,9 @@
                     <li data-i18n="about_features_5"></li>
                 </ul>
             </div>
+            <div class="modal-section about-tell-friends-section">
+                <button id="tellFriendsAboutBtn" class="options-account-btn" data-i18n="btn_tell_friends"></button>
+            </div>
             <div class="modal-section">
                 <h3 data-i18n="about_feedback_heading"></h3>
                 <p><span data-i18n="about_feedback_prefix"></span><a id="githubIssuesLink"
@@ -350,6 +360,11 @@
                         </div>
                     </div>
                 </div>
+            </div>
+
+            <!-- Full-width: Tell Your Friends -->
+            <div class="modal-section options-section-gap">
+                <button id="tellFriendsOptionsBtn" class="options-account-btn" data-i18n="btn_tell_friends"></button>
             </div>
 
             <!-- Full-width: Accounts -->

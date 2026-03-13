@@ -1249,7 +1249,13 @@ class Game {
         // Share score button
         const shareScoreBtn = document.getElementById('shareScoreBtn');
         if (shareScoreBtn) {
-            shareScoreBtn.addEventListener('click', () => this._handleShareScore(shareScoreBtn));
+            shareScoreBtn.addEventListener('click', () => this._handleShareScore());
+        }
+
+        // Share level button (in the map-info banner)
+        const shareLevelBtn = document.getElementById('shareLevelBtn');
+        if (shareLevelBtn) {
+            shareLevelBtn.addEventListener('click', () => this._handleShareLevel());
         }
 
         // Hint check button
@@ -1468,68 +1474,80 @@ class Game {
     }
 
     /**
-     * Build the shareable score text for the current submission.
+     * Build shareable text with configurable content.
+     *
+     * @param {object} [options]
+     * @param {boolean} [options.includeLevel=true]  Whether to include the day/map/date
+     *     line and a level-specific URL (?date=…). When false, omits the level line and
+     *     uses a generic "latest" URL (?level=latest) instead.
+     * @param {boolean} [options.includeScore=false] Whether to include the score and
+     *     hints lines (requires the puzzle to have been submitted).
      * @returns {string} Formatted share text
      */
-    buildShareText() {
-        const score = this.submittedScore ?? 0;
-        const goal = Number(this.goalAreaSize);
-        const pct = goal > 0 ? Math.round((score / goal) * 100) : 0;
-        const timeStr = this._formatTime(this.elapsedSeconds);
-        const date = this.currentDate || '';
-        const displayDate = date ? DateUtils.formatDate(date) : '';
+    buildShareText({ includeLevel = true, includeScore = false } = {}) {
+        const lines = [I18N.t('share_title', { emoji: this.petEmoji })];
 
-        // Day number and level name from the DOM (set by updateMapInfo)
-        const dayNumEl = document.getElementById('mapDay');
-        const dayNum = dayNumEl ? dayNumEl.textContent : '?';
-        const mapNameEl = document.getElementById('mapName');
-        const mapName = mapNameEl ? mapNameEl.textContent : '';
+        if (includeLevel) {
+            const date = this.currentDate || '';
+            const displayDate = date ? DateUtils.formatDate(date) : '';
 
-        const dateLine = mapName
-            ? I18N.t('share_day_map_date', { day: dayNum, mapName, date: displayDate })
-            : I18N.t('share_day_date', { day: dayNum, date: displayDate });
+            // Day number and level name from the DOM (set by updateMapInfo)
+            const dayNumEl = document.getElementById('mapDay');
+            const dayNum = dayNumEl ? dayNumEl.textContent : '?';
+            const mapNameEl = document.getElementById('mapName');
+            const mapName = mapNameEl ? mapNameEl.textContent : '';
 
-        const lines = [
-            I18N.t('share_title', { emoji: this.petEmoji }),
-            dateLine,
-            I18N.t('share_score_line', { pct, time: timeStr }),
-        ];
+            const dateLine = mapName
+                ? I18N.t('share_day_map_date', { day: dayNum, mapName, date: displayDate })
+                : I18N.t('share_day_date', { day: dayNum, date: displayDate });
+            lines.push(dateLine);
 
-        // Add hints used line if any hints were used
-        if (this.hintsUsed.length > 0) {
-            const hintLabels = {
-                [CONSTANTS.HINT_CHECKED]: I18N.t('share_hint_checked'),
-                [CONSTANTS.HINT_TARGET]: I18N.t('share_hint_target'),
-            };
-            const hintsStr = this.hintsUsed.map(h => hintLabels[h] || h).join(', ');
-            lines.push(I18N.t('share_hints_line', { hints: hintsStr }));
-        }
+            if (includeScore) {
+                const score = this.submittedScore ?? 0;
+                const goal = Number(this.goalAreaSize);
+                const pct = goal > 0 ? Math.round((score / goal) * 100) : 0;
+                const timeStr = this._formatTime(this.elapsedSeconds);
+                lines.push(I18N.t('share_score_line', { pct, time: timeStr }));
 
-        // Add the URL so recipients can jump directly to this puzzle.
-        // Use window.location.origin + pathname so it works on any deployment.
-        if (date && typeof window !== 'undefined' && window.location) {
-            const base = window.location.origin + window.location.pathname;
-            const url = `${base}?date=${date}`;
-            lines.push(I18N.t('share_url_line', { url }));
+                // Add hints used line if any hints were used
+                if (this.hintsUsed.length > 0) {
+                    const hintLabels = {
+                        [CONSTANTS.HINT_CHECKED]: I18N.t('share_hint_checked'),
+                        [CONSTANTS.HINT_TARGET]: I18N.t('share_hint_target'),
+                    };
+                    const hintsStr = this.hintsUsed.map(h => hintLabels[h] || h).join(', ');
+                    lines.push(I18N.t('share_hints_line', { hints: hintsStr }));
+                }
+            }
+
+            // Add the URL so recipients can jump directly to this puzzle.
+            // Use window.location.origin + pathname so it works on any deployment.
+            if (date && typeof window !== 'undefined' && window.location) {
+                const base = window.location.origin + window.location.pathname;
+                lines.push(I18N.t('share_url_line', { url: `${base}?date=${date}` }));
+            }
+        } else {
+            // No specific level — use a generic "play latest" URL.
+            if (typeof window !== 'undefined' && window.location) {
+                const base = window.location.origin + window.location.pathname;
+                lines.push(I18N.t('share_url_line', { url: `${base}?level=latest` }));
+            }
         }
 
         return lines.join('\n');
     }
 
     /**
-     * Handle the "Copy Score" button click: build share text, copy to
-     * clipboard, and give the user brief visual feedback on the button.
-     * @param {HTMLElement} btn - The share button element
+     * Copy text to the clipboard and show a neutral toast notification.
+     * Falls back to execCommand for environments without the Clipboard API.
+     * @param {string} text - The text to copy
      */
-    _handleShareScore(btn) {
-        if (!this.isSubmitted) return;
-
-        const text = this.buildShareText();
+    _copyToClipboard(text) {
         if (navigator.clipboard && navigator.clipboard.writeText) {
             navigator.clipboard.writeText(text).then(() => {
-                this._flashShareButton(btn, I18N.t('copied_success'));
+                this.showNotification(I18N.t('copied_success'), 'neutral');
             }).catch(() => {
-                this._flashShareButton(btn, I18N.t('copied_failed'));
+                this.showNotification(I18N.t('copied_failed'));
             });
         } else {
             // Fallback for environments without Clipboard API
@@ -1541,23 +1559,39 @@ class Game {
             ta.select();
             try {
                 document.execCommand('copy');
-                this._flashShareButton(btn, I18N.t('copied_success'));
+                this.showNotification(I18N.t('copied_success'), 'neutral');
             } catch {
-                this._flashShareButton(btn, I18N.t('copied_failed'));
+                this.showNotification(I18N.t('copied_failed'));
             }
             document.body.removeChild(ta);
         }
     }
 
     /**
-     * Briefly change the share button label then restore it.
-     * @param {HTMLElement} btn
-     * @param {string} message
+     * Handle the "Copy Score" button click: build share text with score, copy to
+     * clipboard, and show a neutral toast notification as feedback.
      */
-    _flashShareButton(btn, message) {
-        const original = btn.textContent;
-        btn.textContent = message;
-        setTimeout(() => { btn.textContent = original; }, CONSTANTS.SHARE_BUTTON_FLASH_MS);
+    _handleShareScore() {
+        if (!this.isSubmitted) return;
+        this._copyToClipboard(this.buildShareText({ includeLevel: true, includeScore: true }));
+    }
+
+    /**
+     * Handle the share level button click (in the map-info banner): builds
+     * level share text without score and copies it to the clipboard.
+     * Shows a neutral toast notification as feedback.
+     */
+    _handleShareLevel() {
+        this._copyToClipboard(this.buildShareText({ includeLevel: true, includeScore: false }));
+    }
+
+    /**
+     * Handle the "Tell your friends" button click: builds a generic game share
+     * text (no specific level, no score) and copies it to the clipboard.
+     * Shows a neutral toast notification as feedback.
+     */
+    handleTellFriends() {
+        this._copyToClipboard(this.buildShareText({ includeLevel: false }));
     }
 
     /**
@@ -1873,20 +1907,24 @@ class Game {
     }
 
     /**
-     * Show a notification message to the user
+     * Show a notification message to the user.
      * @param {string} message - The message to display
+     * @param {string} [type=''] - Optional modifier: 'neutral' for accent-colored
+     *   toast (used for copy feedback), '' for the default error-style toast.
      */
-    showNotification(message) {
-        const notificationElement = document.getElementById('notification');
-        if (notificationElement) {
-            notificationElement.textContent = message;
-            notificationElement.classList.add('show');
+    showNotification(message, type = '') {
+        const el = document.getElementById('notification');
+        if (!el) return;
+        el.textContent = message;
+        // Reset to base class then apply optional modifier
+        el.className = 'notification';
+        if (type) el.classList.add(`notification-${type}`);
+        el.classList.add('show');
 
-            // Hide notification after 2 seconds
-            setTimeout(() => {
-                notificationElement.classList.remove('show');
-            }, 2000);
-        }
+        // Hide notification after 2 seconds
+        setTimeout(() => {
+            el.classList.remove('show');
+        }, 2000);
     }
 
     /**
@@ -2463,7 +2501,6 @@ Game.PAUSE_HIDDEN_SELECTORS = [
     '.controls-bottom',
     '.controls-hints',
     '.grid-container',
-    '#notification',
     '#solutionToggleBar',
     '#roamSpaceViewer',
 ];

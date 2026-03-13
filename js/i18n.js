@@ -36,6 +36,7 @@ const LANGUAGES = {
         label_day: 'Day:',
         label_map: 'Map:',
         label_date: 'Date:',
+        btn_share_level_aria: 'Share level',
 
         // ── Controls Bar ──────────────────────────────────────────────────
         btn_reset: 'Reset',
@@ -115,6 +116,9 @@ const LANGUAGES = {
         btn_back_to_game: 'Back to Game',
         copied_success: '✓ Copied!',
         copied_failed: '✗ Failed',
+
+        // ── Share / Tell Friends ──────────────────────────────────────────
+        btn_tell_friends: '📣 Tell Your Friends!',
 
         // ── Score / Metrics ───────────────────────────────────────────────
         pct_of_goal: '{pct}% of goal ({userScore}/{goalScore})',
@@ -322,6 +326,7 @@ const LANGUAGES = {
         label_day: 'Día:',
         label_map: 'Mapa:',
         label_date: 'Fecha:',
+        btn_share_level_aria: 'Compartir nivel',
 
         // ── Controls Bar ──────────────────────────────────────────────────
         btn_reset: 'Reiniciar',
@@ -401,6 +406,9 @@ const LANGUAGES = {
         btn_back_to_game: 'Volver al juego',
         copied_success: '✓ ¡Copiado!',
         copied_failed: '✗ Falló',
+
+        // ── Share / Tell Friends ──────────────────────────────────────────
+        btn_tell_friends: '📣 ¡Cuéntales a tus amigos!',
 
         // ── Score / Metrics ───────────────────────────────────────────────
         pct_of_goal: '{pct}% del objetivo ({userScore}/{goalScore})',
