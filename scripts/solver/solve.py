@@ -66,7 +66,7 @@ def load_tile_data():
     except FileNotFoundError:
         raise RuntimeError(
             'Node.js is required to load tile data from js/tileData.js. '
-            'Please install Node.js (v20+).'
+            'Please install Node.js (v24+).'
         )
     except subprocess.CalledProcessError as exc:
         raise RuntimeError(
