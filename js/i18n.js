@@ -117,6 +117,9 @@ const LANGUAGES = {
         copied_success: '✓ Copied!',
         copied_failed: '✗ Failed',
 
+        // ── Share / Tell Friends ──────────────────────────────────────────
+        btn_tell_friends: '📤 Tell Your Friends!',
+
         // ── Score / Metrics ───────────────────────────────────────────────
         pct_of_goal: '{pct}% of goal ({userScore}/{goalScore})',
         perfect_score: '<strong>PERFECT!</strong><br>You achieved the optimal score of {goalScore}!<br>Time: {time}',
@@ -403,6 +406,9 @@ const LANGUAGES = {
         btn_back_to_game: 'Volver al juego',
         copied_success: '✓ ¡Copiado!',
         copied_failed: '✗ Falló',
+
+        // ── Share / Tell Friends ──────────────────────────────────────────
+        btn_tell_friends: '📤 ¡Cuéntales a tus amigos!',
 
         // ── Score / Metrics ───────────────────────────────────────────────
         pct_of_goal: '{pct}% del objetivo ({userScore}/{goalScore})',

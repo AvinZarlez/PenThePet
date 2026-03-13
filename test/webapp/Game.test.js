@@ -770,9 +770,9 @@ describe('displayRoamingArea() — always shows submitted score', () => {
 });
 
 // ------------------------------------------------------------------
-// buildShareText
+// buildShareText — with score (includeLevel: true, includeScore: true)
 // ------------------------------------------------------------------
-describe('buildShareText()', () => {
+describe('buildShareText({ includeLevel: true, includeScore: true })', () => {
     let game;
 
     beforeEach(() => {
@@ -792,52 +792,52 @@ describe('buildShareText()', () => {
     });
 
     test('contains the pet emoji', () => {
-        const text = game.buildShareText();
+        const text = game.buildShareText({ includeLevel: true, includeScore: true });
         expect(text).toContain('🐶');
     });
 
     test('contains the day number from the DOM', () => {
-        const text = game.buildShareText();
+        const text = game.buildShareText({ includeLevel: true, includeScore: true });
         expect(text).toContain('Day 42');
     });
 
     test('contains the level name from the DOM', () => {
-        const text = game.buildShareText();
+        const text = game.buildShareText({ includeLevel: true, includeScore: true });
         expect(text).toContain('Squirrel Scramble');
     });
 
     test('day line format is Day X - NAME - Date when name is present', () => {
-        const text = game.buildShareText();
+        const text = game.buildShareText({ includeLevel: true, includeScore: true });
         expect(text).toContain('Day 42 - Squirrel Scramble -');
     });
 
     test('day line format is Day X - Date when name is absent', () => {
         document.getElementById('mapName').textContent = '';
-        const text = game.buildShareText();
+        const text = game.buildShareText({ includeLevel: true, includeScore: true });
         expect(text).toContain('Day 42 -');
         expect(text).not.toContain('Day 42 -  -');
     });
 
     test('contains the score percentage', () => {
-        const text = game.buildShareText();
+        const text = game.buildShareText({ includeLevel: true, includeScore: true });
         expect(text).toContain('80%');
     });
 
     test('contains formatted time', () => {
-        const text = game.buildShareText();
+        const text = game.buildShareText({ includeLevel: true, includeScore: true });
         expect(text).toContain('01:33');
     });
 
     test('contains a URL with the date param for sharing', () => {
-        const text = game.buildShareText();
+        const text = game.buildShareText({ includeLevel: true, includeScore: true });
         expect(text).toContain('?date=2026-03-01');
     });
 });
 
 // ------------------------------------------------------------------
-// buildLevelShareText
+// buildShareText — level only (includeLevel: true, includeScore: false)
 // ------------------------------------------------------------------
-describe('buildLevelShareText()', () => {
+describe('buildShareText({ includeLevel: true, includeScore: false })', () => {
     let game;
 
     beforeEach(() => {
@@ -853,53 +853,98 @@ describe('buildLevelShareText()', () => {
     });
 
     test('contains the pet emoji', () => {
-        const text = game.buildLevelShareText();
+        const text = game.buildShareText({ includeLevel: true, includeScore: false });
         expect(text).toContain('🐶');
     });
 
     test('contains the day number from the DOM', () => {
-        const text = game.buildLevelShareText();
+        const text = game.buildShareText({ includeLevel: true, includeScore: false });
         expect(text).toContain('Day 42');
     });
 
     test('contains the level name from the DOM', () => {
-        const text = game.buildLevelShareText();
+        const text = game.buildShareText({ includeLevel: true, includeScore: false });
         expect(text).toContain('Squirrel Scramble');
     });
 
     test('day line format is Day X - NAME - Date when name is present', () => {
-        const text = game.buildLevelShareText();
+        const text = game.buildShareText({ includeLevel: true, includeScore: false });
         expect(text).toContain('Day 42 - Squirrel Scramble -');
     });
 
     test('day line format is Day X - Date when name is absent', () => {
         document.getElementById('mapName').textContent = '';
-        const text = game.buildLevelShareText();
+        const text = game.buildShareText({ includeLevel: true, includeScore: false });
         expect(text).toContain('Day 42 -');
         expect(text).not.toContain('Day 42 -  -');
     });
 
     test('does not contain score percentage', () => {
-        const text = game.buildLevelShareText();
+        const text = game.buildShareText({ includeLevel: true, includeScore: false });
         expect(text).not.toContain('Score:');
         expect(text).not.toContain('%');
     });
 
     test('does not contain hints line', () => {
-        const text = game.buildLevelShareText();
+        const text = game.buildShareText({ includeLevel: true, includeScore: false });
         expect(text).not.toContain('Hints used');
     });
 
     test('contains a URL with the date param for sharing', () => {
-        const text = game.buildLevelShareText();
+        const text = game.buildShareText({ includeLevel: true, includeScore: false });
         expect(text).toContain('?date=2026-03-01');
     });
 
     test('works when not yet submitted', () => {
         game.isSubmitted = false;
-        const text = game.buildLevelShareText();
+        const text = game.buildShareText({ includeLevel: true, includeScore: false });
         expect(text).toContain('🐶');
         expect(text).toContain('?date=2026-03-01');
+    });
+});
+
+// ------------------------------------------------------------------
+// buildShareText — tell friends (includeLevel: false)
+// ------------------------------------------------------------------
+describe('buildShareText({ includeLevel: false })', () => {
+    let game;
+
+    beforeEach(() => {
+        setupDOM();
+        jest.useFakeTimers();
+        game = createGame();
+        game.currentDate = '2026-03-01';
+        game.petEmoji = '🐶';
+    });
+
+    afterEach(() => {
+        jest.useRealTimers();
+    });
+
+    test('contains the pet emoji', () => {
+        const text = game.buildShareText({ includeLevel: false });
+        expect(text).toContain('🐶');
+    });
+
+    test('does not contain day number', () => {
+        const text = game.buildShareText({ includeLevel: false });
+        expect(text).not.toContain('Day 42');
+    });
+
+    test('does not contain score', () => {
+        const text = game.buildShareText({ includeLevel: false });
+        expect(text).not.toContain('Score:');
+        expect(text).not.toContain('%');
+    });
+
+    test('contains the latest-level URL', () => {
+        const text = game.buildShareText({ includeLevel: false });
+        expect(text).toContain('?level=latest');
+    });
+
+    test('does not contain a date-specific URL', () => {
+        const text = game.buildShareText({ includeLevel: false });
+        expect(text).not.toContain('?date=');
     });
 });
 

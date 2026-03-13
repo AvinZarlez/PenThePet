@@ -62,7 +62,9 @@
                 <span class="map-info-label" data-i18n="label_date"></span>
                 <span id="mapDate" class="map-info-value">2026-02-06</span>
             </div>
-            <button id="shareLevelBtn" class="share-level-btn" data-i18n-aria="btn_share_level_aria" aria-label="Share level">📤</button>
+            <button id="shareLevelBtn" class="share-level-btn" data-i18n-aria="btn_share_level_aria" aria-label="Share level">
+                <img src="assets/share.svg" alt="" aria-hidden="true" class="share-level-icon">
+            </button>
         </div>
 
         <!-- URL parameter error banner (hidden by default, shown by main.js on invalid/future param) -->
@@ -276,6 +278,9 @@
                     <li data-i18n="about_features_5"></li>
                 </ul>
             </div>
+            <div class="modal-section about-tell-friends-section">
+                <button id="tellFriendsAboutBtn" class="options-account-btn" data-i18n="btn_tell_friends"></button>
+            </div>
             <div class="modal-section">
                 <h3 data-i18n="about_feedback_heading"></h3>
                 <p><span data-i18n="about_feedback_prefix"></span><a id="githubIssuesLink"
@@ -351,6 +356,11 @@
                         </div>
                     </div>
                 </div>
+            </div>
+
+            <!-- Full-width: Tell Your Friends -->
+            <div class="modal-section options-section-gap">
+                <button id="tellFriendsOptionsBtn" class="options-account-btn" data-i18n="btn_tell_friends"></button>
             </div>
 
             <!-- Full-width: Accounts -->

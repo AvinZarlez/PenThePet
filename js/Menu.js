@@ -82,6 +82,16 @@ class Menu {
 
         // Options modal controls
         this.attachOptionsListeners();
+
+        // Tell Your Friends buttons (About modal and Options modal)
+        const tellFriendsAboutBtn = document.getElementById('tellFriendsAboutBtn');
+        if (tellFriendsAboutBtn) {
+            tellFriendsAboutBtn.addEventListener('click', () => this.game.handleTellFriends());
+        }
+        const tellFriendsOptionsBtn = document.getElementById('tellFriendsOptionsBtn');
+        if (tellFriendsOptionsBtn) {
+            tellFriendsOptionsBtn.addEventListener('click', () => this.game.handleTellFriends());
+        }
     }
 
     /**
