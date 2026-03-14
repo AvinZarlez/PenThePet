@@ -259,9 +259,9 @@ class Game {
             const variantAssets = getTileAssets(tileType, false);
             if (variantAssets && variantAssets.length > 0) {
                 // Deterministic per-cell selection: primes 13 and 7 avoid diagonal repetition
-            // patterns on any grid size, ensuring visual variety across neighbours
-            const variantIndex = (row * 13 + col * 7) % variantAssets.length;
-                cell.appendChild(this._createAssetOverlay(variantAssets[variantIndex], 'tile-overlay', 'tile-overlay-emoji'));
+                // patterns on any grid size, ensuring visual variety across neighbours
+                const variantIndex = (row * 13 + col * 7) % variantAssets.length;
+                cell.appendChild(this._createAssetOverlay(variantAssets[variantIndex], 'tile-overlay-fill', 'tile-overlay-emoji'));
             }
             // If enclosed, render enclosed assets as overlays on top
             if (isPennedTile) {
