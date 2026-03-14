@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 50 50">
+  <!-- Crossed blades (X patterns) -->
+  <path d="M6 48 Q10 41 14 34" stroke="#8bc34a" stroke-width="2" fill="none" stroke-linecap="round"/>
+  <path d="M14 48 Q10 41 6 34" stroke="#7ed957" stroke-width="2" fill="none" stroke-linecap="round"/>
+  <path d="M18 48 Q22 41 26 34" stroke="#a5d63f" stroke-width="2" fill="none" stroke-linecap="round"/>
+  <path d="M26 48 Q22 41 18 34" stroke="#8bc34a" stroke-width="2" fill="none" stroke-linecap="round"/>
+  <path d="M30 48 Q34 41 38 34" stroke="#7ed957" stroke-width="2" fill="none" stroke-linecap="round"/>
+  <path d="M38 48 Q34 41 30 34" stroke="#a5d63f" stroke-width="2" fill="none" stroke-linecap="round"/>
+  <path d="M42 48 Q46 41 50 34" stroke="#8bc34a" stroke-width="2" fill="none" stroke-linecap="round"/>
+  <path d="M3 32 Q7 25 11 18" stroke="#7ed957" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+  <path d="M11 32 Q7 25 3 18" stroke="#a5d63f" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+  <path d="M21 32 Q25 25 29 18" stroke="#8bc34a" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+  <path d="M29 32 Q25 25 21 18" stroke="#7ed957" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+  <path d="M37 32 Q41 25 45 18" stroke="#a5d63f" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+  <path d="M45 32 Q41 25 37 18" stroke="#8bc34a" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+</svg>

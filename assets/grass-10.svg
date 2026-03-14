@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 50 50">
+  <!-- Low horizontal / sideways arching blades -->
+  <path d="M0 44 Q8 40 16 44" stroke="#7ed957" stroke-width="2" fill="none" stroke-linecap="round"/>
+  <path d="M4 48 Q10 43 16 48" stroke="#8bc34a" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+  <path d="M14 41 Q22 37 30 41" stroke="#a5d63f" stroke-width="2" fill="none" stroke-linecap="round"/>
+  <path d="M18 48 Q24 43 30 48" stroke="#7ed957" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+  <path d="M28 44 Q36 40 44 44" stroke="#8bc34a" stroke-width="2" fill="none" stroke-linecap="round"/>
+  <path d="M32 48 Q38 43 44 48" stroke="#a5d63f" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+  <path d="M0 30 Q10 26 20 30" stroke="#7ed957" stroke-width="2" fill="none" stroke-linecap="round"/>
+  <path d="M16 27 Q26 23 36 27" stroke="#8bc34a" stroke-width="2" fill="none" stroke-linecap="round"/>
+  <path d="M32 30 Q42 26 50 30" stroke="#a5d63f" stroke-width="2" fill="none" stroke-linecap="round"/>
+  <path d="M0 16 Q12 12 24 16" stroke="#8bc34a" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+  <path d="M20 13 Q32 9 44 13" stroke="#7ed957" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+  <path d="M0 4 Q14 0 28 4" stroke="#a5d63f" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+</svg>

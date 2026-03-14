@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 50 50">
+  <!-- Circular ripples -->
+  <circle cx="12" cy="12" r="5" stroke="#81d4fa" stroke-width="1.5" fill="none" opacity="0.8"/>
+  <circle cx="12" cy="12" r="9" stroke="#4fc3f7" stroke-width="1" fill="none" opacity="0.5"/>
+  <circle cx="38" cy="10" r="6" stroke="#b3e5fc" stroke-width="1.5" fill="none" opacity="0.8"/>
+  <circle cx="38" cy="10" r="10" stroke="#81d4fa" stroke-width="1" fill="none" opacity="0.4"/>
+  <circle cx="10" cy="36" r="7" stroke="#4fc3f7" stroke-width="1.5" fill="none" opacity="0.7"/>
+  <circle cx="10" cy="36" r="11" stroke="#b3e5fc" stroke-width="1" fill="none" opacity="0.4"/>
+  <circle cx="38" cy="38" r="5" stroke="#81d4fa" stroke-width="1.5" fill="none" opacity="0.8"/>
+  <circle cx="38" cy="38" r="9" stroke="#4fc3f7" stroke-width="1" fill="none" opacity="0.5"/>
+  <circle cx="25" cy="25" r="6" stroke="#b3e5fc" stroke-width="2" fill="none" opacity="0.6"/>
+  <circle cx="25" cy="25" r="11" stroke="#81d4fa" stroke-width="1" fill="none" opacity="0.3"/>
+</svg>

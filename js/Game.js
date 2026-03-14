@@ -130,13 +130,19 @@ class Game {
     }
 
     /**
-     * Apply the first asset from a tile's asset list as the cell's inline background.
+     * Apply the cell background — uses the tile's baseLayer if defined, otherwise
+     * falls back to the first asset in the tile's asset list.
      * @private
      * @param {HTMLElement} cell - The cell element to update
      * @param {string} tileType - The tile type name
      * @param {boolean} isEnclosed - Whether to use enclosed assets
      */
     _setCellBackground(cell, tileType, isEnclosed) {
+        const baseLayer = getTileBaseLayer(tileType);
+        if (baseLayer) {
+            cell.style.background = `url('assets/${baseLayer}') center/cover no-repeat`;
+            return;
+        }
         const assetList = getTileAssets(tileType, isEnclosed);
         if (assetList && assetList.length > 0) {
             cell.style.background = `url('assets/${assetList[0]}') center/cover no-repeat`;
@@ -244,21 +250,38 @@ class Game {
         cell.dataset.row = row;
         cell.dataset.col = col;
 
-        // Set background from first asset via inline style (data-driven, overrides CSS)
+        // Set background — baseLayer (if defined) or first asset
         this._setCellBackground(cell, tileType, isPennedTile);
 
-        // Choose asset list for overlay rendering (index 1+)
-        const assetList = getTileAssets(tileType, isPennedTile);
-
-        // Render additional asset overlays from the chosen list (index 1+)
-        if (assetList && assetList.length > 1) {
-            const isLastFloating = tileInfo.floatAnimation === true;
-            for (let i = 1; i < assetList.length; i++) {
-                const asset = assetList[i];
-                const isTopLayer = isLastFloating && i === assetList.length - 1;
-                const imageClass = isTopLayer ? 'tile-overlay tile-overlay-float' : 'tile-overlay';
-                const emojiClass = isTopLayer ? 'tile-overlay-emoji tile-overlay-float' : 'tile-overlay-emoji';
-                cell.appendChild(this._createAssetOverlay(asset, imageClass, emojiClass));
+        if (getTileBaseLayer(tileType)) {
+            // Tiles with a base layer: pick one variant from the assets list
+            // deterministically based on position for visual consistency across renders
+            const variantAssets = getTileAssets(tileType, false);
+            if (variantAssets && variantAssets.length > 0) {
+                // Deterministic per-cell selection: primes 13 and 7 avoid diagonal repetition
+            // patterns on any grid size, ensuring visual variety across neighbours
+            const variantIndex = (row * 13 + col * 7) % variantAssets.length;
+                cell.appendChild(this._createAssetOverlay(variantAssets[variantIndex], 'tile-overlay', 'tile-overlay-emoji'));
+            }
+            // If enclosed, render enclosed assets as overlays on top
+            if (isPennedTile) {
+                const enclosedAssets = getTileAssets(tileType, true);
+                for (const asset of enclosedAssets) {
+                    cell.appendChild(this._createAssetOverlay(asset, 'tile-overlay', 'tile-overlay-emoji'));
+                }
+            }
+        } else {
+            // Standard tiles: render additional asset overlays from the list (index 1+)
+            const assetList = getTileAssets(tileType, isPennedTile);
+            if (assetList && assetList.length > 1) {
+                const isLastFloating = tileInfo.floatAnimation === true;
+                for (let i = 1; i < assetList.length; i++) {
+                    const asset = assetList[i];
+                    const isTopLayer = isLastFloating && i === assetList.length - 1;
+                    const imageClass = isTopLayer ? 'tile-overlay tile-overlay-float' : 'tile-overlay';
+                    const emojiClass = isTopLayer ? 'tile-overlay-emoji tile-overlay-float' : 'tile-overlay-emoji';
+                    cell.appendChild(this._createAssetOverlay(asset, imageClass, emojiClass));
+                }
             }
         }
 

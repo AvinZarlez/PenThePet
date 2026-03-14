@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 50 50">
+  <!-- Diagonal wave lines -->
+  <path d="M-5 15 Q5 11 15 15 Q25 19 35 15 Q45 11 55 15" stroke="#4fc3f7" stroke-width="2" fill="none" stroke-linecap="round" transform="rotate(-25 25 25)"/>
+  <path d="M-5 25 Q5 21 15 25 Q25 29 35 25 Q45 21 55 25" stroke="#81d4fa" stroke-width="2" fill="none" stroke-linecap="round" transform="rotate(-25 25 25)"/>
+  <path d="M-5 35 Q5 31 15 35 Q25 39 35 35 Q45 31 55 35" stroke="#b3e5fc" stroke-width="1.5" fill="none" stroke-linecap="round" transform="rotate(-25 25 25)"/>
+  <path d="M0 5 Q10 1 20 5 Q30 9 40 5 Q48 2 55 5" stroke="#4fc3f7" stroke-width="1.5" fill="none" stroke-linecap="round" transform="rotate(-25 25 25)"/>
+  <path d="M-5 45 Q5 41 15 45 Q25 49 35 45 Q45 41 55 45" stroke="#81d4fa" stroke-width="1.5" fill="none" stroke-linecap="round" transform="rotate(-25 25 25)"/>
+</svg>

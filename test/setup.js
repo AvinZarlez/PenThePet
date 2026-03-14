@@ -35,6 +35,7 @@ global.isBlockingTile = tileDataModule.isBlockingTile;
 global.getTileType = tileDataModule.getTileType;
 global.isTileClickable = tileDataModule.isTileClickable;
 global.getTileAssets = tileDataModule.getTileAssets;
+global.getTileBaseLayer = tileDataModule.getTileBaseLayer;
 global.getPawOverlay = tileDataModule.getPawOverlay;
 global.isWallState = tileDataModule.isWallState;
 global.getWallTransform = tileDataModule.getWallTransform;

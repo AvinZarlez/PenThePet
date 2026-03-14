@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 50 50">
+  <!-- Mixed height scattered blades -->
+  <path d="M4 48 Q4 40 3 33" stroke="#7ed957" stroke-width="2" fill="none" stroke-linecap="round"/>
+  <path d="M12 48 Q13 44 11 41" stroke="#8bc34a" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+  <path d="M17 48 Q17 38 16 29" stroke="#a5d63f" stroke-width="2" fill="none" stroke-linecap="round"/>
+  <path d="M24 48 Q25 43 23 40" stroke="#7ed957" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+  <path d="M29 48 Q29 37 28 28" stroke="#8bc34a" stroke-width="2" fill="none" stroke-linecap="round"/>
+  <path d="M36 48 Q37 44 35 41" stroke="#a5d63f" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+  <path d="M41 48 Q41 39 40 31" stroke="#7ed957" stroke-width="2" fill="none" stroke-linecap="round"/>
+  <path d="M47 48 Q48 43 46 40" stroke="#8bc34a" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+  <path d="M8 34 Q8 26 7 18" stroke="#a5d63f" stroke-width="2" fill="none" stroke-linecap="round"/>
+  <path d="M21 34 Q22 28 20 23" stroke="#7ed957" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+  <path d="M34 34 Q34 25 33 16" stroke="#8bc34a" stroke-width="2" fill="none" stroke-linecap="round"/>
+  <path d="M45 34 Q46 27 44 21" stroke="#a5d63f" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+  <path d="M15 18 Q15 11 14 6" stroke="#7ed957" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+  <path d="M28 20 Q29 13 27 8" stroke="#8bc34a" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+  <path d="M43 20 Q43 12 42 6" stroke="#a5d63f" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+</svg>

@@ -207,7 +207,10 @@ describe('CONSTANTS', () => {
         });
 
         test('enclosedAssets should fall back to assets when not defined', () => {
-            expect(getTileAssets('water', true)).toEqual(['water.svg']);
+            expect(getTileAssets('water', true)).toEqual([
+                'water-1.svg', 'water-2.svg', 'water-3.svg', 'water-4.svg', 'water-5.svg',
+                'water-6.svg', 'water-7.svg', 'water-8.svg', 'water-9.svg', 'water-10.svg',
+            ]);
             expect(getTileAssets('wall', true)).toEqual(['wall.svg']);
         });
 
@@ -218,13 +221,50 @@ describe('CONSTANTS', () => {
         });
 
         test('getTileAssets returns normal assets when not enclosed', () => {
-            expect(getTileAssets('grass', false)).toEqual(['grass.svg']);
+            expect(getTileAssets('grass', false)).toEqual([
+                'grass-1.svg', 'grass-2.svg', 'grass-3.svg', 'grass-4.svg', 'grass-5.svg',
+                'grass-6.svg', 'grass-7.svg', 'grass-8.svg', 'grass-9.svg', 'grass-10.svg',
+            ]);
             expect(getTileAssets('home', false)).toEqual(['grass.svg', 'home.svg']);
             expect(getTileAssets('star', false)).toEqual(['grass.svg', 'star-outline.svg', 'star.svg']);
         });
 
         test('getTileAssets falls back to grass.svg for unknown tile', () => {
             expect(getTileAssets('nonexistent', false)).toEqual(['grass.svg']);
+        });
+
+        test('grass tile has baseLayer defined', () => {
+            expect(TILE_DATA.grass.baseLayer).toBe('grass-base.svg');
+        });
+
+        test('water tile has baseLayer defined', () => {
+            expect(TILE_DATA.water.baseLayer).toBe('water-base.svg');
+        });
+
+        test('getTileBaseLayer returns baseLayer for grass and water', () => {
+            expect(getTileBaseLayer('grass')).toBe('grass-base.svg');
+            expect(getTileBaseLayer('water')).toBe('water-base.svg');
+        });
+
+        test('getTileBaseLayer returns null for tiles without a baseLayer', () => {
+            expect(getTileBaseLayer('wall')).toBeNull();
+            expect(getTileBaseLayer('home')).toBeNull();
+            expect(getTileBaseLayer('star')).toBeNull();
+            expect(getTileBaseLayer('nonexistent')).toBeNull();
+        });
+
+        test('grass assets list contains 10 variant SVGs', () => {
+            expect(TILE_DATA.grass.assets).toHaveLength(10);
+            for (let i = 1; i <= 10; i++) {
+                expect(TILE_DATA.grass.assets).toContain(`grass-${i}.svg`);
+            }
+        });
+
+        test('water assets list contains 10 variant SVGs', () => {
+            expect(TILE_DATA.water.assets).toHaveLength(10);
+            for (let i = 1; i <= 10; i++) {
+                expect(TILE_DATA.water.assets).toContain(`water-${i}.svg`);
+            }
         });
 
         test('getPawOverlay returns default paw.svg for undefined pawOverlay', () => {

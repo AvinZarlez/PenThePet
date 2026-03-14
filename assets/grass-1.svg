@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 50 50">
+  <!-- Tall upright blades -->
+  <path d="M8 48 Q8 38 7 30" stroke="#7ed957" stroke-width="2" fill="none" stroke-linecap="round"/>
+  <path d="M11 48 Q12 36 10 26" stroke="#8bc34a" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+  <path d="M20 48 Q20 37 19 28" stroke="#7ed957" stroke-width="2" fill="none" stroke-linecap="round"/>
+  <path d="M23 48 Q24 35 22 25" stroke="#a5d63f" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+  <path d="M32 48 Q32 38 31 29" stroke="#8bc34a" stroke-width="2" fill="none" stroke-linecap="round"/>
+  <path d="M35 48 Q36 36 34 27" stroke="#7ed957" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+  <path d="M44 48 Q44 37 43 28" stroke="#a5d63f" stroke-width="2" fill="none" stroke-linecap="round"/>
+  <path d="M47 48 Q48 36 46 27" stroke="#8bc34a" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+  <path d="M14 30 Q14 22 13 15" stroke="#7ed957" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+  <path d="M27 30 Q27 20 26 12" stroke="#8bc34a" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+  <path d="M39 30 Q39 21 38 13" stroke="#a5d63f" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+</svg>

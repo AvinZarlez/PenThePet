@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 50 50">
+  <!-- Arc-shaped waves -->
+  <path d="M2 48 Q14 38 26 48 Q38 58 50 48" stroke="#4fc3f7" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+  <path d="M0 34 Q12 24 24 34 Q36 44 50 34" stroke="#81d4fa" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+  <path d="M0 20 Q12 10 24 20 Q36 30 50 20" stroke="#b3e5fc" stroke-width="2" fill="none" stroke-linecap="round"/>
+  <path d="M0 8 Q10 0 20 8 Q30 16 40 8 Q46 3 50 8" stroke="#4fc3f7" stroke-width="2" fill="none" stroke-linecap="round"/>
+  <!-- Foam highlights -->
+  <ellipse cx="13" cy="42" rx="4" ry="1.5" fill="#e1f5fe" opacity="0.6"/>
+  <ellipse cx="37" cy="42" rx="3" ry="1" fill="#e1f5fe" opacity="0.5"/>
+  <ellipse cx="11" cy="28" rx="4" ry="1.5" fill="#e1f5fe" opacity="0.5"/>
+  <ellipse cx="37" cy="28" rx="3" ry="1" fill="#e1f5fe" opacity="0.4"/>
+</svg>

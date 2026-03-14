@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 50 50">
+  <!-- Blades leaning left -->
+  <path d="M10 48 Q6 40 3 32" stroke="#7ed957" stroke-width="2" fill="none" stroke-linecap="round"/>
+  <path d="M13 48 Q9 38 6 28" stroke="#a5d63f" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+  <path d="M22 48 Q18 39 15 30" stroke="#8bc34a" stroke-width="2" fill="none" stroke-linecap="round"/>
+  <path d="M25 48 Q21 37 18 27" stroke="#7ed957" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+  <path d="M34 48 Q30 40 27 31" stroke="#a5d63f" stroke-width="2" fill="none" stroke-linecap="round"/>
+  <path d="M37 48 Q33 38 30 28" stroke="#8bc34a" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+  <path d="M46 48 Q42 39 39 30" stroke="#7ed957" stroke-width="2" fill="none" stroke-linecap="round"/>
+  <path d="M16 30 Q12 22 9 14" stroke="#8bc34a" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+  <path d="M29 30 Q25 21 22 13" stroke="#a5d63f" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+  <path d="M42 30 Q38 22 35 14" stroke="#7ed957" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+</svg>

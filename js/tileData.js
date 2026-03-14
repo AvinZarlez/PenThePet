@@ -22,7 +22,11 @@ const TILE_DATA = {
         numericId: 1,
         cssClass: 'grass',
         descriptionKey: 'tile_grass_description',
-        assets: ['grass.svg'],
+        baseLayer: 'grass-base.svg',
+        assets: [
+            'grass-1.svg', 'grass-2.svg', 'grass-3.svg', 'grass-4.svg', 'grass-5.svg',
+            'grass-6.svg', 'grass-7.svg', 'grass-8.svg', 'grass-9.svg', 'grass-10.svg',
+        ],
         enclosedAssets: ['penned.svg'],
         ariaLabel: (row, col) => I18N.t('tile_grass_aria', { row: row + 1, col: col + 1 }),
     },
@@ -36,7 +40,11 @@ const TILE_DATA = {
         numericId: 0,
         cssClass: 'water',
         descriptionKey: 'tile_water_description',
-        assets: ['water.svg'],
+        baseLayer: 'water-base.svg',
+        assets: [
+            'water-1.svg', 'water-2.svg', 'water-3.svg', 'water-4.svg', 'water-5.svg',
+            'water-6.svg', 'water-7.svg', 'water-8.svg', 'water-9.svg', 'water-10.svg',
+        ],
         pawOverlay: [],
         ariaLabel: (row, col) => I18N.t('tile_water_aria', { row: row + 1, col: col + 1 }),
     },
@@ -301,6 +309,17 @@ function getTileAssets(tileName, isEnclosed) {
 }
 
 /**
+ * Returns the base layer asset for a tile, or null if none is defined.
+ * When a base layer is defined, it is always rendered as the cell background,
+ * and one randomly-selected asset from the assets list is rendered on top.
+ * @param {string} tileName @returns {string|null}
+ */
+function getTileBaseLayer(tileName) {
+    const data = TILE_DATA[tileName];
+    return (data && data.baseLayer) ? data.baseLayer : null;
+}
+
+/**
  * Returns paw overlay assets for escape-path rendering.
  * undefined pawOverlay → ['paw.svg']; [] → no overlay; custom list → those assets.
  * @param {string} tileName @returns {string[]}
@@ -341,6 +360,7 @@ if (typeof module !== 'undefined' && module.exports) {
         getTileType,
         isTileClickable,
         getTileAssets,
+        getTileBaseLayer,
         getPawOverlay,
     };
 }

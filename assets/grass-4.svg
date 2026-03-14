@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 50 50">
+  <!-- Short dense tufts -->
+  <path d="M5 48 Q5 44 4 41" stroke="#7ed957" stroke-width="2" fill="none" stroke-linecap="round"/>
+  <path d="M8 48 Q9 43 7 40" stroke="#8bc34a" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+  <path d="M11 48 Q11 44 10 41" stroke="#a5d63f" stroke-width="2" fill="none" stroke-linecap="round"/>
+  <path d="M16 48 Q16 43 15 40" stroke="#8bc34a" stroke-width="2" fill="none" stroke-linecap="round"/>
+  <path d="M19 48 Q20 44 18 41" stroke="#7ed957" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+  <path d="M22 48 Q22 43 21 40" stroke="#a5d63f" stroke-width="2" fill="none" stroke-linecap="round"/>
+  <path d="M27 48 Q27 44 26 41" stroke="#7ed957" stroke-width="2" fill="none" stroke-linecap="round"/>
+  <path d="M30 48 Q31 43 29 40" stroke="#8bc34a" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+  <path d="M33 48 Q33 44 32 41" stroke="#a5d63f" stroke-width="2" fill="none" stroke-linecap="round"/>
+  <path d="M38 48 Q38 43 37 40" stroke="#8bc34a" stroke-width="2" fill="none" stroke-linecap="round"/>
+  <path d="M41 48 Q42 44 40 41" stroke="#7ed957" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+  <path d="M44 48 Q44 43 43 40" stroke="#a5d63f" stroke-width="2" fill="none" stroke-linecap="round"/>
+  <path d="M47 48 Q47 44 46 41" stroke="#8bc34a" stroke-width="2" fill="none" stroke-linecap="round"/>
+  <!-- Second row of tufts -->
+  <path d="M3 32 Q3 28 2 25" stroke="#7ed957" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+  <path d="M13 32 Q13 27 12 24" stroke="#8bc34a" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+  <path d="M23 32 Q24 27 22 24" stroke="#a5d63f" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+  <path d="M35 32 Q35 27 34 24" stroke="#7ed957" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+  <path d="M46 32 Q47 27 45 24" stroke="#8bc34a" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+  <!-- Third row -->
+  <path d="M8 16 Q8 12 7 9" stroke="#a5d63f" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+  <path d="M28 16 Q28 11 27 8" stroke="#7ed957" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+  <path d="M42 16 Q43 11 41 8" stroke="#8bc34a" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+</svg>
