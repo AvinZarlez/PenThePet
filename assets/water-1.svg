@@ -1,7 +1,21 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 50 50">
-  <!-- Simple sinusoidal horizontal waves -->
-  <path d="M0 10 Q6 6 12 10 Q18 14 24 10 Q30 6 36 10 Q42 14 50 10" stroke="#4fc3f7" stroke-width="2.5" fill="none" stroke-linecap="round"/>
-  <path d="M0 22 Q7 18 14 22 Q21 26 28 22 Q35 18 42 22 Q47 25 50 22" stroke="#81d4fa" stroke-width="2" fill="none" stroke-linecap="round"/>
-  <path d="M0 34 Q6 30 12 34 Q18 38 24 34 Q30 30 36 34 Q43 38 50 34" stroke="#4fc3f7" stroke-width="2.5" fill="none" stroke-linecap="round"/>
-  <path d="M0 46 Q8 42 16 46 Q24 50 32 46 Q40 42 50 46" stroke="#b3e5fc" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+  <!-- Dense sinusoidal horizontal waves covering the full tile -->
+  <path d="M0 6 Q6 2 12 6 Q18 10 24 6 Q30 2 36 6 Q42 10 50 6" stroke="#4fc3f7" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+  <path d="M0 13 Q7 9 14 13 Q21 17 28 13 Q35 9 42 13 Q47 16 50 13" stroke="#81d4fa" stroke-width="2" fill="none" stroke-linecap="round"/>
+  <path d="M0 20 Q6 16 12 20 Q18 24 24 20 Q30 16 36 20 Q43 24 50 20" stroke="#b3e5fc" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+  <path d="M0 27 Q7 23 14 27 Q21 31 28 27 Q35 23 42 27 Q47 30 50 27" stroke="#4fc3f7" stroke-width="2" fill="none" stroke-linecap="round"/>
+  <path d="M0 34 Q6 30 12 34 Q18 38 24 34 Q30 30 36 34 Q43 38 50 34" stroke="#81d4fa" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+  <path d="M0 41 Q7 37 14 41 Q21 45 28 41 Q35 37 42 41 Q47 44 50 41" stroke="#b3e5fc" stroke-width="2" fill="none" stroke-linecap="round"/>
+  <path d="M0 48 Q8 44 16 48 Q24 52 32 48 Q40 44 50 48" stroke="#4fc3f7" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+  <!-- Foam ellipses at wave crests -->
+  <ellipse cx="8" cy="3" rx="3" ry="1.5" fill="#e1f5fe" opacity="0.85"/>
+  <ellipse cx="26" cy="3" rx="3" ry="1.5" fill="#e1f5fe" opacity="0.75"/>
+  <ellipse cx="44" cy="3" rx="3" ry="1.5" fill="#e1f5fe" opacity="0.85"/>
+  <ellipse cx="16" cy="17" rx="3" ry="1.5" fill="#e1f5fe" opacity="0.75"/>
+  <ellipse cx="34" cy="17" rx="3" ry="1.5" fill="#e1f5fe" opacity="0.85"/>
+  <ellipse cx="8" cy="31" rx="3" ry="1.5" fill="#e1f5fe" opacity="0.75"/>
+  <ellipse cx="26" cy="31" rx="3" ry="1.5" fill="#e1f5fe" opacity="0.85"/>
+  <ellipse cx="44" cy="31" rx="3" ry="1.5" fill="#e1f5fe" opacity="0.75"/>
+  <ellipse cx="16" cy="45" rx="3" ry="1.5" fill="#e1f5fe" opacity="0.85"/>
+  <ellipse cx="36" cy="45" rx="3" ry="1.5" fill="#e1f5fe" opacity="0.75"/>
 </svg>

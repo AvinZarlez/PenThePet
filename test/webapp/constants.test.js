@@ -207,10 +207,7 @@ describe('CONSTANTS', () => {
         });
 
         test('enclosedAssets should fall back to assets when not defined', () => {
-            expect(getTileAssets('water', true)).toEqual([
-                'water-1.svg', 'water-2.svg', 'water-3.svg', 'water-4.svg', 'water-5.svg',
-                'water-6.svg', 'water-7.svg', 'water-8.svg', 'water-9.svg', 'water-10.svg',
-            ]);
+            expect(getTileAssets('water', true)).toEqual(['water-1.svg', 'water-2.svg', 'water-3.svg', 'water-4.svg']);
             expect(getTileAssets('wall', true)).toEqual(['wall.svg']);
         });
 
@@ -221,12 +218,9 @@ describe('CONSTANTS', () => {
         });
 
         test('getTileAssets returns normal assets when not enclosed', () => {
-            expect(getTileAssets('grass', false)).toEqual([
-                'grass-1.svg', 'grass-2.svg', 'grass-3.svg', 'grass-4.svg', 'grass-5.svg',
-                'grass-6.svg', 'grass-7.svg', 'grass-8.svg', 'grass-9.svg', 'grass-10.svg',
-            ]);
-            expect(getTileAssets('home', false)).toEqual(['grass.svg', 'home.svg']);
-            expect(getTileAssets('star', false)).toEqual(['grass.svg', 'star-outline.svg', 'star.svg']);
+            expect(getTileAssets('grass', false)).toEqual(['grass-1.svg', 'grass-2.svg', 'grass-3.svg', 'grass-4.svg']);
+            expect(getTileAssets('home', false)).toEqual(['grass-base.svg', 'home.svg']);
+            expect(getTileAssets('star', false)).toEqual(['grass-base.svg', 'star-outline.svg', 'star.svg']);
         });
 
         test('getTileAssets falls back to grass.svg for unknown tile', () => {
@@ -253,16 +247,16 @@ describe('CONSTANTS', () => {
             expect(getTileBaseLayer('nonexistent')).toBeNull();
         });
 
-        test('grass assets list contains 10 variant SVGs', () => {
-            expect(TILE_DATA.grass.assets).toHaveLength(10);
-            for (let i = 1; i <= 10; i++) {
+        test('grass assets list contains 4 variant SVGs', () => {
+            expect(TILE_DATA.grass.assets).toHaveLength(4);
+            for (let i = 1; i <= 4; i++) {
                 expect(TILE_DATA.grass.assets).toContain(`grass-${i}.svg`);
             }
         });
 
-        test('water assets list contains 10 variant SVGs', () => {
-            expect(TILE_DATA.water.assets).toHaveLength(10);
-            for (let i = 1; i <= 10; i++) {
+        test('water assets list contains 4 variant SVGs', () => {
+            expect(TILE_DATA.water.assets).toHaveLength(4);
+            for (let i = 1; i <= 4; i++) {
                 expect(TILE_DATA.water.assets).toContain(`water-${i}.svg`);
             }
         });
@@ -282,13 +276,13 @@ describe('CONSTANTS', () => {
             expect(getPawOverlay('nonexistent')).toEqual(['paw.svg']);
         });
 
-        test('home tile has grass base asset', () => {
-            expect(TILE_DATA.home.assets[0]).toBe('grass.svg');
+        test('home tile has grass-base as background asset', () => {
+            expect(TILE_DATA.home.assets[0]).toBe('grass-base.svg');
             expect(TILE_DATA.home.assets[1]).toBe('home.svg');
         });
 
-        test('star tile has grass base asset', () => {
-            expect(TILE_DATA.star.assets[0]).toBe('grass.svg');
+        test('star tile has grass-base as background asset', () => {
+            expect(TILE_DATA.star.assets[0]).toBe('grass-base.svg');
             expect(TILE_DATA.star.assets[1]).toBe('star-outline.svg');
             expect(TILE_DATA.star.assets[2]).toBe('star.svg');
         });

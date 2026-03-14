@@ -1,9 +1,29 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 50 50">
-  <!-- Dense short ripples -->
-  <path d="M0 8 Q4 5 8 8 Q12 11 16 8 Q20 5 24 8 Q28 11 32 8 Q36 5 40 8 Q44 11 50 8" stroke="#4fc3f7" stroke-width="1.5" fill="none" stroke-linecap="round"/>
-  <path d="M0 16 Q4 13 8 16 Q12 19 16 16 Q20 13 24 16 Q28 19 32 16 Q36 13 40 16 Q44 19 50 16" stroke="#81d4fa" stroke-width="1.5" fill="none" stroke-linecap="round"/>
-  <path d="M0 24 Q4 21 8 24 Q12 27 16 24 Q20 21 24 24 Q28 27 32 24 Q36 21 40 24 Q44 27 50 24" stroke="#4fc3f7" stroke-width="1.5" fill="none" stroke-linecap="round"/>
-  <path d="M0 32 Q4 29 8 32 Q12 35 16 32 Q20 29 24 32 Q28 35 32 32 Q36 29 40 32 Q44 35 50 32" stroke="#b3e5fc" stroke-width="1.5" fill="none" stroke-linecap="round"/>
-  <path d="M0 40 Q4 37 8 40 Q12 43 16 40 Q20 37 24 40 Q28 43 32 40 Q36 37 40 40 Q44 43 50 40" stroke="#81d4fa" stroke-width="1.5" fill="none" stroke-linecap="round"/>
-  <path d="M0 48 Q5 45 10 48 Q15 51 20 48 Q25 45 30 48 Q35 51 40 48 Q45 45 50 48" stroke="#4fc3f7" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+  <!-- Dense zigzag lines covering the full tile, inspired by water-7 -->
+  <path d="M0 7 L5 3 L10 7 L15 3 L20 7 L25 3 L30 7 L35 3 L40 7 L45 3 L50 7" stroke="#4fc3f7" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M0 14 L5 10 L10 14 L15 10 L20 14 L25 10 L30 14 L35 10 L40 14 L45 10 L50 14" stroke="#81d4fa" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M0 21 L5 17 L10 21 L15 17 L20 21 L25 17 L30 21 L35 17 L40 21 L45 17 L50 21" stroke="#b3e5fc" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M0 28 L5 24 L10 28 L15 24 L20 28 L25 24 L30 28 L35 24 L40 28 L45 24 L50 28" stroke="#4fc3f7" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M0 35 L5 31 L10 35 L15 31 L20 35 L25 31 L30 35 L35 31 L40 35 L45 31 L50 35" stroke="#81d4fa" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M0 42 L5 38 L10 42 L15 38 L20 42 L25 38 L30 42 L35 38 L40 42 L45 38 L50 42" stroke="#b3e5fc" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M0 49 L5 45 L10 49 L15 45 L20 49 L25 45 L30 49 L35 45 L40 49 L45 45 L50 49" stroke="#4fc3f7" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- Foam dots at zigzag peaks -->
+  <circle cx="5" cy="3" r="2" fill="#e1f5fe" opacity="0.9"/>
+  <circle cx="15" cy="3" r="2" fill="#e1f5fe" opacity="0.85"/>
+  <circle cx="25" cy="3" r="2" fill="#e1f5fe" opacity="0.9"/>
+  <circle cx="35" cy="3" r="2" fill="#e1f5fe" opacity="0.85"/>
+  <circle cx="45" cy="3" r="2" fill="#e1f5fe" opacity="0.9"/>
+  <circle cx="5" cy="17" r="2" fill="#e1f5fe" opacity="0.85"/>
+  <circle cx="15" cy="17" r="2" fill="#e1f5fe" opacity="0.9"/>
+  <circle cx="25" cy="17" r="2" fill="#e1f5fe" opacity="0.85"/>
+  <circle cx="35" cy="17" r="2" fill="#e1f5fe" opacity="0.9"/>
+  <circle cx="45" cy="17" r="2" fill="#e1f5fe" opacity="0.85"/>
+  <circle cx="5" cy="31" r="2" fill="#e1f5fe" opacity="0.9"/>
+  <circle cx="15" cy="31" r="2" fill="#e1f5fe" opacity="0.85"/>
+  <circle cx="25" cy="31" r="2" fill="#e1f5fe" opacity="0.9"/>
+  <circle cx="35" cy="31" r="2" fill="#e1f5fe" opacity="0.85"/>
+  <circle cx="45" cy="31" r="2" fill="#e1f5fe" opacity="0.9"/>
+  <circle cx="5" cy="45" r="2" fill="#e1f5fe" opacity="0.85"/>
+  <circle cx="25" cy="45" r="2" fill="#e1f5fe" opacity="0.9"/>
+  <circle cx="45" cy="45" r="2" fill="#e1f5fe" opacity="0.85"/>
 </svg>

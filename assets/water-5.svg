@@ -1,7 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 50 50">
-  <!-- V-shaped wave crests -->
-  <path d="M0 12 L8 6 L16 12 L24 6 L32 12 L40 6 L50 12" stroke="#4fc3f7" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-  <path d="M0 24 L10 18 L20 24 L30 18 L40 24 L50 18" stroke="#81d4fa" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-  <path d="M0 36 L8 30 L16 36 L24 30 L32 36 L40 30 L50 36" stroke="#b3e5fc" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-  <path d="M0 48 L10 42 L20 48 L30 42 L40 48 L50 42" stroke="#4fc3f7" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-</svg>
