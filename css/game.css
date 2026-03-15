@@ -592,13 +592,14 @@
     outline-color: var(--text-on-accent);
 }
 
-/* Tile Type Styles — backgrounds set inline from tileData.js assets */
+/* Tile Type Styles — backgrounds set inline from TileSvgs.js (grass/water/home/star/bee)
+   or from tileData.js assets (wall, hole, filledHole) */
 .cell.grass {
-    /* background set inline from TILE_DATA.grass.assets[0] */
+    /* background set as data: URI by TileSvgs.getTileBaseUri('grass', false) */
 }
 
 .cell.grass.penned {
-    /* background set inline from TILE_DATA.grass.enclosedAssets[0] */
+    /* background recoloured to GRASS_PENNED_PALETTE by TileSvgs.getTileBaseUri('grass', true) */
 }
 
 .cell.water {

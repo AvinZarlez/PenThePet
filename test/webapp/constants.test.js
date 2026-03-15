@@ -212,15 +212,17 @@ describe('CONSTANTS', () => {
         });
 
         test('enclosedAssets should override assets when tile is enclosed', () => {
-            expect(getTileAssets('grass', true)).toEqual(['penned.svg']);
-            expect(getTileAssets('star', true)).toEqual(['penned.svg', 'star-outline.svg', 'star.svg']);
-            expect(getTileAssets('home', true)).toEqual(['penned.svg', 'home.svg']);
+            // grass: penned state handled by TileSvgs recolouring; no enclosedAssets defined
+            expect(getTileAssets('grass', true)).toEqual(['grass-1.svg', 'grass-2.svg', 'grass-3.svg', 'grass-4.svg']);
+            // home/star/bee: enclosedAssets are just the icon overlays (TileSvgs handles the background)
+            expect(getTileAssets('star', true)).toEqual(['star-outline.svg', 'star.svg']);
+            expect(getTileAssets('home', true)).toEqual(['home.svg']);
         });
 
         test('getTileAssets returns normal assets when not enclosed', () => {
             expect(getTileAssets('grass', false)).toEqual(['grass-1.svg', 'grass-2.svg', 'grass-3.svg', 'grass-4.svg']);
-            expect(getTileAssets('home', false)).toEqual(['grass-base.svg', 'home.svg']);
-            expect(getTileAssets('star', false)).toEqual(['grass-base.svg', 'star-outline.svg', 'star.svg']);
+            expect(getTileAssets('home', false)).toEqual(['home.svg']);
+            expect(getTileAssets('star', false)).toEqual(['star-outline.svg', 'star.svg']);
         });
 
         test('getTileAssets falls back to grass.svg for unknown tile', () => {
@@ -245,6 +247,19 @@ describe('CONSTANTS', () => {
             expect(getTileBaseLayer('home')).toBeNull();
             expect(getTileBaseLayer('star')).toBeNull();
             expect(getTileBaseLayer('nonexistent')).toBeNull();
+        });
+
+        test('getTileBackgroundGroup returns grass for home, star, bee', () => {
+            expect(getTileBackgroundGroup('home')).toBe('grass');
+            expect(getTileBackgroundGroup('star')).toBe('grass');
+            expect(getTileBackgroundGroup('bee')).toBe('grass');
+        });
+
+        test('getTileBackgroundGroup returns null for tiles without backgroundGroup', () => {
+            expect(getTileBackgroundGroup('grass')).toBeNull();
+            expect(getTileBackgroundGroup('water')).toBeNull();
+            expect(getTileBackgroundGroup('wall')).toBeNull();
+            expect(getTileBackgroundGroup('nonexistent')).toBeNull();
         });
 
         test('grass assets list contains 4 variant SVGs', () => {
@@ -276,15 +291,15 @@ describe('CONSTANTS', () => {
             expect(getPawOverlay('nonexistent')).toEqual(['paw.svg']);
         });
 
-        test('home tile has grass-base as background asset', () => {
-            expect(TILE_DATA.home.assets[0]).toBe('grass-base.svg');
-            expect(TILE_DATA.home.assets[1]).toBe('home.svg');
+        test('home tile uses TileSvgs for background (backgroundGroup set, no grass-base asset)', () => {
+            expect(TILE_DATA.home.backgroundGroup).toBe('grass');
+            expect(TILE_DATA.home.assets[0]).toBe('home.svg');
         });
 
-        test('star tile has grass-base as background asset', () => {
-            expect(TILE_DATA.star.assets[0]).toBe('grass-base.svg');
-            expect(TILE_DATA.star.assets[1]).toBe('star-outline.svg');
-            expect(TILE_DATA.star.assets[2]).toBe('star.svg');
+        test('star tile uses TileSvgs for background (backgroundGroup set, no grass-base asset)', () => {
+            expect(TILE_DATA.star.backgroundGroup).toBe('grass');
+            expect(TILE_DATA.star.assets[0]).toBe('star-outline.svg');
+            expect(TILE_DATA.star.assets[1]).toBe('star.svg');
         });
     });
 

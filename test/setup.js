@@ -36,6 +36,7 @@ global.getTileType = tileDataModule.getTileType;
 global.isTileClickable = tileDataModule.isTileClickable;
 global.getTileAssets = tileDataModule.getTileAssets;
 global.getTileBaseLayer = tileDataModule.getTileBaseLayer;
+global.getTileBackgroundGroup = tileDataModule.getTileBackgroundGroup;
 global.getPawOverlay = tileDataModule.getPawOverlay;
 global.isWallState = tileDataModule.isWallState;
 global.getWallTransform = tileDataModule.getWallTransform;
@@ -78,3 +79,6 @@ const { getTileType, isTileClickable, TILE_TYPES } = require('../js/tileTypes.js
 global.getTileType = getTileType;
 global.isTileClickable = isTileClickable;
 global.TILE_TYPES = TILE_TYPES;
+
+// Load TileSvgs (dynamic SVG tile generators — must come after tileData)
+global.TileSvgs = require('../js/TileSvgs.js');
