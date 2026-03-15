@@ -1,26 +1,28 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 50 50">
+  <g opacity="0.5">
   <!-- V-crest waves covering the full tile, different rhythm from water-1 and water-2 -->
-  <path d="M0 8 L8 3 L16 8 L24 3 L32 8 L40 3 L50 8" stroke="#b3e5fc" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-  <path d="M0 17 L10 11 L20 17 L30 11 L40 17 L50 11" stroke="#4fc3f7" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-  <path d="M0 26 L8 20 L16 26 L24 20 L32 26 L40 20 L50 26" stroke="#81d4fa" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-  <path d="M0 35 L10 29 L20 35 L30 29 L40 35 L50 29" stroke="#b3e5fc" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-  <path d="M0 44 L8 38 L16 44 L24 38 L32 44 L40 38 L50 44" stroke="#4fc3f7" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-  <path d="M0 50 L10 45 L20 50 L30 45 L40 50 L50 45" stroke="#81d4fa" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M0 8 L8 3 L16 8 L24 3 L32 8 L40 3 L50 8" stroke="#4ab8e0" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M0 17 L10 11 L20 17 L30 11 L40 17 L50 11" stroke="#1e88c8" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M0 26 L8 20 L16 26 L24 20 L32 26 L40 20 L50 26" stroke="#2a9fd4" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M0 35 L10 29 L20 35 L30 29 L40 35 L50 29" stroke="#4ab8e0" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M0 44 L8 38 L16 44 L24 38 L32 44 L40 38 L50 44" stroke="#1e88c8" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M0 50 L10 45 L20 50 L30 45 L40 50 L50 45" stroke="#2a9fd4" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
   <!-- Foam at V-peaks -->
-  <circle cx="8" cy="3" r="2.5" fill="#e1f5fe" opacity="0.9"/>
-  <circle cx="24" cy="3" r="2.5" fill="#e1f5fe" opacity="0.85"/>
-  <circle cx="40" cy="3" r="2.5" fill="#e1f5fe" opacity="0.9"/>
-  <circle cx="10" cy="11" r="2" fill="#e1f5fe" opacity="0.85"/>
-  <circle cx="30" cy="11" r="2" fill="#e1f5fe" opacity="0.9"/>
-  <circle cx="50" cy="11" r="2" fill="#e1f5fe" opacity="0.85"/>
-  <circle cx="8" cy="20" r="2.5" fill="#e1f5fe" opacity="0.9"/>
-  <circle cx="24" cy="20" r="2.5" fill="#e1f5fe" opacity="0.85"/>
-  <circle cx="40" cy="20" r="2.5" fill="#e1f5fe" opacity="0.9"/>
-  <circle cx="10" cy="29" r="2" fill="#e1f5fe" opacity="0.85"/>
-  <circle cx="30" cy="29" r="2" fill="#e1f5fe" opacity="0.9"/>
-  <circle cx="8" cy="38" r="2.5" fill="#e1f5fe" opacity="0.85"/>
-  <circle cx="24" cy="38" r="2.5" fill="#e1f5fe" opacity="0.9"/>
-  <circle cx="40" cy="38" r="2.5" fill="#e1f5fe" opacity="0.85"/>
-  <circle cx="10" cy="45" r="2" fill="#e1f5fe" opacity="0.9"/>
-  <circle cx="30" cy="45" r="2" fill="#e1f5fe" opacity="0.85"/>
+  <circle cx="8" cy="3" r="2.5" fill="#b0d8ec" opacity="0.9"/>
+  <circle cx="24" cy="3" r="2.5" fill="#b0d8ec" opacity="0.85"/>
+  <circle cx="40" cy="3" r="2.5" fill="#b0d8ec" opacity="0.9"/>
+  <circle cx="10" cy="11" r="2" fill="#b0d8ec" opacity="0.85"/>
+  <circle cx="30" cy="11" r="2" fill="#b0d8ec" opacity="0.9"/>
+  <circle cx="50" cy="11" r="2" fill="#b0d8ec" opacity="0.85"/>
+  <circle cx="8" cy="20" r="2.5" fill="#b0d8ec" opacity="0.9"/>
+  <circle cx="24" cy="20" r="2.5" fill="#b0d8ec" opacity="0.85"/>
+  <circle cx="40" cy="20" r="2.5" fill="#b0d8ec" opacity="0.9"/>
+  <circle cx="10" cy="29" r="2" fill="#b0d8ec" opacity="0.85"/>
+  <circle cx="30" cy="29" r="2" fill="#b0d8ec" opacity="0.9"/>
+  <circle cx="8" cy="38" r="2.5" fill="#b0d8ec" opacity="0.85"/>
+  <circle cx="24" cy="38" r="2.5" fill="#b0d8ec" opacity="0.9"/>
+  <circle cx="40" cy="38" r="2.5" fill="#b0d8ec" opacity="0.85"/>
+  <circle cx="10" cy="45" r="2" fill="#b0d8ec" opacity="0.9"/>
+  <circle cx="30" cy="45" r="2" fill="#b0d8ec" opacity="0.85"/>
+  </g>
 </svg>

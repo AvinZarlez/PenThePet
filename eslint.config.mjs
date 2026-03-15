@@ -39,6 +39,7 @@ export default [
                 getTileType: 'readonly',
                 isTileClickable: 'readonly',
                 getTileAssets: 'readonly',
+                getTileBaseLayer: 'readonly',
                 getPawOverlay: 'readonly',
                 FILLABLE_TILES: 'readonly',
                 FILLABLE_NUMERIC_IDS: 'readonly',
