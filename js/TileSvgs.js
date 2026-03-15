@@ -497,6 +497,21 @@ function getTileVariantUri(tileName, variantIndex, isPenned) {
     return null;
 }
 
+// ─── Browser global (script-tag loading) ─────────────────────────────────────
+
+/* istanbul ignore next */
+if (typeof window !== 'undefined') {
+    window.TileSvgs = {
+        GRASS_PALETTE,
+        GRASS_PENNED_PALETTE,
+        WATER_PALETTE,
+        TILE_SVGS_TILES,
+        getTileBaseUri,
+        getTileVariantUri,
+        svgToDataUri,
+    };
+}
+
 // ─── Module export (Node.js / Jest) ──────────────────────────────────────────
 
 /* istanbul ignore next */
