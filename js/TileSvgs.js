@@ -189,7 +189,7 @@ function _getWaterVariant2Svg(p) {
 </svg>`;
 }
 
-// ─── Water variant 3 — sweeping arc waves with foam circles ──────────────────
+// ─── Water variant 3 — sweeping arc waves ──────────────────
 
 function _getWaterVariant3Svg(p) {
     return `<svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 50 50">
