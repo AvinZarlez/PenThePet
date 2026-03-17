@@ -21,9 +21,9 @@
  */
 const GRASS_PALETTE = {
     /** Bright mid-green fill — always the base-layer background. */
-    base:    '#5a9a2a',
-    /** Dark forest green — primary blade / stroke color. */
-    stroke: '#508825',
+    base:    '#00A300',
+    /** Dark green — stroke color. */
+    stroke: '#008000',
 };
 
 /**
@@ -31,8 +31,8 @@ const GRASS_PALETTE = {
  * visual theme used throughout the game.
  */
 const GRASS_PENNED_PALETTE = {
-    base:    '#b8960c',
-    stroke: '#a07808',
+    base:    '#FFCC00',
+    stroke: '#D1A700',
 };
 
 // ─── Water color palette ─────────────────────────────────────────────────────
