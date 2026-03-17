@@ -130,14 +130,31 @@ class Game {
     }
 
     /**
-     * Apply the first asset from a tile's asset list as the cell's inline background.
+     * Apply the cell background — uses TileSvgs for dynamically-colored tiles
+     * (grass, water, and tiles with a backgroundGroup), then falls back to the
+     * tile's baseLayer asset, then to the first asset in the tile's asset list.
      * @private
      * @param {HTMLElement} cell - The cell element to update
      * @param {string} tileType - The tile type name
-     * @param {boolean} isEnclosed - Whether to use enclosed assets
+     * @param {boolean} isPenned - Whether the tile is currently penned/enclosed
      */
-    _setCellBackground(cell, tileType, isEnclosed) {
-        const assetList = getTileAssets(tileType, isEnclosed);
+    _setCellBackground(cell, tileType, isPenned) {
+        // TileSvgs generates data: URIs for grass, water, and tiles with a backgroundGroup (home, star, bee),
+        // with the correct palette for penned vs normal state.
+        if (typeof TileSvgs !== 'undefined') {
+            const svgUri = TileSvgs.getTileBaseUri(tileType, isPenned);
+            if (svgUri) {
+                cell.style.background = `url("${svgUri}") center/cover no-repeat`;
+                return;
+            }
+        }
+        // Fallback for tiles not handled by TileSvgs
+        const baseLayer = getTileBaseLayer(tileType);
+        if (baseLayer) {
+            cell.style.background = `url('assets/${baseLayer}') center/cover no-repeat`;
+            return;
+        }
+        const assetList = getTileAssets(tileType, isPenned);
         if (assetList && assetList.length > 0) {
             cell.style.background = `url('assets/${assetList[0]}') center/cover no-repeat`;
         }
@@ -244,21 +261,53 @@ class Game {
         cell.dataset.row = row;
         cell.dataset.col = col;
 
-        // Set background from first asset via inline style (data-driven, overrides CSS)
+        // Set background — TileSvgs (grass/water/backgroundGroup), baseLayer asset, or first asset
         this._setCellBackground(cell, tileType, isPennedTile);
 
-        // Choose asset list for overlay rendering (index 1+)
-        const assetList = getTileAssets(tileType, isPennedTile);
-
-        // Render additional asset overlays from the chosen list (index 1+)
-        if (assetList && assetList.length > 1) {
-            const isLastFloating = tileInfo.floatAnimation === true;
-            for (let i = 1; i < assetList.length; i++) {
-                const asset = assetList[i];
-                const isTopLayer = isLastFloating && i === assetList.length - 1;
-                const imageClass = isTopLayer ? 'tile-overlay tile-overlay-float' : 'tile-overlay';
-                const emojiClass = isTopLayer ? 'tile-overlay-emoji tile-overlay-float' : 'tile-overlay-emoji';
-                cell.appendChild(this._createAssetOverlay(asset, imageClass, emojiClass));
+        if (getTileBaseLayer(tileType)) {
+            // Tiles with a base layer (grass, water): pick one variant deterministically
+            const variantAssets = getTileAssets(tileType, false);
+            if (variantAssets && variantAssets.length > 0) {
+                // Deterministic per-cell selection: primes 13 and 7 avoid diagonal repetition
+                // patterns on any grid size, ensuring visual variety across neighbours
+                const variantIndex = (row * 13 + col * 7) % variantAssets.length;
+                cell.dataset.variantIndex = variantIndex;
+                let variantOverlay;
+                if (typeof TileSvgs !== 'undefined') {
+                    const svgUri = TileSvgs.getTileVariantUri(tileType, variantIndex, isPennedTile);
+                    if (svgUri) {
+                        const img = document.createElement('img');
+                        img.src = svgUri;
+                        img.alt = '';
+                        img.className = 'tile-overlay-fill';
+                        img.setAttribute('aria-hidden', 'true');
+                        variantOverlay = img;
+                    }
+                }
+                if (!variantOverlay) {
+                    variantOverlay = this._createAssetOverlay(variantAssets[variantIndex], 'tile-overlay-fill', 'tile-overlay-emoji');
+                }
+                cell.appendChild(variantOverlay);
+            }
+            // Penned state for baseLayer tiles is handled entirely by TileSvgs recolouring
+            // the base and variant — no enclosed-asset overlays needed here.
+        } else {
+            // Standard tiles (home, star, bee, wall, etc.)
+            // Tiles with backgroundGroup have TileSvgs managing their background, so ALL
+            // assets are icon overlays (start at index 0).  Other tiles skip index 0
+            // (which was loaded as the CSS background).
+            const assetList = getTileAssets(tileType, isPennedTile);
+            const hasBackgroundGroup = !!getTileBackgroundGroup(tileType);
+            const startIndex = hasBackgroundGroup ? 0 : 1;
+            if (assetList && assetList.length > startIndex) {
+                const isLastFloating = tileInfo.floatAnimation === true;
+                for (let i = startIndex; i < assetList.length; i++) {
+                    const asset = assetList[i];
+                    const isTopLayer = isLastFloating && i === assetList.length - 1;
+                    const imageClass = isTopLayer ? 'tile-overlay tile-overlay-float' : 'tile-overlay';
+                    const emojiClass = isTopLayer ? 'tile-overlay-emoji tile-overlay-float' : 'tile-overlay-emoji';
+                    cell.appendChild(this._createAssetOverlay(asset, imageClass, emojiClass));
+                }
             }
         }
 
@@ -613,6 +662,16 @@ class Game {
                         cell.classList.add('penned');
                         const tileType = this.grid.getTile(row, col);
                         this._setCellBackground(cell, tileType, true);
+                        // For tiles with a variant overlay (grass), recolour it to the
+                        // penned palette so the blades turn golden alongside the base.
+                        if (getTileBaseLayer(tileType) && typeof TileSvgs !== 'undefined') {
+                            const variantIdx = parseInt(cell.dataset.variantIndex, 10);
+                            const variantEl = cell.querySelector('.tile-overlay-fill');
+                            if (variantEl && variantEl.tagName === 'IMG' && !isNaN(variantIdx)) {
+                                const uri = TileSvgs.getTileVariantUri(tileType, variantIdx, true);
+                                if (uri) variantEl.src = uri;
+                            }
+                        }
                         const score = getTileScore(tileType);
                         if (score !== 0 && score !== 1) {
                             this._showScorePopup(cell, score);

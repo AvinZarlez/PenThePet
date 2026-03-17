@@ -40,7 +40,13 @@
   },
   "jest": {
     "testEnvironment": "jsdom",
-    "coverageReporters": ["clover", "json", "lcov", "text", "json-summary"],
+    "coverageReporters": [
+      "clover",
+      "json",
+      "lcov",
+      "text",
+      "json-summary"
+    ],
     "collectCoverageFrom": [
       "js/**/*.js",
       "!js/main.js",

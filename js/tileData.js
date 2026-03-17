@@ -22,8 +22,8 @@ const TILE_DATA = {
         numericId: 1,
         cssClass: 'grass',
         descriptionKey: 'tile_grass_description',
-        assets: ['grass.svg'],
-        enclosedAssets: ['penned.svg'],
+        baseLayer: 'grass-base.svg',
+        assets: ['grass-1.svg', 'grass-2.svg', 'grass-3.svg', 'grass-4.svg'],
         ariaLabel: (row, col) => I18N.t('tile_grass_aria', { row: row + 1, col: col + 1 }),
     },
     water: {
@@ -36,7 +36,8 @@ const TILE_DATA = {
         numericId: 0,
         cssClass: 'water',
         descriptionKey: 'tile_water_description',
-        assets: ['water.svg'],
+        baseLayer: 'water-base.svg',
+        assets: ['water-1.svg', 'water-2.svg', 'water-3.svg', 'water-4.svg'],
         pawOverlay: [],
         ariaLabel: (row, col) => I18N.t('tile_water_aria', { row: row + 1, col: col + 1 }),
     },
@@ -66,8 +67,9 @@ const TILE_DATA = {
         numericId: 2,
         cssClass: 'home',
         descriptionKey: 'tile_home_description',
-        assets: ['grass.svg', 'home.svg'],
-        enclosedAssets: ['penned.svg', 'home.svg'],
+        backgroundGroup: 'grass',
+        assets: ['home.svg'],
+        enclosedAssets: ['home.svg'],
         pawOverlay: [],
         ariaLabel: (row, col) => I18N.t('tile_home_aria', { row: row + 1, col: col + 1 }),
     },
@@ -82,8 +84,9 @@ const TILE_DATA = {
         cssClass: 'grass',
         floatAnimation: true,
         descriptionKey: 'tile_star_description',
-        assets: ['grass.svg', 'star-outline.svg', 'star.svg'],
-        enclosedAssets: ['penned.svg', 'star-outline.svg', 'star.svg'],
+        backgroundGroup: 'grass',
+        assets: ['star-outline.svg', 'star.svg'],
+        enclosedAssets: ['star-outline.svg', 'star.svg'],
         ariaLabel: (row, col) => I18N.t('tile_star_aria', { row: row + 1, col: col + 1 }),
     },
     bee: {
@@ -97,8 +100,9 @@ const TILE_DATA = {
         cssClass: 'grass',
         floatAnimation: true,
         descriptionKey: 'tile_bee_description',
-        assets: ['grass.svg', 'bee-outline.svg', 'bee.svg'],
-        enclosedAssets: ['penned.svg', 'bee-outline.svg', 'bee.svg'],
+        backgroundGroup: 'grass',
+        assets: ['bee-outline.svg', 'bee.svg'],
+        enclosedAssets: ['bee-outline.svg', 'bee.svg'],
         ariaLabel: (row, col) => I18N.t('tile_bee_aria', { row: row + 1, col: col + 1 }),
     },
     hole: {
@@ -301,6 +305,28 @@ function getTileAssets(tileName, isEnclosed) {
 }
 
 /**
+ * Returns the base layer asset for a tile, or null if none is defined.
+ * When a base layer is defined, it is always rendered as the cell background,
+ * and one randomly-selected asset from the assets list is rendered on top.
+ * @param {string} tileName @returns {string|null}
+ */
+function getTileBaseLayer(tileName) {
+    const data = TILE_DATA[tileName];
+    return (data && data.baseLayer) ? data.baseLayer : null;
+}
+
+/**
+ * Returns the background group for a tile (e.g. 'grass'), or null.
+ * Tiles with a backgroundGroup have their base layer managed dynamically by
+ * TileSvgs rather than by a static asset file.
+ * @param {string} tileName @returns {string|null}
+ */
+function getTileBackgroundGroup(tileName) {
+    const data = TILE_DATA[tileName];
+    return (data && data.backgroundGroup) ? data.backgroundGroup : null;
+}
+
+/**
  * Returns paw overlay assets for escape-path rendering.
  * undefined pawOverlay → ['paw.svg']; [] → no overlay; custom list → those assets.
  * @param {string} tileName @returns {string[]}
@@ -341,6 +367,8 @@ if (typeof module !== 'undefined' && module.exports) {
         getTileType,
         isTileClickable,
         getTileAssets,
+        getTileBaseLayer,
+        getTileBackgroundGroup,
         getPawOverlay,
     };
 }
