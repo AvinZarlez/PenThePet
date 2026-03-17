@@ -190,12 +190,14 @@
 .controls-top #timerBtn {
     justify-self: center;
     width: var(--ctrl-center-w, 160px);
+    max-width: 100%;
     height: var(--ctrl-height);
 }
 
 .controls-bottom #pennedStatus {
     justify-self: center;
     width: var(--ctrl-center-w, 160px);
+    max-width: 100%;
     height: var(--ctrl-center-h, 56px);
 }
 
@@ -1170,6 +1172,21 @@
 
     .counter-label {
         font-size: clamp(7px, 2.5vw, 0.75em);
+    }
+}
+
+@media (max-width: 400px) {
+    :root {
+        --ctrl-side-w: 90px;
+        --ctrl-center-w: 90px;
+        --ctrl-height: 42px;
+        --ctrl-center-h: 50px;
+        --ctrl-hint-w: 100px;
+    }
+
+    .controls-top,
+    .controls-bottom {
+        gap: 4px;
     }
 }
 
