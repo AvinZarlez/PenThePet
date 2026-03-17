@@ -50,8 +50,6 @@ const WATER_PALETTE = {
     stroke2: '#2a9fd4',
     /** Pale blue — accent wave stroke. */
     stroke3: '#4ab8e0',
-    /** Near-white foam / ellipse fill color. */
-    foam:    '#b0d8ec',
 };
 
 // ─── SVG utility ──────────────────────────────────────────────────────────────
@@ -171,16 +169,6 @@ function _getWaterVariant1Svg(p) {
   <path d="M0 34 Q6 30 12 34 Q18 38 24 34 Q30 30 36 34 Q43 38 50 34" stroke="${p.stroke2}" stroke-width="2.5" fill="none" stroke-linecap="round"/>
   <path d="M0 41 Q7 37 14 41 Q21 45 28 41 Q35 37 42 41 Q47 44 50 41" stroke="${p.stroke3}" stroke-width="2" fill="none" stroke-linecap="round"/>
   <path d="M0 48 Q8 44 16 48 Q24 52 32 48 Q40 44 50 48" stroke="${p.stroke1}" stroke-width="2.5" fill="none" stroke-linecap="round"/>
-  <ellipse cx="8" cy="3" rx="3" ry="1.5" fill="${p.foam}" opacity="0.85"/>
-  <ellipse cx="26" cy="3" rx="3" ry="1.5" fill="${p.foam}" opacity="0.75"/>
-  <ellipse cx="44" cy="3" rx="3" ry="1.5" fill="${p.foam}" opacity="0.85"/>
-  <ellipse cx="16" cy="17" rx="3" ry="1.5" fill="${p.foam}" opacity="0.75"/>
-  <ellipse cx="34" cy="17" rx="3" ry="1.5" fill="${p.foam}" opacity="0.85"/>
-  <ellipse cx="8" cy="31" rx="3" ry="1.5" fill="${p.foam}" opacity="0.75"/>
-  <ellipse cx="26" cy="31" rx="3" ry="1.5" fill="${p.foam}" opacity="0.85"/>
-  <ellipse cx="44" cy="31" rx="3" ry="1.5" fill="${p.foam}" opacity="0.75"/>
-  <ellipse cx="16" cy="45" rx="3" ry="1.5" fill="${p.foam}" opacity="0.85"/>
-  <ellipse cx="36" cy="45" rx="3" ry="1.5" fill="${p.foam}" opacity="0.75"/>
   </g>
 </svg>`;
 }
@@ -197,24 +185,6 @@ function _getWaterVariant2Svg(p) {
   <path d="M0 35 L5 31 L10 35 L15 31 L20 35 L25 31 L30 35 L35 31 L40 35 L45 31 L50 35" stroke="${p.stroke2}" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
   <path d="M0 42 L5 38 L10 42 L15 38 L20 42 L25 38 L30 42 L35 38 L40 42 L45 38 L50 42" stroke="${p.stroke3}" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
   <path d="M0 49 L5 45 L10 49 L15 45 L20 49 L25 45 L30 49 L35 45 L40 49 L45 45 L50 49" stroke="${p.stroke1}" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-  <circle cx="5" cy="3" r="2" fill="${p.foam}" opacity="0.9"/>
-  <circle cx="15" cy="3" r="2" fill="${p.foam}" opacity="0.85"/>
-  <circle cx="25" cy="3" r="2" fill="${p.foam}" opacity="0.9"/>
-  <circle cx="35" cy="3" r="2" fill="${p.foam}" opacity="0.85"/>
-  <circle cx="45" cy="3" r="2" fill="${p.foam}" opacity="0.9"/>
-  <circle cx="5" cy="17" r="2" fill="${p.foam}" opacity="0.85"/>
-  <circle cx="15" cy="17" r="2" fill="${p.foam}" opacity="0.9"/>
-  <circle cx="25" cy="17" r="2" fill="${p.foam}" opacity="0.85"/>
-  <circle cx="35" cy="17" r="2" fill="${p.foam}" opacity="0.9"/>
-  <circle cx="45" cy="17" r="2" fill="${p.foam}" opacity="0.85"/>
-  <circle cx="5" cy="31" r="2" fill="${p.foam}" opacity="0.9"/>
-  <circle cx="15" cy="31" r="2" fill="${p.foam}" opacity="0.85"/>
-  <circle cx="25" cy="31" r="2" fill="${p.foam}" opacity="0.9"/>
-  <circle cx="35" cy="31" r="2" fill="${p.foam}" opacity="0.85"/>
-  <circle cx="45" cy="31" r="2" fill="${p.foam}" opacity="0.9"/>
-  <circle cx="5" cy="45" r="2" fill="${p.foam}" opacity="0.85"/>
-  <circle cx="25" cy="45" r="2" fill="${p.foam}" opacity="0.9"/>
-  <circle cx="45" cy="45" r="2" fill="${p.foam}" opacity="0.85"/>
   </g>
 </svg>`;
 }
@@ -229,21 +199,6 @@ function _getWaterVariant3Svg(p) {
   <path d="M0 28 Q12 22 25 28 Q38 34 50 28" stroke="${p.stroke3}" stroke-width="3" fill="none" stroke-linecap="round"/>
   <path d="M0 38 Q12 32 25 38 Q38 44 50 38" stroke="${p.stroke1}" stroke-width="2.5" fill="none" stroke-linecap="round"/>
   <path d="M0 48 Q12 42 25 48 Q38 54 50 48" stroke="${p.stroke2}" stroke-width="3" fill="none" stroke-linecap="round"/>
-  <circle cx="8" cy="5" r="3" fill="${p.foam}" opacity="0.85"/>
-  <circle cx="22" cy="4" r="2.5" fill="${p.foam}" opacity="0.75"/>
-  <circle cx="38" cy="5" r="3" fill="${p.foam}" opacity="0.85"/>
-  <circle cx="13" cy="15" r="2.5" fill="${p.foam}" opacity="0.75"/>
-  <circle cx="31" cy="14" r="3" fill="${p.foam}" opacity="0.85"/>
-  <circle cx="47" cy="15" r="2.5" fill="${p.foam}" opacity="0.75"/>
-  <circle cx="5" cy="25" r="3" fill="${p.foam}" opacity="0.85"/>
-  <circle cx="21" cy="24" r="2.5" fill="${p.foam}" opacity="0.75"/>
-  <circle cx="39" cy="25" r="3" fill="${p.foam}" opacity="0.85"/>
-  <circle cx="13" cy="35" r="2.5" fill="${p.foam}" opacity="0.75"/>
-  <circle cx="28" cy="34" r="3" fill="${p.foam}" opacity="0.85"/>
-  <circle cx="44" cy="35" r="2.5" fill="${p.foam}" opacity="0.75"/>
-  <circle cx="7" cy="45" r="3" fill="${p.foam}" opacity="0.85"/>
-  <circle cx="24" cy="44" r="2.5" fill="${p.foam}" opacity="0.75"/>
-  <circle cx="40" cy="45" r="3" fill="${p.foam}" opacity="0.85"/>
   </g>
 </svg>`;
 }
@@ -259,22 +214,6 @@ function _getWaterVariant4Svg(p) {
   <path d="M0 35 L10 29 L20 35 L30 29 L40 35 L50 29" stroke="${p.stroke3}" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
   <path d="M0 44 L8 38 L16 44 L24 38 L32 44 L40 38 L50 44" stroke="${p.stroke1}" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
   <path d="M0 50 L10 45 L20 50 L30 45 L40 50 L50 45" stroke="${p.stroke2}" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-  <circle cx="8" cy="3" r="2.5" fill="${p.foam}" opacity="0.9"/>
-  <circle cx="24" cy="3" r="2.5" fill="${p.foam}" opacity="0.85"/>
-  <circle cx="40" cy="3" r="2.5" fill="${p.foam}" opacity="0.9"/>
-  <circle cx="10" cy="11" r="2" fill="${p.foam}" opacity="0.85"/>
-  <circle cx="30" cy="11" r="2" fill="${p.foam}" opacity="0.9"/>
-  <circle cx="50" cy="11" r="2" fill="${p.foam}" opacity="0.85"/>
-  <circle cx="8" cy="20" r="2.5" fill="${p.foam}" opacity="0.9"/>
-  <circle cx="24" cy="20" r="2.5" fill="${p.foam}" opacity="0.85"/>
-  <circle cx="40" cy="20" r="2.5" fill="${p.foam}" opacity="0.9"/>
-  <circle cx="10" cy="29" r="2" fill="${p.foam}" opacity="0.85"/>
-  <circle cx="30" cy="29" r="2" fill="${p.foam}" opacity="0.9"/>
-  <circle cx="8" cy="38" r="2.5" fill="${p.foam}" opacity="0.85"/>
-  <circle cx="24" cy="38" r="2.5" fill="${p.foam}" opacity="0.9"/>
-  <circle cx="40" cy="38" r="2.5" fill="${p.foam}" opacity="0.85"/>
-  <circle cx="10" cy="45" r="2" fill="${p.foam}" opacity="0.9"/>
-  <circle cx="30" cy="45" r="2" fill="${p.foam}" opacity="0.85"/>
   </g>
 </svg>`;
 }
