@@ -112,33 +112,9 @@ function _getGrassVariant2Svg(p) {
 </svg>`;
 }
 
-// ─── Grass variant 3 — V-shaped leaf fronds ──────────────────────────────────
+// ─── Grass variant 3 — horizontal arcing blades ───────────────────────────────
 
 function _getGrassVariant3Svg(p) {
-    return `<svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 50 50">
-  <g opacity="0.5">
-  <path d="M13 46 L10 40" stroke="${p.stroke}" stroke-width="2" fill="none" stroke-linecap="round"/>
-  <path d="M21 46 L24 40" stroke="${p.stroke}" stroke-width="2" fill="none" stroke-linecap="round"/>
-  <path d="M37 46 L34 40" stroke="${p.stroke}" stroke-width="2" fill="none" stroke-linecap="round"/>
-  <path d="M45 46 L48 40" stroke="${p.stroke}" stroke-width="2" fill="none" stroke-linecap="round"/>
-  <path d="M9 34 L6 28" stroke="${p.stroke}" stroke-width="2" fill="none" stroke-linecap="round"/>
-  <path d="M17 34 L20 28" stroke="${p.stroke}" stroke-width="2" fill="none" stroke-linecap="round"/>
-  <path d="M33 34 L30 28" stroke="${p.stroke}" stroke-width="2" fill="none" stroke-linecap="round"/>
-  <path d="M41 34 L44 28" stroke="${p.stroke}" stroke-width="2" fill="none" stroke-linecap="round"/>
-  <path d="M5 22 L8 16" stroke="${p.stroke}" stroke-width="2" fill="none" stroke-linecap="round"/>
-  <path d="M21 22 L18 16" stroke="${p.stroke}" stroke-width="2" fill="none" stroke-linecap="round"/>
-  <path d="M29 22 L32 16" stroke="${p.stroke}" stroke-width="2" fill="none" stroke-linecap="round"/>
-  <path d="M45 22 L42 16" stroke="${p.stroke}" stroke-width="2" fill="none" stroke-linecap="round"/>
-  <path d="M17 10 L14 4" stroke="${p.stroke}" stroke-width="2" fill="none" stroke-linecap="round"/>
-  <path d="M25 10 L28 4" stroke="${p.stroke}" stroke-width="2" fill="none" stroke-linecap="round"/>
-  <path d="M41 10 L38 4" stroke="${p.stroke}" stroke-width="2" fill="none" stroke-linecap="round"/>
-  </g>
-</svg>`;
-}
-
-// ─── Grass variant 4 — horizontal arcing blades ───────────────────────────────
-
-function _getGrassVariant4Svg(p) {
     return `<svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 50 50">
   <g opacity="0.5">
   <path d="M20 47 Q28 43 36 47" stroke="${p.stroke}" stroke-width="2" fill="none" stroke-linecap="round"/>
@@ -173,25 +149,9 @@ function _getWaterVariant1Svg(p) {
 </svg>`;
 }
 
-// ─── Water variant 2 — zigzag lines ──────────────────────────────────────────
+// ─── Water variant 2 — sweeping arc waves ──────────────────
 
 function _getWaterVariant2Svg(p) {
-    return `<svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 50 50">
-  <g opacity="0.5">
-  <path d="M0 7 L5 3 L10 7 L15 3 L20 7 L25 3 L30 7 L35 3 L40 7 L45 3 L50 7" stroke="${p.stroke1}" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-  <path d="M0 14 L5 10 L10 14 L15 10 L20 14 L25 10 L30 14 L35 10 L40 14 L45 10 L50 14" stroke="${p.stroke2}" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-  <path d="M0 21 L5 17 L10 21 L15 17 L20 21 L25 17 L30 21 L35 17 L40 21 L45 17 L50 21" stroke="${p.stroke3}" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-  <path d="M0 28 L5 24 L10 28 L15 24 L20 28 L25 24 L30 28 L35 24 L40 28 L45 24 L50 28" stroke="${p.stroke1}" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-  <path d="M0 35 L5 31 L10 35 L15 31 L20 35 L25 31 L30 35 L35 31 L40 35 L45 31 L50 35" stroke="${p.stroke2}" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-  <path d="M0 42 L5 38 L10 42 L15 38 L20 42 L25 38 L30 42 L35 38 L40 42 L45 38 L50 42" stroke="${p.stroke3}" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-  <path d="M0 49 L5 45 L10 49 L15 45 L20 49 L25 45 L30 49 L35 45 L40 49 L45 45 L50 49" stroke="${p.stroke1}" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-  </g>
-</svg>`;
-}
-
-// ─── Water variant 3 — sweeping arc waves ──────────────────
-
-function _getWaterVariant3Svg(p) {
     return `<svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 50 50">
   <g opacity="0.5">
   <path d="M0 8 Q12 2 25 8 Q38 14 50 8" stroke="${p.stroke1}" stroke-width="3" fill="none" stroke-linecap="round"/>
@@ -203,35 +163,17 @@ function _getWaterVariant3Svg(p) {
 </svg>`;
 }
 
-// ─── Water variant 4 — V-crest waves ─────────────────────────────────────────
-
-function _getWaterVariant4Svg(p) {
-    return `<svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 50 50">
-  <g opacity="0.5">
-  <path d="M0 8 L8 3 L16 8 L24 3 L32 8 L40 3 L50 8" stroke="${p.stroke3}" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-  <path d="M0 17 L10 11 L20 17 L30 11 L40 17 L50 11" stroke="${p.stroke1}" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-  <path d="M0 26 L8 20 L16 26 L24 20 L32 26 L40 20 L50 26" stroke="${p.stroke2}" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-  <path d="M0 35 L10 29 L20 35 L30 29 L40 35 L50 29" stroke="${p.stroke3}" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-  <path d="M0 44 L8 38 L16 44 L24 38 L32 44 L40 38 L50 44" stroke="${p.stroke1}" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-  <path d="M0 50 L10 45 L20 50 L30 45 L40 50 L50 45" stroke="${p.stroke2}" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-  </g>
-</svg>`;
-}
-
 // ─── Grass variant lookup ─────────────────────────────────────────────────────
 
 const _GRASS_VARIANT_FNS = [
     _getGrassVariant1Svg,
     _getGrassVariant2Svg,
     _getGrassVariant3Svg,
-    _getGrassVariant4Svg,
 ];
 
 const _WATER_VARIANT_FNS = [
     _getWaterVariant1Svg,
     _getWaterVariant2Svg,
-    _getWaterVariant3Svg,
-    _getWaterVariant4Svg,
 ];
 
 // ─── Public API ───────────────────────────────────────────────────────────────
