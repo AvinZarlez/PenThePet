@@ -536,6 +536,7 @@
     height: var(--cell-size, 50px);
     aspect-ratio: 1;
     border-radius: max(2px, calc(var(--cell-size, 50px) * 0.1));
+    overflow: hidden;
     cursor: pointer;
     transition: transform 0.1s, box-shadow 0.1s;
     position: relative;
@@ -655,7 +656,8 @@
 }
 
 /* Shore overlays — rendered on water tiles, one per non-water neighbour side */
-.cell .shore-overlay {
+.cell .shore-overlay,
+.cell .shore-corner-overlay {
     position: absolute;
     top: 0;
     left: 0;
