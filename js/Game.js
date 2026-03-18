@@ -16,11 +16,13 @@ const SHORE_DIRECTIONS = [
 // Pairs of adjacent cardinal directions whose inner corner needs a corner shore piece.
 // Default orientation (0°) places the arc in the top-left; 90°/180°/270° rotate it
 // to top-right/bottom-right/bottom-left respectively.
+// `diag` is the diagonal tile in that corner's direction; if it is also water the
+// inner corner is interior to the water body and no corner piece is needed.
 const SHORE_CORNERS = [
-    { dirs: [{ dRow: -1, dCol: 0 }, { dRow: 0, dCol: -1 }], angle: 0 },   // top-left
-    { dirs: [{ dRow: -1, dCol: 0 }, { dRow: 0, dCol: 1 }],  angle: 90 },  // top-right
-    { dirs: [{ dRow: 1,  dCol: 0 }, { dRow: 0, dCol: 1 }],  angle: 180 }, // bottom-right
-    { dirs: [{ dRow: 1,  dCol: 0 }, { dRow: 0, dCol: -1 }], angle: 270 }, // bottom-left
+    { dirs: [{ dRow: -1, dCol: 0 }, { dRow: 0, dCol: -1 }], diag: { dRow: -1, dCol: -1 }, angle: 0 },   // top-left
+    { dirs: [{ dRow: -1, dCol: 0 }, { dRow: 0, dCol: 1 }],  diag: { dRow: -1, dCol: 1 },  angle: 90 },  // top-right
+    { dirs: [{ dRow: 1,  dCol: 0 }, { dRow: 0, dCol: 1 }],  diag: { dRow: 1,  dCol: 1 },  angle: 180 }, // bottom-right
+    { dirs: [{ dRow: 1,  dCol: 0 }, { dRow: 0, dCol: -1 }], diag: { dRow: 1,  dCol: -1 }, angle: 270 }, // bottom-left
 ];
 
 class Game {
@@ -206,11 +208,14 @@ class Game {
 
         // Corner pieces: render a quarter-circle shore when two adjacent cardinal
         // neighbours are both water, filling the inner-corner gap.
-        for (const { dirs, angle } of SHORE_CORNERS) {
+        // Skip the corner when the diagonal tile is also water — that corner is
+        // interior to the water body and no gap exists there.
+        for (const { dirs, diag, angle } of SHORE_CORNERS) {
             const allWater = dirs.every(({ dRow, dCol }) =>
                 this.grid.getTile(row + dRow, col + dCol) === 'water'
             );
-            if (allWater) {
+            const diagIsWater = this.grid.getTile(row + diag.dRow, col + diag.dCol) === 'water';
+            if (allWater && !diagIsWater) {
                 const corner = document.createElement('img');
                 corner.src = 'assets/shore-corner.svg';
                 corner.alt = '';

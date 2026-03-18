@@ -1463,7 +1463,9 @@ describe('Game — Shore Overlays', () => {
         expect(corners[0].style.transform).toBe('rotate(270deg)');
     });
 
-    test('water surrounded by water on all 4 sides gets 4 corner overlays', () => {
+    test('water in a plus/cross shape — center tile gets 4 corner overlays (grass at all diagonals)', () => {
+        // Plus shape: water at (1,1) centre with water N/S/E/W, grass at all diagonal tiles.
+        // Each inner corner has a land diagonal, so all 4 corners have a genuine gap.
         const g = createGame5(tiles => {
             tiles[1][1] = 'water';
             tiles[0][1] = 'water'; // top
@@ -1472,6 +1474,33 @@ describe('Game — Shore Overlays', () => {
             tiles[1][2] = 'water'; // right
         });
         expect(cornerCount(g, 1, 1)).toBe(4);
+    });
+
+    test('2×2 water block — each tile gets 0 corner overlays (diagonal is always water)', () => {
+        // Each tile's only eligible inner corner faces another water tile diagonally,
+        // so no corners should be drawn — no "island" in the centre of the block.
+        const g = createGame5(tiles => {
+            tiles[0][0] = 'water';
+            tiles[0][1] = 'water';
+            tiles[1][0] = 'water';
+            tiles[1][1] = 'water';
+        });
+        expect(cornerCount(g, 0, 0)).toBe(0);
+        expect(cornerCount(g, 0, 1)).toBe(0);
+        expect(cornerCount(g, 1, 0)).toBe(0);
+        expect(cornerCount(g, 1, 1)).toBe(0);
+    });
+
+    test('3×3 water block — interior tile gets 0 corner overlays', () => {
+        const g = createGame5(tiles => {
+            for (let r = 0; r < 3; r++) {
+                for (let c = 0; c < 3; c++) {
+                    tiles[r][c] = 'water';
+                }
+            }
+        });
+        // (1,1) is fully interior — all 4 cardinals and all 4 diagonals are water
+        expect(cornerCount(g, 1, 1)).toBe(0);
     });
 
     test('water with 3 water neighbours gets 2 corner overlays', () => {
