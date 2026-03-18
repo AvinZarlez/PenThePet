@@ -56,6 +56,16 @@ node scripts/generate-map.js --size 7-17 --count 5  # 5 maps, random sizes
 node scripts/generate-map.js --fresh --count 10 --date 2026-03-01 --size 9
 ```
 
+### Keyboard Controls
+
+| Key | Action |
+| ----------- | ----------------------------------------- |
+| Arrow keys | Navigate between grid cells |
+| Enter | Place or remove a wall on the focused cell |
+| Spacebar | Pause or resume the game timer |
+
+Spacebar has no effect when a menu modal is open.
+
 ### Load a Specific Level via URL Parameters
 
 You can deep-link directly to any puzzle by appending a query string to the page URL.

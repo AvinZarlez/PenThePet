@@ -1317,6 +1317,113 @@ describe('Game — handleCellClick focus restoration', () => {
 });
 
 // ------------------------------------------------------------------
+// Keyboard controls
+// ------------------------------------------------------------------
+describe('Game — Keyboard Controls', () => {
+    function createOpenGame5() {
+        setupDOM();
+        const g = new Game(5);
+        const tiles = Array.from({ length: 5 }, () => Array(5).fill('grass'));
+        tiles[2][2] = 'home';
+        g.grid.loadMap(tiles);
+        g.grid.saveInitialState();
+        g.render();
+        return g;
+    }
+
+    function fireKeydown(key) {
+        const event = new KeyboardEvent('keydown', { key, bubbles: true, cancelable: true });
+        document.dispatchEvent(event);
+        return event;
+    }
+
+    describe('handleCellKeydown()', () => {
+        test('Enter triggers handleCellClick', () => {
+            const g = createOpenGame5();
+            const spy = jest.spyOn(g, 'handleCellClick');
+            const event = new KeyboardEvent('keydown', { key: 'Enter', bubbles: true, cancelable: true });
+            g.handleCellKeydown(event, 0, 0);
+            expect(spy).toHaveBeenCalledWith(0, 0);
+        });
+
+        test('Space does NOT trigger handleCellClick', () => {
+            const g = createOpenGame5();
+            const spy = jest.spyOn(g, 'handleCellClick');
+            const event = new KeyboardEvent('keydown', { key: ' ', bubbles: true, cancelable: true });
+            g.handleCellKeydown(event, 0, 0);
+            expect(spy).not.toHaveBeenCalled();
+        });
+    });
+
+    describe('Spacebar pause/resume (global keydown handler)', () => {
+        beforeEach(() => {
+            jest.useFakeTimers();
+        });
+
+        afterEach(() => {
+            jest.useRealTimers();
+        });
+
+        test('Space pauses the game when running', () => {
+            const g = createOpenGame5();
+            g.isSubmitted = false;
+            g.initTimerForDate('2026-01-01');
+            g.resumeTimer(); // exit the initial ready/paused state
+            expect(g.isPaused).toBe(false);
+
+            fireKeydown(' ');
+
+            expect(g.isPaused).toBe(true);
+            expect(document.getElementById('pauseOverlay').style.display).toBe('flex');
+        });
+
+        test('Space resumes the game when paused', () => {
+            const g = createOpenGame5();
+            g.isSubmitted = false;
+            g.initTimerForDate('2026-01-01');
+            // initTimerForDate leaves the game in the ready/paused state
+            expect(g.isPaused).toBe(true);
+
+            fireKeydown(' ');
+
+            expect(g.isPaused).toBe(false);
+            expect(document.getElementById('pauseOverlay').style.display).toBe('none');
+        });
+
+        test('Space does nothing when a menu modal is open', () => {
+            const g = createOpenGame5();
+            g.isSubmitted = false;
+            g.initTimerForDate('2026-01-01');
+            g.resumeTimer(); // start running
+            expect(g.isPaused).toBe(false);
+
+            // Simulate an open menu modal
+            const modal = document.createElement('div');
+            modal.className = 'modal show';
+            document.body.appendChild(modal);
+
+            fireKeydown(' ');
+
+            expect(g.isPaused).toBe(false); // spacebar skipped — game still running
+            modal.remove();
+        });
+
+        test('Space prevents default to stop page scrolling', () => {
+            const g = createOpenGame5();
+            g.isSubmitted = false;
+            g.initTimerForDate('2026-01-01');
+            g.resumeTimer();
+
+            const event = new KeyboardEvent('keydown', { key: ' ', bubbles: true, cancelable: true });
+            const preventDefaultSpy = jest.spyOn(event, 'preventDefault');
+            document.dispatchEvent(event);
+
+            expect(preventDefaultSpy).toHaveBeenCalled();
+        });
+    });
+});
+
+// ------------------------------------------------------------------
 // Shore overlay rendering
 // ------------------------------------------------------------------
 describe('Game — Shore Overlays', () => {

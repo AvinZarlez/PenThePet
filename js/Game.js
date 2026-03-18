@@ -408,7 +408,7 @@ class Game {
      * @param {number} col - Column index
      */
     handleCellKeydown(event, row, col) {
-        if (event.key === 'Enter' || event.key === ' ') {
+        if (event.key === 'Enter') {
             event.preventDefault();
             this.handleCellClick(row, col);
             // Restore focus to the same cell after click
@@ -1860,6 +1860,20 @@ class Game {
      * @param {KeyboardEvent} event - The keyboard event
      */
     handleArrowKeys(event) {
+        // Handle spacebar to toggle pause/resume (skip if a menu modal is open)
+        if (event.key === ' ') {
+            const modalOpen = document.querySelector('.modal.show');
+            if (!modalOpen) {
+                event.preventDefault();
+                if (this.isPaused) {
+                    this.resumeTimer();
+                } else {
+                    this.pauseTimer();
+                }
+            }
+            return;
+        }
+
         // Only handle arrow keys
         if (!['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(event.key)) {
             return;
