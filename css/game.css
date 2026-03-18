@@ -172,7 +172,7 @@
 .controls-top,
 .controls-bottom {
     display: grid;
-    grid-template-columns: var(--ctrl-side-w, 214px) 1fr var(--ctrl-side-w, 214px);
+    grid-template-columns: minmax(0, var(--ctrl-side-w, 214px)) 1fr minmax(0, var(--ctrl-side-w, 214px));
     align-items: center;
     gap: 10px;
     margin-bottom: 10px;
@@ -681,9 +681,13 @@
 
 /* Full-tile overlay for base-layer variants (grass/water) — must fill the entire cell */
 .cell .tile-overlay-fill {
-    top: 0%;
-    left: 0%;
-    object-fit: cover;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    object-fit: fill;
     transform: none;
     border-radius: inherit;
 }
