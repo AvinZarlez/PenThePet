@@ -1514,6 +1514,139 @@ describe('Game — Shore Overlays', () => {
         expect(angles).toContain('rotate(180deg)');
         expect(angles).toContain('rotate(270deg)');
     });
+
+    // Corner overlay tests
+
+    function cornerCount(g, row, col) {
+        return getCell(g, row, col).querySelectorAll('.shore-corner-overlay').length;
+    }
+
+    test('isolated water tile surrounded by grass gets 0 corner overlays', () => {
+        const g = createGame5(tiles => { tiles[1][1] = 'water'; });
+        expect(cornerCount(g, 1, 1)).toBe(0);
+    });
+
+    test('water with water to the left and top gets 1 corner overlay (top-left, 0°)', () => {
+        const g = createGame5(tiles => {
+            tiles[1][1] = 'water'; // the tile being tested
+            tiles[0][1] = 'water'; // top neighbour
+            tiles[1][0] = 'water'; // left neighbour
+        });
+        const corners = Array.from(getCell(g, 1, 1).querySelectorAll('.shore-corner-overlay'));
+        expect(corners).toHaveLength(1);
+        expect(corners[0].style.transform).toBe('rotate(0deg)');
+    });
+
+    test('water with water to the right and top gets 1 corner overlay (top-right, 90°)', () => {
+        const g = createGame5(tiles => {
+            tiles[1][2] = 'water';
+            tiles[0][2] = 'water'; // top
+            tiles[1][3] = 'water'; // right
+        });
+        const corners = Array.from(getCell(g, 1, 2).querySelectorAll('.shore-corner-overlay'));
+        expect(corners).toHaveLength(1);
+        expect(corners[0].style.transform).toBe('rotate(90deg)');
+    });
+
+    test('water with water to the right and bottom gets 1 corner overlay (bottom-right, 180°)', () => {
+        const g = createGame5(tiles => {
+            tiles[1][2] = 'water';
+            tiles[2][2] = 'water'; // bottom
+            tiles[1][3] = 'water'; // right
+        });
+        const corners = Array.from(getCell(g, 1, 2).querySelectorAll('.shore-corner-overlay'));
+        expect(corners).toHaveLength(1);
+        expect(corners[0].style.transform).toBe('rotate(180deg)');
+    });
+
+    test('water with water to the left and bottom gets 1 corner overlay (bottom-left, 270°)', () => {
+        const g = createGame5(tiles => {
+            tiles[1][2] = 'water';
+            tiles[2][2] = 'water'; // bottom
+            tiles[1][1] = 'water'; // left
+        });
+        const corners = Array.from(getCell(g, 1, 2).querySelectorAll('.shore-corner-overlay'));
+        expect(corners).toHaveLength(1);
+        expect(corners[0].style.transform).toBe('rotate(270deg)');
+    });
+
+    test('water in a plus/cross shape — center tile gets 4 corner overlays (grass at all diagonals)', () => {
+        // Plus shape: water at (1,1) centre with water N/S/E/W, grass at all diagonal tiles.
+        // Each inner corner has a land diagonal, so all 4 corners have a genuine gap.
+        const g = createGame5(tiles => {
+            tiles[1][1] = 'water';
+            tiles[0][1] = 'water'; // top
+            tiles[2][1] = 'water'; // bottom
+            tiles[1][0] = 'water'; // left
+            tiles[1][2] = 'water'; // right
+        });
+        expect(cornerCount(g, 1, 1)).toBe(4);
+    });
+
+    test('2×2 water block — each tile gets 0 corner overlays (diagonal is always water)', () => {
+        // Each tile's only eligible inner corner faces another water tile diagonally,
+        // so no corners should be drawn — no "island" in the centre of the block.
+        const g = createGame5(tiles => {
+            tiles[0][0] = 'water';
+            tiles[0][1] = 'water';
+            tiles[1][0] = 'water';
+            tiles[1][1] = 'water';
+        });
+        expect(cornerCount(g, 0, 0)).toBe(0);
+        expect(cornerCount(g, 0, 1)).toBe(0);
+        expect(cornerCount(g, 1, 0)).toBe(0);
+        expect(cornerCount(g, 1, 1)).toBe(0);
+    });
+
+    test('3×3 water block — interior tile gets 0 corner overlays', () => {
+        const g = createGame5(tiles => {
+            for (let r = 0; r < 3; r++) {
+                for (let c = 0; c < 3; c++) {
+                    tiles[r][c] = 'water';
+                }
+            }
+        });
+        // (1,1) is fully interior — all 4 cardinals and all 4 diagonals are water
+        expect(cornerCount(g, 1, 1)).toBe(0);
+    });
+
+    test('water with 3 water neighbours gets 2 corner overlays', () => {
+        // water on top, left, right — corners at top-left (0°) and top-right (90°)
+        const g = createGame5(tiles => {
+            tiles[1][1] = 'water';
+            tiles[0][1] = 'water'; // top
+            tiles[1][0] = 'water'; // left
+            tiles[1][2] = 'water'; // right
+        });
+        expect(cornerCount(g, 1, 1)).toBe(2);
+        const angles = Array.from(getCell(g, 1, 1).querySelectorAll('.shore-corner-overlay'))
+            .map(el => el.style.transform);
+        expect(angles).toContain('rotate(0deg)');
+        expect(angles).toContain('rotate(90deg)');
+    });
+
+    test('corner overlay images reference shore-corner.svg', () => {
+        const g = createGame5(tiles => {
+            tiles[1][1] = 'water';
+            tiles[0][1] = 'water'; // top
+            tiles[1][0] = 'water'; // left
+        });
+        const corners = getCell(g, 1, 1).querySelectorAll('.shore-corner-overlay');
+        for (const corner of corners) {
+            expect(corner.src).toContain('shore-corner.svg');
+        }
+    });
+
+    test('straight shore and corner overlay counts are independent', () => {
+        // 2-water L-shape: water at (1,1) has water top and left → 2 straight shores, 1 corner
+        const g = createGame5(tiles => {
+            tiles[1][1] = 'water';
+            tiles[0][1] = 'water'; // top
+            tiles[1][0] = 'water'; // left
+        });
+        expect(shoreCount(g, 1, 1)).toBe(2); // right and bottom sides are grass
+        expect(cornerCount(g, 1, 1)).toBe(1);
+    });
 });
 
 // ------------------------------------------------------------------

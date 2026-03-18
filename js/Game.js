@@ -5,6 +5,26 @@
  * and rendering. This is the primary interface for game logic.
  */
 
+// Cardinal directions used for shore overlay placement.
+const SHORE_DIRECTIONS = [
+    { dRow: -1, dCol: 0, angle: 0 },    // top
+    { dRow: 0,  dCol: 1, angle: 90 },   // right
+    { dRow: 1,  dCol: 0, angle: 180 },  // bottom
+    { dRow: 0,  dCol: -1, angle: 270 }, // left
+];
+
+// Pairs of adjacent cardinal directions whose inner corner needs a corner shore piece.
+// Default orientation (0°) places the arc in the top-left; 90°/180°/270° rotate it
+// to top-right/bottom-right/bottom-left respectively.
+// `diag` is the diagonal tile in that corner's direction; if it is also water the
+// inner corner is interior to the water body and no corner piece is needed.
+const SHORE_CORNERS = [
+    { dirs: [{ dRow: -1, dCol: 0 }, { dRow: 0, dCol: -1 }], diag: { dRow: -1, dCol: -1 }, angle: 0 },   // top-left
+    { dirs: [{ dRow: -1, dCol: 0 }, { dRow: 0, dCol: 1 }],  diag: { dRow: -1, dCol: 1 },  angle: 90 },  // top-right
+    { dirs: [{ dRow: 1,  dCol: 0 }, { dRow: 0, dCol: 1 }],  diag: { dRow: 1,  dCol: 1 },  angle: 180 }, // bottom-right
+    { dirs: [{ dRow: 1,  dCol: 0 }, { dRow: 0, dCol: -1 }], diag: { dRow: 1,  dCol: -1 }, angle: 270 }, // bottom-left
+];
+
 class Game {
     /**
      * Create a new Game instance
@@ -165,19 +185,15 @@ class Game {
      * For each of the four cardinal directions where the adjacent tile is not water
      * (or is outside the grid), a rotated shore image is added so that bodies of
      * water look like unified lakes with sandy edges only where they meet land.
+     * In addition, for each pair of adjacent cardinal water neighbours that form an
+     * L-shape (inner corner), a rotated shore-corner image is added to fill the gap.
      * @private
      * @param {HTMLElement} cell - The water cell element to append shore overlays to
      * @param {number} row - Row index of the cell
      * @param {number} col - Column index of the cell
      */
     _addShoreOverlays(cell, row, col) {
-        const directions = [
-            { dRow: -1, dCol: 0, angle: 0 },    // top
-            { dRow: 0,  dCol: 1, angle: 90 },   // right
-            { dRow: 1,  dCol: 0, angle: 180 },  // bottom
-            { dRow: 0,  dCol: -1, angle: 270 }, // left
-        ];
-        for (const { dRow, dCol, angle } of directions) {
+        for (const { dRow, dCol, angle } of SHORE_DIRECTIONS) {
             const neighbor = this.grid.getTile(row + dRow, col + dCol);
             if (neighbor !== 'water') {
                 const shore = document.createElement('img');
@@ -187,6 +203,26 @@ class Game {
                 shore.setAttribute('aria-hidden', 'true');
                 shore.style.transform = `rotate(${angle}deg)`;
                 cell.appendChild(shore);
+            }
+        }
+
+        // Corner pieces: render a quarter-circle shore when two adjacent cardinal
+        // neighbours are both water, filling the inner-corner gap.
+        // Skip the corner when the diagonal tile is also water — that corner is
+        // interior to the water body and no gap exists there.
+        for (const { dirs, diag, angle } of SHORE_CORNERS) {
+            const allWater = dirs.every(({ dRow, dCol }) =>
+                this.grid.getTile(row + dRow, col + dCol) === 'water'
+            );
+            const diagIsWater = this.grid.getTile(row + diag.dRow, col + diag.dCol) === 'water';
+            if (allWater && !diagIsWater) {
+                const corner = document.createElement('img');
+                corner.src = 'assets/shore-corner.svg';
+                corner.alt = '';
+                corner.className = 'shore-corner-overlay';
+                corner.setAttribute('aria-hidden', 'true');
+                corner.style.transform = `rotate(${angle}deg)`;
+                cell.appendChild(corner);
             }
         }
     }

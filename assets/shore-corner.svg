@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 50 50">
+  <defs>
+    <radialGradient id="cornerGrad" cx="0" cy="0" r="16" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#c8a96e" stop-opacity="0.95"/>
+      <stop offset="60%" stop-color="#c8a96e" stop-opacity="0.35"/>
+      <stop offset="100%" stop-color="#c8a96e" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <!-- Quarter-circle corner shore in the top-left; rotate for other corners -->
+  <path d="M0,0 L16,0 A16,16 0 0 1 0,16 Z" fill="url(#cornerGrad)"/>
+</svg>
