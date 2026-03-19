@@ -172,7 +172,7 @@
 .controls-top,
 .controls-bottom {
     display: grid;
-    grid-template-columns: var(--ctrl-side-w, 214px) 1fr var(--ctrl-side-w, 214px);
+    grid-template-columns: minmax(0, var(--ctrl-side-w, 214px)) 1fr minmax(0, var(--ctrl-side-w, 214px));
     align-items: center;
     gap: 10px;
     margin-bottom: 10px;
@@ -190,12 +190,14 @@
 .controls-top #timerBtn {
     justify-self: center;
     width: var(--ctrl-center-w, 160px);
+    max-width: 100%;
     height: var(--ctrl-height);
 }
 
 .controls-bottom #pennedStatus {
     justify-self: center;
     width: var(--ctrl-center-w, 160px);
+    max-width: 100%;
     height: var(--ctrl-center-h, 56px);
 }
 
@@ -681,9 +683,13 @@
 
 /* Full-tile overlay for base-layer variants (grass/water) — must fill the entire cell */
 .cell .tile-overlay-fill {
-    top: 0%;
-    left: 0%;
-    object-fit: cover;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    object-fit: fill;
     transform: none;
     border-radius: inherit;
 }
@@ -1172,6 +1178,21 @@
 
     .counter-label {
         font-size: clamp(7px, 2.5vw, 0.75em);
+    }
+}
+
+@media (max-width: 400px) {
+    :root {
+        --ctrl-side-w: 90px;
+        --ctrl-center-w: 90px;
+        --ctrl-height: 42px;
+        --ctrl-center-h: 50px;
+        --ctrl-hint-w: 100px;
+    }
+
+    .controls-top,
+    .controls-bottom {
+        gap: 4px;
     }
 }
 

@@ -137,6 +137,10 @@
     box-sizing: border-box;
 }
 
+html {
+    overflow-x: clip; /* Prevent horizontal overflow from shifting body centering */
+}
+
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     background: linear-gradient(135deg, var(--page-bg-start) 0%, var(--page-bg-end) 100%);
