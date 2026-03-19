@@ -24,8 +24,10 @@
 **Layers:**
 
 1. **Data** (`Grid.js`) — grid state and tile management
-2. **Logic** (`PathfindingUtils.js`) — BFS pathfinding and penning checks
-3. **Controller** (`Game.js`) — coordinates data and UI, checks win condition
+2. **Logic** (`PathfindingUtils.js`, `ScoreCalculator.js`) — BFS pathfinding, penning checks, and score calculation
+3. **Controller** (`Game.js` + mixins) — coordinates data and UI, checks win condition
+   - `GameTimer.js` — generic pause/resume/lock timer mixin applied to `Game.prototype`
+   - `ScoreCalculator.js` — pure scoring function; replace to change scoring rules for a different game variant
 4. **View** (`index.html`, `css/`) — user interface
 5. **Generation** (`scripts/`) — offline map generation, not loaded in browser
 
@@ -50,7 +52,7 @@ See [CODE_STRUCTURE.md](CODE_STRUCTURE.md) for the full file listing.
 
 **New tile types:** Add one entry to `js/tileData.js` — all rendering, generation, scoring, pathfinding, solver, and player instructions update automatically. See [TILE_SYSTEM.md](TILE_SYSTEM.md).
 
-**New game modes:** Extend the `Game` class. Timer, undo/redo, and hint infrastructure already exists.
+**New game modes / scoring variants:** Extend or fork `Game.js`. Replace `js/ScoreCalculator.js` to implement different scoring rules without touching the game controller. The generic timer (pause/resume/lock) in `js/GameTimer.js` can be reused unchanged.
 
 ## Localization (i18n)
 

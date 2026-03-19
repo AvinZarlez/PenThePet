@@ -57,6 +57,8 @@ export default [
                 MapValidator: 'readonly',
                 MILPSolver: 'readonly',
                 PathfindingUtils: 'readonly',
+                ScoreCalculator: 'readonly',
+                GameTimerMixin: 'readonly',
                 getRandomWord: 'readonly',
                 WORD_LIST: 'readonly',
                 updateMapInfo: 'readonly',

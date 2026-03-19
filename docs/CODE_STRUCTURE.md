@@ -24,6 +24,8 @@ PenThePet/
 │   ├── MapGenerator.js     # Map generation (Node.js only — NOT loaded in browser)
 │   ├── MapValidator.js     # Map quality validation (Node.js only — NOT loaded in browser)
 │   ├── Grid.js             # Grid state management; parseCompactMap / parseCompactSolution
+│   ├── ScoreCalculator.js  # Pure score-calculation functions; swap this to change scoring rules
+│   ├── GameTimer.js        # Generic timer mixin: pause/resume/lock; applied to Game.prototype
 │   ├── Game.js             # Game controller: rendering, clicks, wall placement, penning detection
 │   ├── Menu.js             # Menu system: modals, level selector, options, cookie persistence
 │   ├── firebase-config.js  # Firebase config (empty = cloud sync disabled)
@@ -46,7 +48,7 @@ PenThePet/
 ```
 
 **Script loading order** in `index.html` (must not change):
-`constants.js → config.js → tileData.js → tileTypes.js → CookieUtils.js → i18n.js → DateUtils.js → PathfindingUtils.js → Grid.js → firebase-config.js → CloudMigration.js → CloudSync.js → Analytics.js → Game.js → Menu.js → main.js`
+`constants.js → config.js → tileData.js → tileTypes.js → CookieUtils.js → i18n.js → DateUtils.js → PathfindingUtils.js → Grid.js → firebase-config.js → CloudMigration.js → CloudSync.js → Analytics.js → ScoreCalculator.js → GameTimer.js → Game.js → Menu.js → main.js`
 
 ## 🎯 Key File Notes
 
@@ -56,7 +58,11 @@ PenThePet/
 
 **`js/Grid.js`** — Loads maps from `maps/YYYY.json` only. Exports `parseCompactMap()` and `parseCompactSolution()` for decoding the compact map format.
 
-**`js/Game.js`** — Pure checker/renderer. Does NOT generate maps. Access via `window.game` in console.
+**`js/ScoreCalculator.js`** — Pure `calculateAreaScore(tiles, getTile, scoreFn)` function. Replace or extend this file to implement custom scoring for different game types without touching `Game.js`.
+
+**`js/GameTimer.js`** — Generic mixin (`GameTimerMixin`) for pause/resume/lock timer functionality. Applied to `Game.prototype` at load time. Reusable across any web game that needs the same timer behaviour.
+
+**`js/Game.js`** — Game controller: rendering, clicks, wall placement, penning detection, hints, submission, and sharing. Timer methods come from `GameTimerMixin`; scoring delegates to `ScoreCalculator`. Does NOT generate maps. Access via `window.game` in console.
 
 **`js/MapGenerator.js` / `js/MapValidator.js`** — Node.js only, not loaded in browser.
 

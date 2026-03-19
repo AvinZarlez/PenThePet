@@ -68,6 +68,10 @@ global.PathfindingUtils = require('../js/PathfindingUtils.js');
 global.MILPSolver = require('../scripts/solver/MILPSolver.js');
 global.MapGenerator = require('../js/MapGenerator.js');
 
+// Load ScoreCalculator and GameTimerMixin before Game.js (mirrors browser script-tag load order)
+global.ScoreCalculator = require('../js/ScoreCalculator.js');
+global.GameTimerMixin = require('../js/GameTimer.js');
+
 // Expose Grid and compact map parse helpers as globals (mirrors browser script-tag load order)
 const _Grid = require('../js/Grid.js');
 global.Grid = _Grid;
