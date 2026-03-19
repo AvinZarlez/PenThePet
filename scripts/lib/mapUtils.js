@@ -6,7 +6,7 @@
 
 const fs = require('fs');
 const path = require('path');
-const CONSTANTS = require('../../js/constants.js');
+const CONSTANTS = require('../../js/config/constants.js');
 
 // ---------------------------------------------------------------------------
 // Size input helpers

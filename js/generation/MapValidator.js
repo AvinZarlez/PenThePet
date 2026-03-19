@@ -9,10 +9,10 @@
 (function() {
     if (typeof require !== 'undefined') {
         if (typeof CONSTANTS === 'undefined' && typeof global !== 'undefined') {
-            global.CONSTANTS = require('./constants.js');
+            global.CONSTANTS = require('../config/constants.js');
         }
         if (typeof PathfindingUtils === 'undefined' && typeof global !== 'undefined') {
-            global.PathfindingUtils = require('./PathfindingUtils.js');
+            global.PathfindingUtils = require('../game/PathfindingUtils.js');
         }
     }
 })();

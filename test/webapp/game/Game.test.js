@@ -6,7 +6,7 @@
  * lockTimer, resetTimer, visibility change handling, and related helpers.
  */
 
-const Game = require('../../js/Game.js');
+const Game = require('../../../js/game/Game.js');
 
 function setupDOM() {
     document.body.innerHTML = `

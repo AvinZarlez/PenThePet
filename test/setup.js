@@ -18,7 +18,7 @@ const localStorageMock = {
 global.localStorage = localStorageMock;
 
 // Load tile data first (single source of truth for tile properties)
-const tileDataModule = require('../js/tileData.js');
+const tileDataModule = require('../js/tiles/tileData.js');
 global.TILE_DATA = tileDataModule.TILE_DATA;
 global.COMPACT_CHAR_TO_TILE = tileDataModule.COMPACT_CHAR_TO_TILE;
 global.TILE_TO_COMPACT_CHAR = tileDataModule.TILE_TO_COMPACT_CHAR;
@@ -49,40 +49,41 @@ global.FILLED_SCORE_MAP = tileDataModule.FILLED_SCORE_MAP;
 // Load game modules in the correct order for Node.js environment
 // Note: MILPSolver is loaded for generation pipeline tests (MapGenerator.test.js).
 // It is NOT used by browser-side code (Grid.test.js, Menu.test.js, etc.)
-global.CONSTANTS = require('../js/constants.js');
-global.CONFIG = require('../js/config.js');
-global.CookieUtils = require('../js/CookieUtils.js');
+global.CONSTANTS = require('../js/config/constants.js');
+global.CONFIG = require('../js/config/config.js');
+global.CookieUtils = require('../js/common/CookieUtils.js');
 
 // Load i18n module (depends on CookieUtils)
-const i18nModule = require('../js/i18n.js');
+const i18nModule = require('../js/common/i18n.js');
 global.I18N = i18nModule.I18N;
 global.LANGUAGES = i18nModule.LANGUAGES;
 global.LANGUAGE_OPTIONS = i18nModule.LANGUAGE_OPTIONS;
 
-global.CloudMigration = require('../js/CloudMigration.js');
-global.FIREBASE_CONFIG = require('../js/firebase-config.js');
-global.CloudSync = require('../js/CloudSync.js');
-global.Analytics = require('../js/Analytics.js');
-global.DateUtils = require('../js/DateUtils.js');
-global.PathfindingUtils = require('../js/PathfindingUtils.js');
+global.CloudMigration = require('../js/cloud/CloudMigration.js');
+global.FIREBASE_CONFIG = require('../js/cloud/firebase-config.js');
+global.CloudSync = require('../js/cloud/CloudSync.js');
+global.Analytics = require('../js/cloud/Analytics.js');
+global.DateUtils = require('../js/common/DateUtils.js');
+global.PathfindingUtils = require('../js/game/PathfindingUtils.js');
 global.MILPSolver = require('../scripts/solver/MILPSolver.js');
-global.MapGenerator = require('../js/MapGenerator.js');
+global.MapGenerator = require('../js/generation/MapGenerator.js');
 
 // Load ScoreCalculator and GameTimerMixin before Game.js (mirrors browser script-tag load order)
-global.ScoreCalculator = require('../js/ScoreCalculator.js');
-global.GameTimerMixin = require('../js/GameTimer.js');
+global.ScoreCalculator = require('../js/game/ScoreCalculator.js');
+global.GameTimerMixin = require('../js/game/GameTimer.js');
+global.GameAnimationsMixin = require('../js/game/GameAnimations.js');
 
 // Expose Grid and compact map parse helpers as globals (mirrors browser script-tag load order)
-const _Grid = require('../js/Grid.js');
+const _Grid = require('../js/game/Grid.js');
 global.Grid = _Grid;
 global.parseCompactMap = _Grid.parseCompactMap;
 global.parseCompactSolution = _Grid.parseCompactSolution;
 
 // Load getTileType from tileTypes.js (uses TILE_DATA as source of truth)
-const { getTileType, isTileClickable, TILE_TYPES } = require('../js/tileTypes.js');
+const { getTileType, isTileClickable, TILE_TYPES } = require('../js/tiles/tileTypes.js');
 global.getTileType = getTileType;
 global.isTileClickable = isTileClickable;
 global.TILE_TYPES = TILE_TYPES;
 
 // Load TileSvgs (dynamic SVG tile generators — must come after tileData)
-global.TileSvgs = require('../js/TileSvgs.js');
+global.TileSvgs = require('../js/tiles/TileSvgs.js');

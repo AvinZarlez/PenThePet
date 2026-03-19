@@ -12,8 +12,8 @@
  * - Boundary tiles excluded (pet would escape)
  */
 
-const PathfindingUtils = require('../../js/PathfindingUtils.js');
-const { NUMERIC_TO_TILE, NUMERIC_ID_TO_SCORE } = require('../../js/tileData.js');
+const PathfindingUtils = require('../../js/game/PathfindingUtils.js');
+const { NUMERIC_TO_TILE, NUMERIC_ID_TO_SCORE } = require('../../js/tiles/tileData.js');
 
 // Make NUMERIC_ID_TO_SCORE available globally for PathfindingUtils.calculatePennedScore
 if (typeof global !== 'undefined' && typeof global.NUMERIC_ID_TO_SCORE === 'undefined') {

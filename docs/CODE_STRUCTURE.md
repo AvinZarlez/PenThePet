@@ -52,19 +52,19 @@ PenThePet/
 
 ## 🎯 Key File Notes
 
-**`js/tileData.js`** — The single source of truth for all tile types. All rendering, generation, scoring, pathfinding, solver, and player instructions derive from it. To add a tile: add one entry here plus an SVG asset. See [TILE_SYSTEM.md](TILE_SYSTEM.md).
+**`js/tiles/tileData.js`** — The single source of truth for all tile types. All rendering, generation, scoring, pathfinding, solver, and player instructions derive from it. To add a tile: add one entry here plus an SVG asset. See [TILE_SYSTEM.md](TILE_SYSTEM.md).
 
-**`js/i18n.js`** — The single source of truth for **all user-facing text**. Every string displayed to the user lives here under a language code key (e.g. `en`). No visible text should appear anywhere in `index.html` HTML attributes or content — it must come from `i18n.js` via `data-i18n` attributes or `I18N.t()` calls in JS. See the [Localization](#-localization) section below.
+**`js/common/i18n.js`** — The single source of truth for **all user-facing text**. Every string displayed to the user lives here under a language code key (e.g. `en`). No visible text should appear anywhere in `index.html` HTML attributes or content — it must come from `i18n.js` via `data-i18n` attributes or `I18N.t()` calls in JS. See the [Localization](#-localization) section below.
 
-**`js/Grid.js`** — Loads maps from `maps/YYYY.json` only. Exports `parseCompactMap()` and `parseCompactSolution()` for decoding the compact map format.
+**`js/game/Grid.js`** — Loads maps from `maps/YYYY.json` only. Exports `parseCompactMap()` and `parseCompactSolution()` for decoding the compact map format.
 
-**`js/ScoreCalculator.js`** — Pure `calculateAreaScore(tiles, getTile, scoreFn)` function. Replace or extend this file to implement custom scoring for different game types without touching `Game.js`.
+**`js/game/ScoreCalculator.js`** — Pure `calculateAreaScore(tiles, getTile, scoreFn)` function. Replace or extend this file to implement custom scoring for different game types without touching `Game.js`.
 
-**`js/GameTimer.js`** — Generic mixin (`GameTimerMixin`) for pause/resume/lock timer functionality. Applied to `Game.prototype` at load time. Reusable across any web game that needs the same timer behaviour.
+**`js/game/GameTimer.js`** — Generic mixin (`GameTimerMixin`) for pause/resume/lock timer functionality. Applied to `Game.prototype` at load time. Reusable across any web game that needs the same timer behaviour.
 
-**`js/Game.js`** — Game controller: rendering, clicks, wall placement, penning detection, hints, submission, and sharing. Timer methods come from `GameTimerMixin`; scoring delegates to `ScoreCalculator`. Does NOT generate maps. Access via `window.game` in console.
+**`js/game/Game.js`** — Game controller: rendering, clicks, wall placement, penning detection, hints, submission, and sharing. Timer methods come from `GameTimerMixin`; scoring delegates to `ScoreCalculator`. Does NOT generate maps. Access via `window.game` in console.
 
-**`js/MapGenerator.js` / `js/MapValidator.js`** — Node.js only, not loaded in browser.
+**`js/generation/MapGenerator.js` / `js/generation/MapValidator.js`** — Node.js only, not loaded in browser.
 
 **`scripts/generate-map.js`** — Supports `--date YYYY-MM-DD`, `--size N` or `--size N-M`, `--count N`, `--fresh`.
 
@@ -88,7 +88,7 @@ See [FIREBASE_SETUP.md](FIREBASE_SETUP.md) for the Firestore mapping and schema 
 
 ## 🌐 Localization
 
-All user-facing strings live in **`js/i18n.js`** — the single source of truth for text. **No visible text should be hardcoded** in `index.html` or JS files.
+All user-facing strings live in **`js/common/i18n.js`** — the single source of truth for text. **No visible text should be hardcoded** in `index.html` or JS files.
 
 ### How strings are applied
 
@@ -113,13 +113,13 @@ counterElement.textContent = I18N.t("walls_counter", {
 
 ### Adding a new string
 
-1. Open `js/i18n.js` and add your key to the `en` block in the relevant section.
+1. Open `js/common/i18n.js` and add your key to the `en` block in the relevant section.
 2. Use `{paramName}` placeholders for dynamic values.
 3. Reference it in HTML via `data-i18n="your_key"` or in JS via `I18N.t('your_key', params)`.
 
 ### Adding a new language
 
-First, in `js/i18n.js`, copy the `en` object and add it under a new language code:
+First, in `js/common/i18n.js`, copy the `en` object and add it under a new language code:
 
 ```js
 const LANGUAGES = {
@@ -145,13 +145,13 @@ Tile descriptions use `descriptionKey` in `tileData.js` (e.g. `descriptionKey: '
 
 ## 🔧 How to Extend
 
-- **New tile type:** Add one entry to `js/tileData.js` + SVG asset. See [TILE_SYSTEM.md](TILE_SYSTEM.md).
+- **New tile type:** Add one entry to `js/tiles/tileData.js` + SVG asset. See [TILE_SYSTEM.md](TILE_SYSTEM.md).
 - **New menu option / game mode:** Extend `Menu` or `Game` class.
 - **New preference:** `CookieUtils.setCookie('key', value, 365)` / `CookieUtils.getCookie('key')`
-- **New string / translation:** Add a key to `js/i18n.js` → `LANGUAGES.en`. To add a new language, copy the `en` block, translate, add to `LANGUAGE_OPTIONS`.
+- **New string / translation:** Add a key to `js/common/i18n.js` → `LANGUAGES.en`. To add a new language, copy the `en` block, translate, add to `LANGUAGE_OPTIONS`.
 - **New CSS:** tile cursor/hover → `css/game.css`; new modal → `css/modals.css` or `css/menu.css`
 - **Retheme colours:** All colour and sizing design tokens are CSS custom properties in the `:root` block at the top of `css/base.css`. Changing those variables updates the entire game UI.
-- **Configuration changes:** Edit `js/constants.js` first, then `js/config.js` if needed
+- **Configuration changes:** Edit `js/config/constants.js` first, then `js/config/config.js` if needed
 
 ## 📦 Deployment
 

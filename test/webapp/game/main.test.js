@@ -10,7 +10,7 @@
  * requested.
  */
 
-const { loadTodayMap, resolveMapFromUrlParams } = require('../../js/main.js');
+const { loadTodayMap, resolveMapFromUrlParams } = require('../../../js/main.js');
 
 // Helper: build a resolved fetch mock that returns the given maps object
 // for every request (year file, previous year, or saved-level year).

@@ -2,7 +2,7 @@
  * Tests for MapValidator
  */
 
-const MapValidator = require('../../js/MapValidator.js');
+const MapValidator = require('../../js/generation/MapValidator.js');
 
 describe('MapValidator', () => {
     describe('validate', () => {

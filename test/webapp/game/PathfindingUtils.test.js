@@ -4,7 +4,7 @@
  * Tests the BFS pathfinding utilities used by solvers.
  */
 
-const PathfindingUtils = require('../../js/PathfindingUtils.js');
+const PathfindingUtils = require('../../../js/game/PathfindingUtils.js');
 
 describe('PathfindingUtils', () => {
     describe('isPenned()', () => {

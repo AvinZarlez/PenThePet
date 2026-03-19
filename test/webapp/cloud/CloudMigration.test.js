@@ -5,7 +5,7 @@
  * submission data.
  */
 
-const CloudMigration = require('../../js/CloudMigration.js');
+const CloudMigration = require('../../../js/cloud/CloudMigration.js');
 
 describe('CloudMigration', () => {
     describe('CURRENT_VERSION', () => {

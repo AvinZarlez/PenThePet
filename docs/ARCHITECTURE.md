@@ -17,7 +17,7 @@
 
 **CSS Architecture:** Four files with single responsibility — `base.css` (reset/layout/typography), `game.css` (grid/cells/controls), `modals.css` (shared modal system), `menu.css` (menu/level selector/cloud sync). BEM-like naming, CSS variables for theming, responsive queries at end of each file.
 
-**Configuration:** All constants in `js/constants.js`; derived config in `js/config.js`. Never hardcode values.
+**Configuration:** All constants in `js/config/constants.js`; derived config in `js/config/config.js`. Never hardcode values.
 
 ## Code Organization
 
@@ -50,13 +50,13 @@ See [CODE_STRUCTURE.md](CODE_STRUCTURE.md) for the full file listing.
 
 ## Extensibility
 
-**New tile types:** Add one entry to `js/tileData.js` — all rendering, generation, scoring, pathfinding, solver, and player instructions update automatically. See [TILE_SYSTEM.md](TILE_SYSTEM.md).
+**New tile types:** Add one entry to `js/tiles/tileData.js` — all rendering, generation, scoring, pathfinding, solver, and player instructions update automatically. See [TILE_SYSTEM.md](TILE_SYSTEM.md).
 
-**New game modes / scoring variants:** Extend or fork `Game.js`. Replace `js/ScoreCalculator.js` to implement different scoring rules without touching the game controller. The generic timer (pause/resume/lock) in `js/GameTimer.js` can be reused unchanged.
+**New game modes / scoring variants:** Extend or fork `Game.js`. Replace `js/game/ScoreCalculator.js` to implement different scoring rules without touching the game controller. The generic timer (pause/resume/lock) in `js/game/GameTimer.js` can be reused unchanged.
 
 ## Localization (i18n)
 
-All user-facing strings live in **`js/i18n.js`**. No visible text is hardcoded in `index.html` or JS.
+All user-facing strings live in **`js/common/i18n.js`**. No visible text is hardcoded in `index.html` or JS.
 
 - **HTML** elements that contain text use `data-i18n="key"` attributes (or `data-i18n-html` for HTML content, `data-i18n-title` for tooltips, `data-i18n-aria` for aria-labels, `data-i18n-placeholder` for inputs). Their content is initially empty and filled by `I18N._applyToDOM()` on startup.
 - **JS** code calls `I18N.t('key', { param: value })` everywhere a string is needed.

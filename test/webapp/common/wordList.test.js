@@ -4,7 +4,7 @@
  * Tests the word list functionality and word retrieval functions.
  */
 
-const { WORD_LIST, getRandomWord, getWordCount, getWordAtIndex } = require('../../js/wordList.js');
+const { WORD_LIST, getRandomWord, getWordCount, getWordAtIndex } = require('../../../js/generation/wordList.js');
 
 describe('WORD_LIST', () => {
     describe('Structure', () => {

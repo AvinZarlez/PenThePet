@@ -59,6 +59,7 @@ export default [
                 PathfindingUtils: 'readonly',
                 ScoreCalculator: 'readonly',
                 GameTimerMixin: 'readonly',
+                GameAnimationsMixin: 'readonly',
                 getRandomWord: 'readonly',
                 WORD_LIST: 'readonly',
                 updateMapInfo: 'readonly',

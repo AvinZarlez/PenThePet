@@ -9,20 +9,20 @@
 (function() {
     if (typeof require !== 'undefined') {
         if (typeof global.CONSTANTS === 'undefined') {
-            global.CONSTANTS = require('./constants.js');
+            global.CONSTANTS = require('../config/constants.js');
         }
         if (typeof global.TILE_DATA === 'undefined') {
-            const td = require('./tileData.js');
+            const td = require('../tiles/tileData.js');
             global.TILE_DATA = td.TILE_DATA;
             global.TILE_TO_NUMERIC = td.TILE_TO_NUMERIC;
             global.isFillableTile = td.isFillableTile;
             global.getTileScore = td.getTileScore;
         }
         if (typeof global.PathfindingUtils === 'undefined') {
-            global.PathfindingUtils = require('./PathfindingUtils.js');
+            global.PathfindingUtils = require('../game/PathfindingUtils.js');
         }
         if (typeof global.MILPSolver === 'undefined') {
-            global.MILPSolver = require('../scripts/solver/MILPSolver.js');
+            global.MILPSolver = require('../../scripts/solver/MILPSolver.js');
         }
         if (typeof global.MapValidator === 'undefined') {
             global.MapValidator = require('./MapValidator.js');
