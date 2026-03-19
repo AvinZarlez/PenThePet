@@ -48,7 +48,7 @@ PenThePet/
 ```
 
 **Script loading order** in `index.html` (must not change):
-`constants.js → config.js → tileData.js → tileTypes.js → CookieUtils.js → i18n.js → DateUtils.js → PathfindingUtils.js → Grid.js → firebase-config.js → CloudMigration.js → CloudSync.js → Analytics.js → ScoreCalculator.js → GameTimer.js → Game.js → Menu.js → main.js`
+`config/constants.js → config/config.js → tiles/tileData.js → tiles/TileSvgs.js → tiles/tileTypes.js → common/CookieUtils.js → common/i18n.js → common/DateUtils.js → game/PathfindingUtils.js → game/Grid.js → cloud/firebase-config.js → cloud/CloudMigration.js → cloud/CloudSync.js → cloud/Analytics.js → game/ScoreCalculator.js → game/GameTimer.js → game/GameAnimations.js → game/Game.js → Menu.js → main.js`
 
 ## 🎯 Key File Notes
 
@@ -62,7 +62,9 @@ PenThePet/
 
 **`js/game/GameTimer.js`** — Generic mixin (`GameTimerMixin`) for pause/resume/lock timer functionality. Applied to `Game.prototype` at load time. Reusable across any web game that needs the same timer behaviour.
 
-**`js/game/Game.js`** — Game controller: rendering, clicks, wall placement, penning detection, hints, submission, and sharing. Timer methods come from `GameTimerMixin`; scoring delegates to `ScoreCalculator`. Does NOT generate maps. Access via `window.game` in console.
+**`js/game/GameAnimations.js`** — Animation and rendering mixin (`GameAnimationsMixin`): cell background, shore overlays, paw/pet walk animations, score popups. Applied to `Game.prototype` at load time alongside `GameTimerMixin`.
+
+**`js/game/Game.js`** — Game controller: grid interaction, wall placement, penning detection, hints, submission, and sharing. Timer methods come from `GameTimerMixin`; rendering/animation from `GameAnimationsMixin`; scoring from `ScoreCalculator`. Does NOT generate maps. Access via `window.game` in console.
 
 **`js/generation/MapGenerator.js` / `js/generation/MapValidator.js`** — Node.js only, not loaded in browser.
 
