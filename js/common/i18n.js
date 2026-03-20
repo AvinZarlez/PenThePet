@@ -309,9 +309,9 @@ const LANGUAGES = {
         tile_star_aria: 'Star tile at row {row}, column {col}. Worth 3 points. Cannot place a wall here.',
         tile_bee_description: 'Removes 3 from your score when penned.',
         tile_bee_aria: 'Bee tile at row {row}, column {col}. Costs 3 points. Cannot place a wall here.',
-        tile_hole_description: 'Blocks movement. Click to fill.',
+        tile_hole_description: 'Blocks movement. Click to fill (costs 1 wall).',
         tile_hole_aria: 'Hole at row {row}, column {col}. Click to fill with a wall.',
-        tile_filledHole_description: 'Scores 1 point when penned. Click to unfill.',
+        tile_filledHole_description: 'Scores 1 point when penned. Click to unfill (returns 1 wall).',
         tile_filledHole_aria: 'Filled hole at row {row}, column {col}. Acts as grass. Click to remove fill.',
     },
 
@@ -600,9 +600,9 @@ const LANGUAGES = {
         tile_star_aria: 'Casilla de estrella en fila {row}, columna {col}. Vale 3 puntos. No se puede colocar un muro aquí.',
         tile_bee_description: 'Resta 3 de tu puntuación cuando está cercada.',
         tile_bee_aria: 'Casilla de abeja en fila {row}, columna {col}. Cuesta 3 puntos. No se puede colocar un muro aquí.',
-        tile_hole_description: 'Bloquea el movimiento. Haz clic para rellenar.',
+        tile_hole_description: 'Bloquea el movimiento. Haz clic para rellenar (cuesta 1 muro).',
         tile_hole_aria: 'Agujero en fila {row}, columna {col}. Haz clic para rellenar con un muro.',
-        tile_filledHole_description: 'Suma 1 punto cuando está cercado. Haz clic para quitar el relleno.',
+        tile_filledHole_description: 'Suma 1 punto cuando está cercado. Haz clic para quitar el relleno (devuelve 1 muro).',
         tile_filledHole_aria: 'Agujero relleno en fila {row}, columna {col}. Actúa como hierba. Haz clic para eliminar el relleno.',
     },
 };

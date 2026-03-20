@@ -32,22 +32,26 @@ player instructions, and the Python solver read from `js/tiles/tileData.js` auto
 
 ## Tile Properties Reference
 
-| Property         | Type     | Required | Description                                                                  |
-| ---------------- | -------- | -------- | ---------------------------------------------------------------------------- |
-| `score`          | number   | ✅       | Points when inside penned area (grass=1, star=3, water=0)                    |
-| `wallPlaceable`  | boolean  | ✅       | Whether player can place/remove walls on this tile                           |
-| `clickable`      | boolean  | ✅       | Whether clicking the tile does anything                                      |
-| `blocksMovement` | boolean  | ✅       | Whether tile blocks pet pathfinding                                          |
-| `chance`         | number   | ✅       | Probability (0.00–1.00) for map generation. 0 = not randomly placed          |
-| `compactChar`    | string   | ✅       | Single character for compact map format                                      |
-| `numericId`      | number   | ✅       | Numeric value for solver map format                                          |
-| `cssClass`       | string   | ✅       | CSS class applied to the cell element                                        |
-| `descriptionKey` | string   | ❌       | `i18n.js` key for player-facing description shown in the instructions modal  |
-| `assets`         | string[] | ✅       | Ordered list of visual layers (SVGs as `<img>`, text/emoji as `<span>`)      |
-| `ariaLabel`      | function | ✅       | Function `(row, col) => string` for screen reader labels                     |
-| `enclosedAssets` | string[] | ❌       | Alternate asset list when tile is inside penned area. Falls back to `assets` |
-| `pawOverlay`     | string[] | ❌       | Escape-path overlay. Undefined = default `['paw.svg']`, `[]` = none          |
-| `emoji`          | boolean  | ❌       | Pet Emoji shown on tile                                                      |
+| Property           | Type     | Required | Description                                                                           |
+| ------------------ | -------- | -------- | ------------------------------------------------------------------------------------- |
+| `score`            | number   | ✅       | Points when inside penned area (grass=1, star=3, water=0)                             |
+| `wallPlaceable`    | boolean  | ✅       | Whether player can place/remove walls on this tile                                    |
+| `clickable`        | boolean  | ✅       | Whether clicking the tile does anything                                               |
+| `blocksMovement`   | boolean  | ✅       | Whether tile blocks pet pathfinding                                                   |
+| `chance`           | number   | ✅       | Probability (0.00–1.00) for map generation. 0 = not randomly placed                  |
+| `compactChar`      | string   | ✅       | Single character for compact map format                                               |
+| `numericId`        | number   | ✅       | Numeric value for solver map format                                                   |
+| `cssClass`         | string   | ✅       | CSS class applied to the cell element                                                 |
+| `descriptionKey`   | string   | ❌       | `i18n.js` key for player-facing description shown in the instructions modal           |
+| `assets`           | string[] | ✅       | Static overlay SVGs rendered as `<img>` elements on top of the base layer             |
+| `ariaLabel`        | function | ✅       | Function `(row, col) => string` for screen reader labels                              |
+| `baseLayer`        | string   | ❌       | Static SVG filename used as the cell background. Overridden by `TileSvgs` for grass/water. |
+| `backgroundGroup`  | string   | ❌       | Set to `'grass'` to use the grass base layer (and penned recolor) from `TileSvgs`.    |
+| `enclosedAssets`   | string[] | ❌       | Alternate static overlay list when inside penned area. Falls back to `assets`.        |
+| `pawOverlay`       | string[] | ❌       | Escape-path overlay. Undefined = default `['paw.svg']`, `[]` = none                  |
+| `wallTransformsTo` | string   | ❌       | For fillable tiles: tile name to transform into when filled (e.g. `'filledHole'`)     |
+| `wallState`        | boolean  | ❌       | `true` if tile represents a "wall placed" state (wall or filled hole)                 |
+| `floatAnimation`   | boolean  | ❌       | `true` to apply a CSS floating animation (used by star and bee)                       |
 
 ## Current Tile Types
 
@@ -114,7 +118,7 @@ Built once at load time from `TILE_DATA`:
 
 ## Player Instructions
 
-The instructions modal's Gameplay section is **automatically generated** from `TILE_DATA`. Each tile with a `descriptionKey` property is rendered as a row showing the tile's icon (from `assets`) and its description text (looked up from `i18n.js`). Adding a `descriptionKey` to a new tile (and a matching entry in `i18n.js`) automatically includes it in the player instructions — no HTML changes needed.
+The instructions modal's Gameplay section is **automatically generated** from `TILE_DATA`. Each tile with a `descriptionKey` property is rendered as a row showing the tile's visual (rendered via `TileSvgs` for grass/water, or the first static asset for others) and its description text (looked up from `i18n.js`). Adding a `descriptionKey` to a new tile (and a matching entry in `i18n.js`) automatically includes it in the player instructions — no HTML changes needed.
 
 ---
 
