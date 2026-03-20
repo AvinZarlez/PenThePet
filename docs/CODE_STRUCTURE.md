@@ -5,34 +5,42 @@
 ```text
 PenThePet/
 ├── index.html              # Main HTML (structure only — no inline styles/scripts)
-├── assets/                 # SVG tile images and paw icon
+├── assets/                 # Static SVG tile overlays, hole tiles, shore edges, icons, paw
 ├── css/
 │   ├── base.css            # Design tokens (:root CSS variables), global reset, container, typography, buttons, footer, responsive
 │   ├── game.css            # Game board, controls, grid, cells, sidebar, debug section
 │   ├── modals.css          # Modal overlay, animations, shared modal content styles
 │   └── menu.css            # Menu modal, calendar/level selector, cloud sync UI
 ├── js/
-│   ├── constants.js        # Centralized constants (MAX_WALLS, MAX_GRID_SIZE, tile distribution)
-│   ├── config.js           # Derived game configuration (references constants)
-│   ├── tileData.js         # Tile definitions — single source of truth for all tile properties
-│   ├── tileTypes.js        # Compatibility wrapper: builds TILE_TYPES from TILE_DATA
-│   ├── wordList.js         # ~150 random words for map naming; exports getRandomWord()
-│   ├── CookieUtils.js      # getCookie(name) / setCookie(name, value, days)
-│   ├── i18n.js             # Localization — all user-facing strings; I18N.t(key, params)
-│   ├── DateUtils.js        # getTodayDate() / formatDate(dateStr)
-│   ├── PathfindingUtils.js # BFS pathfinding: isPenned, calculatePennedArea, hasPathToEdge
-│   ├── MapGenerator.js     # Map generation (Node.js only — NOT loaded in browser)
-│   ├── MapValidator.js     # Map quality validation (Node.js only — NOT loaded in browser)
-│   ├── Grid.js             # Grid state management; parseCompactMap / parseCompactSolution
-│   ├── ScoreCalculator.js  # Pure score-calculation functions; swap this to change scoring rules
-│   ├── GameTimer.js        # Generic timer mixin: pause/resume/lock; applied to Game.prototype
-│   ├── Game.js             # Game controller: rendering, clicks, wall placement, penning detection
-│   ├── Menu.js             # Menu system: modals, level selector, options, cookie persistence
-│   ├── firebase-config.js  # Firebase config (empty = cloud sync disabled)
-│   ├── CloudMigration.js   # Versioned schema migration for cloud submission data
-│   ├── CloudSync.js        # Optional cloud sync (Firebase Auth + Firestore)
-│   ├── Analytics.js        # Optional Firebase Analytics (anonymous events, no PII)
-│   └── main.js             # Entry point: loads map, initializes Game and Menu
+│   ├── config/
+│   │   ├── constants.js    # All game constants (MAX_WALLS, MAX_GRID_SIZE, tile distribution)
+│   │   └── config.js       # Derived config referencing constants.js
+│   ├── tiles/
+│   │   ├── tileData.js     # Single source of truth for all tile type properties
+│   │   ├── TileSvgs.js     # Programmatic SVG generators for grass and water (color palettes + data URIs)
+│   │   └── tileTypes.js    # Compatibility wrapper: builds TILE_TYPES from TILE_DATA
+│   ├── common/
+│   │   ├── CookieUtils.js  # getCookie(name) / setCookie(name, value, days)
+│   │   ├── i18n.js         # Localization — all user-facing strings; I18N.t(key, params)
+│   │   └── DateUtils.js    # getTodayDate() / formatDate(dateStr)
+│   ├── game/
+│   │   ├── PathfindingUtils.js  # BFS pathfinding: isPenned, calculatePennedArea, hasPathToEdge
+│   │   ├── Grid.js              # Grid state management; parseCompactMap / parseCompactSolution
+│   │   ├── ScoreCalculator.js   # Pure score-calculation functions; swap this to change scoring rules
+│   │   ├── GameTimer.js         # Generic timer mixin: pause/resume/lock; applied to Game.prototype
+│   │   ├── GameAnimations.js    # Rendering mixin: cell backgrounds, shore overlays, paw/pet animations
+│   │   └── Game.js              # Game controller: rendering, clicks, wall placement, penning detection
+│   ├── cloud/
+│   │   ├── firebase-config.js  # Firebase config (empty = cloud sync disabled)
+│   │   ├── CloudMigration.js   # Versioned schema migration for cloud submission data
+│   │   ├── CloudSync.js        # Optional cloud sync (Firebase Auth + Firestore)
+│   │   └── Analytics.js        # Optional Firebase Analytics (anonymous events, no PII)
+│   ├── generation/
+│   │   ├── MapGenerator.js     # Map generation logic (Node.js only — NOT loaded in browser)
+│   │   ├── MapValidator.js     # Map quality validation (Node.js only — NOT loaded in browser)
+│   │   └── wordList.js         # ~150 random words for map naming; exports getRandomWord()
+│   ├── Menu.js                 # Menu system: modals, level selector, options, cookie persistence
+│   └── main.js                 # Entry point: loads map, initializes Game and Menu
 ├── scripts/
 │   ├── generate-map.js     # CLI entry point: single, batch, or fresh map generation
 │   ├── audit-maps.js       # Validates all maps in maps/ against MapValidator
@@ -53,6 +61,8 @@ PenThePet/
 ## 🎯 Key File Notes
 
 **`js/tiles/tileData.js`** — The single source of truth for all tile types. All rendering, generation, scoring, pathfinding, solver, and player instructions derive from it. To add a tile: add one entry here plus an SVG asset. See [TILE_SYSTEM.md](TILE_SYSTEM.md).
+
+**`js/tiles/TileSvgs.js`** — Programmatic SVG generators for grass and water. Generates data URIs for base layers and variant overlays from palette constants. To retheme grass or water, edit the palette constants at the top of this file — no SVG files need to change.
 
 **`js/common/i18n.js`** — The single source of truth for **all user-facing text**. Every string displayed to the user lives here under a language code key (e.g. `en`). No visible text should appear anywhere in `index.html` HTML attributes or content — it must come from `i18n.js` via `data-i18n` attributes or `I18N.t()` calls in JS. See the [Localization](#-localization) section below.
 

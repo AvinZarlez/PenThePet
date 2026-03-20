@@ -1,107 +1,84 @@
 # Art Assets
 
-All game art assets are stored in the `assets/` folder at the project root. These are SVG files used as tile backgrounds and overlays in the game grid.
+SVG files in `assets/` are used as tile backgrounds and overlays. Grass and water visuals are **generated programmatically** by `js/tiles/TileSvgs.js` — no static SVG files exist for those tile types.
 
-## Asset Inventory
+## Programmatic SVGs (Grass and Water)
 
-### Base Tile Backgrounds
+`js/tiles/TileSvgs.js` generates SVG data URIs at runtime for grass and water tiles. There are no `grass.svg`, `penned.svg`, or `water.svg` files in `assets/`.
 
-These SVGs are applied as the CSS `background-image` of each grid cell (first entry in a tile's `assets` list).
+- **Grass** — a solid-color base layer plus one of three blade-pattern variant overlays. Palette: `GRASS_PALETTE` (green) or `GRASS_PENNED_PALETTE` (amber) when inside the penned area.
+- **Water** — a solid-color base layer plus one of two wave-pattern variant overlays. Palette: `WATER_PALETTE` (navy/blue).
+- Tiles that sit on a grass background (home, star, bee) use the same grass base layer via `backgroundGroup: 'grass'` in their tile data.
 
-| Asset               | File                              | Size     | Usage                                                                                                                                       |
-| ------------------- | --------------------------------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
-| Grass               | `assets/grass.svg`                | 50×50 px | Default ground tile. Repeating green grass texture with blade details. Displayed for all walkable grass cells.                              |
-| Penned              | `assets/penned.svg`               | 50×50 px | Penned area base. Yellow-tinted grass texture indicating tiles the pet can access when enclosed. Replaces `grass.svg` inside the penned area. |
-| Water               | `assets/water.svg`                | 50×50 px | Water obstacle tile. Blue lake water texture with wave highlights. Cannot be clicked or traversed.                                          |
-| Wall                | `assets/wall.svg`                 | 50×50 px | Player-placed wall tile. Wooden fence texture with plank and post details. Shown when a player clicks a grass tile.                         |
-| Hole (empty)        | `assets/hole-empty.svg`           | 50×50 px | Unfilled hole tile. Dark circular pit that blocks movement. Player can fill it by clicking (costs one wall).                                |
-| Hole (filled)       | `assets/hole-filled.svg`          | 50×50 px | Filled hole tile. Brown earth patch shown after a player fills a hole. Acts like grass — walkable and scoreable.                            |
-| Hole (filled+penned)| `assets/hole-filled-penned.svg`   | 50×50 px | Filled hole tile inside the penned area. Yellow-tinted variant of the filled hole shown when enclosed.                                      |
+To retheme grass or water, edit the palette constants at the top of `TileSvgs.js`. Every tile using those palettes updates automatically.
 
-### Tile Overlays
-
-These SVGs are rendered as `<img>` elements stacked on top of the base background (subsequent entries in a tile's `assets` list).
-
-| Asset               | File                              | Size     | Usage                                                                                                                                       |
-| ------------------- | --------------------------------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
-| Home                | `assets/home.svg`                 | 50×50 px | Pet's home tile overlay. Dog house artwork rendered on top of grass or penned base. The chosen pet emoji is displayed centered on top.      |
-| Star                | `assets/star.svg`                 | 50×50 px | Star tile overlay. Gold star icon rendered on top of grass. Star tiles score 3 points instead of 1 when inside the penned area.             |
-| Star outline        | `assets/star-outline.svg`         | 50×50 px | Dark silhouette behind the star. Rendered between the grass base and `star.svg` to make the star stand out against the background.          |
-| Bee                 | `assets/bee.svg`                  | 50×50 px | Bee tile overlay. Bee icon rendered on top of grass. Bee tiles subtract 3 points when inside the penned area.                               |
-| Bee outline         | `assets/bee-outline.svg`          | 50×50 px | Dark silhouette behind the bee. Rendered between the grass base and `bee.svg` to make the bee stand out against the background.             |
-| Shore               | `assets/shore.svg`                | 50×50 px | Water-edge overlay. Sandy shore strip (top ~16 px, fading to transparent) added to water tiles whose top neighbor is not water. Rotated to face each non-water neighbor. |
-
-### Directional Overlay
-
-| Asset | File              | Size     | Usage                                                                                                                                                                      |
-| ----- | ----------------- | -------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Paw   | `assets/paw.svg`  | 30×30 px | Escape path indicator. Paw print icon overlaid on each tile along the pet's escape route. Rotated in code to face the direction the pet walks toward the grid edge.        |
-
-### App Icons
-
-These are not rendered in the game grid. They are used for the browser tab and web-app icon.
-
-| Asset   | File                  | Size       | Usage                                         |
-| ------- | --------------------- | ---------- | --------------------------------------------- |
-| Icon    | `assets/icon.svg`     | 100×100 px | Web-app icon (`<link rel="apple-touch-icon">`)|
-| Favicon | `assets/favicon.svg`  | 32×32 px   | Browser tab icon (`<link rel="icon">`)        |
-
-## Design Guidelines
-
-- **Style**: Cartoony, hand-drawn look fitting an indie puzzle game aesthetic.
-- **Format**: SVG for crisp rendering at any display size. Tiles scale via CSS `background-size: cover`.
-- **Palette**: Natural tones — greens for grass, blues for water, browns for wood/walls, yellows for penned highlights.
-- **Repeating**: Grass, water, and penned textures are designed to tile seamlessly when placed in adjacent grid cells.
-- **Home tile**: The home SVG is mostly a dark interior with a thin doghouse frame and small roof peak. The pet emoji is displayed large and centered on top, dominating the tile.
-- **Hole files**: All three hole-related assets are prefixed `hole-` so they sort together in the `assets/` directory.
-
-## How Assets Are Used
+## Static Asset Inventory
 
 ### Tile Backgrounds
 
-Each tile type defined in `js/tiles/tileData.js` has an `assets` property — an ordered list of SVG filenames. The first entry is the base background; subsequent entries are overlays rendered as `<img>` elements. Cell backgrounds are set inline from `TILE_DATA` assets in `Game._createCellElement()` (via `GameAnimationsMixin`) — no CSS background rules are needed per tile type.
+| File                     | Size     | Usage                                                       |
+| ------------------------ | -------- | ----------------------------------------------------------- |
+| `wall.svg`               | 50×50 px | Player-placed wall. Wooden fence texture.                   |
+| `hole-empty.svg`         | 50×50 px | Unfilled hole. Dark pit that blocks movement.               |
+| `hole-filled.svg`        | 50×50 px | Filled hole. Brown earth patch; walkable and scoreable.     |
+| `hole-filled-penned.svg` | 50×50 px | Filled hole inside the penned area. Amber-tinted variant.   |
 
-When a tile is inside the penned area, the `enclosedAssets` list (if defined) is used instead of `assets`. For example:
+### Tile Overlays
 
-| Tile        | Normal assets                                      | Enclosed assets (`enclosedAssets`)                    |
-| ----------- | -------------------------------------------------- | ----------------------------------------------------- |
-| Grass       | `['grass.svg']`                                    | `['penned.svg']`                                      |
-| Home        | `['grass.svg', 'home.svg']`                        | `['penned.svg', 'home.svg']`                          |
-| Star        | `['grass.svg', 'star-outline.svg', 'star.svg']`    | `['penned.svg', 'star-outline.svg', 'star.svg']`      |
-| Bee         | `['grass.svg', 'bee-outline.svg', 'bee.svg']`      | `['penned.svg', 'bee-outline.svg', 'bee.svg']`        |
-| Hole (filled)| `['hole-filled.svg']`                             | `['hole-filled-penned.svg']`                          |
+These are rendered as `<img>` elements stacked on top of the base background.
 
-### Paw Overlay
+| File               | Size     | Usage                                                                                               |
+| ------------------ | -------- | --------------------------------------------------------------------------------------------------- |
+| `home.svg`         | 50×50 px | Dog house rendered on top of the grass base. Pet emoji centered on top.                             |
+| `star-outline.svg` | 50×50 px | Dark silhouette behind the star, for contrast.                                                      |
+| `star.svg`         | 50×50 px | Star icon. Scores +3 points when penned.                                                            |
+| `bee-outline.svg`  | 50×50 px | Dark silhouette behind the bee, for contrast.                                                       |
+| `bee.svg`          | 50×50 px | Bee icon. Scores −3 points when penned.                                                             |
+| `shore.svg`        | 50×50 px | Sandy shore strip added to each water-edge side that faces a non-water tile. Rotated per direction. |
+| `shore-corner.svg` | 50×50 px | Quarter-circle shore piece for inner corners where two adjacent sides of a water tile face land.    |
 
-The paw icon is rendered as an `<img>` element (class `paw-overlay`) absolutely positioned inside each path cell. The `Game._createCellElement()` method calculates a rotation angle based on the direction the pet needs to walk:
+### Directional Overlay
 
-- **0°** — facing up
-- **90°** — facing right
-- **180°** — facing down
-- **270°** — facing left
+| File      | Size     | Usage                                                                                              |
+| --------- | -------- | -------------------------------------------------------------------------------------------------- |
+| `paw.svg` | 30×30 px | Escape path indicator. Overlaid on each tile along the pet's escape route, rotated toward the edge. |
 
-Custom paw overlays can be defined per tile via the `pawOverlay` property in `TILE_DATA`. Tiles with `pawOverlay: []` suppress the paw (e.g. water, wall, home, hole).
+### App Icons
 
-### Shore Overlay
+| File          | Size       | Usage                                          |
+| ------------- | ---------- | ---------------------------------------------- |
+| `icon.svg`    | 100×100 px | Web-app icon (`<link rel="apple-touch-icon">`) |
+| `favicon.svg` | 32×32 px   | Browser tab icon (`<link rel="icon">`)         |
 
-Water tiles that have a non-water neighbor receive a `shore.svg` overlay rotated to face that neighbor (one `<img>` per edge). This creates a sandy border effect at the water's edge.
+## How Rendering Works
 
-### Home Tile
+`GameAnimationsMixin._createCellElement()` in `js/game/GameAnimations.js` builds each grid cell:
 
-The home cell uses layered assets: `['grass.svg', 'home.svg']` — grass as the base and the dog house on top. When enclosed, it switches to `['penned.svg', 'home.svg']` so the grass base turns yellow. The user's selected pet emoji is rendered as text content centered on the cell, appearing inside the doorway of the dog house.
+1. **Base layer** — `TileSvgs.getTileBaseUri(tileName, isPenned)` returns a data URI for grass/water/grass-background tiles. For other tiles (wall, hole), the `baseLayer` asset file in `TILE_DATA` is used directly.
+2. **Variant overlay** — For grass and water, one variant SVG from `TileSvgs.getTileVariantUri` is overlaid on top. The variant index is deterministic (`(row × 13 + col × 7) % numVariants`) so cells render consistently.
+3. **Extra overlays** — Static `<img>` elements from the `assets` list in `TILE_DATA` (e.g. `home.svg`, `star.svg`).
+4. **Shore overlays** — Water tiles receive `shore.svg` (one per land-facing side) and `shore-corner.svg` (one per inner corner where two adjacent sides face land).
+5. **Penned state** — For grass/water/grass-background tiles, the base and variant SVGs are regenerated with the penned palette. For other tiles, `enclosedAssets` in `TILE_DATA` provides an alternate asset list.
 
-### Hole Tiles
+### Tile Rendering Summary
 
-The hole tile (`hole-empty.svg`) blocks movement and can be filled by the player (costs one wall). When filled, it switches to `hole-filled.svg` (or `hole-filled-penned.svg` when inside the penned area). Clicking a filled hole removes the fill and returns the wall budget.
+| Tile          | Rendering                                                                         |
+| ------------- | --------------------------------------------------------------------------------- |
+| Grass         | TileSvgs base (green/amber) + TileSvgs variant overlay                            |
+| Water         | TileSvgs base (navy) + TileSvgs variant overlay + shore/corner overlays per edge  |
+| Home          | TileSvgs grass base + `home.svg` overlay + pet emoji                              |
+| Star          | TileSvgs grass base + `star-outline.svg` + `star.svg`                             |
+| Bee           | TileSvgs grass base + `bee-outline.svg` + `bee.svg`                               |
+| Wall          | `wall.svg` background                                                             |
+| Hole (empty)  | `hole-empty.svg` background                                                       |
+| Hole (filled) | `hole-filled.svg` (or `hole-filled-penned.svg` when penned)                       |
 
 ## Replacing Assets
 
-To replace any asset with custom artwork:
+1. Create a replacement SVG at the same size listed above.
+2. Place it in `assets/` with the same filename — no code changes needed.
 
-1. Create a new SVG (or PNG/JPEG) at the sizes listed above.
-2. Place it in the `assets/` folder with the same filename.
-3. No code changes needed — the JS references files by path from `TILE_DATA` assets lists.
-4. For non-SVG formats, update the file extension in `js/tiles/tileData.js`.
+To replace grass or water visuals, edit the palette constants or SVG generator functions in `js/tiles/TileSvgs.js`.
 
 ---
 
