@@ -2542,3 +2542,571 @@ describe('Game — Reset & Hint button visibility after submission', () => {
         });
     });
 });
+
+// ===========================================================================
+// Additional coverage tests — GameTimer & GameAnimations edge cases
+// ===========================================================================
+
+// ---------------------------------------------------------------------------
+// GameTimer — remaining branch coverage
+// ---------------------------------------------------------------------------
+
+describe('Game — Timer additional branch coverage', () => {
+    let game;
+
+    function setupDOM2() {
+        document.body.innerHTML = `
+            <div id="pauseOverlay" class="pause-overlay" style="display: none;">
+                <div class="pause-content">
+                    <div id="pauseTitle" class="pause-title">Pause</div>
+                    <div id="pauseTime" class="pause-time">00:00</div>
+                    <button id="resumeBtn" class="resume-btn">&#9654; Resume</button>
+                </div>
+            </div>
+            <div class="controls-top">
+                <div class="wall-counter"><span id="wallCounter">0 / 9</span></div>
+                <button id="timerBtn" class="timer-btn">
+                    <span id="timerValue" class="timer-value">00:00</span>
+                    <span id="timerIcon" class="timer-icon">⏸</span>
+                </button>
+                <div class="score-display"><span id="scoreValue">∞</span></div>
+            </div>
+            <div class="map-info">
+                <span id="mapDay">1</span>
+                <span id="mapName">Test</span>
+            </div>
+            <div class="grid-container"><div id="grid" class="grid"></div></div>
+            <div class="controls-bottom">
+                <button id="resetBtn">Reset</button>
+                <button id="pennedStatus" class="penned-status not-penned" data-interactive="false">
+                    <span class="submit-label">Unsolved</span><span class="submit-check">✗</span>
+                </button>
+                <div class="best-state-wrapper">
+                    <button id="bestStateBanner" class="best-state-banner" disabled style="display: none;">
+                        <span class="best-state-label">Pet Not Penned</span>
+                    </button>
+                </div>
+            </div>
+            <div class="controls-hints">
+                <button id="hintCheckBtn" class="hint-check-btn" style="display: none;" disabled></button>
+                <div id="hintUsedDisplay" class="hint-used-display" style="display: none;"></div>
+            </div>
+            <div id="notification" class="notification"></div>
+            <div id="solutionToggleBar" style="display: none;">
+                <span id="solutionViewLabel"></span>
+                <button id="solutionToggleBtn"></button>
+            </div>
+            <aside id="roamSpaceViewer" class="roam-viewer-sidebar">
+                <article class="viewer-card">
+                    <section class="metrics-display">
+                        <output class="metric-value" id="roamAreaMetric">0</output>
+                        <small class="metric-percentage" id="roamAreaPercentage"></small>
+                        <small class="metric-helper"></small>
+                    </section>
+                    <footer class="viewer-footer">
+                        <button id="shareScoreBtn">📋 Copy Score</button>
+                        <button id="exitViewer">Back to Game</button>
+                    </footer>
+                </article>
+            </aside>
+        `;
+    }
+
+    function createTimerGame() {
+        const g = new Game(7);
+        const tiles = Array.from({ length: 7 }, () => Array(7).fill('grass'));
+        tiles[3][3] = 'home';
+        g.grid.loadMap(tiles);
+        g.grid.saveInitialState();
+        g.currentDate = '2026-01-15';
+        return g;
+    }
+
+    beforeEach(() => {
+        setupDOM2();
+        document.cookie.split(';').forEach((c) => {
+            document.cookie = c.trim().split('=')[0] + '=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/';
+        });
+        jest.useFakeTimers();
+        game = createTimerGame();
+    });
+
+    afterEach(() => {
+        game._stopTimerInterval();
+        jest.useRealTimers();
+    });
+
+    test('initTimerForDate falls back to 0 elapsed when timer cookie contains invalid JSON', () => {
+        CookieUtils.setCookie('timer_2026-01-15', '{not:valid::json}', 365);
+        game.isSubmitted = false;
+        game.initTimerForDate('2026-01-15');
+        expect(game.elapsedSeconds).toBe(0);
+    });
+
+    test('timer interval calls _saveTimerState when elapsedSeconds reaches a multiple of 30', () => {
+        game.isSubmitted = false;
+        game.initTimerForDate('2026-01-15');
+        // Pre-set elapsed to 29 so the very next tick crosses the 30s boundary
+        game.elapsedSeconds = 29;
+        game.resumeTimer();
+        const spy = jest.spyOn(game, '_saveTimerState');
+        jest.advanceTimersByTime(1000);
+        expect(spy).toHaveBeenCalled();
+        spy.mockRestore();
+    });
+
+    test('_handleVisibilityChange pauses a currently running timer when the tab is hidden', () => {
+        game.isSubmitted = false;
+        game.initTimerForDate('2026-01-15');
+        // Resume puts the timer in the running state (isPaused = false)
+        game.resumeTimer();
+        expect(game.isPaused).toBe(false);
+
+        Object.defineProperty(document, 'hidden', { value: true, configurable: true });
+        game._handleVisibilityChange();
+
+        expect(game.isPaused).toBe(true);
+        expect(game._timerInterval).toBeNull();
+
+        Object.defineProperty(document, 'hidden', { value: false, configurable: true });
+    });
+});
+
+// ---------------------------------------------------------------------------
+// GameAnimations — remaining branch coverage
+// ---------------------------------------------------------------------------
+
+describe('Game — GameAnimations additional branch coverage', () => {
+    let game;
+
+    function setupAnimDOM() {
+        document.body.innerHTML = `
+            <div id="pauseOverlay" style="display:none;"></div>
+            <div class="controls-top">
+                <div class="wall-counter"><span id="wallCounter">0/9</span></div>
+                <button id="timerBtn"><span id="timerValue">00:00</span><span id="timerIcon">⏸</span></button>
+                <div class="score-display"><span id="scoreValue">∞</span></div>
+            </div>
+            <div class="map-info"><span id="mapDay">1</span><span id="mapName">T</span></div>
+            <div class="grid-container"><div id="grid" class="grid"></div></div>
+            <div class="controls-bottom">
+                <button id="resetBtn">Reset</button>
+                <button id="pennedStatus" data-interactive="false">
+                    <span class="submit-label">Unsolved</span><span class="submit-check">✗</span>
+                </button>
+                <div class="best-state-wrapper">
+                    <button id="bestStateBanner" disabled style="display:none;">
+                        <span class="best-state-label"></span>
+                    </button>
+                </div>
+            </div>
+            <div class="controls-hints">
+                <button id="hintCheckBtn" style="display:none;" disabled><span class="hint-check-label">Check if optimal</span></button>
+                <div id="hintUsedDisplay" style="display:none;"></div>
+            </div>
+            <div id="notification"></div>
+            <div id="solutionToggleBar" style="display:none;">
+                <span id="solutionViewLabel"></span><button id="solutionToggleBtn"></button>
+            </div>
+            <aside id="roamSpaceViewer">
+                <article class="viewer-card">
+                    <section class="metrics-display">
+                        <output id="roamAreaMetric">0</output>
+                        <small id="roamAreaPercentage"></small>
+                        <small class="metric-helper"></small>
+                    </section>
+                    <footer class="viewer-footer">
+                        <button id="shareScoreBtn">Copy</button>
+                        <button id="exitViewer">Back</button>
+                    </footer>
+                </article>
+            </aside>
+        `;
+    }
+
+    function createBaseGame() {
+        const g = new Game(5);
+        const tiles = Array.from({ length: 5 }, () => Array(5).fill('grass'));
+        tiles[2][2] = 'home';
+        g.grid.loadMap(tiles);
+        g.grid.saveInitialState();
+        return g;
+    }
+
+    beforeEach(() => {
+        setupAnimDOM();
+        game = createBaseGame();
+        jest.useFakeTimers();
+    });
+
+    afterEach(() => {
+        jest.useRealTimers();
+    });
+
+    // _createAssetOverlay — emoji/span branch (lines 133-137)
+    describe('_createAssetOverlay() — emoji/text branch', () => {
+        test('returns a <span> element for a plain emoji asset', () => {
+            const el = game._createAssetOverlay('🐕', 'img-class', 'emoji-class');
+            expect(el.tagName).toBe('SPAN');
+            expect(el.className).toBe('emoji-class');
+            expect(el.textContent).toBe('🐕');
+            expect(el.getAttribute('aria-hidden')).toBe('true');
+        });
+
+        test('returns a <span> for a plain text string (no image extension)', () => {
+            const el = game._createAssetOverlay('hello', 'img-class', 'emoji-class');
+            expect(el.tagName).toBe('SPAN');
+            expect(el.textContent).toBe('hello');
+        });
+
+        test('returns an <img> for an .svg asset', () => {
+            const el = game._createAssetOverlay('paw.svg', 'img-class', 'emoji-class');
+            expect(el.tagName).toBe('IMG');
+            expect(el.className).toBe('img-class');
+        });
+
+        test('returns an <img> for a .png asset', () => {
+            const el = game._createAssetOverlay('star.png', 'img-class', 'emoji-class');
+            expect(el.tagName).toBe('IMG');
+        });
+    });
+
+    // _setCellBackground — baseLayer fallback (lines 59-60)
+    describe('_setCellBackground() — baseLayer fallback', () => {
+        test('falls back to baseLayer asset when TileSvgs returns null base URI', () => {
+            const origGetBaseUri = TileSvgs.getTileBaseUri;
+            TileSvgs.getTileBaseUri = () => null;
+            const cell = document.createElement('div');
+            // Verify the fallback runs without throwing and attempts to set the background
+            const spy = jest.spyOn(cell.style, 'background', 'set');
+            game._setCellBackground(cell, 'grass', false);
+            TileSvgs.getTileBaseUri = origGetBaseUri;
+            expect(spy.mock.calls.length).toBeGreaterThan(0);
+            const assigned = spy.mock.calls[0][0];
+            expect(assigned).toContain('grass-base.svg');
+            spy.mockRestore();
+        });
+
+        test('falls back to first asset when TileSvgs returns null and no baseLayer exists', () => {
+            const origGetBaseUri = TileSvgs.getTileBaseUri;
+            TileSvgs.getTileBaseUri = () => null;
+            const cell = document.createElement('div');
+            const spy = jest.spyOn(cell.style, 'background', 'set');
+            game._setCellBackground(cell, 'wall', false);
+            TileSvgs.getTileBaseUri = origGetBaseUri;
+            expect(spy.mock.calls.length).toBeGreaterThan(0);
+            const assigned = spy.mock.calls[0][0];
+            expect(assigned).toContain('wall.svg');
+            spy.mockRestore();
+        });
+    });
+
+    // _createCellElement — isPennedTile adds 'penned' class (line 179)
+    describe('_createCellElement() — isPennedTile branch', () => {
+        test('adds "penned" CSS class when cell coordinates are in accessibleTiles', () => {
+            const accessibleTiles = new Set(['2,2']);
+            const cell = game._createCellElement(2, 2, 'home', new Set(), accessibleTiles, null);
+            expect(cell.classList.contains('penned')).toBe(true);
+        });
+
+        test('does not add "penned" CSS class when cell is not in accessibleTiles', () => {
+            const cell = game._createCellElement(0, 0, 'grass', new Set(), new Set(), null);
+            expect(cell.classList.contains('penned')).toBe(false);
+        });
+    });
+
+    // _createCellElement — variant overlay fallback when TileSvgs returns null (line 209)
+    describe('_createCellElement() — variant overlay TileSvgs fallback', () => {
+        test('uses _createAssetOverlay fallback when getTileVariantUri returns null', () => {
+            const origGetVariantUri = TileSvgs.getTileVariantUri;
+            TileSvgs.getTileVariantUri = () => null;
+            const cell = game._createCellElement(0, 0, 'grass', new Set(), new Set(), null);
+            TileSvgs.getTileVariantUri = origGetVariantUri;
+            // A tile-overlay-fill element should still be created via the fallback
+            const overlay = cell.querySelector('.tile-overlay-fill');
+            expect(overlay).not.toBeNull();
+        });
+    });
+
+    // _createCellElement — paw overlay with rotation angle from directions map (lines 242-243)
+    describe('_createCellElement() — paw rotation angle from directions', () => {
+        test('applies the angle from directions map to the paw overlay transform', () => {
+            const pathSet = new Set(['2,2']);
+            const directions = new Map([['2,2', 90]]);
+            const cell = game._createCellElement(2, 2, 'grass', pathSet, new Set(), directions);
+            const paw = cell.querySelector('.paw-overlay');
+            expect(paw).not.toBeNull();
+            expect(paw.style.transform).toContain('90deg');
+        });
+
+        test('applies angle 0 when cell coordinate is not in directions map', () => {
+            const pathSet = new Set(['0,0']);
+            const directions = new Map(); // empty directions
+            const cell = game._createCellElement(0, 0, 'grass', pathSet, new Set(), directions);
+            const paw = cell.querySelector('.paw-overlay');
+            expect(paw).not.toBeNull();
+            expect(paw.style.transform).toContain('0deg');
+        });
+    });
+
+    // _scheduleWanderStep — neighbors.length > 0 branch (lines 463, 468-470)
+    describe('_scheduleWanderStep() — pet moves when accessible neighbors exist', () => {
+        test('pet moves to an accessible cardinal neighbour when one is available', () => {
+            // Give the pet a position and accessible tiles that include its neighbours
+            game._petPos = { row: 2, col: 2 };
+            const walker = document.createElement('span');
+            walker.className = 'pet-walker';
+            game.gridElement.appendChild(walker);
+
+            const accessible = new Set(['2,2', '1,2', '3,2', '2,1', '2,3']);
+            game._scheduleWanderStep(accessible);
+            jest.advanceTimersByTime(CONSTANTS.PET_WANDER_STEP_MS + 1);
+
+            // Pet must have moved to one of the accessible tiles
+            expect(game._petPos).not.toBeNull();
+            const movedKey = `${game._petPos.row},${game._petPos.col}`;
+            expect(accessible.has(movedKey)).toBe(true);
+
+            // Cancel follow-up wander timeouts to avoid leaking into other tests
+            game._petWanderTimeouts.forEach(id => clearTimeout(id));
+            game._petWanderTimeouts = [];
+        });
+
+        test('pet stays put when _petPos is null during a wander step', () => {
+            game._petPos = null;
+            const accessible = new Set(['2,2']);
+            game._scheduleWanderStep(accessible);
+            jest.advanceTimersByTime(CONSTANTS.PET_WANDER_STEP_MS + 1);
+            // _petPos remains null — the early-return branch
+            expect(game._petPos).toBeNull();
+            game._petWanderTimeouts.forEach(id => clearTimeout(id));
+            game._petWanderTimeouts = [];
+        });
+    });
+
+    // _startPetReturn — no home tile in grid (lines 492-494)
+    describe('_startPetReturn() — grid with no home tile', () => {
+        test('calls onComplete immediately and clears _petPos when grid has no home', () => {
+            const g = new Game(3);
+            const noHomeTiles = Array.from({ length: 3 }, () => Array(3).fill('grass'));
+            g.grid.loadMap(noHomeTiles);
+            g.grid.saveInitialState();
+            // Assign a dummy gridElement so the walker lookup doesn't throw
+            g.gridElement = document.createElement('div');
+            g._petPos = { row: 1, col: 1 };
+
+            let called = false;
+            g._startPetReturn(() => { called = true; });
+
+            expect(called).toBe(true);
+            expect(g._petPos).toBeNull();
+        });
+    });
+
+    // _startPetReturn — path blocked by water (lines 506-508)
+    describe('_startPetReturn() — pet completely blocked by water', () => {
+        test('calls onComplete immediately when _findReturnPath returns null', () => {
+            const g = new Game(3);
+            const waterTiles = [
+                ['water', 'water', 'water'],
+                ['water', 'grass', 'water'],
+                ['water', 'water', 'home'],
+            ];
+            g.grid.loadMap(waterTiles);
+            g.grid.saveInitialState();
+            g.gridElement = document.createElement('div');
+            g._petPos = { row: 1, col: 1 };
+
+            let called = false;
+            g._startPetReturn(() => { called = true; });
+
+            expect(called).toBe(true);
+            expect(g._petPos).toBeNull();
+        });
+    });
+
+    // _findReturnPath — no path exists (line 581)
+    describe('_findReturnPath() — no reachable path', () => {
+        test('returns null when every neighbour of the pet is water', () => {
+            const g = new Game(3);
+            const waterTiles = [
+                ['water', 'water', 'water'],
+                ['water', 'grass', 'water'],
+                ['water', 'water', 'home'],
+            ];
+            g.grid.loadMap(waterTiles);
+            g.grid.saveInitialState();
+
+            const result = g._findReturnPath({ row: 1, col: 1 }, { row: 2, col: 2 });
+            expect(result).toBeNull();
+        });
+    });
+
+    // _showTileTooltip — returns early when I18N.t yields empty text (line 635)
+    describe('_showTileTooltip() — empty translation fallback', () => {
+        test('does not append a tooltip when I18N.t returns an empty string', () => {
+            game.render();
+            const cell = game.gridElement.querySelector('[data-row="0"][data-col="0"]');
+
+            // Temporarily make I18N.t return an empty string for all keys
+            const originalT = I18N.t.bind(I18N);
+            I18N.t = () => '';
+
+            game._showTileTooltip(cell, 'water');
+
+            I18N.t = originalT;
+            expect(cell.querySelector('.tile-tooltip')).toBeNull();
+        });
+    });
+
+    // _showTileTooltip — auto-removal timeout fires (lines 646-647)
+    describe('_showTileTooltip() — tooltip auto-removal', () => {
+        test('removes the tooltip element after TILE_TOOLTIP_DURATION_MS elapses', () => {
+            game.render();
+            const cell = game.gridElement.querySelector('[data-row="0"][data-col="0"]');
+            game._showTileTooltip(cell, 'water');
+
+            expect(cell.querySelector('.tile-tooltip')).not.toBeNull();
+
+            jest.advanceTimersByTime(CONSTANTS.TILE_TOOLTIP_DURATION_MS + 1);
+
+            expect(cell.querySelector('.tile-tooltip')).toBeNull();
+        });
+
+        test('does not throw when tooltip is already removed before the timeout fires', () => {
+            const cell = document.createElement('div');
+            document.body.appendChild(cell);
+            game._showTileTooltip(cell, 'star');
+            // Manually remove tooltip before the timeout fires
+            const tooltip = cell.querySelector('.tile-tooltip');
+            if (tooltip) tooltip.remove();
+            // Timeout fires — parentNode is null, should not throw
+            expect(() => jest.advanceTimersByTime(CONSTANTS.TILE_TOOLTIP_DURATION_MS + 1)).not.toThrow();
+            cell.remove();
+        });
+    });
+});
+
+// ---------------------------------------------------------------------------
+// GameTimer — additional branch coverage (submission.time undefined, currentDate null)
+// ---------------------------------------------------------------------------
+describe('Game — Timer branch coverage (submission.time and currentDate)', () => {
+    let game;
+
+    function setupTimerDOM3() {
+        document.body.innerHTML = `
+            <div id="pauseOverlay" style="display:none;">
+                <div id="pauseTitle"></div>
+                <div id="pauseTime"></div>
+                <button id="resumeBtn"></button>
+            </div>
+            <div class="controls-top">
+                <div class="wall-counter"><span id="wallCounter">0/9</span></div>
+                <button id="timerBtn"><span id="timerValue">00:00</span><span id="timerIcon">⏸</span></button>
+                <div class="score-display"><span id="scoreValue">∞</span></div>
+            </div>
+            <div class="map-info"><span id="mapDay">1</span><span id="mapName">T</span></div>
+            <div class="grid-container"><div id="grid" class="grid"></div></div>
+            <div class="controls-bottom">
+                <button id="resetBtn">Reset</button>
+                <button id="pennedStatus" data-interactive="false">
+                    <span class="submit-label">U</span><span class="submit-check">✗</span>
+                </button>
+                <div class="best-state-wrapper">
+                    <button id="bestStateBanner" disabled style="display:none;">
+                        <span class="best-state-label"></span>
+                    </button>
+                </div>
+            </div>
+            <div class="controls-hints">
+                <button id="hintCheckBtn" style="display:none;" disabled>
+                    <span class="hint-check-label">Check</span>
+                </button>
+                <div id="hintUsedDisplay" style="display:none;"></div>
+            </div>
+            <div id="notification"></div>
+            <div id="solutionToggleBar" style="display:none;">
+                <span id="solutionViewLabel"></span><button id="solutionToggleBtn"></button>
+            </div>
+            <aside id="roamSpaceViewer">
+                <article class="viewer-card">
+                    <section class="metrics-display">
+                        <output id="roamAreaMetric">0</output>
+                        <small id="roamAreaPercentage"></small>
+                        <small class="metric-helper"></small>
+                    </section>
+                    <footer class="viewer-footer">
+                        <button id="shareScoreBtn">Copy</button>
+                        <button id="exitViewer">Back</button>
+                    </footer>
+                </article>
+            </aside>
+        `;
+    }
+
+    beforeEach(() => {
+        setupTimerDOM3();
+        document.cookie.split(';').forEach((c) => {
+            document.cookie = c.trim().split('=')[0] + '=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/';
+        });
+        jest.useFakeTimers();
+        const g = new Game(5);
+        const tiles = Array.from({ length: 5 }, () => Array(5).fill('grass'));
+        tiles[2][2] = 'home';
+        g.grid.loadMap(tiles);
+        g.grid.saveInitialState();
+        game = g;
+    });
+
+    afterEach(() => {
+        game._stopTimerInterval();
+        jest.useRealTimers();
+    });
+
+    test('initTimerForDate uses 0 elapsed when submission exists but has no time property', () => {
+        game.isSubmitted = true;
+        game.loadSubmission = jest.fn(() => ({ score: 5, walls: [] })); // no .time
+        game.currentDate = '2026-03-01';
+        game.initTimerForDate('2026-03-01');
+        expect(game.elapsedSeconds).toBe(0);
+    });
+
+    test('lockTimer works when currentDate is null (no cookie to delete)', () => {
+        game.currentDate = null;
+        expect(() => game.lockTimer()).not.toThrow();
+        expect(game.isTimerLocked).toBe(true);
+    });
+
+    test('resetTimer works when currentDate is null (no cookie to delete)', () => {
+        game.currentDate = null;
+        expect(() => game.resetTimer()).not.toThrow();
+        expect(game.isTimerLocked).toBe(false);
+        expect(game.elapsedSeconds).toBe(0);
+    });
+
+    test('_startTimerInterval returns early when interval is already running', () => {
+        game.isSubmitted = false;
+        game.currentDate = '2026-03-01';
+        game.initTimerForDate('2026-03-01');
+        game.resumeTimer(); // starts interval
+        const intervalRef = game._timerInterval;
+        expect(intervalRef).not.toBeNull();
+        // Calling again should NOT replace the existing interval
+        game._startTimerInterval();
+        expect(game._timerInterval).toBe(intervalRef);
+    });
+
+    test('_startTimerInterval returns early when timer is locked', () => {
+        game.isTimerLocked = true;
+        game.isPaused = false;
+        game._startTimerInterval();
+        expect(game._timerInterval).toBeNull();
+    });
+
+    test('_startTimerInterval returns early when timer is paused', () => {
+        game.isTimerLocked = false;
+        game.isPaused = true;
+        game._startTimerInterval();
+        expect(game._timerInterval).toBeNull();
+    });
+});

@@ -937,3 +937,399 @@ describe('Menu', () => {
         });
     });
 });
+
+// ===========================================================================
+// Additional coverage tests — Menu edge cases
+// ===========================================================================
+
+// Require CloudSync for use in cloud sync branch tests
+const _cloudSyncForMenuTests = require('../../../js/cloud/CloudSync.js');
+
+describe('Menu — additional branch coverage', () => {
+    let menu;
+    let game;
+
+    function setupFullDOM() {
+        document.body.innerHTML = `
+            <button id="menuBtn"></button>
+            <div id="menuModal" class="modal"></div>
+            <div id="levelSelectorModal" class="modal">
+                <div id="levelList"></div>
+            </div>
+            <div id="instructionsModal" class="modal">
+                <div id="tileDescriptions" class="tile-descriptions"></div>
+            </div>
+            <div id="aboutModal" class="modal"></div>
+            <div id="optionsModal" class="modal">
+                <select id="modalPetType"></select>
+                <input type="checkbox" id="modalHintsDisabled">
+                <input type="checkbox" id="modalNeverShowTarget">
+                <select id="modalTimezone"></select>
+                <select id="modalLanguage"></select>
+                <input type="checkbox" id="debugModeCheckbox">
+            </div>
+            <button class="modal-close"></button>
+            <button id="instrShortcutBtn"></button>
+            <button id="levelSelectorBtn"></button>
+            <button id="instructionsBtn"></button>
+            <button id="aboutBtn"></button>
+            <button id="optionsBtn"></button>
+            <button id="tellFriendsAboutBtn"></button>
+            <button id="tellFriendsOptionsBtn"></button>
+            <select id="petType"></select>
+            <div class="debug-section" style="display: none;">
+                <input type="checkbox" id="debugShowAllLevels">
+                <button id="debugResetLevel"></button>
+                <button id="debugResetAll"></button>
+            </div>
+        `;
+    }
+
+    function createMockGame() {
+        return {
+            petEmoji: '🐶',
+            hintsDisabled: false,
+            neverShowTarget: true,
+            hintsUsed: [],
+            render: jest.fn(),
+            updateLegend: jest.fn(),
+            pauseTimer: jest.fn(),
+            resetTimer: jest.fn(),
+            initTimerForDate: jest.fn(),
+            handleTellFriends: jest.fn(),
+            grid: {
+                size: 7,
+                loadMap: jest.fn(),
+                saveInitialState: jest.fn(),
+                reset: jest.fn(),
+                getTile: jest.fn(() => 'grass'),
+                setTile: jest.fn(),
+            },
+            wallCount: 0,
+            goalAreaSize: 10,
+            maxWalls: 9,
+            currentDate: '2026-02-06',
+            optimalSolution: null,
+            isSubmitted: false,
+            submittedScore: null,
+            submittedWalls: null,
+            viewingOptimal: false,
+            updateWallCounter: jest.fn(),
+            updateAreaSizeDisplay: jest.fn(),
+            updateResetButton: jest.fn(),
+            updateSolutionToggleBar: jest.fn(),
+            updateHintButton: jest.fn(),
+            loadHintsUsed: jest.fn(() => []),
+            loadSubmission: jest.fn(() => null),
+            deleteSubmission: jest.fn(),
+            isValidPosition: jest.fn(() => true),
+        };
+    }
+
+    beforeEach(() => {
+        setupFullDOM();
+        game = createMockGame();
+        menu = new Menu(game);
+        // Clear cookies
+        document.cookie.split(';').forEach((c) => {
+            document.cookie = c.trim().split('=')[0] + '=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/';
+        });
+    });
+
+    // -----------------------------------------------------------------------
+    // Modal close button click handler (lines 66-68)
+    // -----------------------------------------------------------------------
+    describe('Modal close button — click event handler', () => {
+        test('clicking a .modal-close button inside a .modal calls closeModal', () => {
+            const spy = jest.spyOn(menu, 'closeModal');
+            // Build a modal with a close button that has a closest('.modal') ancestor
+            const modal = document.createElement('div');
+            modal.className = 'modal show';
+            const closeBtn = document.createElement('button');
+            closeBtn.className = 'modal-close';
+            modal.appendChild(closeBtn);
+            document.body.appendChild(modal);
+
+            // Re-initialise so attachEventListeners picks up the new button
+            const freshMenu = new Menu(game);
+            const freshSpy = jest.spyOn(freshMenu, 'closeModal');
+            closeBtn.click();
+
+            expect(freshSpy).toHaveBeenCalledWith(modal);
+            modal.remove();
+            spy.mockRestore();
+        });
+    });
+
+    // -----------------------------------------------------------------------
+    // "Tell Your Friends" buttons (lines 89, 93)
+    // -----------------------------------------------------------------------
+    describe('Tell Your Friends button event handlers', () => {
+        test('clicking tellFriendsAboutBtn calls game.handleTellFriends', () => {
+            document.getElementById('tellFriendsAboutBtn').click();
+            expect(game.handleTellFriends).toHaveBeenCalled();
+        });
+
+        test('clicking tellFriendsOptionsBtn calls game.handleTellFriends', () => {
+            document.getElementById('tellFriendsOptionsBtn').click();
+            expect(game.handleTellFriends).toHaveBeenCalled();
+        });
+    });
+
+    // -----------------------------------------------------------------------
+    // Hints re-enabled branch in modalHintsDisabled change (lines 127-128)
+    // -----------------------------------------------------------------------
+    describe('modalHintsDisabled — re-enable restores neverShowTarget', () => {
+        test('un-checking hintsDisabled restores neverShowTarget and enables checkbox', () => {
+            const hintsCheckbox = document.getElementById('modalHintsDisabled');
+            const neverShowCheckbox = document.getElementById('modalNeverShowTarget');
+
+            // First disable hints (so neverShowTarget becomes forced-on)
+            hintsCheckbox.checked = true;
+            hintsCheckbox.dispatchEvent(new Event('change'));
+            expect(neverShowCheckbox.checked).toBe(true);
+            expect(neverShowCheckbox.disabled).toBe(true);
+
+            // Now re-enable hints — neverShowTarget should be restored from game state
+            game.neverShowTarget = false;
+            hintsCheckbox.checked = false;
+            hintsCheckbox.dispatchEvent(new Event('change'));
+            expect(neverShowCheckbox.checked).toBe(false);
+            expect(neverShowCheckbox.disabled).toBe(false);
+        });
+    });
+
+    // -----------------------------------------------------------------------
+    // modalNeverShowTarget change listener (lines 137-139)
+    // -----------------------------------------------------------------------
+    describe('modalNeverShowTarget — change listener', () => {
+        test('toggling neverShowTarget checkbox updates game.neverShowTarget and calls updateHintButton', () => {
+            const checkbox = document.getElementById('modalNeverShowTarget');
+            checkbox.checked = true;
+            checkbox.dispatchEvent(new Event('change'));
+            expect(game.neverShowTarget).toBe(true);
+            expect(game.updateHintButton).toHaveBeenCalled();
+        });
+    });
+
+    // -----------------------------------------------------------------------
+    // modalTimezone change listener (line 145)
+    // -----------------------------------------------------------------------
+    describe('modalTimezone — change listener', () => {
+        test('changing timezone select saves new value to cookie', () => {
+            const tzSelect = document.getElementById('modalTimezone');
+            Object.defineProperty(tzSelect, 'value', { value: 'America/New_York', writable: true });
+            tzSelect.dispatchEvent(new Event('change'));
+            // Cookie should be set (CookieUtils.getCookie will return the value)
+            const saved = CookieUtils.getCookie('timezone');
+            expect(saved).toBe('America/New_York');
+        });
+    });
+
+    // -----------------------------------------------------------------------
+    // modalLanguage change listener (lines 150-155)
+    // -----------------------------------------------------------------------
+    describe('modalLanguage — change listener', () => {
+        test('changing language select calls I18N.setLanguage', () => {
+            const langSelect = document.getElementById('modalLanguage');
+            const spySetLang = jest.spyOn(I18N, 'setLanguage').mockImplementation(() => {});
+            Object.defineProperty(langSelect, 'value', { value: 'en', writable: true });
+            // The handler also calls window.location.reload; since jsdom blocks actual navigation
+            // we only assert the I18N call, which is the relevant branch to cover.
+            expect(() => langSelect.dispatchEvent(new Event('change'))).not.toThrow();
+            expect(spySetLang).toHaveBeenCalledWith('en');
+            spySetLang.mockRestore();
+        });
+    });
+
+    // -----------------------------------------------------------------------
+    // openMenu calls pauseTimer (line 234)
+    // -----------------------------------------------------------------------
+    describe('openMenu() — calls pauseTimer', () => {
+        test('openMenu pauses the game timer', () => {
+            menu.openMenu();
+            expect(game.pauseTimer).toHaveBeenCalled();
+        });
+    });
+
+    // -----------------------------------------------------------------------
+    // openInstructions calls pauseTimer (line 672)
+    // -----------------------------------------------------------------------
+    describe('openInstructions() — calls pauseTimer', () => {
+        test('openInstructions pauses the game timer', () => {
+            menu.openInstructions();
+            expect(game.pauseTimer).toHaveBeenCalled();
+        });
+    });
+
+    // -----------------------------------------------------------------------
+    // openAbout calls pauseTimer (line 758)
+    // -----------------------------------------------------------------------
+    describe('openAbout() — calls pauseTimer', () => {
+        test('openAbout pauses the game timer', () => {
+            menu.openAbout();
+            expect(game.pauseTimer).toHaveBeenCalled();
+        });
+    });
+
+    // -----------------------------------------------------------------------
+    // openOptions calls pauseTimer (line 772)
+    // -----------------------------------------------------------------------
+    describe('openOptions() — calls pauseTimer', () => {
+        test('openOptions pauses the game timer', () => {
+            menu.openOptions();
+            expect(game.pauseTimer).toHaveBeenCalled();
+        });
+    });
+
+    // -----------------------------------------------------------------------
+    // loadMapsDatabase error handling (lines 302-303)
+    // -----------------------------------------------------------------------
+    describe('loadMapsDatabase() — fetch error handling', () => {
+        test('sets mapsDatabase to empty object when fetch throws', async () => {
+            global.fetch = jest.fn(() => Promise.reject(new Error('network error')));
+            await menu.loadMapsDatabase();
+            expect(menu.mapsDatabase).toEqual({});
+        });
+    });
+
+    // -----------------------------------------------------------------------
+    // resetCurrentLevel — calls resetTimer (line 213)
+    // -----------------------------------------------------------------------
+    describe('resetCurrentLevel() — timer integration', () => {
+        test('calls game.resetTimer when it is available', () => {
+            game.currentDate = '2026-02-06';
+            menu.resetCurrentLevel();
+            expect(game.resetTimer).toHaveBeenCalled();
+        });
+    });
+
+    // -----------------------------------------------------------------------
+    // loadLevel — calls initTimerForDate (line 662)
+    // -----------------------------------------------------------------------
+    describe('loadLevel() — timer integration', () => {
+        test('calls game.initTimerForDate with map date', async () => {
+            const mapData = {
+                date: '2026-03-15',
+                size: 7,
+                goal: 10,
+                maxWalls: 5,
+                map: 'g'.repeat(49),
+                optimalSolution: null,
+            };
+            await menu.loadLevel(mapData);
+            expect(game.initTimerForDate).toHaveBeenCalledWith('2026-03-15');
+        });
+
+        test('does not call game.initTimerForDate when mapData has no date', async () => {
+            const mapData = {
+                size: 7,
+                goal: 10,
+                maxWalls: 5,
+                map: 'g'.repeat(49),
+            };
+            await menu.loadLevel(mapData);
+            expect(game.initTimerForDate).not.toHaveBeenCalled();
+        });
+    });
+
+    // -----------------------------------------------------------------------
+    // loadLevel — submission wall restoration (lines 634-642)
+    // -----------------------------------------------------------------------
+    describe('loadLevel() — restores submitted wall positions', () => {
+        test('restores wall tiles from a saved submission', async () => {
+            const wallPositions = [[1, 1], [2, 2]];
+            game.loadSubmission = jest.fn(() => ({
+                score: 5,
+                walls: wallPositions,
+            }));
+            // Make getTile return 'grass' so walls are placeable
+            game.grid.getTile = jest.fn(() => 'grass');
+
+            const mapData = {
+                date: '2026-02-06',
+                size: 7,
+                goal: 11,
+                maxWalls: 5,
+                map: 'g'.repeat(49),
+                optimalSolution: null,
+            };
+            await menu.loadLevel(mapData);
+
+            expect(game.isSubmitted).toBe(true);
+            expect(game.submittedScore).toBe(5);
+            // setTile should have been called for each wall position
+            expect(game.grid.setTile).toHaveBeenCalledTimes(wallPositions.length);
+        });
+    });
+
+    // -----------------------------------------------------------------------
+    // openLevelSelector — calls pauseTimer (line 248)
+    // -----------------------------------------------------------------------
+    describe('openLevelSelector() — calls pauseTimer', () => {
+        test('openLevelSelector pauses the game timer', async () => {
+            global.fetch = jest.fn(() =>
+                Promise.resolve({
+                    ok: true,
+                    json: () => Promise.resolve({}),
+                })
+            );
+            await menu.openLevelSelector();
+            expect(game.pauseTimer).toHaveBeenCalled();
+        });
+    });
+
+    // -----------------------------------------------------------------------
+    // Cloud sync in _savePetToCookie, _saveHintsDisabledToCookie,
+    // _saveNeverShowTargetToCookie (lines 954, 966, 978-989)
+    // -----------------------------------------------------------------------
+    describe('Settings save methods — cloud sync branch', () => {
+        // These tests cover the cloud-sync branch inside _savePetToCookie, etc.
+        // We mock _shouldSyncToCloud to return true AND expose CloudSync as a
+        // proper global so that Menu.js can call CloudSync.saveSettings().
+        let origGlobalCloudSync;
+
+        beforeEach(() => {
+            origGlobalCloudSync = global.CloudSync;
+            // Replace CloudSync global with a controlled spy object
+            global.CloudSync = {
+                isConfigured: jest.fn(() => true),
+                isLoggedIn: jest.fn(() => true),
+                saveSettings: jest.fn(),
+            };
+        });
+
+        afterEach(() => {
+            global.CloudSync = origGlobalCloudSync;
+        });
+
+        test('_savePetToCookie syncs to cloud when logged in', () => {
+            menu._savePetToCookie('🐱');
+            expect(global.CloudSync.saveSettings).toHaveBeenCalledWith(expect.objectContaining({ selectedPet: '🐱' }));
+        });
+
+        test('_saveHintsDisabledToCookie syncs to cloud when logged in', () => {
+            menu._saveHintsDisabledToCookie(true);
+            expect(global.CloudSync.saveSettings).toHaveBeenCalledWith(expect.objectContaining({ hintsDisabled: 'true' }));
+        });
+
+        test('_saveNeverShowTargetToCookie syncs to cloud when logged in', () => {
+            menu._saveNeverShowTargetToCookie(false);
+            expect(global.CloudSync.saveSettings).toHaveBeenCalledWith(expect.objectContaining({ neverShowTarget: 'false' }));
+        });
+    });
+
+    // -----------------------------------------------------------------------
+    // openOptions — I18N.getLanguage() fallback when I18N undefined (line 806)
+    // -----------------------------------------------------------------------
+    describe('openOptions() — language selector value', () => {
+        test('sets modalLanguage value to current language from I18N', () => {
+            const langSelect = document.getElementById('modalLanguage');
+            const option = document.createElement('option');
+            option.value = 'en';
+            langSelect.appendChild(option);
+            menu.openOptions();
+            expect(langSelect.value).toBe('en');
+        });
+    });
+});
