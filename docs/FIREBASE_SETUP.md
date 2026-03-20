@@ -243,7 +243,7 @@ appear in this list or sign-in will be blocked.
 
 ### Step 8 — Add Your Config as GitHub Secrets
 
-Instead of editing `js/firebase-config.js` directly, add the Firebase values as
+Instead of editing `js/cloud/firebase-config.js` directly, add the Firebase values as
 **repository secrets** so that the deploy workflow injects them automatically.
 This keeps credentials out of the committed codebase.
 
@@ -263,7 +263,7 @@ This keeps credentials out of the committed codebase.
 
 3. Push any change to `main` (or trigger the **Deploy static content to Pages**
    workflow manually). The workflow will substitute the secrets into
-   `js/firebase-config.js` at deploy time.
+   `js/cloud/firebase-config.js` at deploy time.
 
 The app detects that `apiKey` is non-empty and automatically enables the
 cloud sync UI.  When `measurementId` is also set, Firebase Analytics is
@@ -340,7 +340,7 @@ the same data.
 
 All submission documents carry a `__version` field so older data can be
 automatically migrated when it is loaded. The current version is **1.1**.
-Migration is handled by `js/CloudMigration.js` — see
+Migration is handled by `js/cloud/CloudMigration.js` — see
 [Adding a new schema version](#adding-a-new-schema-version) below.
 
 | Version | Changes                                                                     |
@@ -437,7 +437,7 @@ the local cookie — not just the fields that were compared — so nothing is lo
 
 ## Adding a New Schema Version
 
-Schema versioning is handled by `js/CloudMigration.js`. To add a new version:
+Schema versioning is handled by `js/cloud/CloudMigration.js`. To add a new version:
 
 1. Bump `CURRENT_VERSION` in `CloudMigration.js` (e.g. `'1.2'`).
 2. Add a migration function for the previous version:
@@ -465,7 +465,7 @@ Migration runs automatically when:
 ## Running Without Cloud Sync or Analytics
 
 If you fork this repository and do **not** want cloud sync, simply skip Step 8
-(do not add the secrets). The `apiKey` in `js/firebase-config.js` will remain
+(do not add the secrets). The `apiKey` in `js/cloud/firebase-config.js` will remain
 empty after deployment and the app will behave exactly as before — all data
 stays in local cookies and the cloud sync UI is hidden.
 

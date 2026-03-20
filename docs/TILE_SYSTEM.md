@@ -1,12 +1,12 @@
 # Tile System
 
-The tile system is the foundation of PenThePet's game mechanics. All tile types are defined in `js/tileData.js` — the **single source of truth** for game logic, rendering, map generation, solving, and player-facing instructions.
+The tile system is the foundation of PenThePet's game mechanics. All tile types are defined in `js/tiles/tileData.js` — the **single source of truth** for game logic, rendering, map generation, solving, and player-facing instructions.
 
 ## Adding a New Tile Type
 
-To add a new tile, add a single entry to `js/tileData.js`:
+To add a new tile, add a single entry to `js/tiles/tileData.js`:
 
-1. Edit `js/tileData.js` (the single source of truth):
+1. Edit `js/tiles/tileData.js` (the single source of truth):
 
 ```javascript
 myTile: {
@@ -24,11 +24,11 @@ myTile: {
 },
 ```
 
-1. Add a `my_tile_description` key to `js/i18n.js` under `LANGUAGES.en` with the player-facing description text.
+1. Add a `my_tile_description` key to `js/common/i18n.js` under `LANGUAGES.en` with the player-facing description text.
 1. Add the SVG asset to `assets/` and a CSS rule for cursor/hover behavior.
 
 That's it — all derived lookup tables, rendering, generation, pathfinding, scoring,
-player instructions, and the Python solver read from `js/tileData.js` automatically.
+player instructions, and the Python solver read from `js/tiles/tileData.js` automatically.
 
 ## Tile Properties Reference
 
@@ -73,18 +73,18 @@ This mechanic is generic — new fillable tile types can be added by setting `bl
 ### Data Flow
 
 ```text
-js/tileData.js (single source of truth)
-    ├── Game.js         — scoring (getTileScore), click handling (isWallPlaceable),
-    │                     rendering (_createCellElement reads assets/enclosedAssets/pawOverlay)
-    ├── PathfindingUtils — scoring (NUMERIC_ID_TO_SCORE), movement (BLOCKING_NUMERIC_IDS)
-    ├── Grid.js         — compact map parsing (COMPACT_CHAR_TO_TILE)
-    ├── MapGenerator.js — tile distribution (chance), numeric conversion (TILE_TO_NUMERIC)
-    ├── MILPSolver.js   — numeric↔string conversion (NUMERIC_TO_TILE)
-    ├── Menu.js         — wall placement checks (isWallPlaceable),
-    │                     instructions rendering (descriptionKey → I18N.t())
-    ├── main.js         — wall placement checks (isWallPlaceable)
-    ├── tileTypes.js    — compatibility wrapper (builds TILE_TYPES from TILE_DATA)
-    └── solve.py        — reads tileData.js via Node.js subprocess
+js/tiles/tileData.js (single source of truth)
+    ├── game/Game.js            — scoring (getTileScore), click handling (isWallPlaceable),
+    │                             rendering (GameAnimationsMixin._createCellElement reads assets/enclosedAssets/pawOverlay)
+    ├── game/PathfindingUtils   — scoring (NUMERIC_ID_TO_SCORE), movement (BLOCKING_NUMERIC_IDS)
+    ├── game/Grid.js            — compact map parsing (COMPACT_CHAR_TO_TILE)
+    ├── generation/MapGenerator — tile distribution (chance), numeric conversion (TILE_TO_NUMERIC)
+    ├── scripts/MILPSolver.js   — numeric↔string conversion (NUMERIC_TO_TILE)
+    ├── Menu.js                 — wall placement checks (isWallPlaceable),
+    │                             instructions rendering (descriptionKey → I18N.t())
+    ├── main.js                 — wall placement checks (isWallPlaceable)
+    ├── tiles/tileTypes.js      — compatibility wrapper (builds TILE_TYPES from TILE_DATA)
+    └── scripts/solve.py        — reads tileData.js via Node.js subprocess
 ```
 
 ### Derived Lookup Tables

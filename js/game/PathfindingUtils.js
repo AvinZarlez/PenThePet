@@ -8,7 +8,7 @@
 
 // Import blocking-tile sets from tileData if in Node.js environment
 if (typeof BLOCKING_NUMERIC_IDS === 'undefined' && typeof require !== 'undefined') {
-    const _td = require('./tileData.js');
+    const _td = require('../tiles/tileData.js');
     if (typeof global.BLOCKING_NUMERIC_IDS === 'undefined') {
         global.BLOCKING_NUMERIC_IDS = _td.BLOCKING_NUMERIC_IDS;
     }

@@ -7,10 +7,10 @@
  * Rendering/animation methods are provided by GameAnimationsMixin (js/game/GameAnimations.js),
  * also applied via Object.assign at the bottom of this file.
  *
- * Timer behaviour is provided by GameTimerMixin (js/GameTimer.js), applied
+ * Timer behaviour is provided by GameTimerMixin (js/game/GameTimer.js), applied
  * via Object.assign at the bottom of this file.
  *
- * Score calculation is delegated to ScoreCalculator (js/ScoreCalculator.js)
+ * Score calculation is delegated to ScoreCalculator (js/game/ScoreCalculator.js)
  * so the scoring rules can be swapped for different game variants.
  */
 
@@ -1686,7 +1686,7 @@ class Game {
     }
 
     // =====================================================================
-    // Timer Methods — provided by GameTimerMixin (js/GameTimer.js)
+    // Timer Methods — provided by GameTimerMixin (js/game/GameTimer.js)
     // =====================================================================
     // initTimerForDate, pauseTimer, resumeTimer, lockTimer, resetTimer,
     // updateTimerDisplay, updateTimerButton, _formatTime, _showPauseOverlay,

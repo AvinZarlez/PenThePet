@@ -52,7 +52,7 @@ jobs:
               ('appId',              'FIREBASE_APP_ID'),
               ('measurementId',      'FIREBASE_MEASUREMENT_ID'),
           ]
-          with open('js/firebase-config.js') as f:
+          with open('js/cloud/firebase-config.js') as f:
               content = f.read()
           for js_key, env_var in fields:
               value = os.environ.get(env_var, '').strip()
@@ -61,7 +61,7 @@ jobs:
                       print(f'Error: {env_var} contains invalid characters', file=sys.stderr)
                       sys.exit(1)
                   content = content.replace(f"{js_key}: ''", f"{js_key}: '{value}'")
-          with open('js/firebase-config.js', 'w') as f:
+          with open('js/cloud/firebase-config.js', 'w') as f:
               f.write(content)
           PYEOF
       - name: Setup Pages
