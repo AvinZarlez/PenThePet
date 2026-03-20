@@ -688,7 +688,7 @@ class Menu {
         const container = document.getElementById('tileDescriptions');
         if (!container || container.children.length > 0) return;
 
-        for (const [, data] of Object.entries(TILE_DATA)) {
+        for (const [tileName, data] of Object.entries(TILE_DATA)) {
             if (!data.descriptionKey) continue;
 
             const row = document.createElement('div');
@@ -696,7 +696,38 @@ class Menu {
 
             const icon = document.createElement('div');
             icon.className = 'tile-desc-icon';
-            if (data.assets && data.assets.length > 0) {
+
+            if (TileSvgs.TILE_SVGS_TILES.has(tileName)) {
+                // Tiles managed by TileSvgs use dynamically-generated SVG layers
+                const baseUri = TileSvgs.getTileBaseUri(tileName, false);
+                if (baseUri) {
+                    const img = document.createElement('img');
+                    img.src = baseUri;
+                    img.alt = '';
+                    img.setAttribute('aria-hidden', 'true');
+                    icon.appendChild(img);
+                }
+                const variantUri = TileSvgs.getTileVariantUri(tileName, 0, false);
+                if (variantUri) {
+                    const img = document.createElement('img');
+                    img.src = variantUri;
+                    img.alt = '';
+                    img.setAttribute('aria-hidden', 'true');
+                    icon.appendChild(img);
+                }
+                // Icon tiles (home, star, bee) also have a static overlay icon
+                if (data.backgroundGroup && data.assets && data.assets.length > 0) {
+                    for (const asset of data.assets) {
+                        if (asset.endsWith('.svg')) {
+                            const img = document.createElement('img');
+                            img.src = `assets/${asset}`;
+                            img.alt = '';
+                            img.setAttribute('aria-hidden', 'true');
+                            icon.appendChild(img);
+                        }
+                    }
+                }
+            } else if (data.assets && data.assets.length > 0) {
                 for (const asset of data.assets) {
                     if (asset.endsWith('.svg')) {
                         const img = document.createElement('img');

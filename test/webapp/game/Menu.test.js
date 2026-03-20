@@ -203,6 +203,25 @@ describe('Menu', () => {
             expect(rows.length).toBe(tilesWithDesc.length);
         });
 
+        test('grass and water tile icons use data: URIs from TileSvgs, not missing asset files', () => {
+            menu.openInstructions();
+            const container = document.getElementById('tileDescriptions');
+            const rows = Array.from(container.querySelectorAll('.tile-desc-row'));
+            const tileNames = Object.keys(TILE_DATA).filter(k => TILE_DATA[k].descriptionKey);
+
+            for (const tileName of ['grass', 'water']) {
+                const idx = tileNames.indexOf(tileName);
+                expect(idx).toBeGreaterThanOrEqual(0);
+                const row = rows[idx];
+                const imgs = row.querySelectorAll('img');
+                // Grass and water each render exactly 2 layers: base + variant overlay
+                expect(imgs.length).toBe(2);
+                imgs.forEach(img => {
+                    expect(img.src).toMatch(/^data:/);
+                });
+            }
+        });
+
         test('should open about modal', () => {
             menu.openAbout();
             const aboutModal = document.getElementById('aboutModal');
