@@ -420,3 +420,32 @@ describe('CONSTANTS', () => {
         });
     });
 });
+
+// ---------------------------------------------------------------------------
+// TileData utility function branch coverage
+// ---------------------------------------------------------------------------
+describe('tileData utility functions — edge cases', () => {
+    test('getNumericTileScore returns 0 for an unknown numeric ID', () => {
+        // This covers the `: 0` branch in NUMERIC_ID_TO_SCORE[numericId] !== undefined check
+        expect(getNumericTileScore(-999)).toBe(0);
+        expect(getNumericTileScore(99999)).toBe(0);
+    });
+
+    test('isTileClickable returns false for an unknown tile name', () => {
+        // This covers the `data ? data.clickable : false` — false branch
+        expect(isTileClickable('nonexistent_tile_xyz')).toBe(false);
+    });
+
+    test('getTileScore returns 0 for an unknown tile name', () => {
+        // Covers the `data ? data.score : 0` — false branch
+        expect(getTileScore('unknown_tile_xyz')).toBe(0);
+    });
+
+    test('isBlockingTile returns false for a non-blocking tile name', () => {
+        expect(isBlockingTile('grass')).toBe(false);
+    });
+
+    test('isBlockingTile returns true for a blocking tile (water)', () => {
+        expect(isBlockingTile('water')).toBe(true);
+    });
+});

@@ -274,3 +274,33 @@ describe('Tile description keys in TILE_DATA', () => {
         }
     });
 });
+
+// ---------------------------------------------------------------------------
+// Branch coverage: LANGUAGES[this._lang] || LANGUAGES.en fallback in t()
+// ---------------------------------------------------------------------------
+describe('I18N.t() — LANGUAGES fallback when _lang is invalid', () => {
+    afterEach(() => {
+        I18N._lang = 'en';
+    });
+
+    test('falls back to LANGUAGES.en when _lang points to a non-existent language', () => {
+        // Directly bypass setLanguage validation to set an invalid _lang
+        I18N._lang = '__invalid_lang_xyz__';
+        // t() should use LANGUAGES.en as fallback and return the English string
+        const result = I18N.t('status_unsolved');
+        expect(result).toBe('Unsolved');
+    });
+});
+
+// ---------------------------------------------------------------------------
+// Branch coverage: applyTranslations() — languageSelector present in DOM
+// ---------------------------------------------------------------------------
+describe('I18N.applyTranslations() — languageSelector sync', () => {
+    test('sets languageSelector value to current language when element exists', () => {
+        // The select needs an option matching the language value for jsdom to accept it
+        document.body.innerHTML = '<select id="languageSelector"><option value="en">English</option></select>';
+        I18N._lang = 'en';
+        I18N.applyTranslations();
+        expect(document.getElementById('languageSelector').value).toBe('en');
+    });
+});
