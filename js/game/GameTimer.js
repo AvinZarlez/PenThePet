@@ -233,6 +233,26 @@ const GameTimerMixin = {
     },
 
     /**
+     * Refresh the pause overlay content (title, elapsed time, and Resume/Begin button)
+     * without re-applying the element hide/show logic.
+     * Safe to call while already paused (e.g. after a cloud-sync timer update).
+     * No-op when the overlay is not currently visible.
+     */
+    updatePauseOverlay() {
+        const overlay = document.getElementById('pauseOverlay');
+        if (!overlay || overlay.style.display === 'none') return;
+        const pauseTitle = document.getElementById('pauseTitle');
+        if (pauseTitle) pauseTitle.textContent = this.isReadyPending ? I18N.t('ready_title') : I18N.t('pause_title');
+        const pauseTime = document.getElementById('pauseTime');
+        if (pauseTime) {
+            pauseTime.textContent = this._formatTime(this.elapsedSeconds);
+            pauseTime.style.visibility = this.elapsedSeconds > 0 ? 'visible' : 'hidden';
+        }
+        const resumeBtn = document.getElementById('resumeBtn');
+        if (resumeBtn) resumeBtn.textContent = this.elapsedSeconds > 0 ? I18N.t('btn_resume') : I18N.t('btn_begin');
+    },
+
+    /**
      * Update the timer button appearance based on current state.
      * When locked: disabled, shows stopwatch icon.
      * When paused: disabled (Resume button is the only way out), shows play icon.

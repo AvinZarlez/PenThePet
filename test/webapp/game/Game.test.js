@@ -556,6 +556,54 @@ describe('Game — Timer', () => {
     });
 
     // ------------------------------------------------------------------
+    // updatePauseOverlay
+    // ------------------------------------------------------------------
+    describe('updatePauseOverlay()', () => {
+        test('no-op when overlay is hidden', () => {
+            document.getElementById('pauseOverlay').style.display = 'none';
+            document.getElementById('resumeBtn').textContent = '▶ Begin';
+            game.elapsedSeconds = 60;
+            game.updatePauseOverlay();
+            // Should not have changed the button since the overlay is hidden
+            expect(document.getElementById('resumeBtn').textContent).toBe('▶ Begin');
+        });
+
+        test('updates button from Begin to Resume when elapsedSeconds > 0', () => {
+            document.getElementById('pauseOverlay').style.display = 'flex';
+            document.getElementById('resumeBtn').textContent = I18N.t('btn_begin');
+            game.elapsedSeconds = 30;
+            game.isPaused = true;
+            game.isReadyPending = true;
+            game.updatePauseOverlay();
+            expect(document.getElementById('resumeBtn').textContent).toBe(I18N.t('btn_resume'));
+        });
+
+        test('updates pauseTime visibility when elapsedSeconds > 0', () => {
+            document.getElementById('pauseOverlay').style.display = 'flex';
+            const pauseTime = document.getElementById('pauseTime');
+            pauseTime.style.visibility = 'hidden';
+            game.elapsedSeconds = 45;
+            game.isPaused = true;
+            game.updatePauseOverlay();
+            expect(pauseTime.style.visibility).toBe('visible');
+            expect(pauseTime.textContent).toBe('00:45');
+        });
+
+        test('does not re-hide game elements (no side-effects on element visibility)', () => {
+            // Set overlay visible and game elements visible (paused = false initially)
+            game.isPaused = false;
+            const controls = document.querySelector('.controls-top');
+            controls.style.display = 'flex';
+            // Manually show overlay without triggering _showPauseOverlay
+            document.getElementById('pauseOverlay').style.display = 'flex';
+            game.elapsedSeconds = 60;
+            game.updatePauseOverlay();
+            // controls-top should NOT be hidden by updatePauseOverlay
+            expect(controls.style.display).toBe('flex');
+        });
+    });
+
+    // ------------------------------------------------------------------
     // solutionToggleBar visibility — regression for always-visible bug
     // ------------------------------------------------------------------
     describe('solutionToggleBar visibility', () => {

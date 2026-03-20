@@ -495,6 +495,7 @@ async function initGame() {
                         if (syncedElapsed > game.elapsedSeconds) {
                             game.elapsedSeconds = syncedElapsed;
                             game.updateTimerDisplay();
+                            game.updatePauseOverlay();
                         }
                     } catch (e) { console.warn('CloudSync: Failed to parse timer cookie:', e); }
                 }

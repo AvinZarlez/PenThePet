@@ -201,6 +201,22 @@ describe('cloudsync:synced event handler logic', () => {
             }
             return;
         }
+
+        // No submission change — update the timer display if the synced
+        // timer value is higher than the current in-memory value.
+        if (!game.isTimerLocked) {
+            const saved = CookieUtils.getCookie(`timer_${game.currentDate}`);
+            if (saved) {
+                try {
+                    const syncedElapsed = JSON.parse(saved).elapsed || 0;
+                    if (syncedElapsed > game.elapsedSeconds) {
+                        game.elapsedSeconds = syncedElapsed;
+                        if (typeof game.updateTimerDisplay === 'function') game.updateTimerDisplay();
+                        if (typeof game.updatePauseOverlay === 'function') game.updatePauseOverlay();
+                    }
+                } catch (e) { /* ignore */ }
+            }
+        }
     }
 
     const MAP_DATA = { date: '2026-03-01', size: 5, map: 'X' };
@@ -354,6 +370,93 @@ describe('cloudsync:synced event handler logic', () => {
 
         expect(reload).toHaveBeenCalled();
         expect(loadLevel).not.toHaveBeenCalled();
+    });
+
+    // ------------------------------------------------------------------
+    // Timer-only sync path: no submission change, timer value updated
+    // ------------------------------------------------------------------
+
+    test('calls updatePauseOverlay when sync brings higher elapsed time (Begin → Resume)', () => {
+        // Simulates: user opened level fresh (elapsed=0, button="Begin"),
+        // sync arrives with elapsed=30 from another device.
+        CookieUtils.setCookie('timer_2026-03-01', JSON.stringify({ elapsed: 30 }), 1);
+
+        const updateTimerDisplay = jest.fn();
+        const updatePauseOverlay = jest.fn();
+        const game = {
+            currentDate: '2026-03-01',
+            isSubmitted: false,
+            isTimerLocked: false,
+            submittedScore: null,
+            elapsedSeconds: 0,
+            loadSubmission: jest.fn(() => null),
+            updateTimerDisplay,
+            updatePauseOverlay,
+        };
+        const menu = { mapsDatabase: { '2026-03-01': MAP_DATA }, loadLevel: jest.fn() };
+
+        simulateSyncHandler(game, menu);
+
+        expect(game.elapsedSeconds).toBe(30);
+        expect(updateTimerDisplay).toHaveBeenCalled();
+        expect(updatePauseOverlay).toHaveBeenCalled();
+
+        // Cleanup
+        CookieUtils.setCookie('timer_2026-03-01', '', -1);
+    });
+
+    test('does not update timer when synced value is not higher than current', () => {
+        CookieUtils.setCookie('timer_2026-03-01', JSON.stringify({ elapsed: 10 }), 1);
+
+        const updateTimerDisplay = jest.fn();
+        const updatePauseOverlay = jest.fn();
+        const game = {
+            currentDate: '2026-03-01',
+            isSubmitted: false,
+            isTimerLocked: false,
+            submittedScore: null,
+            elapsedSeconds: 60,
+            loadSubmission: jest.fn(() => null),
+            updateTimerDisplay,
+            updatePauseOverlay,
+        };
+        const menu = { mapsDatabase: { '2026-03-01': MAP_DATA }, loadLevel: jest.fn() };
+
+        simulateSyncHandler(game, menu);
+
+        expect(game.elapsedSeconds).toBe(60); // unchanged
+        expect(updateTimerDisplay).not.toHaveBeenCalled();
+        expect(updatePauseOverlay).not.toHaveBeenCalled();
+
+        // Cleanup
+        CookieUtils.setCookie('timer_2026-03-01', '', -1);
+    });
+
+    test('does not update timer when timer is locked', () => {
+        CookieUtils.setCookie('timer_2026-03-01', JSON.stringify({ elapsed: 120 }), 1);
+
+        const updateTimerDisplay = jest.fn();
+        const updatePauseOverlay = jest.fn();
+        const game = {
+            currentDate: '2026-03-01',
+            isSubmitted: false,
+            isTimerLocked: true,
+            submittedScore: null,
+            elapsedSeconds: 0,
+            loadSubmission: jest.fn(() => null),
+            updateTimerDisplay,
+            updatePauseOverlay,
+        };
+        const menu = { mapsDatabase: { '2026-03-01': MAP_DATA }, loadLevel: jest.fn() };
+
+        simulateSyncHandler(game, menu);
+
+        expect(game.elapsedSeconds).toBe(0); // unchanged
+        expect(updateTimerDisplay).not.toHaveBeenCalled();
+        expect(updatePauseOverlay).not.toHaveBeenCalled();
+
+        // Cleanup
+        CookieUtils.setCookie('timer_2026-03-01', '', -1);
     });
 });
 
