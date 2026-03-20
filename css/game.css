@@ -538,7 +538,7 @@
     height: var(--cell-size, 50px);
     aspect-ratio: 1;
     border-radius: max(2px, calc(var(--cell-size, 50px) * 0.1));
-    overflow: hidden;
+    overflow: visible;
     cursor: pointer;
     transition: transform 0.1s, box-shadow 0.1s;
     position: relative;
@@ -667,6 +667,7 @@
     height: 100%;
     pointer-events: none;
     transform-origin: center center;
+    border-radius: inherit;
 }
 
 /* Tile asset overlays (rendered from tileData.assets list) */
@@ -679,6 +680,7 @@
     pointer-events: none;
     transform: translate(-50%, -50%);
     object-fit: contain;
+    border-radius: inherit;
 }
 
 /* Full-tile overlay for base-layer variants (grass/water) — must fill the entire cell */
