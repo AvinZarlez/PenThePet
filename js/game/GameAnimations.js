@@ -582,22 +582,28 @@ const GameAnimationsMixin = {
     },
 
     /**
- * Show a floating score popup on a cell when it becomes penned.
+ * Show a floating score popup above a cell when it becomes penned.
  * Displays the score value with a "+" prefix for positive values.
- * The popup fades in, floats up, and disappears automatically.
+ * The popup is appended to the grid element (not the cell) so it is not
+ * clipped by the cell's overflow:hidden and floats above all sibling cells.
+ * It fades in, floats up, and disappears automatically.
  * Only called for tiles with a non-standard score (not 0 or 1).
  * @private
- * @param {HTMLElement} cell - The cell element to attach the popup to
+ * @param {HTMLElement} cell - The cell element whose position determines the popup location
  * @param {number} score - The score value to display
  */
     _showScorePopup(cell, score) {
+        const row = parseInt(cell.dataset.row, 10) || 0;
+        const col = parseInt(cell.dataset.col, 10) || 0;
         const popup = document.createElement('span');
         popup.className = `score-popup ${score > 0 ? 'positive' : 'negative'}`;
         popup.textContent = score > 0 ? `+${score}` : `${score}`;
         popup.setAttribute('aria-hidden', 'true');
         const durationMs = CONSTANTS.SCORE_POPUP_DURATION_MS;
         popup.style.setProperty('--score-popup-duration', `${durationMs}ms`);
-        cell.appendChild(popup);
+        popup.style.setProperty('--popup-row', row);
+        popup.style.setProperty('--popup-col', col);
+        this.gridElement.appendChild(popup);
         setTimeout(() => {
             if (popup.parentNode) {
                 popup.parentNode.removeChild(popup);
