@@ -30,40 +30,43 @@ npm run lint:markdown:fix   # markdownlint auto-fix
 **Generation** (`scripts/`): Offline Node.js + Python MILP solver (PuLP + CBC). Goal = **MAXIMUM** penned area.
 
 **Script loading order** in `index.html` (must not change):
-`constants.js → config.js → tileData.js → tileTypes.js → CookieUtils.js → i18n.js → DateUtils.js → PathfindingUtils.js → Grid.js → firebase-config.js → CloudMigration.js → CloudSync.js → Analytics.js → Game.js → Menu.js → main.js`
+`config/constants.js → config/config.js → tiles/tileData.js → tiles/TileSvgs.js → tiles/tileTypes.js → common/CookieUtils.js → common/i18n.js → common/DateUtils.js → game/PathfindingUtils.js → game/Grid.js → cloud/firebase-config.js → cloud/CloudMigration.js → cloud/CloudSync.js → cloud/Analytics.js → game/ScoreCalculator.js → game/GameTimer.js → game/GameAnimations.js → game/Game.js → Menu.js → main.js`
 
 ## Key Files
 
 | File | Role |
 |------|------|
-| `js/constants.js` | All game constants (`CONSTANTS`). Edit here first. |
-| `js/config.js` | Derived config referencing `CONSTANTS`. |
-| `js/tileData.js` | **Single source of truth** for all tile types. All rendering, generation, scoring, pathfinding, solver, and player instructions derive from it. |
-| `js/tileTypes.js` | Compatibility wrapper — builds `TILE_TYPES` from `TILE_DATA`. |
-| `js/i18n.js` | **Single source of truth** for all user-facing text. Use `I18N.t('key')` in JS; `data-i18n="key"` in HTML. |
-| `js/Grid.js` | Grid state management + `parseCompactMap` / `parseCompactSolution`. |
-| `js/PathfindingUtils.js` | BFS pathfinding: `isPenned`, `calculatePennedArea`, `hasPathToEdge`. |
-| `js/Game.js` | Main game controller — rendering, clicks, wall placement, penning detection. |
+| `js/config/constants.js` | All game constants (`CONSTANTS`). Edit here first. |
+| `js/config/config.js` | Derived config referencing `CONSTANTS`. |
+| `js/tiles/tileData.js` | **Single source of truth** for all tile types. All rendering, generation, scoring, pathfinding, solver, and player instructions derive from it. |
+| `js/tiles/tileTypes.js` | Compatibility wrapper — builds `TILE_TYPES` from `TILE_DATA`. |
+| `js/common/i18n.js` | **Single source of truth** for all user-facing text. Use `I18N.t('key')` in JS; `data-i18n="key"` in HTML. |
+| `js/game/Grid.js` | Grid state management + `parseCompactMap` / `parseCompactSolution`. |
+| `js/game/PathfindingUtils.js` | BFS pathfinding: `isPenned`, `calculatePennedArea`, `hasPathToEdge`. |
+| `js/game/ScoreCalculator.js` | Pure scoring function — replace to implement different scoring rules for a forked game. |
+| `js/game/GameTimer.js` | Reusable timer mixin (`GameTimerMixin`) — pause/resume/lock/format. Applied to `Game.prototype`. |
+| `js/game/GameAnimations.js` | Animation/rendering mixin (`GameAnimationsMixin`) — cell backgrounds, shore overlays, paw/pet animations. Applied to `Game.prototype`. |
+| `js/game/Game.js` | Main game controller — wall placement, penning detection, hints, submission, sharing. |
 | `js/Menu.js` | Modal system — level selector, instructions, options, cloud sync UI. |
-| `js/CloudSync.js` | Optional Firebase Auth + Firestore sync (dormant when `firebase-config.js` is empty). |
-| `js/Analytics.js` | Optional Firebase Analytics (no-op when unconfigured; anonymous events only). |
+| `js/cloud/CloudSync.js` | Optional Firebase Auth + Firestore sync (dormant when `firebase-config.js` is empty). |
+| `js/cloud/Analytics.js` | Optional Firebase Analytics (no-op when unconfigured; anonymous events only). |
 | `js/main.js` | Entry point — loads map, initializes `Game` and `Menu`. |
-| `js/MapGenerator.js` | Map generation logic (Node.js only, not loaded in browser). |
-| `js/MapValidator.js` | Map quality validation (Node.js only, not loaded in browser). |
+| `js/generation/MapGenerator.js` | Map generation logic (Node.js only, not loaded in browser). |
+| `js/generation/MapValidator.js` | Map quality validation (Node.js only, not loaded in browser). |
 
 ## Tile System
 
-All tile properties live in `js/tileData.js`. To add a tile:
+All tile properties live in `js/tiles/tileData.js`. To add a tile:
 
-1. Add one entry to `TILE_DATA` in `js/tileData.js`.
-2. Add a `descriptionKey` pointing to a new key in `js/i18n.js` (under `LANGUAGES.en`).
+1. Add one entry to `TILE_DATA` in `js/tiles/tileData.js`.
+2. Add a `descriptionKey` pointing to a new key in `js/common/i18n.js` (under `LANGUAGES.en`).
 3. Add the SVG asset to `assets/`.
 
 Everything else (rendering, generation, scoring, pathfinding, player instructions) updates automatically. See [docs/TILE_SYSTEM.md](../docs/TILE_SYSTEM.md).
 
 ## Localization
 
-All user-facing strings live in `js/i18n.js`. **Never hardcode visible text** in HTML or JS.
+All user-facing strings live in `js/common/i18n.js`. **Never hardcode visible text** in HTML or JS.
 
 - In HTML: `<element data-i18n="key"></element>` (leave content empty)
 - In JS: `I18N.t('key', { param: value })`

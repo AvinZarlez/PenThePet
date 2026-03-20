@@ -4,7 +4,7 @@
  * Tests the CONSTANTS object structure and values.
  */
 
-const CONSTANTS = require('../../js/constants.js');
+const CONSTANTS = require('../../../js/config/constants.js');
 
 describe('CONSTANTS', () => {
     describe('Structure', () => {

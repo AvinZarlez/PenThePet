@@ -7,7 +7,7 @@
 
 // Import TILE_DATA lookup if in Node.js environment
 if (typeof TILE_DATA === 'undefined' && typeof require !== 'undefined') {
-    const _td = require('./tileData.js');
+    const _td = require('../tiles/tileData.js');
     global.TILE_DATA = _td.TILE_DATA;
     global.COMPACT_CHAR_TO_TILE = _td.COMPACT_CHAR_TO_TILE;
 }

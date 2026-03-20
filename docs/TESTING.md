@@ -19,7 +19,7 @@ npm test                              # all tests with coverage
 npm run test:webapp                   # browser-side tests only
 npm run test:generation               # generation tests only
 npm run test:watch                    # watch mode
-npx jest test/webapp/Grid.test.js     # single file
+npx jest test/webapp/game/Grid.test.js     # single file
 npx jest -t "test name"              # tests matching pattern
 
 npm run lint:fix                      # JS linting
@@ -31,6 +31,10 @@ npm run lint:markdown:fix             # Markdown linting
 
 ### Webapp Tests (`test/webapp/`)
 
+Tests are organised into subfolders that mirror the `js/` subfolder structure.
+
+**`test/webapp/common/`**
+
 | File                          | What it tests                                                |
 | ----------------------------- | ------------------------------------------------------------ |
 | `constants.test.js`           | CONSTANTS values, types, tile distribution sums              |
@@ -38,13 +42,23 @@ npm run lint:markdown:fix             # Markdown linting
 | `CookieUtils.test.js`         | Read/write cookies, emoji/JSON values, name collisions       |
 | `DateUtils.test.js`           | ISO date formatting, display formatting                      |
 | `i18n.test.js`                | Language options, key existence, fallback to English         |
+
+**`test/webapp/cloud/`**
+
+| File                          | What it tests                                                |
+| ----------------------------- | ------------------------------------------------------------ |
+| `CloudMigration.test.js`      | Schema migration, backward compatibility                     |
+| `CloudSync.test.js`           | Sign in/out, sync, conflict resolution, data operations      |
+| `Analytics.test.js`           | Event logging, graceful degradation when unconfigured        |
+
+**`test/webapp/game/`**
+
+| File                          | What it tests                                                |
+| ----------------------------- | ------------------------------------------------------------ |
 | `PathfindingUtils.test.js`    | `isPenned()`, `calculatePennedArea()`, edge cases            |
 | `Grid.test.js`                | Constructor, map loading, state management, tile get/set     |
 | `Game.test.js`                | Initialization, wall placement, scoring, timer, submission   |
 | `Menu.test.js`                | Modal open/close, cookie persistence, level loading, options |
-| `CloudMigration.test.js`      | Schema migration, backward compatibility                     |
-| `CloudSync.test.js`           | Sign in/out, sync, conflict resolution, data operations      |
-| `Analytics.test.js`           | Event logging, graceful degradation when unconfigured        |
 | `main.test.js`                | `loadTodayMap`, `updateMapInfo`, map fallback logic          |
 
 ### Generation Tests (`test/generation/`)
@@ -59,7 +73,7 @@ npm run lint:markdown:fix             # Markdown linting
 
 ### Excluded from Coverage
 
-`js/main.js`, `js/Game.js`, `js/config.js`, `js/tileTypes.js`, `js/firebase-config.js`, `js/CloudSync.js` — excluded in `package.json` (`collectCoverageFrom`). These are either thin config/entry-point files or require a live Firebase environment.
+`js/main.js`, `js/game/Game.js`, `js/config/config.js`, `js/tiles/tileTypes.js`, `js/cloud/firebase-config.js`, `js/cloud/CloudSync.js` — excluded in `package.json` (`collectCoverageFrom`). These are either thin config/entry-point files or require a live Firebase environment.
 
 ## Writing Tests
 

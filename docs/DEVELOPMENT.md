@@ -33,11 +33,11 @@ python3 -m http.server 8080   # start local server
 
 ### Add a New Tile Type
 
-See [TILE_SYSTEM.md](TILE_SYSTEM.md). In short: add one entry to `js/tileData.js` and an SVG asset — everything else is automatic.
+See [TILE_SYSTEM.md](TILE_SYSTEM.md). In short: add one entry to `js/tiles/tileData.js` and an SVG asset — everything else is automatic.
 
 ### Add or Edit a User-Facing String
 
-All strings live in `js/i18n.js` under `LANGUAGES.en`. To change visible text:
+All strings live in `js/common/i18n.js` under `LANGUAGES.en`. To change visible text:
 
 1. Find or add the key in `LANGUAGES.en`.
 2. In HTML, reference it via `data-i18n="key"` (leave the element content empty).
@@ -83,7 +83,7 @@ You can deep-link directly to any puzzle by appending a query string to the page
 
 ### Change a Config Value
 
-Edit `js/constants.js`, regenerate maps if needed (`--fresh`), run `npm test`.
+Edit `js/config/constants.js`, regenerate maps if needed (`--fresh`), run `npm test`.
 
 ## Debugging
 

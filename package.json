@@ -50,11 +50,11 @@
     "collectCoverageFrom": [
       "js/**/*.js",
       "!js/main.js",
-      "!js/config.js",
-      "!js/Game.js",
-      "!js/tileTypes.js",
-      "!js/firebase-config.js",
-      "!js/CloudSync.js"
+      "!js/config/config.js",
+      "!js/game/Game.js",
+      "!js/tiles/tileTypes.js",
+      "!js/cloud/firebase-config.js",
+      "!js/cloud/CloudSync.js"
     ],
     "coverageThreshold": {
       "global": {

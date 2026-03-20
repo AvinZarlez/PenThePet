@@ -5,7 +5,7 @@
  * instructions, about, and options modals.
  */
 
-const Menu = require('../../js/Menu.js');
+const Menu = require('../../../js/Menu.js');
 
 // Mock DOM elements for testing
 function setupDOM() {

@@ -59,7 +59,7 @@ These are not rendered in the game grid. They are used for the browser tab and w
 
 ### Tile Backgrounds
 
-Each tile type defined in `js/tileData.js` has an `assets` property — an ordered list of SVG filenames. The first entry is the base background; subsequent entries are overlays rendered as `<img>` elements. Cell backgrounds are set inline from `TILE_DATA` assets in `Game._createCellElement()` — no CSS background rules are needed per tile type.
+Each tile type defined in `js/tiles/tileData.js` has an `assets` property — an ordered list of SVG filenames. The first entry is the base background; subsequent entries are overlays rendered as `<img>` elements. Cell backgrounds are set inline from `TILE_DATA` assets in `Game._createCellElement()` (via `GameAnimationsMixin`) — no CSS background rules are needed per tile type.
 
 When a tile is inside the penned area, the `enclosedAssets` list (if defined) is used instead of `assets`. For example:
 
@@ -101,7 +101,7 @@ To replace any asset with custom artwork:
 1. Create a new SVG (or PNG/JPEG) at the sizes listed above.
 2. Place it in the `assets/` folder with the same filename.
 3. No code changes needed — the JS references files by path from `TILE_DATA` assets lists.
-4. For non-SVG formats, update the file extension in `js/tileData.js`.
+4. For non-SVG formats, update the file extension in `js/tiles/tileData.js`.
 
 ---
 

@@ -143,6 +143,7 @@ const LANGUAGES = {
 
         // ── Hint Notifications ────────────────────────────────────────────
         hint_not_optimal_notification: 'A more optimal solution exists.',
+        hint_reveal_notification: 'The optimal solution is {score}.',
 
         // ── Cloud Notification ────────────────────────────────────────────
         cloud_data_loaded: '☁️ Updated level data loaded from cloud',
@@ -433,6 +434,7 @@ const LANGUAGES = {
 
         // ── Hint Notifications ────────────────────────────────────────────
         hint_not_optimal_notification: 'Existe una solución más óptima.',
+        hint_reveal_notification: 'La solución óptima es {score}.',
 
         // ── Cloud Notification ────────────────────────────────────────────
         cloud_data_loaded: '☁️ Datos del nivel actualizados cargados desde la nube',

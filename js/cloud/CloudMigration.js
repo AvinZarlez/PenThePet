@@ -26,7 +26,7 @@
 
 // Import CONSTANTS if in Node.js environment
 if (typeof CONSTANTS === 'undefined' && typeof require !== 'undefined') {
-    global.CONSTANTS = require('./constants.js');
+    global.CONSTANTS = require('../config/constants.js');
 }
 
 const CloudMigration = (function () {

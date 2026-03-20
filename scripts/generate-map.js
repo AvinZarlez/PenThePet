@@ -17,10 +17,10 @@
  */
 
 const path = require('path');
-const MapGenerator = require('../js/MapGenerator.js');
-const MapValidator = require('../js/MapValidator.js');
-const { getRandomWord } = require('../js/wordList.js');
-const { TILE_TO_COMPACT_CHAR } = require('../js/tileData.js');
+const MapGenerator = require('../js/generation/MapGenerator.js');
+const MapValidator = require('../js/generation/MapValidator.js');
+const { getRandomWord } = require('../js/generation/wordList.js');
+const { TILE_TO_COMPACT_CHAR } = require('../js/tiles/tileData.js');
 const {
     parseSizeInput,
     getRandomSize,

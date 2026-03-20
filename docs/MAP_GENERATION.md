@@ -60,9 +60,9 @@ Each entry in `maps/YYYY.json` is keyed by date (`YYYY-MM-DD`):
 }
 ```
 
-**`map`** — compact string of `size²` characters, row-major: `g`=grass, `w`=water, `h`=home, `s`=star, `b`=bee, `o`=hole. Decode with `parseCompactMap(mapStr, size)` in `js/Grid.js`.
+**`map`** — compact string of `size²` characters, row-major: `g`=grass, `w`=water, `h`=home, `s`=star, `b`=bee, `o`=hole. Decode with `parseCompactMap(mapStr, size)` in `js/game/Grid.js`.
 
-**`optimalSolution`** — flat array `[r0, c0, r1, c1, …]` of optimal wall coordinates. Decode with `parseCompactSolution(flatArr)` in `js/Grid.js`.
+**`optimalSolution`** — flat array `[r0, c0, r1, c1, …]` of optimal wall coordinates. Decode with `parseCompactSolution(flatArr)` in `js/game/Grid.js`.
 
 ## Generating Maps
 
@@ -96,12 +96,12 @@ node scripts/audit-maps.js   # validates all maps in maps/ directory
 
 | File                           | Role                                                  |
 | ------------------------------ | ----------------------------------------------------- |
-| `js/constants.js`              | `maxWallsForSize()`, `TILE_DISTRIBUTION`, size limits |
-| `js/Grid.js`                   | `parseCompactMap()`, `parseCompactSolution()`         |
-| `js/MapValidator.js`           | Quality validation rules                              |
-| `js/MapGenerator.js`           | Map generation logic (Node.js only, not browser)      |
-| `js/PathfindingUtils.js`       | BFS pathfinding for penning/connectivity checks       |
-| `js/wordList.js`               | Random words for map names                            |
+| `js/config/constants.js`       | `maxWallsForSize()`, `TILE_DISTRIBUTION`, size limits |
+| `js/game/Grid.js`              | `parseCompactMap()`, `parseCompactSolution()`         |
+| `js/generation/MapValidator.js`| Quality validation rules                              |
+| `js/generation/MapGenerator.js`| Map generation logic (Node.js only, not browser)      |
+| `js/game/PathfindingUtils.js`  | BFS pathfinding for penning/connectivity checks       |
+| `js/generation/wordList.js`    | Random words for map names                            |
 | `scripts/solver/MILPSolver.js` | Node.js wrapper calling Python solver                 |
 | `scripts/solver/solve.py`      | Python MILP solver (PuLP + CBC)                       |
 | `scripts/generate-map.js`      | CLI entry point (single, batch, or fresh)             |

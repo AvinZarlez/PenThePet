@@ -5,7 +5,7 @@
  * language switching, fallback behaviour, and DOM application.
  */
 
-const { I18N, LANGUAGES, LANGUAGE_OPTIONS } = require('../../js/i18n.js');
+const { I18N, LANGUAGES, LANGUAGE_OPTIONS } = require('../../../js/common/i18n.js');
 
 // Reset language to 'en' before each test so tests are independent
 beforeEach(() => {

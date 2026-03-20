@@ -36,7 +36,7 @@ from pulp import LpProblem, LpMaximize, LpVariable, lpSum, value, PULP_CBC_CMD
 
 def load_tile_data():
     """
-    Load tile data from js/tileData.js (single source of truth).
+    Load tile data from js/tiles/tileData.js (single source of truth).
 
     Uses Node.js to require() the JS module and output tile data as JSON.
     This avoids duplicating tile definitions — the JS file is the only place
@@ -46,7 +46,7 @@ def load_tile_data():
         dict mapping tile name (str) → dict of all tile properties
     """
     js_path = os.path.abspath(
-        os.path.join(os.path.dirname(__file__), '..', '..', 'js', 'tileData.js')
+        os.path.join(os.path.dirname(__file__), '..', '..', 'js', 'tiles', 'tileData.js')
     )
     # Use JSON to safely escape the path in the Node.js expression
     safe_path = json.dumps(js_path.replace('\\', '/'))
@@ -65,7 +65,7 @@ def load_tile_data():
         )
     except FileNotFoundError:
         raise RuntimeError(
-            'Node.js is required to load tile data from js/tileData.js. '
+            'Node.js is required to load tile data from js/tiles/tileData.js. '
             'Please install Node.js (v24+).'
         )
     except subprocess.CalledProcessError as exc:
@@ -77,7 +77,7 @@ def load_tile_data():
 
 def load_tile_scores():
     """
-    Load tile score values from js/tileData.js (single source of truth).
+    Load tile score values from js/tiles/tileData.js (single source of truth).
 
     Returns:
         dict mapping tile name (str) → score (int)
@@ -88,7 +88,7 @@ def load_tile_scores():
 
 def load_tile_properties():
     """
-    Load tile properties from js/tileData.js (single source of truth).
+    Load tile properties from js/tiles/tileData.js (single source of truth).
 
     Returns:
         dict mapping tile name (str) → dict with blocksMovement, wallPlaceable,

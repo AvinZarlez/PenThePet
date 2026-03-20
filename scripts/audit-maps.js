@@ -6,8 +6,8 @@
  */
 
 const path = require('path');
-const MapValidator = require('../js/MapValidator.js');
-const { parseCompactMap, parseCompactSolution } = require('../js/Grid.js');
+const MapValidator = require('../js/generation/MapValidator.js');
+const { parseCompactMap, parseCompactSolution } = require('../js/game/Grid.js');
 const { readAllMaps } = require('./lib/mapUtils.js');
 
 function auditMaps() {

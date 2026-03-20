@@ -6,9 +6,9 @@
  * not loaded in the browser.
  */
 
-const MapGenerator = require('../../js/MapGenerator.js');
+const MapGenerator = require('../../js/generation/MapGenerator.js');
 const MILPSolver = require('../../scripts/solver/MILPSolver.js');
-const CONSTANTS = require('../../js/constants.js');
+const CONSTANTS = require('../../js/config/constants.js');
 
 describe('MapGenerator', () => {
     describe('Constructor', () => {
