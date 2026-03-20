@@ -1668,60 +1668,70 @@ describe('Game — Score Modifier Popups', () => {
     function makeCell() {
         const cell = document.createElement('div');
         cell.className = 'cell';
+        cell.dataset.row = '1';
+        cell.dataset.col = '1';
         document.body.appendChild(cell);
         return cell;
     }
 
-    test('appends a .score-popup element to the cell', () => {
+    test('appends a .score-popup element to the grid element', () => {
         const cell = makeCell();
         game._showScorePopup(cell, 3);
-        const popup = cell.querySelector('.score-popup');
+        const popup = game.gridElement.querySelector('.score-popup');
         expect(popup).not.toBeNull();
     });
 
     test('displays "+3" text for a positive score', () => {
         const cell = makeCell();
         game._showScorePopup(cell, 3);
-        expect(cell.querySelector('.score-popup').textContent).toBe('+3');
+        expect(game.gridElement.querySelector('.score-popup').textContent).toBe('+3');
     });
 
     test('displays "-3" text for a negative score', () => {
         const cell = makeCell();
         game._showScorePopup(cell, -3);
-        expect(cell.querySelector('.score-popup').textContent).toBe('-3');
+        expect(game.gridElement.querySelector('.score-popup').textContent).toBe('-3');
     });
 
     test('adds "positive" class for a positive score', () => {
         const cell = makeCell();
         game._showScorePopup(cell, 3);
-        expect(cell.querySelector('.score-popup').classList.contains('positive')).toBe(true);
+        expect(game.gridElement.querySelector('.score-popup').classList.contains('positive')).toBe(true);
     });
 
     test('adds "negative" class for a negative score', () => {
         const cell = makeCell();
         game._showScorePopup(cell, -3);
-        expect(cell.querySelector('.score-popup').classList.contains('negative')).toBe(true);
+        expect(game.gridElement.querySelector('.score-popup').classList.contains('negative')).toBe(true);
     });
 
     test('popup has aria-hidden set to "true"', () => {
         const cell = makeCell();
         game._showScorePopup(cell, 3);
-        expect(cell.querySelector('.score-popup').getAttribute('aria-hidden')).toBe('true');
+        expect(game.gridElement.querySelector('.score-popup').getAttribute('aria-hidden')).toBe('true');
     });
 
     test('removes the popup after SCORE_POPUP_DURATION_MS', () => {
         const cell = makeCell();
         game._showScorePopup(cell, 3);
-        expect(cell.querySelector('.score-popup')).not.toBeNull();
+        expect(game.gridElement.querySelector('.score-popup')).not.toBeNull();
         jest.advanceTimersByTime(CONSTANTS.SCORE_POPUP_DURATION_MS);
-        expect(cell.querySelector('.score-popup')).toBeNull();
+        expect(game.gridElement.querySelector('.score-popup')).toBeNull();
     });
 
     test('popup is not removed before SCORE_POPUP_DURATION_MS has elapsed', () => {
         const cell = makeCell();
         game._showScorePopup(cell, 3);
         jest.advanceTimersByTime(CONSTANTS.SCORE_POPUP_DURATION_MS - 1);
-        expect(cell.querySelector('.score-popup')).not.toBeNull();
+        expect(game.gridElement.querySelector('.score-popup')).not.toBeNull();
+    });
+
+    test('popup sets --popup-row and --popup-col CSS custom properties from cell data attributes', () => {
+        const cell = makeCell();
+        game._showScorePopup(cell, 3);
+        const popup = game.gridElement.querySelector('.score-popup');
+        expect(popup.style.getPropertyValue('--popup-row')).toBe('1');
+        expect(popup.style.getPropertyValue('--popup-col')).toBe('1');
     });
 
     test('_animatePennedArea shows popup for star tile (score 3)', () => {
@@ -1746,7 +1756,7 @@ describe('Game — Score Modifier Popups', () => {
         const starCell = g.gridElement.querySelector('[data-row="2"][data-col="3"]');
         expect(starCell).not.toBeNull();
         expect(starCell.classList.contains('penned')).toBe(true);
-        const popup = starCell.querySelector('.score-popup');
+        const popup = g.gridElement.querySelector('.score-popup');
         expect(popup).not.toBeNull();
         expect(popup.textContent).toBe('+3');
         expect(popup.classList.contains('positive')).toBe(true);
@@ -1774,7 +1784,7 @@ describe('Game — Score Modifier Popups', () => {
         const beeCell = g.gridElement.querySelector('[data-row="2"][data-col="1"]');
         expect(beeCell).not.toBeNull();
         expect(beeCell.classList.contains('penned')).toBe(true);
-        const popup = beeCell.querySelector('.score-popup');
+        const popup = g.gridElement.querySelector('.score-popup');
         expect(popup).not.toBeNull();
         expect(popup.textContent).toBe('-3');
         expect(popup.classList.contains('negative')).toBe(true);

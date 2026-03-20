@@ -737,39 +737,40 @@
     animation: tileFloat 8s ease-in-out infinite;
 }
 
-/* Score modifier popup — fades in, floats up, fades out when a tile becomes penned */
+/* Score modifier popup — fades in, floats up, fades out when a tile becomes penned.
+ * Appended directly to .grid so it is not clipped by .cell overflow:hidden and renders
+ * above all sibling cells. --popup-row and --popup-col position it at the cell centre. */
 @keyframes scorePopupFloat {
     0% {
         opacity: 0;
-        transform: translateX(-50%) translateY(0);
+        transform: translateX(-50%) translateY(-50%);
     }
 
     15% {
         opacity: 1;
-        transform: translateX(-50%) translateY(-30%);
+        transform: translateX(-50%) translateY(calc(-50% - 30%));
     }
 
     75% {
         opacity: 1;
-        transform: translateX(-50%) translateY(-160%);
+        transform: translateX(-50%) translateY(calc(-50% - 160%));
     }
 
     100% {
         opacity: 0;
-        transform: translateX(-50%) translateY(-220%);
+        transform: translateX(-50%) translateY(calc(-50% - 220%));
     }
 }
 
-.cell .score-popup {
+.score-popup {
     position: absolute;
-    bottom: 50%;
-    left: 50%;
-    transform: translateX(-50%);
+    left: calc(var(--grid-padding, 3px) + var(--popup-col, 0) * (var(--cell-size, 50px) + var(--grid-gap, 3px)) + var(--cell-size, 50px) / 2);
+    top: calc(var(--grid-padding, 3px) + var(--popup-row, 0) * (var(--cell-size, 50px) + var(--grid-gap, 3px)) + var(--cell-size, 50px) / 2);
     font-weight: bold;
     font-size: clamp(0.75em, calc(var(--cell-size, 50px) / 22), 1.3em);
     pointer-events: none;
     z-index: 20;
-    white-space: wrap;
+    white-space: nowrap;
     animation: scorePopupFloat var(--score-popup-duration, 1.8s) ease-out forwards;
     text-shadow:
         -1px -1px 0 #000,
@@ -778,11 +779,11 @@
         1px 1px 0 #000;
 }
 
-.cell .score-popup.positive {
+.score-popup.positive {
     color: #6ecf6e;
 }
 
-.cell .score-popup.negative {
+.score-popup.negative {
     color: #e8665a;
 }
 
