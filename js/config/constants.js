@@ -116,8 +116,8 @@ const CONSTANTS = {
 
     // Animal options for pet selection
     ANIMAL_OPTIONS: [
-        { emoji: '🐶', name: 'Dog' },
-        { emoji: '🐱', name: 'Cat' },
+        { emoji: '🐶', name: 'Dog Face' },
+        { emoji: '🐱', name: 'Cat Face' },
         { emoji: '🐰', name: 'Rabbit' },
         { emoji: '🐹', name: 'Hamster' },
         { emoji: '🐀', name: 'Rat' },
@@ -131,17 +131,18 @@ const CONSTANTS = {
         { emoji: '🕷️', name: 'Spider' },
         { emoji: '🐈‍⬛', name: 'Black Cat' },
         { emoji: '🦜', name: 'Parrot' },
-        { emoji: '🐕', name: 'Dog Face' },
+        { emoji: '🐕', name: 'Dog' },
         { emoji: '🐩', name: 'Poodle' },
         { emoji: '🦎', name: 'Lizard' },
         { emoji: '🦮', name: 'Guide Dog' },
-        { emoji: '🐈', name: 'Cat Face' },
+        { emoji: '🐈', name: 'Cat' },
         { emoji: '🐴', name: 'Horse Face' },
         { emoji: '🐎', name: 'Horse' },
         { emoji: '🐭', name: 'Mouse Face' },
         { emoji: '🐁', name: 'Mouse' },
         { emoji: '🐿️', name: 'Squirrel' },
-        { emoji: '🪨', name: 'Rock' }
+        { emoji: '🪨', name: 'Rock' },
+        { emoji: '🐉', name: 'Dragon'}
     ]
 };
 
