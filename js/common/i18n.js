@@ -251,6 +251,9 @@ const LANGUAGES = {
         // ── Cloud Sync Bar ────────────────────────────────────────────────
         cloud_sync_sign_in_btn: '☁️ Sign In to Sync',
         cloud_sync_syncing: '🔄 Syncing…',
+        cloud_sync_syncing_date: '🔄 Syncing level…',
+        cloud_sync_syncing_month: '🔄 Syncing month…',
+        cloud_sync_syncing_all: '🔄 Syncing all data…',
         cloud_sync_synced: '☁️ Synced',
         cloud_sync_error: '⚠️ Sync error',
 
@@ -542,6 +545,9 @@ const LANGUAGES = {
         // ── Cloud Sync Bar ────────────────────────────────────────────────
         cloud_sync_sign_in_btn: '☁️ Iniciar sesión para sincronizar',
         cloud_sync_syncing: '🔄 Sincronizando…',
+        cloud_sync_syncing_date: '🔄 Sincronizando nivel…',
+        cloud_sync_syncing_month: '🔄 Sincronizando mes…',
+        cloud_sync_syncing_all: '🔄 Sincronizando todo…',
         cloud_sync_synced: '☁️ Sincronizado',
         cloud_sync_error: '⚠️ Error de sincronización',
 

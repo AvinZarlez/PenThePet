@@ -781,3 +781,81 @@ describe('syncNow() caching', () => {
     });
 });
 
+
+// ============================================================
+// Phased sync helpers
+// ============================================================
+
+describe('_getCurrentDate()', () => {
+    const DATE = '2026-03-15';
+
+    afterEach(() => {
+        CookieUtils.deleteCookie('currentLevel');
+    });
+
+    test('is exposed on the public API', () => {
+        expect(typeof CloudSync._getCurrentDate).toBe('function');
+    });
+
+    test('returns currentLevel cookie value when it is a valid date', () => {
+        CookieUtils.setCookie('currentLevel', DATE, 1);
+        expect(CloudSync._getCurrentDate()).toBe(DATE);
+    });
+
+    test('ignores currentLevel cookie when value is not a valid YYYY-MM-DD date', () => {
+        CookieUtils.setCookie('currentLevel', 'not-a-date', 1);
+        const result = CloudSync._getCurrentDate();
+        // Falls back to today — just verify it looks like a date string
+        expect(result).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+    });
+
+    test('returns a YYYY-MM-DD date string when no cookie is set', () => {
+        const result = CloudSync._getCurrentDate();
+        expect(result).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+    });
+});
+
+describe('updateSyncStatus() – phased sync labels', () => {
+    beforeEach(() => {
+        document.body.innerHTML = `
+            <span id="cloudSyncStatus"></span>
+            <div id="syncErrorModal" class="modal"></div>
+            <div id="syncErrorMessage"></div>
+            <a id="syncErrorIssueLink" href=""></a>
+        `;
+        // Initialise I18N so t() returns the key or a string
+        if (typeof I18N !== 'undefined' && typeof I18N.t === 'function') {
+            I18N.setLanguage('en');
+        }
+    });
+
+    afterEach(() => {
+        document.body.innerHTML = '';
+    });
+
+    test('syncNow() resolves without throwing', async () => {
+        await expect(CloudSync.syncNow()).resolves.toBeUndefined();
+    });
+
+    test('i18n key cloud_sync_syncing_date is defined', () => {
+        expect(I18N.t('cloud_sync_syncing_date')).not.toBe('');
+        expect(I18N.t('cloud_sync_syncing_date')).not.toBeUndefined();
+    });
+
+    test('i18n key cloud_sync_syncing_month is defined', () => {
+        expect(I18N.t('cloud_sync_syncing_month')).not.toBe('');
+        expect(I18N.t('cloud_sync_syncing_month')).not.toBeUndefined();
+    });
+
+    test('i18n key cloud_sync_syncing_all is defined', () => {
+        expect(I18N.t('cloud_sync_syncing_all')).not.toBe('');
+        expect(I18N.t('cloud_sync_syncing_all')).not.toBeUndefined();
+    });
+
+    test('i18n phase keys are distinct from the generic syncing key', () => {
+        const generic = I18N.t('cloud_sync_syncing');
+        expect(I18N.t('cloud_sync_syncing_date')).not.toBe(generic);
+        expect(I18N.t('cloud_sync_syncing_month')).not.toBe(generic);
+        expect(I18N.t('cloud_sync_syncing_all')).not.toBe(generic);
+    });
+});

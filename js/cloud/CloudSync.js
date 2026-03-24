@@ -37,14 +37,36 @@
  *
  * ── WHEN SYNC RUNS ───────────────────────────────────────────────────────────
  *
- *   • Sign in (auth state change) — full sync of all levels.
+ *   • Sign in (auth state change) — phased sync (see below), then realtime listener.
  *   • Realtime listener — continuous push of any remote changes while signed in.
  *   • Open level selector — explicit syncNow() before calendar is populated,
  *     so completion checkmarks (✓/🏆) are accurate.
  *   • Select / load a level — explicit syncNow() before the level is rendered,
  *     so the loaded submission/timer state is always current.
- *   • After every sync — the `cloudsync:synced` event fires; main.js reloads
- *     the currently displayed level if its submission state or data changed.
+ *   • After every sync phase — the `cloudsync:synced` event fires; main.js
+ *     reloads the currently displayed level if its submission state or data changed.
+ *
+ * ── PHASED SYNC ──────────────────────────────────────────────────────────────
+ *
+ *   Rather than fetching the entire collection at once (slow for users with
+ *   many completed puzzles), syncFromCloud() runs in three phases:
+ *
+ *   Phase 1 — Current date + settings (4 doc reads, ~instant):
+ *     Fetches the submission, timer, progress, and settings docs for the level
+ *     currently open.  Fires `cloudsync:synced` immediately so the game
+ *     display reflects cloud data as fast as possible.
+ *
+ *   Phase 2 — Current month (3 range queries, fast):
+ *     Fetches all submission, timer, and progress docs for the current calendar
+ *     month.  Fires `cloudsync:synced` and resolves the Promise so callers
+ *     (e.g. the level selector) can refresh the UI without waiting for the full
+ *     collection scan.  Status badge: "🔄 Syncing month…"
+ *
+ *   Phase 3 — All remaining data (full collection scan, background):
+ *     Runs after the Promise resolves, in the background.  Picks up older
+ *     submissions, legacy hints_ docs, and any data not covered earlier.
+ *     Fires a final `cloudsync:synced` when complete.
+ *     Status badge: "🔄 Syncing all data…" → "☁️ Synced"
  *
  * ── CONFLICT RESOLUTION ──────────────────────────────────────────────────────
  *
@@ -298,6 +320,18 @@ const CloudSync = (function () {
         if (state === 'syncing') {
             el.textContent = I18N.t('cloud_sync_syncing');
             el.title = 'Syncing with cloud';
+            el.className = 'cloud-sync-status syncing';
+        } else if (state === 'syncing_date') {
+            el.textContent = I18N.t('cloud_sync_syncing_date');
+            el.title = 'Syncing current level';
+            el.className = 'cloud-sync-status syncing';
+        } else if (state === 'syncing_month') {
+            el.textContent = I18N.t('cloud_sync_syncing_month');
+            el.title = 'Syncing current month';
+            el.className = 'cloud-sync-status syncing';
+        } else if (state === 'syncing_all') {
+            el.textContent = I18N.t('cloud_sync_syncing_all');
+            el.title = 'Syncing all data';
             el.className = 'cloud-sync-status syncing';
         } else if (state === 'synced') {
             el.textContent = I18N.t('cloud_sync_synced');
@@ -800,41 +834,35 @@ const CloudSync = (function () {
     // ----------------------------------------------------------------
 
     /**
-     * Download all cloud submissions and merge into local cookies.
-     * Conflict resolution rules: see docs/FIREBASE_SETUP.md.
-     *
-     * When the realtime listener is active and a full sync was completed within
-     * CONSTANTS.CLOUD_SYNC_CACHE_TTL_SECONDS, the expensive Firestore download
-     * is skipped.  The realtime listener keeps cookies up to date in the
-     * background, so callers (e.g. the level selector) get a fast no-op rather
-     * than waiting for a redundant round-trip.
+     * Return the current puzzle date from the `currentLevel` cookie, falling
+     * back to today's date.  Used by syncFromCloud() to determine which docs
+     * to fetch first in the phased sync.
+     * @returns {string} Date string in YYYY-MM-DD format
      */
-    async function syncFromCloud() {
-        if (!db || !currentUser) return;
-
-        // Use cached data when a recent sync already populated local cookies AND
-        // the realtime listener is keeping them current.
-        const ttlMs = CONSTANTS.CLOUD_SYNC_CACHE_TTL_SECONDS * 1000;
-        if (ttlMs > 0 &&
-            lastSyncTime !== null &&
-            unsubscribeListener !== null &&
-            (Date.now() - lastSyncTime) < ttlMs) {
-            // Notify callers that sync is "done" — cookies are already fresh.
-            if (typeof document !== 'undefined') {
-                document.dispatchEvent(new CustomEvent('cloudsync:synced'));
-            }
-            return;
+    function _getCurrentDate() {
+        if (typeof CookieUtils !== 'undefined') {
+            const saved = CookieUtils.getCookie('currentLevel');
+            if (saved && /^\d{4}-\d{2}-\d{2}$/.test(saved)) return saved;
         }
+        if (typeof DateUtils !== 'undefined') {
+            return DateUtils.getTodayDate();
+        }
+        return new Date().toISOString().substring(0, 10);
+    }
 
+    /**
+     * Phase 3 of the phased sync: fetch all documents in the collection and
+     * merge them into local cookies.  Runs in the background after Phases 1
+     * and 2 have already handled the current date and current month.
+     *
+     * This function manages the `isSyncing` flag for its duration so the
+     * realtime listener continues to ignore echoes of our own writes.
+     *
+     * @param {firebase.firestore.CollectionReference} collRef
+     */
+    async function _syncAllBackground(collRef) {
         try {
-            // Guard our own writes so the realtime listener ignores them.
-            isSyncing = true;
-            updateSyncStatus('syncing');
-
-            const collRef = db
-                .collection('users')
-                .doc(currentUser.uid)
-                .collection(COLLECTION_NAME);
+            updateSyncStatus('syncing_all');
 
             const snapshot = await collRef.get();
 
@@ -872,11 +900,140 @@ const CloudSync = (function () {
                 document.dispatchEvent(new CustomEvent('cloudsync:synced'));
             }
         } catch (e) {
-            console.error('CloudSync: Failed to sync from cloud:', e);
+            console.error('CloudSync: Background full sync failed:', e);
             updateSyncStatus('error', getSyncErrorMessage(e));
         } finally {
             isSyncing = false;
         }
+    }
+
+    /**
+     * Download cloud data and merge into local cookies using a three-phase
+     * strategy so the most important data arrives first.
+     *
+     * Phase 1 — Current date + settings (4 individual doc reads, ~instant):
+     *   Syncs the submission, timer, progress, and settings docs for the level
+     *   the user is currently viewing.  Fires `cloudsync:synced` so the game
+     *   display reflects cloud data as quickly as possible.
+     *
+     * Phase 2 — Current month (3 range queries, fast):
+     *   Syncs all submission, timer, and progress docs for the current calendar
+     *   month so the level selector shows accurate completion badges.  Fires
+     *   `cloudsync:synced` and resolves the returned Promise so callers can
+     *   refresh the UI without waiting for the full collection scan.
+     *
+     * Phase 3 — All remaining data (full collection scan, background):
+     *   Runs without blocking callers.  Picks up older submissions, legacy
+     *   hints_ docs, and any docs not covered by the earlier phases.  Fires a
+     *   final `cloudsync:synced` when complete.
+     *
+     * When the realtime listener is active and a full sync was completed within
+     * CONSTANTS.CLOUD_SYNC_CACHE_TTL_SECONDS, the expensive Firestore download
+     * is skipped.  The realtime listener keeps cookies up to date in the
+     * background, so callers (e.g. the level selector) get a fast no-op rather
+     * than waiting for a redundant round-trip.
+     */
+    async function syncFromCloud() {
+        if (!db || !currentUser) return;
+
+        // Use cached data when a recent sync already populated local cookies AND
+        // the realtime listener is keeping them current.
+        const ttlMs = CONSTANTS.CLOUD_SYNC_CACHE_TTL_SECONDS * 1000;
+        if (ttlMs > 0 &&
+            lastSyncTime !== null &&
+            unsubscribeListener !== null &&
+            (Date.now() - lastSyncTime) < ttlMs) {
+            // Notify callers that sync is "done" — cookies are already fresh.
+            if (typeof document !== 'undefined') {
+                document.dispatchEvent(new CustomEvent('cloudsync:synced'));
+            }
+            return;
+        }
+
+        // Guard our own writes so the realtime listener ignores them.
+        // isSyncing stays true until Phase 3 completes (_syncAllBackground).
+        isSyncing = true;
+
+        const collRef = db
+            .collection('users')
+            .doc(currentUser.uid)
+            .collection(COLLECTION_NAME);
+
+        const currentDate = _getCurrentDate();
+        // Extract YYYY-MM from the YYYY-MM-DD date string for month-scoped queries.
+        const yearMonth = currentDate ? currentDate.substring(0, 7) : null;
+
+        try {
+            // ── Phase 1: Current date + settings ─────────────────────────────
+            // Four parallel doc reads cover everything needed to render the
+            // current level immediately after sign-in.
+            updateSyncStatus('syncing_date');
+            if (currentDate) {
+                const [submissionDoc, timerDoc, progressDoc, settingsDoc] = await Promise.all([
+                    collRef.doc(currentDate).get(),
+                    collRef.doc(TIMER_DOC_PREFIX + currentDate).get(),
+                    collRef.doc(PROGRESS_DOC_PREFIX + currentDate).get(),
+                    collRef.doc(SETTINGS_DOC).get(),
+                ]);
+                if (settingsDoc.exists) applyCloudSettings(settingsDoc.data());
+                if (timerDoc.exists) applyCloudTimerState(timerDoc.id, timerDoc.data());
+                if (progressDoc.exists) applyCloudProgressState(progressDoc.id, progressDoc.data());
+                if (submissionDoc.exists) {
+                    applyCloudSubmission(
+                        submissionDoc.id,
+                        _deserializeSubmissionFromFirestore(submissionDoc.data())
+                    );
+                }
+                if (typeof document !== 'undefined') {
+                    document.dispatchEvent(new CustomEvent('cloudsync:synced'));
+                }
+            }
+
+            // ── Phase 2: Current month ────────────────────────────────────────
+            // Three range queries (submissions, timers, progress) fetch all docs
+            // for the current month so the level selector shows accurate badges.
+            updateSyncStatus('syncing_month');
+            if (yearMonth) {
+                const monthStart = yearMonth + '-01';
+                const monthEnd = yearMonth + '-31';
+                const docId = firebase.firestore.FieldPath.documentId();
+                const [submissionsSnap, timersSnap, progressSnap] = await Promise.all([
+                    collRef.where(docId, '>=', monthStart).where(docId, '<=', monthEnd).get(),
+                    collRef
+                        .where(docId, '>=', TIMER_DOC_PREFIX + monthStart)
+                        .where(docId, '<=', TIMER_DOC_PREFIX + monthEnd)
+                        .get(),
+                    collRef
+                        .where(docId, '>=', PROGRESS_DOC_PREFIX + monthStart)
+                        .where(docId, '<=', PROGRESS_DOC_PREFIX + monthEnd)
+                        .get(),
+                ]);
+                submissionsSnap.forEach(function (doc) {
+                    applyCloudSubmission(doc.id, _deserializeSubmissionFromFirestore(doc.data()));
+                });
+                timersSnap.forEach(function (doc) {
+                    applyCloudTimerState(doc.id, doc.data());
+                });
+                progressSnap.forEach(function (doc) {
+                    applyCloudProgressState(doc.id, doc.data());
+                });
+                if (typeof document !== 'undefined') {
+                    document.dispatchEvent(new CustomEvent('cloudsync:synced'));
+                }
+            }
+        } catch (e) {
+            console.error('CloudSync: Failed to sync from cloud:', e);
+            updateSyncStatus('error', getSyncErrorMessage(e));
+            isSyncing = false;
+            return;
+        }
+
+        // Phases 1 and 2 complete.  Launch Phase 3 in the background so callers
+        // can proceed (e.g. the level selector can show month-accurate badges)
+        // while the full collection scan catches older data.
+        // NOTE: isSyncing remains true until Phase 3 finishes so the realtime
+        // listener continues to ignore echoes of our own writes.
+        _syncAllBackground(collRef);
     }
 
     /**
@@ -1515,6 +1672,8 @@ const CloudSync = (function () {
         _resetSyncCache: function () { lastSyncTime = null; },
         // Exposed for unit testing of auth UI state.
         _updateAuthUI: updateAuthUI,
+        // Exposed for unit testing of phased sync helpers.
+        _getCurrentDate: _getCurrentDate,
     };
 })();
 
