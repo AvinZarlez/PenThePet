@@ -142,26 +142,6 @@ Use **relative paths** in HTML (`js/main.js` not `/js/main.js`) — absolute pat
 
 Pre-configured in `.vscode/` — launch configs for running/debugging tests, tasks for lint workflows, and recommended extensions (ESLint, Ruff, markdownlint, Jest). Press F5 to debug tests; right-click HTML → Open with Live Server.
 
-### JavaScript Linting in VS Code
-
-When you open the project, VS Code will prompt you to install the recommended extensions. Accept the prompt, or install them manually via the Extensions panel (`Ctrl+Shift+X` / `Cmd+Shift+X`) and search for:
-
-- **ESLint** (`dbaeumer.vscode-eslint`) — shows ESLint errors and warnings inline as you type and fixes them on save.
-
-Once installed, ESLint runs automatically. Errors appear as red underlines and warnings as yellow underlines directly in the editor. The Problems panel (`Ctrl+Shift+M` / `Cmd+Shift+M`) lists all issues in the workspace.
-
-**To lint or auto-fix from the terminal:**
-
-```bash
-npm run lint        # check all JS files for errors
-npm run lint:fix    # auto-fix all fixable issues
-```
-
-**To lint from within VS Code**, use the built-in tasks (`Terminal → Run Task`):
-
-- **Lint JavaScript** — runs `npm run lint` and shows output in the terminal panel.
-- **Fix JavaScript Lint Issues** — runs `npm run lint:fix` and applies all auto-fixable changes.
-
 ---
 
 **See also:** [docs/README.md](README.md) · [TESTING.md](TESTING.md) · [DEBUGGING_BRANCHES.md](DEBUGGING_BRANCHES.md) · [MAP_GENERATION.md](MAP_GENERATION.md) · [FIREBASE_SETUP.md](FIREBASE_SETUP.md)
