@@ -31,7 +31,7 @@
 
 - **Daily Puzzles** — A new unique map every day
 - **Level Selector** — Play any previous day's puzzle
-- **26 Pet Types** — Choose your favorite animal emoji
+- **Emoji Pets** — Choose your favorite animal emoji
 - **Hint System** — Three modes: disabled, check optimal, or reveal target
 - **Mobile-Friendly** — Responsive design for any screen size
 - **Keyboard Navigation** — Full accessibility support
@@ -43,7 +43,7 @@ Access these from the **☰ Menu → Options**:
 
 | Option           | Description                                                                                                                                      |
 | ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
-| **Pet Type**     | Choose from 26 animal emojis                                                                                                                     |
+| **Pet Type**     | Choose from list of animal emojis                                                                                                                     |
 | **Hint Mode**    | _Disabled_ — no hints. _Check Optimal_ — area turns yellow/green based on goal. _Reveal Target_ — shows your area vs. the goal (e.g., "8 / 11"). |
 | **Timezone**     | Select your local timezone so the daily puzzle resets at midnight your time                                                                      |
 | **Language**     | Switch between supported UI languages (English, Español)                                                                                         |
