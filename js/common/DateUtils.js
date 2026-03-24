@@ -28,7 +28,7 @@ const DateUtils = {
             const m = parts.find(p => p.type === 'month').value;
             const d = parts.find(p => p.type === 'day').value;
             return `${y}-${m}-${d}`;
-        } catch (_) {
+        } catch {
             // Intl.DateTimeFormat throws RangeError for unknown/invalid timezones.
             // Fall back to raw UTC rather than crashing the page.
             return new Date().toISOString().split('T')[0];
