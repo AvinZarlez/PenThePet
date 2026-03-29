@@ -2796,7 +2796,7 @@ describe('Game — GameAnimations additional branch coverage', () => {
             TileSvgs.getTileBaseUri = origGetBaseUri;
             expect(spy.mock.calls.length).toBeGreaterThan(0);
             const assigned = spy.mock.calls[0][0];
-            expect(assigned).toContain('wall.svg');
+            expect(assigned).toContain('wall.png');
             spy.mockRestore();
         });
     });

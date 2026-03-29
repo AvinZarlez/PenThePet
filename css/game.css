@@ -653,7 +653,7 @@
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    font-size: clamp(0.8em, calc(var(--cell-size, 50px) / 22), 1.6em);
+    font-size: clamp(8px, calc(var(--cell-size, 50px) * 0.65), 36px);
     pointer-events: none;
 }
 
@@ -840,7 +840,7 @@
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    font-size: clamp(0.8em, calc(var(--cell-size, 50px) / 22), 1.6em);
+    font-size: clamp(8px, calc(var(--cell-size, 50px) * 0.65), 36px);
     pointer-events: none;
 }
 
