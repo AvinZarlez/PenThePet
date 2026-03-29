@@ -1,11 +1,11 @@
 /**
  * MILP Solver for Pen the Pet - Node.js Generation Pipeline Only
  *
- * Calls the Python MILP solver (PuLP + CBC) for provably optimal wall placement.
+ * Uses the JavaScript MILP solver (glpk.js) for provably optimal wall placement.
  * This file is used ONLY by the generation scripts (scripts/generate-*.js),
  * never loaded in the browser.
  *
- * The Python solver formulates the problem as a Mixed Integer Linear Program:
+ * The solver formulates the problem as a Mixed Integer Linear Program:
  * - Binary variables for wall placement and pen membership
  * - Network flow ensures the pen is connected to home
  * - Vertex-cut constraints ensure the pen boundary is walls/water
@@ -60,49 +60,31 @@ class MILPSolver {
             };
         }
 
-        return this._solvePython(map, maxWalls);
+        return this._solveJS(map, maxWalls);
     }
 
     /**
-     * Solve using the Python MILP solver.
-     * Calls scripts/solver/solve.py via child_process.
+     * Solve using the JavaScript MILP solver (glpk.js).
      * @private
      */
-    static _solvePython(numericMap, maxWalls) {
-        const { execFileSync } = require('child_process');
-        const path = require('path');
+    static _solveJS(numericMap, maxWalls) {
+        const { solveMap } = require('./solve.js');
 
-        // Convert numeric map to string format for the Python solver
+        // Convert numeric map to string format expected by the solver
         const stringMap = numericMap.map(row => row.map(tile => {
             return NUMERIC_TO_TILE[tile] || 'grass';
         }));
 
-        const input = JSON.stringify({ map: stringMap, maxWalls: maxWalls });
-        const solverPath = path.resolve(__dirname, 'solve.py');
-
-        let output;
-        try {
-            output = execFileSync('python3', [solverPath], {
-                input: input,
-                encoding: 'utf-8',
-                timeout: 150000, // 150s - slightly above Python's 120s solver timeout
-                maxBuffer: 10 * 1024 * 1024
-            });
-        } catch (err) {
-            console.error('Python solver failed:', err.message);
-            return null;
-        }
-
         let result;
         try {
-            result = JSON.parse(output.trim());
-        } catch (_err) { // eslint-disable-line no-unused-vars
-            console.error('Failed to parse Python solver output:', output);
+            result = solveMap(stringMap, maxWalls);
+        } catch (err) {
+            console.error('MILP solver failed:', err.message);
             return null;
         }
 
         if (!result.feasible) {
-            console.log('Python solver: no feasible solution found');
+            console.log('MILP solver: no feasible solution found');
             return null;
         }
 

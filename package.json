@@ -10,12 +10,9 @@
     "test:watch": "jest --watch",
     "lint": "eslint js/**/*.js test/**/*.js scripts/**/*.js",
     "lint:fix": "eslint js/**/*.js test/**/*.js scripts/**/*.js --fix",
-    "lint:python": "ruff check scripts/solver/",
-    "lint:python:fix": "ruff check --fix scripts/solver/",
     "lint:markdown": "markdownlint-cli2 \"**/*.md\" \"#node_modules\"",
     "lint:markdown:fix": "markdownlint-cli2 --fix \"**/*.md\" \"#node_modules\"",
-    "lint:yaml": "yamllint .github/ .yamllint.yml",
-    "lint:all": "npm run lint && npm run lint:python && npm run lint:markdown && npm run lint:yaml",
+    "lint:all": "npm run lint && npm run lint:markdown",
     "generate-maps": "node scripts/generate-map.js"
   },
   "keywords": [
@@ -34,6 +31,7 @@
     "@types/jest": "^30.0.0",
     "eslint": "^10.1.0",
     "globals": "^17.4.0",
+    "glpk.js": "^4.0.2",
     "jest": "^30.3.0",
     "jest-environment-jsdom": "^30.3.0",
     "markdownlint-cli2": "^0.22.0"

@@ -4,7 +4,7 @@
     {
       "label": "Start HTTP Server",
       "type": "shell",
-      "command": "python3 -m http.server 8080",
+      "command": "npx http-server -p 8080 -c-1",
       "isBackground": true,
       "problemMatcher": [
         {
@@ -18,8 +18,8 @@
           ],
           "background": {
             "activeOnStart": true,
-            "beginsPattern": "^Serving HTTP on",
-            "endsPattern": "^Serving HTTP on"
+            "beginsPattern": "^Starting up http-server",
+            "endsPattern": "^Starting up http-server"
           }
         }
       ],
@@ -74,16 +74,6 @@
       "label": "Fix JavaScript Lint Issues",
       "type": "npm",
       "script": "lint:fix",
-      "problemMatcher": [],
-      "presentation": {
-        "reveal": "always",
-        "panel": "shared"
-      }
-    },
-    {
-      "label": "Lint Python",
-      "type": "npm",
-      "script": "lint:python",
       "problemMatcher": [],
       "presentation": {
         "reveal": "always",

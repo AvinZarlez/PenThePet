@@ -38,15 +38,8 @@ jobs:
         with:
           node-version: '24.x'
 
-      - name: Setup Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.13'
-
       - name: Install dependencies
-        run: |
-          npm install
-          pip install -r scripts/solver/requirements.txt
+        run: npm install
 
       - name: Create branch
         id: create_branch
