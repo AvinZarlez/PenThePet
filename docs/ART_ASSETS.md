@@ -31,9 +31,7 @@ These are rendered as `<img>` elements stacked on top of the base background.
 | ------------------ | -------- | --------------------------------------------------------------------------------------------------- |
 | `home.png`         | 50×50 px | Dog house rendered on top of the grass base. Pet emoji centered on top.                             |
 | `star-outline.svg` | 50×50 px | Dark silhouette behind the star, for contrast.                                                      |
-| `star.svg`         | 50×50 px | Star icon. Scores +3 points when penned.                                                            |
-| `beehive.png`  | 50×50 px | Dark silhouette behind the bee, for contrast.                                                       |
-| `bee.png`          | 50×50 px | Bee icon. Scores −3 points when penned.                                                             |
+| `beehive.png`  | 50×50 px | Beehive behind the bee, for contrast.                                                       |
 | `shore.svg`        | 50×50 px | Sandy shore strip added to each water-edge side that faces a non-water tile. Rotated per direction. |
 | `shore-corner.svg` | 50×50 px | Quarter-circle shore piece for inner corners where two adjacent sides of a water tile face land.    |
 
@@ -47,8 +45,8 @@ These are rendered as `<img>` elements stacked on top of the base background.
 
 | File          | Size       | Usage                                          |
 | ------------- | ---------- | ---------------------------------------------- |
-| `icon.svg`    | 100×100 px | Web-app icon (`<link rel="apple-touch-icon">`) |
-| `favicon.svg` | 32×32 px   | Browser tab icon (`<link rel="icon">`)         |
+| `icon.svg`    | 256x256 px | Game Icon (`<link rel="icon">`)|
+| `apple-touch-icon.png` | 180×180 px   | Apple Web-app icon (`<link rel="apple-touch-icon">`) |
 
 ## How Rendering Works
 
@@ -56,7 +54,7 @@ These are rendered as `<img>` elements stacked on top of the base background.
 
 1. **Base layer** — `TileSvgs.getTileBaseUri(tileName, isPenned)` returns a data URI for grass/water/grass-background tiles. For other tiles (wall, hole), the `baseLayer` asset file in `TILE_DATA` is used directly.
 2. **Variant overlay** — For grass and water, one variant SVG from `TileSvgs.getTileVariantUri` is overlaid on top. The variant index is deterministic (`(row × 13 + col × 7) % numVariants`) so cells render consistently.
-3. **Extra overlays** — Static `<img>` elements from the `assets` list in `TILE_DATA` (e.g. `home.png`, `star.svg`).
+3. **Extra overlays** — Static `<img>` elements from the `assets` list in `TILE_DATA` (e.g. `home.png`).
 4. **Shore overlays** — Water tiles receive `shore.svg` (one per land-facing side) and `shore-corner.svg` (one per inner corner where two adjacent sides face land).
 5. **Penned state** — For grass/water/grass-background tiles, the base and variant SVGs are regenerated with the penned palette. For other tiles, `enclosedAssets` in `TILE_DATA` provides an alternate asset list.
 
@@ -67,8 +65,8 @@ These are rendered as `<img>` elements stacked on top of the base background.
 | Grass         | TileSvgs base (green/amber) + TileSvgs variant overlay                            |
 | Water         | TileSvgs base (navy) + TileSvgs variant overlay + shore/corner overlays per edge  |
 | Home          | TileSvgs grass base + `home.png` overlay + pet emoji                              |
-| Star          | TileSvgs grass base + `star-outline.svg` + `star.svg`                             |
-| Bee           | TileSvgs grass base + `beehive.png` + `bee.png`                               |
+| Star          | TileSvgs grass base + `star-outline.svg` + star emoji ⭐                      |
+| Bee           | TileSvgs grass base + `beehive.png` + bee emoji 🐝                              |
 | Wall          | `wall.png` background                                                             |
 | Hole (empty)  | `hole-empty.png` background                                                       |
 | Hole (filled) | `hole-filled.png` (or `hole-filled-penned.png` when penned)                       |

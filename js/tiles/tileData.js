@@ -85,8 +85,8 @@ const TILE_DATA = {
         floatAnimation: true,
         descriptionKey: 'tile_star_description',
         backgroundGroup: 'grass',
-        assets: ['star-outline.svg', 'star.svg'],
-        enclosedAssets: ['star-outline.svg', 'star.svg'],
+        assets: ['star-outline.svg', '⭐'],
+        enclosedAssets: ['star-outline.svg', '⭐'],
         ariaLabel: (row, col) => I18N.t('tile_star_aria', { row: row + 1, col: col + 1 }),
     },
     bee: {
@@ -101,8 +101,8 @@ const TILE_DATA = {
         floatAnimation: true,
         descriptionKey: 'tile_bee_description',
         backgroundGroup: 'grass',
-        assets: ['beehive.png', 'bee.png'],
-        enclosedAssets: ['beehive.png', 'bee.png'],
+        assets: ['beehive.png', '🐝'],
+        enclosedAssets: ['beehive.png', '🐝'],
         ariaLabel: (row, col) => I18N.t('tile_bee_aria', { row: row + 1, col: col + 1 }),
     },
     hole: {

@@ -215,14 +215,14 @@ describe('CONSTANTS', () => {
             // grass: penned state handled by TileSvgs recolouring; no enclosedAssets defined
             expect(getTileAssets('grass', true)).toEqual(['grass-1.svg', 'grass-2.svg', 'grass-3.svg', 'grass-4.svg']);
             // home/star/bee: enclosedAssets are just the icon overlays (TileSvgs handles the background)
-            expect(getTileAssets('star', true)).toEqual(['star-outline.svg', 'star.svg']);
+            expect(getTileAssets('star', true)).toEqual(['star-outline.svg', '⭐']);
             expect(getTileAssets('home', true)).toEqual(['home.png']);
         });
 
         test('getTileAssets returns normal assets when not enclosed', () => {
             expect(getTileAssets('grass', false)).toEqual(['grass-1.svg', 'grass-2.svg', 'grass-3.svg', 'grass-4.svg']);
             expect(getTileAssets('home', false)).toEqual(['home.png']);
-            expect(getTileAssets('star', false)).toEqual(['star-outline.svg', 'star.svg']);
+            expect(getTileAssets('star', false)).toEqual(['star-outline.svg', '⭐']);
         });
 
         test('getTileAssets falls back to grass.svg for unknown tile', () => {
@@ -299,7 +299,7 @@ describe('CONSTANTS', () => {
         test('star tile uses TileSvgs for background (backgroundGroup set, no grass-base asset)', () => {
             expect(TILE_DATA.star.backgroundGroup).toBe('grass');
             expect(TILE_DATA.star.assets[0]).toBe('star-outline.svg');
-            expect(TILE_DATA.star.assets[1]).toBe('star.svg');
+            expect(TILE_DATA.star.assets[1]).toBe('⭐');
         });
     });
 
