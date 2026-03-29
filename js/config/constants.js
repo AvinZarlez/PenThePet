@@ -13,7 +13,7 @@ const CONSTANTS = {
 
     /**
      * Max walls for a given grid size: floor(size × 0.75).
-     * Examples: 7×7→5, 9×9→6, 11×11→8, 17×17→12
+     * Examples: 9×9→6, 11×11→8, 13×13→9, 17×17→12
      * @param {number} size @returns {number}
      */
     maxWallsForSize: function(size) {
@@ -22,7 +22,7 @@ const CONSTANTS = {
 
     // Grid configuration
     MAX_GRID_SIZE: 17,          // Maximum grid size (17x17)
-    MIN_GRID_SIZE: 7,           // Minimum grid size (7x7)
+    MIN_GRID_SIZE: 9,           // Minimum grid size (9x9)
     DEFAULT_GRID_SIZE: 9,       // Default grid size (9x9)
 
     // Map data

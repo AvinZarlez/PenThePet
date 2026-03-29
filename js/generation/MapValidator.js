@@ -32,9 +32,9 @@ class MapValidator {
             errors.push('Map does not have a valid path from home to edge');
         }
         
-        // 2. Goal area must be >= 5 (prevents trivially easy maps)
-        if (solution.goalArea < 5) {
-            errors.push(`Goal area too small (${solution.goalArea} < 5) - map is too easy`);
+        // 2. Goal area must be >= 9 (prevents trivially easy maps)
+        if (solution.goalArea < 9) {
+            errors.push(`Goal area too small (${solution.goalArea} < 9) - map is too easy`);
         }
         
         // 3. Optimal walls must fit within the wall budget for this grid size

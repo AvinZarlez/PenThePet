@@ -22,8 +22,8 @@ describe('parseSizeInput', () => {
     });
 
     test('parses a valid range string', () => {
-        const result = parseSizeInput('7-17');
-        expect(result).toEqual({ type: 'range', min: 7, max: 17 });
+        const result = parseSizeInput('9-17');
+        expect(result).toEqual({ type: 'range', min: 9, max: 17 });
     });
 
     test('parses a range where min equals max', () => {
@@ -63,10 +63,10 @@ describe('getRandomSize', () => {
     });
 
     test('returns a value within range for range input', () => {
-        const parsed = { type: 'range', min: 7, max: 13 };
+        const parsed = { type: 'range', min: 9, max: 13 };
         for (let i = 0; i < 50; i++) {
             const size = getRandomSize(parsed);
-            expect(size).toBeGreaterThanOrEqual(7);
+            expect(size).toBeGreaterThanOrEqual(9);
             expect(size).toBeLessThanOrEqual(13);
         }
     });
