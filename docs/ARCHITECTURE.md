@@ -35,7 +35,7 @@ See [CODE_STRUCTURE.md](CODE_STRUCTURE.md) for the full file listing.
 
 ## Algorithm Design
 
-**Map Generation (MILP):** Maps are pre-generated offline using a Python MILP solver (PuLP + CBC). The solver maximizes enclosed area subject to the wall budget. Result is provably optimal — not a heuristic. See [MAP_GENERATION.md](MAP_GENERATION.md).
+**Map Generation (MILP):** Maps are pre-generated offline using a JavaScript MILP solver (glpk.js + GLPK). The solver maximizes enclosed area subject to the wall budget. Result is provably optimal — not a heuristic. See [MAP_GENERATION.md](MAP_GENERATION.md).
 
 **Pathfinding (BFS):** Pet reachability uses BFS — simple, correct, and fast on grids up to 17×17.
 

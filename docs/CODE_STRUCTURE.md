@@ -47,9 +47,8 @@ PenThePet/
 │   ├── lib/
 │   │   └── mapUtils.js     # Shared utilities: dates, size parsing, DB validation/fix
 │   └── solver/
-│       ├── MILPSolver.js   # Node.js wrapper calling Python solver
-│       ├── solve.py        # Python MILP solver (PuLP + CBC)
-│       └── requirements.txt
+│       ├── MILPSolver.js   # Node.js wrapper calling the MILP solver
+│       └── solve.js        # JavaScript MILP solver (glpk.js + GLPK)
 ├── test/                   # Jest test suite (webapp/ and generation/)
 ├── docs/                   # Documentation (see docs/README.md)
 └── maps/                   # Pre-generated maps: maps/YYYY.json (one file per year)

@@ -2,19 +2,19 @@
 
 ## Getting Started
 
-**Prerequisites:** Node.js 20+, Python 3, Git, web browser, text editor
+**Prerequisites:** Node.js 24+, Git, web browser, text editor
 
 ```bash
 git clone https://github.com/AvinZarlez/PenThePet.git
 cd PenThePet
 npm install                    # dev dependencies (testing/linting)
-python3 -m http.server 8080   # start local server
+npx http-server -p 8080 -c-1   # start local server
 # open http://localhost:8080
 ```
 
 ## Development Workflow
 
-1. Start local server (`python3 -m http.server 8080`)
+1. Start local server (`npx http-server -p 8080 -c-1`)
 2. Edit files → hard refresh browser (`Cmd/Ctrl+Shift+R`) — no build step
 3. Run `npm test` before committing
 4. Commit small, focused changes
@@ -50,7 +50,6 @@ To add a new language, copy the `en` block, translate the values, and add an ent
 ### Generate New Daily Maps
 
 ```bash
-pip install -r scripts/solver/requirements.txt
 node scripts/generate-map.js --size 9               # single map
 node scripts/generate-map.js --size 7-17 --count 5  # 5 maps, random sizes
 node scripts/generate-map.js --fresh --count 10 --date 2026-03-01 --size 9
@@ -119,11 +118,11 @@ Use DevTools (F12) → Sources to set breakpoints. Check Network tab for 404s on
 
 ### GitHub Actions Workflows
 
-**`lint.yml`** — Runs ESLint (JS), ruff (Python), markdownlint (Markdown), yamllint (YAML). A `Lint` gate job always reports a result so the required status check never stalls.
+**`lint.yml`** — Runs ESLint (JS), markdownlint (Markdown). A `Lint` gate job always reports a result so the required status check never stalls.
 
 **`test.yml`** — Runs Jest webapp and generation tests in parallel, then a full coverage run with Codecov upload. A `Test` gate job always reports a result.
 
-**`generate-daily-map.yml`** — Triggered manually via `workflow_dispatch`. Generates maps with the Python MILP solver, validates quality, and opens a PR against `main`.
+**`generate-daily-map.yml`** — Triggered manually via `workflow_dispatch`. Generates maps with the JavaScript MILP solver (glpk.js), validates quality, and opens a PR against `main`.
 
 **`static.yml`** — Deploys to GitHub Pages on push to `main`.
 
@@ -152,11 +151,11 @@ Use **relative paths** in HTML (`js/main.js` not `/js/main.js`) — absolute pat
 | Tests timeout                       | Use smaller maps in tests (`size = 5`); set `jest.setTimeout(30000)`    |
 | Coverage below threshold            | Run `npm test -- --coverage`, find uncovered lines, add tests           |
 | ESLint errors                       | `npm run lint:fix`                                                      |
-| Map generation fails                | Check Python/PuLP install; verify tile distribution sums to ~1.0        |
+| Map generation fails                | Verify tile distribution sums to ~1.0; check Node.js version (24+)     |
 
 ## VS Code Setup
 
-Pre-configured in `.vscode/` — launch configs for running/debugging tests, tasks for lint workflows, and recommended extensions (ESLint, Ruff, markdownlint, Jest). Press F5 to debug tests; right-click HTML → Open with Live Server.
+Pre-configured in `.vscode/` — launch configs for running/debugging tests, tasks for lint workflows, and recommended extensions (ESLint, markdownlint, Jest). Press F5 to debug tests; right-click HTML → Open with Live Server.
 
 ---
 

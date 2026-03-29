@@ -28,7 +28,7 @@ myTile: {
 1. Add the SVG asset to `assets/` and a CSS rule for cursor/hover behavior.
 
 That's it — all derived lookup tables, rendering, generation, pathfinding, scoring,
-player instructions, and the Python solver read from `js/tiles/tileData.js` automatically.
+player instructions, and the MILP solver read from `js/tiles/tileData.js` automatically.
 
 ## Tile Properties Reference
 
@@ -88,7 +88,7 @@ js/tiles/tileData.js (single source of truth)
     │                             instructions rendering (descriptionKey → I18N.t())
     ├── main.js                 — wall placement checks (isWallPlaceable)
     ├── tiles/tileTypes.js      — compatibility wrapper (builds TILE_TYPES from TILE_DATA)
-    └── scripts/solve.py        — reads tileData.js via Node.js subprocess
+    └── scripts/solve.js        — reads tileData.js directly via require()
 ```
 
 ### Derived Lookup Tables

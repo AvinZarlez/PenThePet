@@ -6,7 +6,7 @@ Maps are pre-generated offline and stored in `maps/YYYY.json` (one file per year
 
 ## Algorithm
 
-The Python MILP solver (`scripts/solver/solve.py`, powered by PuLP + CBC):
+The MILP solver (`scripts/solver/solve.js`, powered by GLPK via glpk.js):
 
 1. Generates a random map (grass/water distribution per `CONSTANTS.TILE_DISTRIBUTION`)
 2. Validates home can reach an edge (BFS)
@@ -76,8 +76,6 @@ Each entry in `maps/YYYY.json` is keyed by date (`YYYY-MM-DD`):
 ### Method 2: Local Script
 
 ```bash
-pip install -r scripts/solver/requirements.txt
-
 node scripts/generate-map.js --date 2026-02-15 --size 9
 node scripts/generate-map.js --size 9-17 --count 5
 node scripts/generate-map.js --fresh --count 10 --date 2026-03-01 --size 9
@@ -101,8 +99,8 @@ node scripts/audit-maps.js   # validates all maps in maps/ directory
 | `js/generation/MapGenerator.js`| Map generation logic (Node.js only, not browser)      |
 | `js/game/PathfindingUtils.js`  | BFS pathfinding for penning/connectivity checks       |
 | `js/generation/wordList.js`    | Random words for map names                            |
-| `scripts/solver/MILPSolver.js` | Node.js wrapper calling Python solver                 |
-| `scripts/solver/solve.py`      | Python MILP solver (PuLP + CBC)                       |
+| `scripts/solver/MILPSolver.js` | Node.js wrapper calling the MILP solver               |
+| `scripts/solver/solve.js`      | JavaScript MILP solver (glpk.js + GLPK)               |
 | `scripts/generate-map.js`      | CLI entry point (single, batch, or fresh)             |
 | `scripts/lib/mapUtils.js`      | Date helpers, size parsing, DB validation/fix         |
 | `scripts/audit-maps.js`        | Validates all maps in `maps/` against MapValidator    |
@@ -118,8 +116,7 @@ MapGenerator.generate()
   → _placeHoles()
   → _validateMap() [BFS]
   → calculateGoal()
-      → MILPSolver.solveMap() [Node.js wrapper]
-          → scripts/solver/solve.py [PuLP MILP]
+      → MILPSolver.solveMap() → scripts/solver/solve.js [MILP via glpk.js]
   → MapValidator.validate() [quality checks]
   → Return { map, goal, maxWalls } or RETRY (up to 1000)
   → If all attempts fail: THROW ERROR (no fallback)

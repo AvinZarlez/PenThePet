@@ -4,7 +4,6 @@
 
 - **Jest 30.x** — testing framework with jsdom for DOM simulation
 - **ESLint 10.x** — JavaScript linting
-- **ruff** — Python linting
 - **markdownlint-cli2** — Markdown linting
 - **GitHub Actions** — CI on every push/PR
 
@@ -23,7 +22,6 @@ npx jest test/webapp/game/Grid.test.js     # single file
 npx jest -t "test name"              # tests matching pattern
 
 npm run lint:fix                      # JS linting
-npm run lint:python:fix               # Python linting
 npm run lint:markdown:fix             # Markdown linting
 ```
 
@@ -96,7 +94,7 @@ describe("MyFunction", () => {
 
 Tests and linting run automatically on every push and PR via two GitHub Actions workflows:
 
-- **`lint.yml`** — ESLint, ruff, markdownlint, yamllint; gate job always reports `Lint` status
+- **`lint.yml`** — ESLint, markdownlint; gate job always reports `Lint` status
 - **`test.yml`** — Jest webapp + generation tests in parallel, then full coverage with Codecov upload; gate job always reports `Test` status
 
 Sub-jobs are conditional on which files changed; gate jobs always run to prevent "Expected — Waiting" PR blocks.
