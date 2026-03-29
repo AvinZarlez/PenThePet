@@ -70,8 +70,8 @@ describe('MapGenerator', () => {
 
         test('should generate a valid map with goal', () => {
             const spy = mockSolverCalls(7,
-                { goalArea: 5, optimalWallCount: 3 },
-                20 // unlimited score > 5
+                { goalArea: 9, optimalWallCount: 3 },
+                20 // unlimited score > 9
             );
 
             const generator = new MapGenerator(7);
@@ -102,7 +102,7 @@ describe('MapGenerator', () => {
 
         test('should place home tile at center', () => {
             const spy = mockSolverCalls(7,
-                { goalArea: 8, optimalWallCount: 4 },
+                { goalArea: 9, optimalWallCount: 4 },
                 20
             );
 
@@ -118,7 +118,7 @@ describe('MapGenerator', () => {
 
         test('should accept optional dateString parameter', () => {
             const spy = mockSolverCalls(7,
-                { goalArea: 5, optimalWallCount: 2 },
+                { goalArea: 9, optimalWallCount: 2 },
                 15
             );
 
@@ -132,14 +132,14 @@ describe('MapGenerator', () => {
 
         test('should return map with goal and maxWalls equal to optimalWallCount', () => {
             const spy = mockSolverCalls(7,
-                { goalArea: 6, optimalWallCount: 3 },
+                { goalArea: 9, optimalWallCount: 3 },
                 20
             );
 
             const generator = new MapGenerator(7);
             const result = generator.generate();
 
-            expect(result.goal).toBe(6);
+            expect(result.goal).toBe(9);
             // Rule 1: maxWalls is the solver's optimalWallCount (minimum walls needed)
             expect(result.maxWalls).toBe(3);
             
@@ -164,14 +164,14 @@ describe('MapGenerator', () => {
                 if (callCount === 1) {
                     return {
                         walls: Array(7).fill(null).map(() => Array(7).fill(0)),
-                        goalArea: 5,
+                        goalArea: 9,
                         optimalWallCount: 20 // Too many walls
                     };
                 }
                 // Subsequent limited calls: within budget
                 return {
                     walls: Array(7).fill(null).map(() => Array(7).fill(0)),
-                    goalArea: 5,
+                    goalArea: 9,
                     optimalWallCount: 3
                 };
             });
@@ -616,7 +616,7 @@ describe('MapGenerator', () => {
                 if (maxWalls >= size * size) {
                     return { walls: Array(size).fill(null).map(() => Array(size).fill(0)), goalArea: 20, optimalWallCount: 5 };
                 }
-                return { walls: Array(size).fill(null).map(() => Array(size).fill(0)), goalArea: 5, optimalWallCount: 2 };
+                return { walls: Array(size).fill(null).map(() => Array(size).fill(0)), goalArea: 9, optimalWallCount: 2 };
             });
 
             const generator = new MapGenerator(size);
@@ -652,7 +652,7 @@ describe('MapGenerator', () => {
                 if (maxWalls >= size * size) {
                     return { walls: Array(size).fill(null).map(() => Array(size).fill(0)), goalArea: 20, optimalWallCount: 8 };
                 }
-                return { walls: Array(size).fill(null).map(() => Array(size).fill(0)), goalArea: 8, optimalWallCount: 4 };
+                return { walls: Array(size).fill(null).map(() => Array(size).fill(0)), goalArea: 9, optimalWallCount: 4 };
             });
 
             const generator = new MapGenerator(size, { grass: 1.0, water: 0.0 });
@@ -669,7 +669,7 @@ describe('MapGenerator', () => {
                 if (maxWalls >= size * size) {
                     return { walls: Array(size).fill(null).map(() => Array(size).fill(0)), goalArea: 10, optimalWallCount: 3 };
                 }
-                return { walls: Array(size).fill(null).map(() => Array(size).fill(0)), goalArea: 5, optimalWallCount: 1 };
+                return { walls: Array(size).fill(null).map(() => Array(size).fill(0)), goalArea: 9, optimalWallCount: 1 };
             });
 
             const generator = new MapGenerator(size, { grass: 0.1, water: 0.9 });
@@ -689,7 +689,7 @@ describe('MapGenerator', () => {
                 if (maxWalls >= size * size) {
                     return { walls: Array(size).fill(null).map(() => Array(size).fill(0)), goalArea: 20, optimalWallCount: 8 };
                 }
-                return { walls: Array(size).fill(null).map(() => Array(size).fill(0)), goalArea: 8, optimalWallCount: 4 };
+                return { walls: Array(size).fill(null).map(() => Array(size).fill(0)), goalArea: 9, optimalWallCount: 4 };
             });
 
             const generator = new MapGenerator(size);
