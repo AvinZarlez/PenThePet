@@ -20,6 +20,7 @@ class Menu {
         this._loadedYears = new Set(); // Track which years have been fetched
         this._isSyncing = false; // Whether a cloud sync is currently in progress
         this._pendingLevelSelection = null; // Level queued to load once sync finishes
+        this.currentMapData = null; // Full map data for the currently loaded level
 
         this.attachEventListeners();
     }
@@ -167,6 +168,7 @@ class Menu {
         const resetLevelBtn = document.getElementById('debugResetLevel');
         const resetAllBtn = document.getElementById('debugResetAll');
         const showAllLevelsCheckbox = document.getElementById('debugShowAllLevels');
+        const shareMapUrlBtn = document.getElementById('debugShareMapUrl');
 
         if (resetLevelBtn) {
             resetLevelBtn.addEventListener('click', () => this.resetCurrentLevel());
@@ -179,6 +181,32 @@ class Menu {
                 this.showAllLevels = e.target.checked;
                 this.populateLevelList();
             });
+        }
+        if (shareMapUrlBtn) {
+            shareMapUrlBtn.addEventListener('click', () => this.shareMapUrl());
+        }
+    }
+
+    /**
+     * Generate a shareable URL containing the current level's full map data
+     * encoded as a base64url string in the `?map=` parameter, then copy it
+     * to the clipboard.  Recipients can paste the URL directly into a browser
+     * to play the exact same puzzle, and their progress is saved independently
+     * under a stable content-based key.
+     */
+    shareMapUrl() {
+        if (typeof MapURLCodec === 'undefined') {
+            if (this.game && typeof this.game.showNotification === 'function') {
+                this.game.showNotification(I18N.t('copied_failed'));
+            }
+            return;
+        }
+        if (!this.currentMapData) return;
+        const encoded = MapURLCodec.encodeMapData(this.currentMapData);
+        const base = window.location.origin + window.location.pathname;
+        const url = `${base}?map=${encoded}`;
+        if (this.game && typeof this.game._copyToClipboard === 'function') {
+            this.game._copyToClipboard(url);
         }
     }
 
@@ -595,7 +623,7 @@ class Menu {
      * Load a specific level into the game.
      * Fully resets game state to match the new level, including grid size,
      * submission state, and optimal solution data.
-     * @param {Object} mapData - Map data object from maps/YYYY.json
+     * @param {Object} mapData - Map data object from maps/YYYY.json or decoded from ?map=
      */
     async loadLevel(mapData) {
         // Update map info display
@@ -616,10 +644,19 @@ class Menu {
             this.game.maxWalls = mapData.maxWalls;
         }
 
-        // Update current date and optimal solution (parse compact flat array into pairs)
-        this.game.currentDate = mapData.date || null;
+        // Determine the save key.  Custom maps loaded from ?map= carry a
+        // content-based _saveKey; regular levels use their YYYY-MM-DD date.
+        const saveKey = mapData._saveKey || mapData.date || null;
+
+        // Update current date/save-key, custom-map flag, and optimal solution.
+        this.game.currentDate = saveKey;
+        this.game.isCustomMapLevel = !!(mapData._saveKey);
         this.game.optimalSolution = mapData.optimalSolution ?
             parseCompactSolution(mapData.optimalSolution) : null;
+
+        // Keep currentMapData in sync so the "Share Map URL" button always
+        // encodes whichever level is currently loaded.
+        this.currentMapData = mapData;
 
         // Reset submission state for the new level
         this.game.isSubmitted = false;
@@ -628,8 +665,8 @@ class Menu {
         this.game.viewingOptimal = false;
 
         // Check if user has already submitted for this puzzle
-        if (mapData.date) {
-            const submission = this.game.loadSubmission(mapData.date);
+        if (saveKey) {
+            const submission = this.game.loadSubmission(saveKey);
             if (submission) {
                 this.game.isSubmitted = true;
                 this.game.submittedScore = submission.score;
@@ -647,7 +684,7 @@ class Menu {
 
         // Load hints AFTER submission so the merge includes any hintsUsed
         // that arrived via cloud sync as part of the submission document.
-        this.game.hintsUsed = mapData.date ? this.game.loadHintsUsed(mapData.date) : [];
+        this.game.hintsUsed = saveKey ? this.game.loadHintsUsed(saveKey) : [];
 
         // Render the game
         this.game.render();
@@ -658,8 +695,8 @@ class Menu {
         this.game.updateLegend();
 
         // Initialise the timer for the new level
-        if (typeof this.game.initTimerForDate === 'function' && mapData.date) {
-            this.game.initTimerForDate(mapData.date);
+        if (typeof this.game.initTimerForDate === 'function' && saveKey) {
+            this.game.initTimerForDate(saveKey);
         }
     }
 

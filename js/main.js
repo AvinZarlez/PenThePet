@@ -5,7 +5,7 @@
  * Modify this file to change initialization behavior or add global event handlers.
  */
 
-/* global parseCompactMap, parseCompactSolution */
+/* global parseCompactMap, parseCompactSolution, MapURLCodec */
 
 let game;
 let menu;
@@ -21,12 +21,13 @@ const DATE_PARAM_REGEX = /^\d{4}-\d{2}-\d{2}$/;
 let _urlParamError = null;
 
 /**
- * Read the `date` and `level` query-string parameters from the current URL.
- * `date` takes priority: when both are present the caller should ignore `level`.
+ * Read the `date`, `level`, and `map` query-string parameters from the current URL.
+ * `map` takes highest priority (self-contained encoded data, no DB lookup needed).
+ * `date` takes priority over `level` when both are present.
  * Returns null fields when the parameters are absent.
  *
  * @param {string} [_searchOverride] - Optional search string for testing (e.g. '?date=2026-01-01')
- * @returns {{ urlDate: string|null, urlLevel: string|null }}
+ * @returns {{ urlDate: string|null, urlLevel: string|null, urlMap: string|null }}
  */
 function getUrlParams(_searchOverride) {
     const search = _searchOverride !== undefined
@@ -36,6 +37,7 @@ function getUrlParams(_searchOverride) {
     return {
         urlDate: params.get('date'),
         urlLevel: params.get('level'),
+        urlMap: params.get('map'),
     };
 }
 
@@ -44,19 +46,25 @@ function getUrlParams(_searchOverride) {
  * When resolution succeeds, `error` is null. On failure, `map` is null and the
  * caller should fall back to the default (latest) level.
  *
- * @param {{ urlDate: string|null, urlLevel: string|null }} urlParams
+ * Priority order: `map` > `date` > `level`.
+ *
+ * @param {{ urlDate: string|null, urlLevel: string|null, urlMap: string|null }} urlParams
  * @param {Object} mapsDb - Full maps database keyed by date string
  * @param {string} today  - Today's date in YYYY-MM-DD format
  * @returns {{ map: Object|null, error: string|null }}
  */
 function resolveMapFromUrlParams(urlParams, mapsDb, today) {
-    const { urlDate, urlLevel } = urlParams;
+    const { urlDate, urlLevel, urlMap } = urlParams;
 
+    // `map` takes the highest priority — it is self-contained and needs no DB lookup.
+    if (urlMap != null) {
+        return _resolveByMapData(urlMap);
+    }
     // Date takes priority over level when both are supplied.
-    if (urlDate !== null) {
+    if (urlDate != null) {
         return _resolveByDate(urlDate, mapsDb, today);
     }
-    if (urlLevel !== null) {
+    if (urlLevel != null) {
         return _resolveByLevel(urlLevel, mapsDb, today);
     }
     return { map: null, error: null };
@@ -150,6 +158,48 @@ function _resolveByLevel(urlLevel, mapsDb, today) {
 }
 
 /**
+ * Resolve a map from a base64url-encoded `?map=` URL parameter.
+ * Decodes and validates the payload using MapURLCodec, then attaches a stable
+ * content-based save key (`_saveKey`) so progress is persisted independently
+ * of the maps database.
+ *
+ * Regular levels (loaded by date or level number) are NOT affected by this
+ * path — they continue to use their YYYY-MM-DD date string as the save key.
+ *
+ * @param {string} urlMap - Raw value of the `?map=` URL parameter
+ * @returns {{ map: Object|null, error: string|null }}
+ */
+function _resolveByMapData(urlMap) {
+    try {
+        if (typeof MapURLCodec === 'undefined') {
+            return {
+                map: null,
+                error: I18N.t('url_param_map_invalid'),
+            };
+        }
+        const mapData = MapURLCodec.decodeMapData(urlMap);
+        if (!mapData) {
+            return {
+                map: null,
+                error: I18N.t('url_param_map_invalid'),
+            };
+        }
+        // Attach a stable content-based save key so that saves for this custom
+        // map are stored independently of the maps database and survive level
+        // list changes.  The key is derived from the puzzle layout only (not
+        // metadata like date or mapName) so it remains stable across re-shares.
+        mapData._saveKey = MapURLCodec.computeSaveKey(mapData);
+        return { map: mapData, error: null };
+    } catch (err) {
+        console.error('URL param: error resolving map data', err);
+        return {
+            map: null,
+            error: I18N.t('url_param_map_invalid'),
+        };
+    }
+}
+
+/**
  * Load today's map from the database or from cookie selection.
  * Falls back to the latest available level if today's map doesn't exist.
  *
@@ -159,7 +209,11 @@ function _resolveByLevel(urlLevel, mapsDb, today) {
  * level, malformed param) is stored in the module-level _urlParamError
  * variable and a fallback map is returned.
  *
- * @param {{ urlDate?: string|null, urlLevel?: string|null }} [_testUrlParams]
+ * Priority order for URL params: `map` > `date` > `level`.
+ * The `map` parameter is self-contained encoded data that does not require a
+ * database lookup; `date` and `level` still resolve against maps/YYYY.json.
+ *
+ * @param {{ urlDate?: string|null, urlLevel?: string|null, urlMap?: string|null }} [_testUrlParams]
  *   Optional URL params override used only in unit tests.
  * @returns {Promise<Object|null>} Map data or null if not found
  */
@@ -175,7 +229,7 @@ async function loadTodayMap(_testUrlParams) {
         const urlParams = _testUrlParams !== undefined
             ? _testUrlParams
             : getUrlParams();
-        const hasUrlParams = urlParams.urlDate !== null || urlParams.urlLevel !== null;
+        const hasUrlParams = urlParams.urlDate != null || urlParams.urlLevel != null || urlParams.urlMap != null;
 
         // Collect which year files to fetch.
         const yearsToLoad = new Set([currentYear]);
@@ -186,7 +240,11 @@ async function loadTodayMap(_testUrlParams) {
         if (hasUrlParams) {
             // Do NOT update lastVisitDate when loading via URL param so that
             // the next normal visit still treats it as the first visit of the day.
-            if (urlParams.urlDate && DATE_PARAM_REGEX.test(urlParams.urlDate)) {
+            if (urlParams.urlMap != null) {
+                // `map` param is fully self-contained — no year files needed.
+                // Still load the current year so the fallback path has data if
+                // decoding fails.
+            } else if (urlParams.urlDate && DATE_PARAM_REGEX.test(urlParams.urlDate)) {
                 // We know the year from the date string.
                 yearsToLoad.add(parseInt(urlParams.urlDate.substring(0, 4), 10));
             } else if (urlParams.urlLevel) {
@@ -297,7 +355,7 @@ function updateMapInfo(mapData) {
     const mapNameElement = document.getElementById('mapName');
     const mapDateElement = document.getElementById('mapDate');
     
-    if (mapDayElement && mapData.dayNumber !== undefined) {
+    if (mapDayElement && mapData.dayNumber != null) {
         mapDayElement.textContent = mapData.dayNumber;
     }
     
@@ -305,7 +363,9 @@ function updateMapInfo(mapData) {
         mapNameElement.textContent = mapData.mapName;
     }
     
-    if (mapDateElement && mapData.date) {
+    // Only format and display the date when it is a valid YYYY-MM-DD string.
+    // Custom maps loaded from ?map= may have an empty or absent date field.
+    if (mapDateElement && mapData.date && DATE_PARAM_REGEX.test(mapData.date)) {
         mapDateElement.textContent = DateUtils.formatDate(mapData.date);
     }
 }
@@ -362,13 +422,18 @@ async function initGame() {
         console.warn('Map does not have a maxWalls value, using default');
     }
     
-    // Store current date and optimal solution (parse compact flat array into pairs)
-    game.currentDate = mapData.date;
+    // Store current date and optimal solution (parse compact flat array into pairs).
+    // For custom maps loaded from ?map=, use the content-based _saveKey so that
+    // progress is tracked by puzzle layout rather than by date.  Regular levels
+    // keep their YYYY-MM-DD date string as the save key — no change.
+    const saveKey = mapData._saveKey || mapData.date;
+    game.currentDate = saveKey;
+    game.isCustomMapLevel = !!(mapData._saveKey);
     game.optimalSolution = mapData.optimalSolution ?
         parseCompactSolution(mapData.optimalSolution) : null;
 
     // Check if user has already submitted for this puzzle
-    const submission = game.loadSubmission(mapData.date);
+    const submission = game.loadSubmission(saveKey);
     if (submission) {
         game.isSubmitted = true;
         game.submittedScore = submission.score;
@@ -386,7 +451,7 @@ async function initGame() {
 
     // Load hints AFTER submission so the merge includes any hintsUsed
     // that arrived via cloud sync as part of the submission document.
-    game.hintsUsed = game.loadHintsUsed(mapData.date);
+    game.hintsUsed = game.loadHintsUsed(saveKey);
     
     game.render();
     game.updateWallCounter();
@@ -394,11 +459,13 @@ async function initGame() {
     game.updateResetButton();
     game.updateLegend();  // Update legend to show loaded pet emoji
     game.updateSolutionToggleBar();  // Show toggle bar if already submitted
-    game.initTimerForDate(mapData.date);  // Start/restore the puzzle timer
+    game.initTimerForDate(saveKey);  // Start/restore the puzzle timer
     
     // Initialize menu system
     // eslint-disable-next-line no-undef
     menu = new Menu(game);
+    // Store the full map data so the debug "Share Map URL" tool can encode it.
+    menu.currentMapData = mapData;
     
     // Debug tools are hidden by default; CloudSync will enable them for game testers after auth
     menu.updateDebugToolsVisibility(false);
@@ -475,6 +542,14 @@ async function initGame() {
                         game && typeof game.showNotification === 'function') {
                         game.showNotification(I18N.t('cloud_data_loaded'));
                     }
+                } else if (game.isCustomMapLevel && menu.currentMapData) {
+                    // Custom map loaded from ?map= URL — reload state in-place using
+                    // the stored map data so the page URL context is preserved.
+                    await menu.loadLevel(menu.currentMapData);
+                    if (submissionDataChanged && cloudOverwrites.has(game.currentDate) &&
+                        game && typeof game.showNotification === 'function') {
+                        game.showNotification(I18N.t('cloud_data_loaded'));
+                    }
                 } else {
                     // mapsDatabase not yet loaded (level selector never opened).
                     // The submission cookie has already been updated by the sync;
@@ -515,7 +590,7 @@ async function initGame() {
     // Must run after CloudSync.init() which calls firebase.initializeApp().
     if (typeof Analytics !== 'undefined') {
         Analytics.init();
-        Analytics.trackLevelLoaded(mapData.date, game.isSubmitted);
+        Analytics.trackLevelLoaded(mapData.date || saveKey, game.isSubmitted);
     }
 }
 
@@ -564,6 +639,6 @@ window.addEventListener('DOMContentLoaded', () => {
 
 // Export for use in Node.js testing
 if (typeof module !== 'undefined' && module.exports) {
-    module.exports = { loadTodayMap, resolveMapFromUrlParams };
+    module.exports = { loadTodayMap, resolveMapFromUrlParams, _resolveByMapData };
 }
 

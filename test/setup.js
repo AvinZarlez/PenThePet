@@ -64,6 +64,7 @@ global.FIREBASE_CONFIG = require('../js/cloud/firebase-config.js');
 global.CloudSync = require('../js/cloud/CloudSync.js');
 global.Analytics = require('../js/cloud/Analytics.js');
 global.DateUtils = require('../js/common/DateUtils.js');
+global.MapURLCodec = require('../js/common/MapURLCodec.js');
 global.PathfindingUtils = require('../js/game/PathfindingUtils.js');
 global.MILPSolver = require('../scripts/solver/MILPSolver.js');
 global.MapGenerator = require('../js/generation/MapGenerator.js');

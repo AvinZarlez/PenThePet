@@ -140,6 +140,7 @@ const LANGUAGES = {
         url_param_not_found: '"{value}" does not exist — loading the latest available level instead.',
         url_param_invalid: '"{value}" is not a valid {param} — loading the latest available level instead.',
         url_param_error: 'Something went wrong loading {param} — loading the latest available level instead.',
+        url_param_map_invalid: 'The "map" URL parameter is not valid — loading the latest available level instead.',
 
         // ── Hint Notifications ────────────────────────────────────────────
         hint_not_optimal_notification: 'A more optimal solution exists.',
@@ -295,6 +296,7 @@ const LANGUAGES = {
         debug_show_all_levels_help: 'Shows future levels in the level selector',
         debug_reset_level: 'Reset Level',
         debug_reset_all: 'Reset All Data',
+        debug_share_map_url: 'Share Map URL',
 
         // ── Footer ────────────────────────────────────────────────────────
         footer_view_github: 'View on GitHub',
@@ -434,6 +436,7 @@ const LANGUAGES = {
         url_param_not_found: '"{value}" no existe — cargando el último nivel disponible.',
         url_param_invalid: '"{value}" no es un {param} válido — cargando el último nivel disponible.',
         url_param_error: 'Algo salió mal al cargar {param} — cargando el último nivel disponible.',
+        url_param_map_invalid: 'El parámetro URL "map" no es válido — cargando el último nivel disponible.',
 
         // ── Hint Notifications ────────────────────────────────────────────
         hint_not_optimal_notification: 'Existe una solución más óptima.',
@@ -589,6 +592,7 @@ const LANGUAGES = {
         debug_show_all_levels_help: 'Muestra niveles futuros en el selector de niveles',
         debug_reset_level: 'Reiniciar nivel',
         debug_reset_all: 'Restablecer todos los datos',
+        debug_share_map_url: 'Compartir URL del mapa',
 
         // ── Footer ────────────────────────────────────────────────────────
         footer_view_github: 'Ver en GitHub',
