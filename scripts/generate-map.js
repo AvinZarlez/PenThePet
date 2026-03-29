@@ -19,7 +19,7 @@
 const path = require('path');
 const MapGenerator = require('../js/generation/MapGenerator.js');
 const MapValidator = require('../js/generation/MapValidator.js');
-const { getRandomWord } = require('../js/generation/wordList.js');
+const { generateLevelName } = require('../js/generation/wordList.js');
 const { TILE_TO_COMPACT_CHAR } = require('../js/tiles/tileData.js');
 const {
     parseSizeInput,
@@ -97,7 +97,7 @@ async function generateMap(date, size) {
     console.log('✓ Map passed quality validation');
     console.log(`  Goal: ${result.goal}, Walls: ${result.maxWalls}`);
 
-    const mapName = getRandomWord();
+    const mapName = generateLevelName();
 
     console.log('\n✓ Map generated successfully!');
     console.log(`  Name: "${mapName}"`);

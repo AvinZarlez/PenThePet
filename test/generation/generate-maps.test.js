@@ -179,10 +179,20 @@ describe('Map Database Validation', () => {
             
             const fixed = fixMapsDatabase(maps);
             
-            // Check that names are now unique
+            // First occurrence keeps its original name
             expect(fixed['2026-01-01'].mapName).toBe('Alpha');
-            expect(fixed['2026-01-02'].mapName).toBe('Alpha-1');
-            expect(fixed['2026-01-03'].mapName).toBe('Alpha-2');
+            // Duplicates get new unique two-word names (no numbered suffixes)
+            expect(fixed['2026-01-02'].mapName).not.toBe('Alpha');
+            expect(fixed['2026-01-02'].mapName).not.toMatch(/-\d+$/);
+            expect(fixed['2026-01-03'].mapName).not.toBe('Alpha');
+            expect(fixed['2026-01-03'].mapName).not.toMatch(/-\d+$/);
+            // All three names are distinct
+            const names = new Set([
+                fixed['2026-01-01'].mapName,
+                fixed['2026-01-02'].mapName,
+                fixed['2026-01-03'].mapName
+            ]);
+            expect(names.size).toBe(3);
             
             // Validate the fixed database
             const validation = validateMapsDatabase(fixed);

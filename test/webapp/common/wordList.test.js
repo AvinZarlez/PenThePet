@@ -4,7 +4,7 @@
  * Tests the word list functionality and word retrieval functions.
  */
 
-const { WORD_LIST, getRandomWord, getWordCount, getWordAtIndex } = require('../../../js/generation/wordList.js');
+const { WORD_LIST, getRandomWord, getWordCount, getWordAtIndex, generateLevelName } = require('../../../js/generation/wordList.js');
 
 describe('WORD_LIST', () => {
     describe('Structure', () => {
@@ -16,9 +16,9 @@ describe('WORD_LIST', () => {
             expect(WORD_LIST.length).toBeGreaterThan(0);
         });
 
-        test('should have a reasonable number of words (50-200)', () => {
+        test('should have a reasonable number of words (50-300)', () => {
             expect(WORD_LIST.length).toBeGreaterThanOrEqual(50);
-            expect(WORD_LIST.length).toBeLessThanOrEqual(200);
+            expect(WORD_LIST.length).toBeLessThanOrEqual(300);
         });
     });
 
@@ -197,5 +197,54 @@ describe('Word List Content Categories', () => {
         const colorWords = ['Crimson', 'Azure', 'Emerald', 'Violet'];
         const hasColorWords = colorWords.some(word => WORD_LIST.includes(word));
         expect(hasColorWords).toBe(true);
+    });
+});
+
+describe('generateLevelName()', () => {
+    test('should return a string', () => {
+        const name = generateLevelName();
+        expect(typeof name).toBe('string');
+    });
+
+    test('should return a two-word name separated by a space', () => {
+        const name = generateLevelName();
+        const parts = name.split(' ');
+        expect(parts).toHaveLength(2);
+    });
+
+    test('both words should come from WORD_LIST', () => {
+        const name = generateLevelName();
+        const [first, second] = name.split(' ');
+        expect(WORD_LIST).toContain(first);
+        expect(WORD_LIST).toContain(second);
+    });
+
+    test('should not use the same word twice', () => {
+        for (let i = 0; i < 20; i++) {
+            const name = generateLevelName();
+            const [first, second] = name.split(' ');
+            expect(first).not.toBe(second);
+        }
+    });
+
+    test('should not return null or undefined', () => {
+        const name = generateLevelName();
+        expect(name).not.toBeNull();
+        expect(name).not.toBeUndefined();
+    });
+
+    test('should produce varied names across multiple calls', () => {
+        const names = new Set();
+        for (let i = 0; i < 20; i++) {
+            names.add(generateLevelName());
+        }
+        expect(names.size).toBeGreaterThanOrEqual(5);
+    });
+
+    test('should not contain a numbered suffix', () => {
+        for (let i = 0; i < 20; i++) {
+            const name = generateLevelName();
+            expect(name).not.toMatch(/-\d+$/);
+        }
     });
 });

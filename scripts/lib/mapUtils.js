@@ -7,6 +7,7 @@
 const fs = require('fs');
 const path = require('path');
 const CONSTANTS = require('../../js/config/constants.js');
+const { generateLevelName } = require('../../js/generation/wordList.js');
 
 // ---------------------------------------------------------------------------
 // Size input helpers
@@ -242,20 +243,19 @@ function fixMapsDatabase(maps) {
         fixed[date].dayNumber = index + 1;
     });
 
-    // Fix duplicate names by appending a counter
+    // Fix duplicate names by generating new unique two-word names
     const usedNames = new Set();
     for (const date of dates) {
         let mapName = fixed[date].mapName;
-        let counter = 1;
 
-        while (usedNames.has(mapName)) {
-            mapName = `${fixed[date].mapName}-${counter}`;
-            counter++;
-        }
-
-        if (mapName !== fixed[date].mapName) {
-            console.log(`  Renamed "${fixed[date].mapName}" to "${mapName}" for ${date}`);
-            fixed[date].mapName = mapName;
+        if (usedNames.has(mapName)) {
+            let newName;
+            do {
+                newName = generateLevelName();
+            } while (usedNames.has(newName));
+            console.log(`  Renamed "${mapName}" to "${newName}" for ${date}`);
+            fixed[date].mapName = newName;
+            mapName = newName;
         }
 
         usedNames.add(mapName);
