@@ -10,7 +10,7 @@ npm run test:webapp                   # browser-side tests only
 npm run test:generation               # generation tests only
 npm run test:watch                    # watch mode
 npx jest test/webapp/game/Grid.test.js     # single file
-npm run lint:all                      # lint JS, Python, Markdown
+npm run lint:all                      # lint JS, Markdown
 ```
 
 ## Test Files

@@ -22,7 +22,7 @@ if (typeof global !== 'undefined' && typeof global.NUMERIC_ID_TO_SCORE === 'unde
 
 class MILPSolver {
     /**
-     * Solve the map to find optimal wall placement using the Python MILP solver.
+     * Solve the map to find optimal wall placement using the MILP solver.
      *
      * @param {Array} map - 2D array where 0=water, 1=grass, 2=home (numeric format)
      * @param {number} maxWalls - Maximum number of walls available

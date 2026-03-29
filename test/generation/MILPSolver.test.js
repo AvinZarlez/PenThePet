@@ -1,7 +1,7 @@
 /**
  * Integration tests for MILPSolver — hole (fillable tile) handling.
  *
- * These tests call the real Python solver (not mocked) to verify that the MILP
+ * These tests call the real MILP solver (not mocked) to verify that the MILP
  * correctly models holes as fill-or-not choices rather than treating them as
  * permanent walls or fixed passable tiles.
  *
@@ -27,7 +27,7 @@ const S = 3; // star  (score +3)
 const B = 4; // bee   (score -3)
 const O = 6; // hole  (blocking, fillable — becomes filledHole when filled, score +1)
 
-// Each test calls the Python solver, so a generous timeout is needed.
+// Each test calls the MILP solver, so a generous timeout is needed.
 const SOLVER_TIMEOUT_MS = 60000;
 
 /**
@@ -63,7 +63,7 @@ describe('MILPSolver — hole fill-or-not choice', () => {
      * grass(4,4).  Filling it gains +1 score for +1 wall — the solver must
      * choose to fill it.
      *
-     * Verified against the Python solver manually (see solve.py):
+     * Verified against the MILP solver (see solve.js):
      *   hole map  → goalArea 14, walls 4, solution includes (4,3)
      *   water map → goalArea 13, walls 3, solution does NOT include (4,3)
      */
@@ -105,7 +105,7 @@ describe('MILPSolver — hole fill-or-not choice', () => {
      * just like water.  Both the hole map and the equivalent water map should
      * produce identical results.
      *
-     * Verified against the Python solver:
+     * Verified against the MILP solver:
      *   hole map  → goalArea 13, walls 5, solution does NOT include (4,3)
      *   water map → goalArea 13, walls 5, same solution
      */

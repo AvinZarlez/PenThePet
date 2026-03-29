@@ -2,7 +2,7 @@
  * Tile Data Definitions — Single Source of Truth
  *
  * All tile type properties are defined here. Both browser/Node.js code and
- * the Python solver read from this file. No other file duplicates these values.
+ * the MILP solver read from this file. No other file duplicates these values.
  *
  * To add a new tile: add an entry to TILE_DATA below + an SVG asset.
  * All game logic, rendering, generation, scoring, solving, and player

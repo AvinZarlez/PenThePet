@@ -4,8 +4,7 @@ This folder contains the MILP solver pipeline used during map generation to find
 
 ## What belongs here
 
-- The Node.js solver wrapper and Python MILP solver
-- Python dependency specification (`requirements.txt`)
+- The Node.js solver wrapper (`MILPSolver.js`) and the JavaScript MILP solver (`solve.js`, powered by glpk.js)
 
 This code runs offline only (locally or in GitHub Actions). It is never loaded in the browser.
 
