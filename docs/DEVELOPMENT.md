@@ -76,10 +76,26 @@ You can deep-link directly to any puzzle by appending a query string to the page
 
 **To always load today's level (ignores saved level cookies):** `<game-url>/?level=latest`
 
-- If both `date` and `level` are provided in the same URL, `date` takes priority and `level` is ignored.
+**With encoded map data (custom / editor-generated levels):** `<game-url>/?map=<encoded>`
+
+- Priority order when multiple parameters are present: `map` > `date` > `level`.
 - `?level=latest` always loads today's puzzle, overriding any saved level in cookies.
 - Loading via URL parameter does **not** update the "first visit of the day" cookie, so the next normal visit will still open today's puzzle as usual.
 - If the requested level is in the future, does not exist, or is malformed, a red error banner explains the problem and the latest available level loads instead.
+
+#### The `?map=` parameter (custom levels)
+
+The `?map=` value is a URL-safe base64url string produced by `MapURLCodec.encodeMapData()`.  It encodes the complete puzzle — tile layout, goal, wall budget, optimal solution, and metadata — so the recipient does not need the level to be in the maps database.
+
+**Generating a shareable map URL (debug mode only):**  Enable Debug Mode in Options, then click the **Share Map URL** button in the debug tools section.  The URL is copied to the clipboard.
+
+**Save-data isolation:**  Progress for a `?map=` level is stored under a stable content-based key (`map_<hash>`) that is derived from the puzzle layout, not the date.  This means:
+
+- The same puzzle always maps to the same save slot, regardless of metadata changes.
+- Regular levels (loaded by date or level number) continue to use their `YYYY-MM-DD` date as the save key — no behaviour change for existing users.
+- Save data for custom maps is cloud-synced using the same rules as regular levels (requires Firebase sign-in).
+
+**Codec versioning:**  The encoded payload includes a `v` field (current: `1`).  If the payload format ever changes, old URLs will still decode correctly because `MapURLCodec.decodeMapData()` migrates older payloads before validation.  See `js/common/MapURLCodec.js` for the version history and migration instructions.
 
 ### Change a Config Value
 
