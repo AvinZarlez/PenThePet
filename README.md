@@ -67,3 +67,5 @@ MIT License — see [LICENSE](LICENSE) for details.
 ## 🙏 Credits
 
 Made by [Avin Zarlez](https://www.AvinZarlez.com).
+
+Additional art assets by Zafira Zarlez.
