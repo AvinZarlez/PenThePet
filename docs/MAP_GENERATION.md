@@ -22,7 +22,6 @@ The Python MILP solver (`scripts/solver/solve.py`, powered by PuLP + CBC):
 
 | Size  | maxWalls |
 | ----- | -------- |
-| 7×7   | 5        |
 | 9×9   | 6        |
 | 11×11 | 8        |
 | 13×13 | 9        |
@@ -36,7 +35,7 @@ The Python MILP solver (`scripts/solver/solve.py`, powered by PuLP + CBC):
 All maps must pass `MapValidator` checks:
 
 1. **Path to edge** — home can reach an edge tile with no walls placed
-2. **Goal area ≥ 5** — prevents trivially easy maps
+2. **Goal area ≥ 9** — prevents trivially easy maps
 3. **Wall budget** — optimal wall count ≤ `floor(size × 0.75)`
 4. **Strategic placement** — at least one optimal wall is on a non-edge tile
 5. **No adjacent holes** — fillable tiles (holes) cannot be orthogonally adjacent; one is replaced with grass
@@ -52,9 +51,9 @@ Each entry in `maps/YYYY.json` is keyed by date (`YYYY-MM-DD`):
   "dayNumber": 1,
   "mapName": "Coral",
   "date": "2026-02-06",
-  "size": 7,
-  "goal": 13,
-  "maxWalls": 5,
+  "size": 9,
+  "goal": 19,
+  "maxWalls": 6,
   "map": "gwgwh...",
   "optimalSolution": [1, 0, 2, 3]
 }
@@ -69,7 +68,7 @@ Each entry in `maps/YYYY.json` is keyed by date (`YYYY-MM-DD`):
 ### Method 1: GitHub Actions (recommended)
 
 1. **Actions** tab → **Generate Daily Map** → **Run workflow**
-2. Parameters: `date` (optional, defaults to next available), `size` (exact or range like `7-17`), `count` (default 1)
+2. Parameters: `date` (optional, defaults to next available), `size` (exact or range like `9-17`), `count` (default 1)
 3. The workflow generates maps, validates quality, and opens a PR against `main`
 
 > **Setup:** Enable "Allow GitHub Actions to create and approve pull requests" in Settings → Actions → General, or add a `REPO_TOKEN` secret with `repo` scope.
@@ -80,7 +79,7 @@ Each entry in `maps/YYYY.json` is keyed by date (`YYYY-MM-DD`):
 pip install -r scripts/solver/requirements.txt
 
 node scripts/generate-map.js --date 2026-02-15 --size 9
-node scripts/generate-map.js --size 7-17 --count 5
+node scripts/generate-map.js --size 9-17 --count 5
 node scripts/generate-map.js --fresh --count 10 --date 2026-03-01 --size 9
 ```
 
@@ -129,7 +128,7 @@ MapGenerator.generate()
 ## Key Invariants
 
 - `maxWalls = floor(size × 0.75)` — stored per-map; never change without regenerating all maps
-- Goal = maximum achievable area; `goalArea ≥ 5`; at least one wall not on edge
+- Goal = maximum achievable area; `goalArea ≥ 9`; at least one wall not on edge
 - Home can reach edge initially; no fallbacks — generation throws on failure
 - Compact format: tile string (`g`/`w`/`h`) + flat solution array `[r,c,r,c,…]`
 - No map generation in the browser — browser is checker only

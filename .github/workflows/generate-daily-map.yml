@@ -8,9 +8,9 @@ on:
         required: false
         default: ''
       size:
-        description: 'Map size — exact (e.g. "9") or a range to pick from randomly (e.g. "7-17"). Must be between 7 (minimum) and 17 (maximum).'
+        description: 'Map size — exact (e.g. "9") or a range to pick from randomly (e.g. "9-17"). Must be between 9 (minimum) and 17 (maximum).'
         required: true
-        default: '7-17'
+        default: '9-17'
       count:
         description: 'Number of maps to generate'
         required: false

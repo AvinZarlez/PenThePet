@@ -19,7 +19,7 @@ describe('MapValidator', () => {
             ];
             
             const solution = {
-                goalArea: 8,
+                goalArea: 9,
                 optimalWallCount: 4,
                 optimalSolution: [[1, 2], [2, 1], [3, 2], [4, 1]] // Not all on edges
             };
@@ -37,14 +37,14 @@ describe('MapValidator', () => {
             ];
             
             const solution = {
-                goalArea: 2, // Too small (< 5)
+                goalArea: 2, // Too small (< 9)
                 optimalWallCount: 2,
                 optimalSolution: [[0, 0], [2, 0]]
             };
             
             const result = MapValidator.validate(map, solution);
             expect(result.valid).toBe(false);
-            expect(result.errors).toContain('Goal area too small (2 < 5) - map is too easy');
+            expect(result.errors).toContain('Goal area too small (2 < 9) - map is too easy');
         });
         
         test('should fail validation when all walls are on edge', () => {

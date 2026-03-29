@@ -39,7 +39,7 @@ function parseSizeInput(sizeStr) {
     }
     const exact = parseInt(str);
     if (isNaN(exact)) {
-        throw new Error(`Invalid size "${str}": must be a number or range (e.g., "9" or "7-17")`);
+        throw new Error(`Invalid size "${str}": must be a number or range (e.g., "9" or "9-17")`);
     }
     if (exact < MIN_GRID_SIZE || exact > MAX_GRID_SIZE) {
         throw new Error(`Invalid size ${exact}: must be between ${MIN_GRID_SIZE} and ${MAX_GRID_SIZE}`);
