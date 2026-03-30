@@ -13,31 +13,39 @@ function sendJson(res, statusCode, payload) {
     res.end(JSON.stringify(payload));
 }
 
-function sendFile(res, filePath) {
-    const resolved = path.resolve(filePath);
-    if (!resolved.startsWith(ROOT_DIR + path.sep) && resolved !== ROOT_DIR) {
-        res.writeHead(403);
-        res.end('Forbidden');
-        return;
-    }
-    fs.readFile(resolved, (err, data) => {
-        if (err) {
+function sendFile(res, requestPath) {
+    const sanitizedRequestPath = requestPath.replace(/^\/+/, '');
+    const joinedPath = path.resolve(ROOT_DIR, sanitizedRequestPath);
+    fs.realpath(joinedPath, (realErr, realPath) => {
+        if (realErr) {
             res.writeHead(404);
             res.end('Not found');
             return;
         }
-        const ext = path.extname(filePath).toLowerCase();
-        const contentType = {
-            '.html': 'text/html; charset=utf-8',
-            '.css': 'text/css; charset=utf-8',
-            '.js': 'application/javascript; charset=utf-8',
-            '.json': 'application/json; charset=utf-8',
-            '.svg': 'image/svg+xml',
-            '.png': 'image/png',
-            '.webmanifest': 'application/manifest+json; charset=utf-8',
-        }[ext] || 'application/octet-stream';
-        res.writeHead(200, { 'Content-Type': contentType });
-        res.end(data);
+        if (!realPath.startsWith(ROOT_DIR + path.sep) && realPath !== ROOT_DIR) {
+            res.writeHead(403);
+            res.end('Forbidden');
+            return;
+        }
+        fs.readFile(realPath, (err, data) => {
+            if (err) {
+                res.writeHead(404);
+                res.end('Not found');
+                return;
+            }
+            const ext = path.extname(realPath).toLowerCase();
+            const contentType = {
+                '.html': 'text/html; charset=utf-8',
+                '.css': 'text/css; charset=utf-8',
+                '.js': 'application/javascript; charset=utf-8',
+                '.json': 'application/json; charset=utf-8',
+                '.svg': 'image/svg+xml',
+                '.png': 'image/png',
+                '.webmanifest': 'application/manifest+json; charset=utf-8',
+            }[ext] || 'application/octet-stream';
+            res.writeHead(200, { 'Content-Type': contentType });
+            res.end(data);
+        });
     });
 }
 
@@ -81,8 +89,7 @@ const server = http.createServer((req, res) => {
 
     let requestPath = req.url.split('?')[0];
     if (requestPath === '/') requestPath = '/level-editor/index.html';
-    const filePath = path.join(ROOT_DIR, requestPath.replace(/^\/+/, ''));
-    sendFile(res, filePath);
+    sendFile(res, requestPath);
 });
 
 server.listen(PORT, () => {
