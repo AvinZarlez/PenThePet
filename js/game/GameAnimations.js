@@ -253,6 +253,9 @@ const GameAnimationsMixin = {
 
         // Add event listeners
         cell.addEventListener('click', () => this.handleCellClick(row, col));
+        if (typeof this.handleCellContextMenu === 'function') {
+            cell.addEventListener('contextmenu', (e) => this.handleCellContextMenu(e, row, col));
+        }
         cell.addEventListener('keydown', (e) => this.handleCellKeydown(e, row, col));
         cell.addEventListener('focus', () => this.lastFocusedCell = { row, col });
 

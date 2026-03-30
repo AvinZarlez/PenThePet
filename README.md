@@ -60,7 +60,7 @@ npm run level-editor
 # open http://localhost:8787/
 ```
 
-The editor auto-saves draft state every 30 seconds in a cookie, supports tile painting (grass/water/star/bee/hole/home), and returns a map code plus playable live-game URL once solved.
+The editor auto-saves draft state every 30 seconds in a cookie and returns a map code plus playable live-game URL once solved.
 
 ---
 

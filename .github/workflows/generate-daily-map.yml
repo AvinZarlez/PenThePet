@@ -23,139 +23,31 @@ on:
 
 jobs:
   generate-map:
-    runs-on: ubuntu-latest
-
     permissions:
       contents: write
       pull-requests: write
+    uses: ./.github/workflows/map-update-common.yml
+    with:
+      branch_prefix: maps/add-maps
+      run_command: |
+        DATE_ARG="${{ github.event.inputs.date }}"
+        SIZE_ARG="${{ github.event.inputs.size }}"
+        COUNT_ARG="${{ github.event.inputs.count }}"
+        WEAVE_ARG="${{ github.event.inputs.weave }}"
 
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+        EXTRA_FLAGS=""
+        if [ "$WEAVE_ARG" = "true" ]; then
+          EXTRA_FLAGS="--weave"
+        fi
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '24.x'
-
-      - name: Setup Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.13'
-
-      - name: Install dependencies
-        run: |
-          npm install
-          pip install -r scripts/solver/requirements.txt
-
-      - name: Create branch
-        id: create_branch
-        run: |
-          BRANCH_NAME="maps/add-maps-$(date +%Y%m%d-%H%M%S)"
-          echo "branch_name=${BRANCH_NAME}" >> $GITHUB_OUTPUT
-          git checkout -b "${BRANCH_NAME}"
-
-      - name: Generate map(s)
-        id: generate
-        run: |
-          DATE_ARG="${{ github.event.inputs.date }}"
-          SIZE_ARG="${{ github.event.inputs.size }}"
-          COUNT_ARG="${{ github.event.inputs.count }}"
-          WEAVE_ARG="${{ github.event.inputs.weave }}"
-
-          EXTRA_FLAGS=""
-          if [ "$WEAVE_ARG" = "true" ]; then
-            EXTRA_FLAGS="--weave"
-          fi
-
-          if [ -n "$DATE_ARG" ] && [ "$WEAVE_ARG" != "true" ]; then
-            echo "Generating ${COUNT_ARG} map(s) starting ${DATE_ARG} (size: ${SIZE_ARG})"
-            node scripts/generate-map.js --size "${SIZE_ARG}" --count "${COUNT_ARG}" --date "${DATE_ARG}" ${EXTRA_FLAGS}
-          else
-            echo "Generating ${COUNT_ARG} map(s) with auto-assigned date(s) (size: ${SIZE_ARG}, weave: ${WEAVE_ARG})"
-            node scripts/generate-map.js --size "${SIZE_ARG}" --count "${COUNT_ARG}" ${EXTRA_FLAGS}
-          fi
-
-      - name: Check for changes
-        id: check_changes
-        run: |
-          if git diff --quiet maps/; then
-            echo "has_changes=false" >> $GITHUB_OUTPUT
-          else
-            echo "has_changes=true" >> $GITHUB_OUTPUT
-          fi
-
-      - name: Commit and push branch
-        if: steps.check_changes.outputs.has_changes == 'true'
-        run: |
-          git config user.name "GitHub Actions Bot"
-          git config user.email "actions@github.com"
-          git add maps/
-          DATE_ARG="${{ github.event.inputs.date }}"
-          COUNT_ARG="${{ github.event.inputs.count }}"
-          WEAVE_ARG="${{ github.event.inputs.weave }}"
-          if [ "$WEAVE_ARG" = "true" ]; then
-            git commit -m "Weave-insert ${COUNT_ARG} daily map(s) into future schedule"
-          elif [ "${COUNT_ARG}" -gt 1 ]; then
-            if [ -n "$DATE_ARG" ]; then
-              git commit -m "Add ${COUNT_ARG} daily maps starting ${DATE_ARG}"
-            else
-              git commit -m "Add ${COUNT_ARG} daily maps (auto-assigned dates)"
-            fi
-          else
-            if [ -n "$DATE_ARG" ]; then
-              git commit -m "Add daily map for ${DATE_ARG}"
-            else
-              git commit -m "Add new daily map (auto-assigned date)"
-            fi
-          fi
-          git push origin "${{ steps.create_branch.outputs.branch_name }}"
-
-      - name: Create Pull Request
-        id: create_pr
-        if: steps.check_changes.outputs.has_changes == 'true'
-        continue-on-error: true
-        run: |
-          DATE_ARG="${{ github.event.inputs.date }}"
-          COUNT_ARG="${{ github.event.inputs.count }}"
-          SIZE_ARG="${{ github.event.inputs.size }}"
-          WEAVE_ARG="${{ github.event.inputs.weave }}"
-          if [ "$WEAVE_ARG" = "true" ]; then
-            TITLE="Weave-insert ${COUNT_ARG} new daily map(s) (size: ${SIZE_ARG})"
-            BODY="Weave-inserted ${COUNT_ARG} map(s) with size **${SIZE_ARG}** randomly into the future schedule (starting 2 days from today)."
-          elif [ "${COUNT_ARG}" -gt 1 ]; then
-            TITLE="Add ${COUNT_ARG} new daily maps (size: ${SIZE_ARG})"
-            BODY="Generated ${COUNT_ARG} map(s) with size **${SIZE_ARG}** using the map generation pipeline."
-          elif [ -n "$DATE_ARG" ]; then
-            TITLE="Add daily map for ${DATE_ARG} (size: ${SIZE_ARG})"
-            BODY="Generated map for **${DATE_ARG}** with size **${SIZE_ARG}** using the map generation pipeline."
-          else
-            TITLE="Add new daily map (size: ${SIZE_ARG})"
-            BODY="Generated a new map with size **${SIZE_ARG}** using the map generation pipeline."
-          fi
-          gh pr create \
-            --title "${TITLE}" \
-            --body "${BODY}" \
-            --head "${{ steps.create_branch.outputs.branch_name }}" \
-            --base main
-        env:
-          GH_TOKEN: ${{ secrets.REPO_TOKEN || secrets.GITHUB_TOKEN }}
-
-      - name: PR creation fallback
-        if: steps.check_changes.outputs.has_changes == 'true' && steps.create_pr.outcome == 'failure'
-        run: |
-          BRANCH="${{ steps.create_branch.outputs.branch_name }}"
-          echo "::warning::Automatic PR creation failed. The branch '${BRANCH}' was pushed successfully."
-          echo ""
-          echo "Create the pull request manually:"
-          echo "  https://github.com/${{ github.repository }}/compare/main...${BRANCH}?expand=1"
-          echo ""
-          echo "To fix automatic PR creation, enable one of:"
-          echo "  1. Repository setting: Settings > Actions > General > 'Allow GitHub Actions to create and approve pull requests'"
-          echo "  2. Add a REPO_TOKEN secret (Personal Access Token with 'repo' scope) under Settings > Secrets and variables > Actions"
-
-      - name: No changes
-        if: steps.check_changes.outputs.has_changes == 'false'
-        run: |
-          echo "No changes to maps.json - map may already exist or generation failed"
-          exit 1
+        if [ -n "$DATE_ARG" ] && [ "$WEAVE_ARG" != "true" ]; then
+          echo "Generating ${COUNT_ARG} map(s) starting ${DATE_ARG} (size: ${SIZE_ARG})"
+          node scripts/generate-map.js --size "${SIZE_ARG}" --count "${COUNT_ARG}" --date "${DATE_ARG}" ${EXTRA_FLAGS}
+        else
+          echo "Generating ${COUNT_ARG} map(s) with auto-assigned date(s) (size: ${SIZE_ARG}, weave: ${WEAVE_ARG})"
+          node scripts/generate-map.js --size "${SIZE_ARG}" --count "${COUNT_ARG}" ${EXTRA_FLAGS}
+        fi
+      commit_message: Add generated daily map(s)
+      pr_title: Add generated daily map(s)
+      pr_body: Adds map data generated from the standard map generation pipeline.
+      no_changes_message: No changes to maps.json - map may already exist or generation failed

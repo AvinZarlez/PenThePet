@@ -59,7 +59,6 @@ const CONSTANTS = {
         AUTOSAVE_COOKIE_KEY: 'level_editor_draft',
         MAX_REQUEST_BODY_BYTES: 3 * 1024 * 1024,
         DEFAULT_LEVEL_NAME: 'Custom Level',
-        TILE_OPTIONS: ['grass', 'water', 'star', 'bee', 'hole', 'home'],
     },
 
     // Gameplay

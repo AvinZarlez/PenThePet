@@ -3,10 +3,15 @@ const MapValidator = require('../../js/generation/MapValidator.js');
 const MILPSolver = require('../solver/MILPSolver.js');
 const MapURLCodec = require('../../js/common/MapURLCodec.js');
 const { encodeCompactMap, encodeCompactSolution, parseCompactMap } = require('../../js/game/Grid.js');
-const { TILE_TO_NUMERIC } = require('../../js/tiles/tileData.js');
+const { TILE_DATA, TILE_TO_NUMERIC } = require('../../js/tiles/tileData.js');
+
+function getEditorTileOptions() {
+    return Object.keys(TILE_DATA)
+        .filter((name) => name !== 'grass' && name !== 'wall' && name !== 'filledHole');
+}
 
 function toNumericMap(stringMap) {
-    const fallbackTile = CONSTANTS.LEVEL_EDITOR.TILE_OPTIONS[0];
+    const fallbackTile = 'grass';
     return stringMap.map((row) => row.map((tile) => TILE_TO_NUMERIC[tile] ?? TILE_TO_NUMERIC[fallbackTile]));
 }
 
@@ -40,9 +45,14 @@ function solveAndValidateEditorMap(input) {
     const numericMap = toNumericMap(input.map);
     const solution = MILPSolver.solveMap(numericMap, maxWalls);
     if (!solution) {
+        const solverDetail = MILPSolver.getLastError ? MILPSolver.getLastError() : null;
+        const missingDependency = typeof solverDetail === 'string' && solverDetail.includes('No module named');
+        const errorMessage = missingDependency
+            ? 'Solver dependency missing. Install Python requirements: pip install -r scripts/solver/requirements.txt'
+            : 'Solver could not find a feasible solution for this map.';
         return {
             ok: false,
-            error: 'Solver could not find a feasible solution for this map.',
+            error: errorMessage,
             validationErrors: [],
         };
     }
@@ -110,4 +120,5 @@ module.exports = {
     decodeEditorMapCode,
     buildPlayableUrl,
     ensureSingleHome,
+    getEditorTileOptions,
 };

@@ -57,9 +57,7 @@ function encodeCompactMap(map2d) {
     if (!Array.isArray(map2d) || map2d.length === 0) {
         throw new Error('encodeCompactMap: map2d must be a non-empty 2D array');
     }
-    const fallbackTile = (typeof CONSTANTS !== 'undefined' && CONSTANTS.LEVEL_EDITOR && Array.isArray(CONSTANTS.LEVEL_EDITOR.TILE_OPTIONS))
-        ? CONSTANTS.LEVEL_EDITOR.TILE_OPTIONS[0]
-        : 'grass';
+    const fallbackTile = 'grass';
     return map2d.map(row => row.map(tile => TILE_TO_COMPACT_CHAR[tile] || TILE_TO_COMPACT_CHAR[fallbackTile]).join('')).join('');
 }
 

@@ -297,6 +297,14 @@ const LANGUAGES = {
         debug_reset_level: 'Reset Level',
         debug_reset_all: 'Reset All Data',
         debug_share_map_url: 'Share Map URL',
+        tile_name_grass: 'Grass',
+        tile_name_water: 'Water',
+        tile_name_wall: 'Wall',
+        tile_name_home: 'Home',
+        tile_name_star: 'Star',
+        tile_name_bee: 'Bee',
+        tile_name_hole: 'Hole',
+        tile_name_filled_hole: 'Filled Hole',
 
         // ── Footer ────────────────────────────────────────────────────────
         footer_view_github: 'View on GitHub',
@@ -309,7 +317,6 @@ const LANGUAGES = {
         editor_label_name: 'Level Name',
         editor_label_map_size: 'Map Size',
         editor_label_tile: 'Tile Selector',
-        editor_btn_reset: 'Reset',
         editor_btn_solve: 'Solve & Validate',
         editor_btn_toggle_solution: 'View Optional Solution',
         editor_btn_hide_solution: 'Hide Optional Solution',
@@ -321,12 +328,7 @@ const LANGUAGES = {
         editor_error_no_home: 'Map must contain exactly one home tile.',
         editor_confirm_reset: 'Are you sure? This will reset to a blank map.',
         editor_confirm_resize: 'Are you sure? Changing map size resets to a blank map.',
-        editor_tile_grass: 'Grass',
-        editor_tile_water: 'Water',
-        editor_tile_star: 'Star',
-        editor_tile_bee: 'Bee',
-        editor_tile_hole: 'Hole',
-        editor_tile_home: 'Home',
+        editor_hint_right_click_erase: 'Tip: Right-click a tile to erase it back to grass.',
 
         // ── Tile Descriptions (referenced by descriptionKey in tileData.js) ─
         tile_grass_description: 'Click to place a wall. Scores 1 point when penned.',
@@ -620,6 +622,14 @@ const LANGUAGES = {
         debug_reset_level: 'Reiniciar nivel',
         debug_reset_all: 'Restablecer todos los datos',
         debug_share_map_url: 'Compartir URL del mapa',
+        tile_name_grass: 'Pasto',
+        tile_name_water: 'Agua',
+        tile_name_wall: 'Muro',
+        tile_name_home: 'Hogar',
+        tile_name_star: 'Estrella',
+        tile_name_bee: 'Abeja',
+        tile_name_hole: 'Hoyo',
+        tile_name_filled_hole: 'Hoyo relleno',
 
         // ── Footer ────────────────────────────────────────────────────────
         footer_view_github: 'Ver en GitHub',
@@ -632,7 +642,6 @@ const LANGUAGES = {
         editor_label_name: 'Nombre del nivel',
         editor_label_map_size: 'Tamaño del mapa',
         editor_label_tile: 'Selector de loseta',
-        editor_btn_reset: 'Reiniciar',
         editor_btn_solve: 'Resolver y validar',
         editor_btn_toggle_solution: 'Ver solución opcional',
         editor_btn_hide_solution: 'Ocultar solución opcional',
@@ -644,12 +653,7 @@ const LANGUAGES = {
         editor_error_no_home: 'El mapa debe contener exactamente una casilla de hogar.',
         editor_confirm_reset: '¿Estás seguro? Esto reiniciará a un mapa en blanco.',
         editor_confirm_resize: '¿Estás seguro? Cambiar el tamaño reinicia a un mapa en blanco.',
-        editor_tile_grass: 'Pasto',
-        editor_tile_water: 'Agua',
-        editor_tile_star: 'Estrella',
-        editor_tile_bee: 'Abeja',
-        editor_tile_hole: 'Hoyo',
-        editor_tile_home: 'Hogar',
+        editor_hint_right_click_erase: 'Consejo: clic derecho para borrar una casilla y volverla pasto.',
 
         // ── Tile Descriptions (referenced by descriptionKey in tileData.js) ─
         tile_grass_description: 'Haz clic para colocar un muro. Suma 1 punto cuando está cercado.',

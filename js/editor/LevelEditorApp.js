@@ -94,18 +94,14 @@ class LevelEditorApp {
             sizeSelect.appendChild(option);
         }
 
-        const tileOptions = [
-            ...CONSTANTS.LEVEL_EDITOR.TILE_OPTIONS.map((value) => ({
-                value,
-                key: `editor_tile_${value}`,
-            })),
-        ];
         tileSelect.innerHTML = '';
-        for (const opt of tileOptions) {
+        for (const value of LevelEditorCore.EDITABLE_TILE_OPTIONS) {
+            const tileData = TILE_DATA[value];
+            if (!tileData || !tileData.nameKey) continue;
             const option = document.createElement('option');
-            option.value = opt.value;
-            option.textContent = I18N.t(opt.key);
-            if (opt.value === this.core.selectedTile) option.selected = true;
+            option.value = value;
+            option.textContent = I18N.t(tileData.nameKey);
+            if (value === this.core.selectedTile) option.selected = true;
             tileSelect.appendChild(option);
         }
     }
@@ -205,7 +201,17 @@ class LevelEditorApp {
 
     handleCellClick(row, col) {
         this.core.placeTile(row, col);
-        this.grid.setTile(row, col, this.core.selectedTile);
+        this.grid.loadMap(this.core.map);
+        this.solutionVisible = false;
+        this.render();
+        this._renderStatus();
+        this._saveDraft();
+    }
+
+    handleCellContextMenu(event, row, col) {
+        event.preventDefault();
+        this.core.eraseTile(row, col);
+        this.grid.loadMap(this.core.map);
         this.solutionVisible = false;
         this.render();
         this._renderStatus();

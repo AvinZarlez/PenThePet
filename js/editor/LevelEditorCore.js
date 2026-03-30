@@ -22,7 +22,7 @@ class LevelEditorCore {
 
         this.size = initialSize;
         this.levelName = options.levelName || CONSTANTS.LEVEL_EDITOR.DEFAULT_LEVEL_NAME;
-        this.selectedTile = 'grass';
+        this.selectedTile = LevelEditorCore.DEFAULT_SELECTED_TILE;
         this.solvedResult = null;
         this.map = this._createBlankMap(this.size);
     }
@@ -35,7 +35,7 @@ class LevelEditorCore {
         this.size = size;
         this.map = this._createBlankMap(size);
         this.solvedResult = null;
-        this.selectedTile = 'grass';
+        this.selectedTile = LevelEditorCore.DEFAULT_SELECTED_TILE;
     }
 
     setLevelName(name) {
@@ -43,7 +43,7 @@ class LevelEditorCore {
     }
 
     setSelectedTile(tileName) {
-        if (!CONSTANTS.LEVEL_EDITOR.TILE_OPTIONS.includes(tileName)) {
+        if (!LevelEditorCore.EDITABLE_TILE_OPTIONS.includes(tileName)) {
             throw new Error(`Unsupported editor tile: ${tileName}`);
         }
         this.selectedTile = tileName;
@@ -68,6 +68,12 @@ class LevelEditorCore {
         this.invalidateSolvedState();
     }
 
+    eraseTile(row, col) {
+        if (row < 0 || col < 0 || row >= this.size || col >= this.size) return;
+        this.map[row][col] = LevelEditorCore.ERASE_TILE;
+        this.invalidateSolvedState();
+    }
+
     _removeExistingHome() {
         for (let r = 0; r < this.size; r++) {
             for (let c = 0; c < this.size; c++) {
@@ -75,6 +81,21 @@ class LevelEditorCore {
                     this.map[r][c] = 'grass';
                 }
             }
+        }
+    }
+
+    ensureSingleHome() {
+        const homePositions = [];
+        for (let r = 0; r < this.size; r++) {
+            for (let c = 0; c < this.size; c++) {
+                if (this.map[r][c] === 'home') homePositions.push([r, c]);
+            }
+        }
+        if (homePositions.length <= 1) return;
+        const [keepR, keepC] = homePositions[homePositions.length - 1];
+        for (const [r, c] of homePositions) {
+            if (r === keepR && c === keepC) continue;
+            this.map[r][c] = LevelEditorCore.ERASE_TILE;
         }
     }
 
@@ -117,9 +138,10 @@ class LevelEditorCore {
         if (typeof draft.levelName === 'string') {
             this.levelName = draft.levelName;
         }
-        if (typeof draft.selectedTile === 'string' && CONSTANTS.LEVEL_EDITOR.TILE_OPTIONS.includes(draft.selectedTile)) {
+        if (typeof draft.selectedTile === 'string' && LevelEditorCore.EDITABLE_TILE_OPTIONS.includes(draft.selectedTile)) {
             this.selectedTile = draft.selectedTile;
         }
+        this.ensureSingleHome();
         this.solvedResult = draft.solvedResult || null;
     }
 
@@ -131,6 +153,11 @@ class LevelEditorCore {
         this.solvedResult = null;
     }
 }
+
+LevelEditorCore.ERASE_TILE = 'grass';
+LevelEditorCore.DEFAULT_SELECTED_TILE = 'water';
+LevelEditorCore.EDITABLE_TILE_OPTIONS = Object.keys(TILE_DATA)
+    .filter((name) => name !== LevelEditorCore.ERASE_TILE && name !== 'wall' && name !== 'filledHole');
 
 if (typeof module !== 'undefined' && module.exports) {
     module.exports = LevelEditorCore;

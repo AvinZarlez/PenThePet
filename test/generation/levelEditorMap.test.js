@@ -3,6 +3,7 @@ const {
     decodeEditorMapCode,
     buildPlayableUrl,
     ensureSingleHome,
+    getEditorTileOptions,
 } = require('../../scripts/lib/levelEditorMap.js');
 
 describe('levelEditorMap helpers', () => {
@@ -17,6 +18,15 @@ describe('levelEditorMap helpers', () => {
 
     test('decodeEditorMapCode throws on invalid code', () => {
         expect(() => decodeEditorMapCode('bad!!')).toThrow(/Invalid map code/);
+    });
+
+    test('editor tile options exclude grass and wall-state tiles', () => {
+        const options = getEditorTileOptions();
+        expect(options).toContain('home');
+        expect(options).toContain('water');
+        expect(options).not.toContain('grass');
+        expect(options).not.toContain('wall');
+        expect(options).not.toContain('filledHole');
     });
 });
 
