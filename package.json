@@ -37,7 +37,7 @@
     "globals": "^17.4.0",
     "jest": "^30.3.0",
     "jest-environment-jsdom": "^30.3.0",
-    "markdownlint-cli2": "^0.22.0"
+    "markdownlint-cli2": "^0.21.0"
   },
   "jest": {
     "testEnvironment": "jsdom",
