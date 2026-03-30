@@ -1,0 +1,95 @@
+name: Add map
+
+on:
+  workflow_dispatch:
+    inputs:
+      map_code:
+        description: 'Map code (hash) from level editor or debug share URL'
+        required: true
+      date:
+        description: 'Optional date (YYYY-MM-DD). Leave empty to auto-assign.'
+        required: false
+        default: ''
+      map_name:
+        description: 'Optional map name override'
+        required: false
+        default: ''
+
+jobs:
+  add-map:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24.x'
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+
+      - name: Install dependencies
+        run: |
+          npm install
+          pip install -r scripts/solver/requirements.txt
+
+      - name: Create branch
+        id: create_branch
+        run: |
+          BRANCH_NAME="maps/add-map-$(date +%Y%m%d-%H%M%S)"
+          echo "branch_name=${BRANCH_NAME}" >> $GITHUB_OUTPUT
+          git checkout -b "${BRANCH_NAME}"
+
+      - name: Add map from code
+        run: |
+          CMD=(node scripts/add-map.js --map-code "${{ github.event.inputs.map_code }}")
+          if [ -n "${{ github.event.inputs.date }}" ]; then
+            CMD+=(--date "${{ github.event.inputs.date }}")
+          fi
+          if [ -n "${{ github.event.inputs.map_name }}" ]; then
+            CMD+=(--map-name "${{ github.event.inputs.map_name }}")
+          fi
+          "${CMD[@]}"
+
+      - name: Check for changes
+        id: check_changes
+        run: |
+          if git diff --quiet maps/; then
+            echo "has_changes=false" >> $GITHUB_OUTPUT
+          else
+            echo "has_changes=true" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Commit and push branch
+        if: steps.check_changes.outputs.has_changes == 'true'
+        run: |
+          git config user.name "GitHub Actions Bot"
+          git config user.email "actions@github.com"
+          git add maps/
+          git commit -m "Add map from level editor code"
+          git push origin "${{ steps.create_branch.outputs.branch_name }}"
+
+      - name: Create Pull Request
+        if: steps.check_changes.outputs.has_changes == 'true'
+        run: |
+          gh pr create \
+            --title "Add map from level editor code" \
+            --body "Adds one map from a submitted level-editor map code after solver + validation checks." \
+            --head "${{ steps.create_branch.outputs.branch_name }}" \
+            --base main
+        env:
+          GH_TOKEN: ${{ secrets.REPO_TOKEN || secrets.GITHUB_TOKEN }}
+
+      - name: No changes
+        if: steps.check_changes.outputs.has_changes == 'false'
+        run: |
+          echo "No map changes were produced."
+          exit 1

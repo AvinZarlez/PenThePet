@@ -300,6 +300,33 @@ const LANGUAGES = {
 
         // ── Footer ────────────────────────────────────────────────────────
         footer_view_github: 'View on GitHub',
+        footer_level_editor: 'Local Level Editor',
+
+        // ── Level Editor ──────────────────────────────────────────────────
+        editor_page_title: 'Pen the Pet - Level Editor',
+        editor_title: 'Level Editor',
+        editor_subtitle: 'Create and validate custom Pen the Pet levels locally',
+        editor_label_name: 'Level Name',
+        editor_label_map_size: 'Map Size',
+        editor_label_tile: 'Tile Selector',
+        editor_btn_reset: 'Reset',
+        editor_btn_solve: 'Solve & Validate',
+        editor_btn_toggle_solution: 'View Optional Solution',
+        editor_btn_hide_solution: 'Hide Optional Solution',
+        editor_status_unsolved: 'Map is unsolved. Any edits require solve again.',
+        editor_status_ready: '✅ Ready! Goal: {goal}, Max Walls: {maxWalls}',
+        editor_status_code: 'Map Code:',
+        editor_status_url: 'Play URL:',
+        editor_error_popup_title: 'Validation failed',
+        editor_error_no_home: 'Map must contain exactly one home tile.',
+        editor_confirm_reset: 'Are you sure? This will reset to a blank map.',
+        editor_confirm_resize: 'Are you sure? Changing map size resets to a blank map.',
+        editor_tile_grass: 'Grass',
+        editor_tile_water: 'Water',
+        editor_tile_star: 'Star',
+        editor_tile_bee: 'Bee',
+        editor_tile_hole: 'Hole',
+        editor_tile_home: 'Home',
 
         // ── Tile Descriptions (referenced by descriptionKey in tileData.js) ─
         tile_grass_description: 'Click to place a wall. Scores 1 point when penned.',
@@ -596,6 +623,33 @@ const LANGUAGES = {
 
         // ── Footer ────────────────────────────────────────────────────────
         footer_view_github: 'Ver en GitHub',
+        footer_level_editor: 'Editor de niveles local',
+
+        // ── Level Editor ──────────────────────────────────────────────────
+        editor_page_title: 'Pen the Pet - Editor de Niveles',
+        editor_title: 'Editor de Niveles',
+        editor_subtitle: 'Crea y valida niveles personalizados de Pen the Pet localmente',
+        editor_label_name: 'Nombre del nivel',
+        editor_label_map_size: 'Tamaño del mapa',
+        editor_label_tile: 'Selector de loseta',
+        editor_btn_reset: 'Reiniciar',
+        editor_btn_solve: 'Resolver y validar',
+        editor_btn_toggle_solution: 'Ver solución opcional',
+        editor_btn_hide_solution: 'Ocultar solución opcional',
+        editor_status_unsolved: 'El mapa no está resuelto. Cualquier cambio requiere resolver de nuevo.',
+        editor_status_ready: '✅ ¡Listo! Objetivo: {goal}, Muros máximos: {maxWalls}',
+        editor_status_code: 'Código del mapa:',
+        editor_status_url: 'URL para jugar:',
+        editor_error_popup_title: 'La validación falló',
+        editor_error_no_home: 'El mapa debe contener exactamente una casilla de hogar.',
+        editor_confirm_reset: '¿Estás seguro? Esto reiniciará a un mapa en blanco.',
+        editor_confirm_resize: '¿Estás seguro? Cambiar el tamaño reinicia a un mapa en blanco.',
+        editor_tile_grass: 'Pasto',
+        editor_tile_water: 'Agua',
+        editor_tile_star: 'Estrella',
+        editor_tile_bee: 'Abeja',
+        editor_tile_hole: 'Hoyo',
+        editor_tile_home: 'Hogar',
 
         // ── Tile Descriptions (referenced by descriptionKey in tileData.js) ─
         tile_grass_description: 'Haz clic para colocar un muro. Suma 1 punto cuando está cercado.',

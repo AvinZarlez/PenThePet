@@ -48,6 +48,27 @@ function parseCompactMap(mapStr, size) {
 }
 
 /**
+ * Encode a 2D map array of tile names into a compact row-major string.
+ * @param {Array<Array<string>>} map2d - 2D array of tile type strings
+ * @returns {string} Compact map string
+ */
+function encodeCompactMap(map2d) {
+    if (!Array.isArray(map2d) || map2d.length === 0) {
+        throw new Error('encodeCompactMap: map2d must be a non-empty 2D array');
+    }
+    const tileToChar = (typeof TILE_TO_COMPACT_CHAR !== 'undefined')
+        ? TILE_TO_COMPACT_CHAR
+        : (() => {
+            const map = {};
+            for (const [name, data] of Object.entries(TILE_DATA)) {
+                map[name] = data.compactChar;
+            }
+            return map;
+        })();
+    return map2d.map(row => row.map(tile => tileToChar[tile] || 'g').join('')).join('');
+}
+
+/**
  * Parse a compact (flat) solution array into coordinate pairs.
  * @param {Array<number>} flatArr - Flat array [r0, c0, r1, c1, ...]
  * @returns {Array<Array<number>>} Array of [row, col] coordinate pairs
@@ -59,6 +80,21 @@ function parseCompactSolution(flatArr) {
         pairs.push([flatArr[i], flatArr[i + 1]]);
     }
     return pairs;
+}
+
+/**
+ * Encode [row,col] pairs into a compact flat solution array.
+ * @param {Array<Array<number>>} pairs - Array of [row,col] coordinate pairs
+ * @returns {Array<number>} Flat array [r0,c0,r1,c1,...]
+ */
+function encodeCompactSolution(pairs) {
+    if (!Array.isArray(pairs)) return [];
+    return pairs.reduce((acc, pair) => {
+        if (Array.isArray(pair) && pair.length >= 2) {
+            acc.push(pair[0], pair[1]);
+        }
+        return acc;
+    }, []);
 }
 
 class Grid {
@@ -152,5 +188,7 @@ class Grid {
 if (typeof module !== 'undefined' && module.exports) {
     module.exports = Grid;
     module.exports.parseCompactMap = parseCompactMap;
+    module.exports.encodeCompactMap = encodeCompactMap;
     module.exports.parseCompactSolution = parseCompactSolution;
+    module.exports.encodeCompactSolution = encodeCompactSolution;
 }

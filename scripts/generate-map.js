@@ -20,7 +20,7 @@ const path = require('path');
 const MapGenerator = require('../js/generation/MapGenerator.js');
 const MapValidator = require('../js/generation/MapValidator.js');
 const { generateLevelName } = require('../js/generation/wordList.js');
-const { TILE_TO_COMPACT_CHAR } = require('../js/tiles/tileData.js');
+const { encodeCompactMap, encodeCompactSolution } = require('../js/game/Grid.js');
 const {
     parseSizeInput,
     getRandomSize,
@@ -33,25 +33,6 @@ const {
     fixMapsDatabase,
     weaveInsert,
 } = require('./lib/mapUtils.js');
-
-/**
- * Encode a 2D map array into a compact single-character-per-tile string.
- * Uses TILE_TO_COMPACT_CHAR from tileData.js as source of truth.
- * @param {Array} map2d - 2D array of tile type strings
- * @returns {string} Compact map string (row-major)
- */
-function encodeCompactMap(map2d) {
-    return map2d.map(row => row.map(t => TILE_TO_COMPACT_CHAR[t] || 'g').join('')).join('');
-}
-
-/**
- * Encode an optimal solution (array of [row,col] pairs) into a flat array.
- * @param {Array} solution - Array of [row, col] coordinate pairs
- * @returns {Array<number>} Flat array [r0, c0, r1, c1, ...]
- */
-function encodeCompactSolution(solution) {
-    return solution.reduce((acc, pair) => { acc.push(pair[0], pair[1]); return acc; }, []);
-}
 
 /**
  * Generate one map with MILP solving and quality validation.

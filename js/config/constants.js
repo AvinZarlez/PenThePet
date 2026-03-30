@@ -27,6 +27,7 @@ const CONSTANTS = {
 
     // Map data
     FIRST_MAP_YEAR: 2026,          // First year that has map data files in maps/
+    LIVE_GAME_URL: 'https://avinzarlez.com/penthepet',
 
     // Map generation
     MAX_GENERATION_ATTEMPTS: 100,  // Inner-loop attempts per outer retry (outer limit is 1000 in generate())
@@ -49,6 +50,16 @@ const CONSTANTS = {
 
     // Grid sizing
     GRID_PADDING: 6,            // Padding around the grid in pixels
+
+    // Local level editor
+    LEVEL_EDITOR: {
+        DEFAULT_PORT: 8787,
+        AUTOSAVE_INTERVAL_MS: 30000,
+        AUTOSAVE_COOKIE_DAYS: 365,
+        AUTOSAVE_COOKIE_KEY: 'level_editor_draft',
+        DEFAULT_LEVEL_NAME: 'Custom Level',
+        TILE_OPTIONS: ['grass', 'water', 'star', 'bee', 'hole', 'home'],
+    },
 
     // Gameplay
     ALLOW_WALL_REMOVAL: true,   // Allow clicking walls to remove them

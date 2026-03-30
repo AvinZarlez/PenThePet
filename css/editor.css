@@ -1,0 +1,45 @@
+.editor-controls {
+    display: grid;
+    gap: 10px;
+    margin: 12px 0;
+    grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+}
+
+.editor-field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.editor-field input,
+.editor-field select {
+    border: 1px solid var(--ui-border);
+    border-radius: 8px;
+    background: var(--tile-bg);
+    color: var(--text-dark);
+    padding: 8px 10px;
+}
+
+.editor-actions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.editor-status {
+    margin-top: 10px;
+    padding: 10px;
+    border-radius: 10px;
+    border: 1px solid var(--ui-border);
+    background: var(--tile-bg);
+    text-align: left;
+}
+
+.editor-status pre {
+    margin: 6px 0;
+    padding: 8px;
+    overflow: auto;
+    max-height: 130px;
+    border-radius: 8px;
+    background: rgba(0, 0, 0, 0.06);
+}

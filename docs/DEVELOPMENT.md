@@ -56,6 +56,16 @@ node scripts/generate-map.js --size 7-17 --count 5  # 5 maps, random sizes
 node scripts/generate-map.js --fresh --count 10 --date 2026-03-01 --size 9
 ```
 
+### Local Level Editor
+
+Run the local level editor server:
+
+```bash
+npm run level-editor
+```
+
+Then open `http://localhost:8787/` to build a custom map, solve/validate it with the existing Python MILP solver, and get a playable `?map=` URL for the live game.
+
 ### Keyboard Controls
 
 | Key | Action |
@@ -124,6 +134,8 @@ Use DevTools (F12) → Sources to set breakpoints. Check Network tab for 404s on
 **`test.yml`** — Runs Jest webapp and generation tests in parallel, then a full coverage run with Codecov upload. A `Test` gate job always reports a result.
 
 **`generate-daily-map.yml`** — Triggered manually via `workflow_dispatch`. Generates maps with the Python MILP solver, validates quality, and opens a PR against `main`.
+
+**`add-map.yml`** — Triggered manually via `workflow_dispatch`. Accepts a level-editor/debug map code, re-runs solver + validation, writes the map into `maps/`, and opens a PR against `main`.
 
 **`static.yml`** — Deploys to GitHub Pages on push to `main`.
 

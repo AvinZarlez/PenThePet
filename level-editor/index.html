@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pen the Pet - Level Editor</title>
+    <link rel="icon" type="image/svg+xml" href="../assets/icon.svg">
+    <link rel="stylesheet" href="../css/base.css">
+    <link rel="stylesheet" href="../css/game.css">
+    <link rel="stylesheet" href="../css/editor.css">
+</head>
+<body>
+    <div class="container">
+        <h1><span aria-hidden="true">🧩</span> <span data-i18n="editor_title"></span></h1>
+        <p class="subtitle" data-i18n="editor_subtitle"></p>
+
+        <div class="editor-controls">
+            <label class="editor-field">
+                <span data-i18n="editor_label_name"></span>
+                <input id="editorLevelName" type="text" maxlength="60">
+            </label>
+            <label class="editor-field">
+                <span data-i18n="editor_label_map_size"></span>
+                <select id="editorMapSize"></select>
+            </label>
+            <label class="editor-field">
+                <span data-i18n="editor_label_tile"></span>
+                <select id="editorTileSelector"></select>
+            </label>
+        </div>
+
+        <div class="editor-actions">
+            <button id="editorResetBtn" class="ctrl-panel" data-i18n="editor_btn_reset"></button>
+            <button id="editorSolveBtn" class="ctrl-panel" data-i18n="editor_btn_solve"></button>
+            <button id="editorToggleSolutionBtn" class="ctrl-panel" style="display:none;" data-i18n="editor_btn_toggle_solution"></button>
+        </div>
+
+        <div class="grid-container">
+            <div id="grid" class="grid"></div>
+        </div>
+
+        <div id="editorStatus" class="editor-status" role="status" aria-live="polite"></div>
+    </div>
+
+    <script src="../js/config/constants.js"></script>
+    <script src="../js/config/config.js"></script>
+    <script src="../js/tiles/tileData.js"></script>
+    <script src="../js/tiles/TileSvgs.js"></script>
+    <script src="../js/common/CookieUtils.js"></script>
+    <script src="../js/common/i18n.js"></script>
+    <script src="../js/common/MapURLCodec.js"></script>
+    <script src="../js/game/Grid.js"></script>
+    <script src="../js/game/GameAnimations.js"></script>
+    <script src="../js/editor/LevelEditorCore.js"></script>
+    <script src="../js/editor/LevelEditorApp.js"></script>
+</body>
+</html>
