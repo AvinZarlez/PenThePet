@@ -14,12 +14,13 @@ function sendJson(res, statusCode, payload) {
 }
 
 function sendFile(res, filePath) {
-    if (!filePath.startsWith(ROOT_DIR)) {
+    const resolved = path.resolve(filePath);
+    if (!resolved.startsWith(ROOT_DIR + path.sep) && resolved !== ROOT_DIR) {
         res.writeHead(403);
         res.end('Forbidden');
         return;
     }
-    fs.readFile(filePath, (err, data) => {
+    fs.readFile(resolved, (err, data) => {
         if (err) {
             res.writeHead(404);
             res.end('Not found');
@@ -43,13 +44,22 @@ function sendFile(res, filePath) {
 const server = http.createServer((req, res) => {
     if (req.method === 'POST' && req.url === '/api/solve-level') {
         let body = '';
+        let rejected = false;
         req.on('data', (chunk) => {
+            if (rejected) return;
             body += chunk;
-            if (body.length > 3 * 1024 * 1024) {
+            if (body.length > CONSTANTS.LEVEL_EDITOR.MAX_REQUEST_BODY_BYTES) {
+                rejected = true;
+                sendJson(res, 413, {
+                    ok: false,
+                    error: 'Request body too large',
+                    validationErrors: [],
+                });
                 req.destroy();
             }
         });
         req.on('end', () => {
+            if (rejected) return;
             try {
                 const payload = JSON.parse(body || '{}');
                 const solved = solveAndValidateEditorMap(payload);

@@ -10,6 +10,7 @@ if (typeof TILE_DATA === 'undefined' && typeof require !== 'undefined') {
     const _td = require('../tiles/tileData.js');
     global.TILE_DATA = _td.TILE_DATA;
     global.COMPACT_CHAR_TO_TILE = _td.COMPACT_CHAR_TO_TILE;
+    global.TILE_TO_COMPACT_CHAR = _td.TILE_TO_COMPACT_CHAR;
 }
 
 /** compact char → tile name; derived from TILE_DATA (single source of truth) */
@@ -56,16 +57,10 @@ function encodeCompactMap(map2d) {
     if (!Array.isArray(map2d) || map2d.length === 0) {
         throw new Error('encodeCompactMap: map2d must be a non-empty 2D array');
     }
-    const tileToChar = (typeof TILE_TO_COMPACT_CHAR !== 'undefined')
-        ? TILE_TO_COMPACT_CHAR
-        : (() => {
-            const map = {};
-            for (const [name, data] of Object.entries(TILE_DATA)) {
-                map[name] = data.compactChar;
-            }
-            return map;
-        })();
-    return map2d.map(row => row.map(tile => tileToChar[tile] || 'g').join('')).join('');
+    const fallbackTile = (typeof CONSTANTS !== 'undefined' && CONSTANTS.LEVEL_EDITOR && Array.isArray(CONSTANTS.LEVEL_EDITOR.TILE_OPTIONS))
+        ? CONSTANTS.LEVEL_EDITOR.TILE_OPTIONS[0]
+        : 'grass';
+    return map2d.map(row => row.map(tile => TILE_TO_COMPACT_CHAR[tile] || TILE_TO_COMPACT_CHAR[fallbackTile]).join('')).join('');
 }
 
 /**

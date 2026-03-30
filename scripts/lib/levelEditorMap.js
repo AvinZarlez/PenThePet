@@ -6,7 +6,8 @@ const { encodeCompactMap, encodeCompactSolution, parseCompactMap } = require('..
 const { TILE_TO_NUMERIC } = require('../../js/tiles/tileData.js');
 
 function toNumericMap(stringMap) {
-    return stringMap.map((row) => row.map((tile) => TILE_TO_NUMERIC[tile] !== undefined ? TILE_TO_NUMERIC[tile] : TILE_TO_NUMERIC.grass));
+    const fallbackTile = CONSTANTS.LEVEL_EDITOR.TILE_OPTIONS[0];
+    return stringMap.map((row) => row.map((tile) => TILE_TO_NUMERIC[tile] ?? TILE_TO_NUMERIC[fallbackTile]));
 }
 
 function ensureSingleHome(map) {

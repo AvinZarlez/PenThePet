@@ -40,7 +40,6 @@ class LevelEditorCore {
 
     setLevelName(name) {
         this.levelName = (name || '').trim();
-        this.invalidateSolvedState();
     }
 
     setSelectedTile(tileName) {

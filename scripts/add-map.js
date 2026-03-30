@@ -60,6 +60,8 @@ async function main() {
     let validation = validateMapsDatabase(maps);
     let outputMaps = maps;
     if (!validation.valid) {
+        console.log(`Fixing ${validation.issues.length} map database issue(s) before save...`);
+        validation.issues.forEach((issue) => console.log(`  - ${issue.message}`));
         outputMaps = fixMapsDatabase(maps);
         validation = validateMapsDatabase(outputMaps);
     }

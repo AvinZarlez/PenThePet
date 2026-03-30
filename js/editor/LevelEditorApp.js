@@ -12,8 +12,10 @@ class LevelEditorApp {
         if (draftRaw) {
             try {
                 this.core.loadDraft(JSON.parse(draftRaw));
-            } catch {
-                // ignore malformed draft cookie
+            } catch (error) {
+                if (typeof console !== 'undefined' && console.warn) {
+                    console.warn('Failed to load level editor draft cookie:', error);
+                }
             }
         }
 
@@ -93,12 +95,10 @@ class LevelEditorApp {
         }
 
         const tileOptions = [
-            { value: 'grass', key: 'editor_tile_grass' },
-            { value: 'water', key: 'editor_tile_water' },
-            { value: 'star', key: 'editor_tile_star' },
-            { value: 'bee', key: 'editor_tile_bee' },
-            { value: 'hole', key: 'editor_tile_hole' },
-            { value: 'home', key: 'editor_tile_home' },
+            ...CONSTANTS.LEVEL_EDITOR.TILE_OPTIONS.map((value) => ({
+                value,
+                key: `editor_tile_${value}`,
+            })),
         ];
         tileSelect.innerHTML = '';
         for (const opt of tileOptions) {
