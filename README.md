@@ -1,10 +1,12 @@
 # 🐕 PenThePet
 
 [![Live Demo](https://img.shields.io/badge/demo-live-brightgreen)](https://avinzarlez.github.io/penthepet)
-[![CI/CD Pipeline](https://github.com/AvinZarlez/penthepet/actions/workflows/test.yml/badge.svg)](https://github.com/AvinZarlez/penthepet/actions/workflows/test.yml)
+[![Testing Pipeline](https://github.com/AvinZarlez/penthepet/actions/workflows/test.yml/badge.svg)](https://github.com/AvinZarlez/penthepet/actions/workflows/test.yml)
+[![Linting Pipeline](https://github.com/AvinZarlez/penthepet/actions/workflows/lint.yml/badge.svg)](https://github.com/AvinZarlez/penthepet/actions/workflows/lint.yml)
 [![Deploy to GitHub Pages](https://github.com/AvinZarlez/penthepet/actions/workflows/static.yml/badge.svg)](https://github.com/AvinZarlez/penthepet/actions/workflows/static.yml)
 [![Generate Daily Map](https://github.com/AvinZarlez/penthepet/actions/workflows/generate-daily-map.yml/badge.svg)](https://github.com/AvinZarlez/penthepet/actions/workflows/generate-daily-map.yml)
 [![Add map](https://github.com/AvinZarlez/penthepet/actions/workflows/add-map.yml/badge.svg)](https://github.com/AvinZarlez/penthepet/actions/workflows/add-map.yml)
+[![Edit map](https://github.com/AvinZarlez/penthepet/actions/workflows/edit-map.yml/badge.svg)](https://github.com/AvinZarlez/penthepet/actions/workflows/edit-map.yml)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
 **A daily logic puzzle — fence in your pet!** PenThePet is a free, browser-based puzzle game where you strategically place walls to create the largest enclosed area for your pet. A new puzzle every day, no install required.
