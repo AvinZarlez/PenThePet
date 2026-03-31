@@ -1,0 +1,45 @@
+name: Edit map
+
+on:
+  workflow_dispatch:
+    inputs:
+      map_code:
+        description: 'Map code (hash) from level editor or debug share URL'
+        required: true
+      date:
+        description: 'Date of the level to edit (YYYY-MM-DD). Use this OR day_number.'
+        required: false
+        default: ''
+      day_number:
+        description: 'Day number of the level to edit. Use this OR date.'
+        required: false
+        default: ''
+      map_name:
+        description: 'Optional map name override'
+        required: false
+        default: ''
+
+jobs:
+  edit-map:
+    permissions:
+      contents: write
+      pull-requests: write
+    uses: ./.github/workflows/map-update-common.yml
+    with:
+      branch_prefix: maps/edit-map
+      run_command: |
+        CMD=(node scripts/edit-map.js --map-code "${{ github.event.inputs.map_code }}")
+        if [ -n "${{ github.event.inputs.date }}" ]; then
+          CMD+=(--date "${{ github.event.inputs.date }}")
+        fi
+        if [ -n "${{ github.event.inputs.day_number }}" ]; then
+          CMD+=(--day-number "${{ github.event.inputs.day_number }}")
+        fi
+        if [ -n "${{ github.event.inputs.map_name }}" ]; then
+          CMD+=(--map-name "${{ github.event.inputs.map_name }}")
+        fi
+        "${CMD[@]}"
+      commit_message: Edit map from level editor code
+      pr_title: Edit map from level editor code
+      pr_body: Replaces an existing map with a new map code after solver + validation checks.
+      no_changes_message: No map changes were produced.
