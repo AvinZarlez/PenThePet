@@ -152,7 +152,7 @@ class LevelEditorApp {
             btn.dataset.tile = value;
             btn.title = I18N.t(tileData.nameKey);
             const icon = TileSvgs.createTileIconElement(value, false);
-            icon.className = 'tile-palette-icon';
+            icon.className = 'cell tile-palette-icon';
             btn.appendChild(icon);
             tileSelector.appendChild(btn);
         }

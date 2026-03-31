@@ -84,47 +84,14 @@
     height: 100%;
     border-radius: 4px;
     display: block;
+    /* Use palette button size so var(--cell-size) calcs scale correctly */
+    --cell-size: 36px;
 }
 
-/* Tile asset overlays inside palette buttons — mirrors .cell .tile-overlay in game.css */
-.tile-palette-icon .tile-overlay {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 100%;
-    height: 100%;
-    pointer-events: none;
-    transform: translate(-50%, -50%);
-    object-fit: contain;
-    border-radius: inherit;
-}
-
-/* Full-tile variant overlays (grass/water) — mirrors .cell .tile-overlay-fill */
-.tile-palette-icon .tile-overlay-fill {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    pointer-events: none;
-    object-fit: fill;
+/* Suppress the game cell hover scale inside the clipped palette button */
+.tile-palette-icon.cell:hover {
     transform: none;
-    border-radius: inherit;
-}
-
-/* Emoji/text overlays — mirrors .cell .tile-overlay-emoji */
-.tile-palette-icon .tile-overlay-emoji {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    font-size: clamp(8px, calc(36px * 0.65), 36px);
-    pointer-events: none;
-}
-
-/* Keep palette icons static — no floating animation */
-.tile-palette-icon .tile-overlay-float {
-    animation: none;
+    box-shadow: none;
 }
 
 .editor-actions {
