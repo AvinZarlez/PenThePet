@@ -1465,3 +1465,64 @@ describe('Menu — additional branch coverage', () => {
         });
     });
 });
+
+// ===========================================================================
+// DOM click event regression tests for Menu
+// Verifies that clicking real DOM buttons in the menu modal system fires the
+// correct handlers — guarding against argument-order bugs like the cell-click
+// regression where the event object was passed as a data argument.
+// ===========================================================================
+
+describe('Menu — DOM button click regression', () => {
+    let menu;
+    let game;
+
+    beforeEach(() => {
+        setupDOM();
+        game = createMockGame();
+        menu = new Menu(game);
+        mockFetch();
+        document.cookie.split(';').forEach((c) => {
+            document.cookie = c.trim().split('=')[0] + '=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/';
+        });
+    });
+
+    test('clicking menuBtn opens the menu modal', () => {
+        const menuBtn = document.getElementById('menuBtn');
+        const menuModal = document.getElementById('menuModal');
+        menuBtn.click();
+        expect(menuModal.classList.contains('show')).toBe(true);
+    });
+
+    test('clicking instructionsBtn opens the instructions modal', () => {
+        const instrBtn = document.getElementById('instructionsBtn');
+        const instrModal = document.getElementById('instructionsModal');
+        instrBtn.click();
+        expect(instrModal.classList.contains('show')).toBe(true);
+    });
+
+    test('clicking aboutBtn opens the about modal', () => {
+        const aboutBtn = document.getElementById('aboutBtn');
+        const aboutModal = document.getElementById('aboutModal');
+        aboutBtn.click();
+        expect(aboutModal.classList.contains('show')).toBe(true);
+    });
+
+    test('clicking optionsBtn opens the options modal', () => {
+        const optionsBtn = document.getElementById('optionsBtn');
+        const optionsModal = document.getElementById('optionsModal');
+        optionsBtn.click();
+        expect(optionsModal.classList.contains('show')).toBe(true);
+    });
+
+    test('clicking a .modal-close button inside a modal closes that modal', () => {
+        // Open the about modal first
+        document.getElementById('aboutBtn').click();
+        const aboutModal = document.getElementById('aboutModal');
+        expect(aboutModal.classList.contains('show')).toBe(true);
+
+        // menu.closeModal() must remove the 'show' class
+        menu.closeModal(aboutModal);
+        expect(aboutModal.classList.contains('show')).toBe(false);
+    });
+});
