@@ -309,7 +309,6 @@ const LANGUAGES = {
 
         // ── Footer ────────────────────────────────────────────────────────
         footer_view_github: 'View on GitHub',
-        footer_level_editor: 'Local Level Editor',
 
         // ── Level Editor ──────────────────────────────────────────────────
         editor_page_title: 'Pen the Pet - Level Editor',
@@ -645,7 +644,6 @@ const LANGUAGES = {
 
         // ── Footer ────────────────────────────────────────────────────────
         footer_view_github: 'Ver en GitHub',
-        footer_level_editor: 'Editor de niveles local',
 
         // ── Level Editor ──────────────────────────────────────────────────
         editor_page_title: 'Pen the Pet - Editor de Niveles',
