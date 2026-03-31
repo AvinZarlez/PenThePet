@@ -221,7 +221,7 @@ class LevelEditorApp {
         const playBtn = document.getElementById('editorPlayMapBtn');
         if (copyBtn) {
             if (this.copyButtonCopied) {
-                copyBtn.textContent = I18N.t('editor_btn_copied');
+                copyBtn.textContent = I18N.t('copied_success');
                 copyBtn.classList.add('copied');
             }
             copyBtn.addEventListener('click', () => this._copyPlayableUrl(solved.playableUrl));
@@ -357,6 +357,25 @@ Object.assign(LevelEditorApp.prototype, GameAnimationsMixin);
 
 window.addEventListener('DOMContentLoaded', () => {
     I18N.loadFromCookie();
+    const langSelector = document.getElementById('languageSelector');
+    if (langSelector) {
+        langSelector.innerHTML = '';
+        LANGUAGE_OPTIONS.forEach(opt => {
+            const option = document.createElement('option');
+            option.value = opt.value;
+            option.textContent = opt.label;
+            langSelector.appendChild(option);
+        });
+        langSelector.value = I18N.getLanguage();
+        langSelector.addEventListener('change', () => {
+            I18N.setLanguage(langSelector.value);
+            window.location.reload();
+        });
+    }
+    const githubFooterLink = document.getElementById('githubFooterLink');
+    if (githubFooterLink && typeof CONSTANTS !== 'undefined' && CONSTANTS.REPO_URL) {
+        githubFooterLink.href = CONSTANTS.REPO_URL;
+    }
     I18N.applyTranslations();
     document.title = I18N.t('editor_page_title');
     window.levelEditorApp = new LevelEditorApp();

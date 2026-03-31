@@ -80,10 +80,22 @@ describe('LevelEditorApp', () => {
         const beforeStatusText = app.statusElement.textContent;
         await app._copyPlayableUrl('https://example.com');
         const copyBtn = document.getElementById('editorCopyUrlBtn');
-        expect(copyBtn.textContent).toBe(I18N.t('editor_btn_copied'));
+        expect(copyBtn.textContent).toBe(I18N.t('copied_success'));
         expect(app.statusMessageKey).toBe('');
         expect(beforeStatusText).toContain(I18N.t('editor_status_code'));
         expect(app.statusElement.textContent).toContain(I18N.t('editor_status_code'));
+    });
+
+    test('viewing solution keeps board visible with wall overlays', () => {
+        app.core.setSolvedResult({
+            mapData: { goal: 12, maxWalls: 6, optimalSolution: [0, 0, 0, 1] },
+            encoded: 'abc',
+            playableUrl: 'https://example.com',
+        });
+        app.solveState = CONSTANTS.LEVEL_EDITOR.STATE_SOLVED;
+        app.mode = CONSTANTS.LEVEL_EDITOR.MODE_VIEWING_SOLUTION;
+        app.render();
+        expect(app.gridElement.children.length).toBe(app.grid.size * app.grid.size);
     });
 
 });
