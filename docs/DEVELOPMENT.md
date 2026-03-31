@@ -168,7 +168,11 @@ Use **relative paths** in HTML (`js/main.js` not `/js/main.js`) — absolute pat
 
 ## VS Code Setup
 
-Pre-configured in `.vscode/` — launch configs for running/debugging tests, tasks for lint workflows, and recommended extensions (ESLint, Ruff, markdownlint, Jest). Press F5 to debug tests; right-click HTML → Open with Live Server.
+Pre-configured in `.vscode/` — launch configs for running/debugging tests, launching the main webapp and level editor, tasks for test/lint/server workflows, and recommended extensions (ESLint, Ruff, markdownlint, Jest).
+
+- Use **Start in web browser** to launch the main game (`http://localhost:8080`).
+- Use **Start Level Editor in browser** to launch the local level editor (`http://localhost:8787/level-editor/index.html`).
+- Use **Jest: Run Level Editor Tests** or the **Run Level Editor Tests** task for editor-focused coverage.
 
 ---
 

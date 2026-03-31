@@ -14,10 +14,19 @@ Open **Run and Debug** (`Ctrl+Shift+D` / `Cmd+Shift+D`) and pick from the dropdo
 | **Jest: Run All Tests**         | Runs all tests with coverage                             |
 | **Jest: Run Webapp Tests**      | Runs only `test/webapp/` tests                           |
 | **Jest: Run Generation Tests**  | Runs only `test/generation/` tests                       |
+| **Jest: Run Level Editor Tests**| Runs level-editor UI + related generation pipeline tests |
 | **Jest: Run Current Test File** | Runs the currently open test file                        |
 | **Run Map Generation Script**   | Generates 5 maps at sizes 7 and 9                        |
+| **Start Level Editor in browser** | Starts level-editor server and opens the editor URL    |
 
-VSCode tasks (`Ctrl+Shift+P` → "Run Task") mirror most of these for test and lint workflows.
+VSCode tasks (`Ctrl+Shift+P` → "Run Task") mirror these workflows:
+
+- **Run All Tests**
+- **Run Webapp Tests**
+- **Run Generation Tests**
+- **Run Level Editor Tests**
+- **Start HTTP Server** (main webapp)
+- **Start Level Editor Server** (local level editor)
 
 ---
 
