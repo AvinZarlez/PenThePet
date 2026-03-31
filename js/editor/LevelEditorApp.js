@@ -10,6 +10,7 @@ class LevelEditorApp {
         this.mode = CONSTANTS.LEVEL_EDITOR.MODE_EDITING;
         this.solveState = CONSTANTS.LEVEL_EDITOR.STATE_UNSOLVED;
         this.statusMessageKey = '';
+        this.copyButtonCopied = false;
         this.lastFocusedCell = null;
 
         const draftRaw = CookieUtils.getCookie(CONSTANTS.LEVEL_EDITOR.AUTOSAVE_COOKIE_KEY);
@@ -154,6 +155,7 @@ class LevelEditorApp {
         this.mode = CONSTANTS.LEVEL_EDITOR.MODE_EDITING;
         this.solveState = CONSTANTS.LEVEL_EDITOR.STATE_SOLVING;
         this.statusMessageKey = 'editor_status_solving';
+        this.copyButtonCopied = false;
         this._syncActionControls();
         this._renderStatus();
 
@@ -182,6 +184,7 @@ class LevelEditorApp {
             this.core.setSolvedResult(data);
             this.solveState = CONSTANTS.LEVEL_EDITOR.STATE_SOLVED;
             this.statusMessageKey = '';
+            this.copyButtonCopied = false;
             this._renderStatus();
             this._syncActionControls();
             this._saveDraft();
@@ -206,11 +209,8 @@ class LevelEditorApp {
         }
         const solved = this.core.solvedResult;
         this.statusElement.innerHTML = `
-            <div>${I18N.t('editor_status_ready', { goal: solved.mapData.goal, maxWalls: solved.mapData.maxWalls })}</div>
             <div>${I18N.t('editor_status_code')}</div>
             <pre>${solved.encoded}</pre>
-            <div>${I18N.t('editor_status_url')}</div>
-            <pre>${solved.playableUrl}</pre>
             <div class="editor-status-actions">
                 <button type="button" id="editorCopyUrlBtn" data-i18n="editor_btn_copy_url"></button>
                 <button type="button" id="editorPlayMapBtn" data-i18n="editor_btn_play_map"></button>
@@ -220,6 +220,10 @@ class LevelEditorApp {
         const copyBtn = document.getElementById('editorCopyUrlBtn');
         const playBtn = document.getElementById('editorPlayMapBtn');
         if (copyBtn) {
+            if (this.copyButtonCopied) {
+                copyBtn.textContent = I18N.t('editor_btn_copied');
+                copyBtn.classList.add('copied');
+            }
             copyBtn.addEventListener('click', () => this._copyPlayableUrl(solved.playableUrl));
         }
         if (playBtn) {
@@ -232,13 +236,15 @@ class LevelEditorApp {
     render() {
         this.gridElement.innerHTML = '';
         this.gridElement.style.gridTemplateColumns = `repeat(${this.grid.size}, 1fr)`;
-        const solutionSet = this._getSolutionSet();
+        const solution = this._getSolutionSet();
+        const solutionSet = solution.walls;
+        const pennedSet = solution.penned;
         for (let r = 0; r < this.grid.size; r++) {
             for (let c = 0; c < this.grid.size; c++) {
                 const tileType = this.grid.getTile(r, c);
                 const hasSolutionWall = solutionSet.has(`${r},${c}`);
                 const displayTile = hasSolutionWall ? getWallTransform(tileType) : tileType;
-                const cell = this._createCellElement(r, c, displayTile, new Set(), new Set(), null);
+                const cell = this._createCellElement(r, c, displayTile, new Set(), pennedSet, null);
                 this.gridElement.appendChild(cell);
             }
         }
@@ -248,10 +254,15 @@ class LevelEditorApp {
         if (this.mode !== CONSTANTS.LEVEL_EDITOR.MODE_VIEWING_SOLUTION
             || !this.core.solvedResult
             || !Array.isArray(this.core.solvedResult.mapData.optimalSolution)) {
-            return new Set();
+            return { walls: new Set(), penned: new Set() };
         }
         const pairs = parseCompactSolution(this.core.solvedResult.mapData.optimalSolution);
-        return new Set(pairs.map(([r, c]) => `${r},${c}`));
+        const walls = new Set(pairs.map(([r, c]) => `${r},${c}`));
+        const pennedPairs = PathfindingUtils.getPennedTiles(this.core.map, walls);
+        return {
+            walls,
+            penned: new Set(pennedPairs.map(([r, c]) => `${r},${c}`)),
+        };
     }
 
     handleCellClick(event, row, col) {
@@ -267,6 +278,7 @@ class LevelEditorApp {
         this.grid.loadMap(this.core.map);
         this.solveState = CONSTANTS.LEVEL_EDITOR.STATE_UNSOLVED;
         this.statusMessageKey = '';
+        this.copyButtonCopied = false;
         this.render();
         this._renderStatus();
         this._syncActionControls();
@@ -287,6 +299,7 @@ class LevelEditorApp {
         this.grid.loadMap(this.core.map);
         this.solveState = CONSTANTS.LEVEL_EDITOR.STATE_UNSOLVED;
         this.statusMessageKey = '';
+        this.copyButtonCopied = false;
         this.render();
         this._renderStatus();
         this._syncActionControls();
@@ -324,24 +337,18 @@ class LevelEditorApp {
         try {
             if (navigator.clipboard && navigator.clipboard.writeText) {
                 await navigator.clipboard.writeText(url);
-                this.statusMessageKey = 'editor_status_copied_url';
+                this.copyButtonCopied = true;
                 this._renderStatus();
                 setTimeout(() => {
-                    if (this.statusMessageKey === 'editor_status_copied_url') {
-                        this.statusMessageKey = '';
+                    if (this.copyButtonCopied) {
+                        this.copyButtonCopied = false;
                         this._renderStatus();
                     }
                 }, 2000);
             }
         } catch {
-            this.statusMessageKey = 'editor_status_copy_failed';
-            this._renderStatus();
-            setTimeout(() => {
-                if (this.statusMessageKey === 'editor_status_copy_failed') {
-                    this.statusMessageKey = '';
-                    this._renderStatus();
-                }
-            }, 2500);
+            this.copyButtonCopied = false;
+            window.alert(I18N.t('editor_status_copy_failed'));
         }
     }
 }

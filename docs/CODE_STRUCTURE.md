@@ -39,13 +39,17 @@ PenThePet/
 │   │   ├── MapGenerator.js     # Map generation logic (Node.js only — NOT loaded in browser)
 │   │   ├── MapValidator.js     # Map quality validation (Node.js only — NOT loaded in browser)
 │   │   └── wordList.js         # ~150 random words for map naming; exports getRandomWord()
+│   ├── editor/
+│   │   ├── LevelEditorCore.js  # Editor state machine + map editing rules (browser level editor only)
+│   │   └── LevelEditorApp.js   # Local editor UI controller (browser level editor only)
 │   ├── Menu.js                 # Menu system: modals, level selector, options, cookie persistence
 │   └── main.js                 # Entry point: loads map, initializes Game and Menu
 ├── scripts/
 │   ├── generate-map.js     # CLI entry point: single, batch, or fresh map generation
 │   ├── audit-maps.js       # Validates all maps in maps/ against MapValidator
 │   ├── lib/
-│   │   └── mapUtils.js     # Shared utilities: dates, size parsing, DB validation/fix
+│   │   ├── mapUtils.js     # Shared utilities: dates, size parsing, DB validation/fix
+│   │   └── levelEditorMap.js # Shared solve/validate pipeline for local editor + add-map ingestion
 │   └── solver/
 │       ├── MILPSolver.js   # Node.js wrapper calling Python solver
 │       ├── solve.py        # Python MILP solver (PuLP + CBC)
@@ -77,6 +81,8 @@ PenThePet/
 **`js/game/Game.js`** — Game controller: grid interaction, wall placement, penning detection, hints, submission, and sharing. Timer methods come from `GameTimerMixin`; rendering/animation from `GameAnimationsMixin`; scoring from `ScoreCalculator`. Does NOT generate maps. Access via `window.game` in console.
 
 **`js/generation/MapGenerator.js` / `js/generation/MapValidator.js`** — Node.js only, not loaded in browser.
+
+**`level-editor/index.html` + `js/editor/*`** — A separate local editor web app that shares core tile, solver, and validation code with the game pipeline. Treat editor UX/state changes independently from main game UX changes, but keep shared logic aligned.
 
 **`scripts/generate-map.js`** — Supports `--date YYYY-MM-DD`, `--size N` or `--size N-M`, `--count N`, `--fresh`.
 

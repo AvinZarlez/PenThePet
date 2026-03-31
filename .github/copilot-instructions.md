@@ -29,6 +29,8 @@ npm run lint:markdown:fix   # markdownlint auto-fix
 
 **Generation** (`scripts/`): Offline Node.js + Python MILP solver (PuLP + CBC). Goal = **MAXIMUM** penned area.
 
+**Level Editor** (`level-editor/`, `js/editor/`): Separate local web app for authoring maps. It shares tile definitions, map codec, solver pipeline, and validator rules with generation/ingestion. Keep editor UI changes local, but keep shared solve/validate behavior aligned with generation invariants.
+
 **Script loading order** in `index.html` (must not change):
 `config/constants.js → config/config.js → tiles/tileData.js → tiles/TileSvgs.js → tiles/tileTypes.js → common/CookieUtils.js → common/i18n.js → common/DateUtils.js → game/PathfindingUtils.js → game/Grid.js → cloud/firebase-config.js → cloud/CloudMigration.js → cloud/CloudSync.js → cloud/Analytics.js → game/ScoreCalculator.js → game/GameTimer.js → game/GameAnimations.js → game/Game.js → Menu.js → main.js`
 
@@ -75,6 +77,8 @@ All user-facing strings live in `js/common/i18n.js`. **Never hardcode visible te
 
 Maps are pre-generated offline and stored in `maps/YYYY.json`. Wall budget = `floor(size × 0.75)`. Generation throws on failure — no fallbacks.
 
+When a map solves with fewer walls than this size budget, generation/editor flows align stored `maxWalls` to the solver's `optimalWallCount` so map budget matches the solved optimum.
+
 ```bash
 pip install -r scripts/solver/requirements.txt
 node scripts/generate-map.js --date 2026-02-15 --size 9
@@ -91,6 +95,7 @@ See [docs/MAP_GENERATION.md](../docs/MAP_GENERATION.md).
 - [docs/TESTING.md](../docs/TESTING.md) — test files, running tests, writing tests
 - [docs/DEVELOPMENT.md](../docs/DEVELOPMENT.md) — dev setup, workflow, CI/CD, debugging
 - [docs/MAP_GENERATION.md](../docs/MAP_GENERATION.md) — generation algorithm and commands
+- [docs/LEVEL_VALIDATION.md](../docs/LEVEL_VALIDATION.md) — shared validation rules and invariants
 - [docs/TILE_SYSTEM.md](../docs/TILE_SYSTEM.md) — tile properties and how to add new tiles
 - [docs/FIREBASE_SETUP.md](../docs/FIREBASE_SETUP.md) — optional cloud sync and analytics setup
 - [docs/ART_ASSETS.md](../docs/ART_ASSETS.md) — asset inventory and replacement guide

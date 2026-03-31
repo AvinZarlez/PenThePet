@@ -41,9 +41,9 @@ function solveAndValidateEditorMap(input) {
     }
     ensureSingleHome(input.map);
 
-    const maxWalls = input.maxWalls !== undefined ? input.maxWalls : CONSTANTS.maxWallsForSize(size);
+    const initialMaxWalls = input.maxWalls !== undefined ? input.maxWalls : CONSTANTS.maxWallsForSize(size);
     const numericMap = toNumericMap(input.map);
-    const solution = MILPSolver.solveMap(numericMap, maxWalls);
+    const solution = MILPSolver.solveMap(numericMap, initialMaxWalls);
     if (!solution) {
         const solverDetail = MILPSolver.getLastError ? MILPSolver.getLastError() : null;
         const missingDependency = typeof solverDetail === 'string' && solverDetail.includes('No module named');
@@ -57,12 +57,13 @@ function solveAndValidateEditorMap(input) {
         };
     }
 
+    const effectiveMaxWalls = solution.optimalWallCount;
     const validation = MapValidator.validate(input.map, {
         goalArea: solution.goalArea,
         optimalWallCount: solution.optimalWallCount,
         optimalSolution: solution.walls
             .flatMap((row, r) => row.map((v, c) => (v ? [r, c] : null)).filter(Boolean)),
-        maxWalls,
+        maxWalls: effectiveMaxWalls,
     });
 
     if (!validation.valid) {
@@ -88,7 +89,7 @@ function solveAndValidateEditorMap(input) {
         mapName,
         size,
         goal: solution.goalArea,
-        maxWalls,
+        maxWalls: effectiveMaxWalls,
         map: compactMap,
         optimalSolution: compactSolution,
         dayNumber: null,

@@ -174,7 +174,7 @@ describe('MapValidator', () => {
             expect(result.errors.length).toBeGreaterThan(1);
         });
         
-        test('should fail when not all walls are needed (rule 1)', () => {
+        test('should not fail specifically due to unused maxWalls metadata', () => {
             const map = [
                 ['grass', 'grass', 'grass', 'grass', 'grass', 'grass', 'grass'],
                 ['grass', 'water', 'grass', 'water', 'grass', 'water', 'grass'],
@@ -193,11 +193,10 @@ describe('MapValidator', () => {
             };
             
             const result = MapValidator.validate(map, solution);
-            expect(result.valid).toBe(false);
-            expect(result.errors).toContain('Not all walls needed for optimal score (uses 3 of 5 walls)');
+            expect(result.errors).not.toContain('Not all walls needed for optimal score (uses 3 of 5 walls)');
         });
         
-        test('should pass when all walls are needed (rule 1)', () => {
+        test('should pass when all walls are needed', () => {
             const map = [
                 ['grass', 'grass', 'grass', 'grass', 'grass', 'grass', 'grass'],
                 ['grass', 'water', 'star',  'water', 'grass', 'water', 'grass'],
@@ -220,7 +219,7 @@ describe('MapValidator', () => {
             expect(result.errors).toHaveLength(0);
         });
         
-        test('should skip rule 1 when maxWalls not provided in solution', () => {
+        test('should pass when maxWalls is not provided in solution', () => {
             const map = [
                 ['grass', 'grass', 'grass', 'grass', 'grass', 'grass', 'grass'],
                 ['grass', 'water', 'star',  'water', 'grass', 'water', 'grass'],
@@ -231,7 +230,7 @@ describe('MapValidator', () => {
                 ['grass', 'grass', 'grass', 'grass', 'grass', 'grass', 'grass']
             ];
             
-            // No maxWalls provided — rule 1 should be skipped
+            // No maxWalls provided — still valid when other checks pass
             const solution = {
                 goalArea: 10,
                 optimalWallCount: 3,

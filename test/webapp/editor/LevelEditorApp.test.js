@@ -67,4 +67,23 @@ describe('LevelEditorApp', () => {
         expect(app.solveBtn.disabled).toBe(false);
         expect(app.solveState).toBe(CONSTANTS.LEVEL_EDITOR.STATE_UNSOLVED);
     });
+
+    test('copy url only changes copy button text', async () => {
+        app.core.setSolvedResult({
+            mapData: { goal: 12, maxWalls: 6, optimalSolution: [0, 0] },
+            encoded: 'abc',
+            playableUrl: 'https://example.com',
+        });
+        app.solveState = CONSTANTS.LEVEL_EDITOR.STATE_SOLVED;
+        app._renderStatus();
+
+        const beforeStatusText = app.statusElement.textContent;
+        await app._copyPlayableUrl('https://example.com');
+        const copyBtn = document.getElementById('editorCopyUrlBtn');
+        expect(copyBtn.textContent).toBe(I18N.t('editor_btn_copied'));
+        expect(app.statusMessageKey).toBe('');
+        expect(beforeStatusText).toContain(I18N.t('editor_status_code'));
+        expect(app.statusElement.textContent).toContain(I18N.t('editor_status_code'));
+    });
+
 });

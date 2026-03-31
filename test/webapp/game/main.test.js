@@ -10,7 +10,7 @@
  * requested.
  */
 
-const { loadTodayMap, resolveMapFromUrlParams } = require('../../../js/main.js');
+const { loadTodayMap, resolveMapFromUrlParams, updateMapInfo } = require('../../../js/main.js');
 
 // Helper: build a resolved fetch mock that returns the given maps object
 // for every request (year file, previous year, or saved-level year).
@@ -155,6 +155,18 @@ describe('loadTodayMap()', () => {
 
         const result = await loadTodayMap();
         expect(result).toBeNull();
+    });
+});
+
+describe('updateMapInfo()', () => {
+    test('shows N/A day label for custom maps with no day number', () => {
+        document.body.innerHTML = `
+            <span id="mapDay"></span>
+            <span id="mapName"></span>
+            <span id="mapDate"></span>
+        `;
+        updateMapInfo({ dayNumber: null, mapName: 'Custom', date: '' });
+        expect(document.getElementById('mapDay').textContent).toBe(I18N.t('label_na'));
     });
 });
 

@@ -15,11 +15,15 @@
     padding: 10px 16px;
 }
 
+.editor-field span {
+    color: var(--text-primary);
+}
+
 .editor-field input,
 .editor-field select {
     border: 2px solid var(--accent);
     border-radius: 999px;
-    background: var(--surface-bg);
+    background: linear-gradient(135deg, var(--ctrl-bg-start) 0%, var(--ctrl-bg-end) 100%);
     color: var(--text-primary);
     padding: 8px 10px;
     font-weight: 600;
@@ -27,7 +31,12 @@
 
 .editor-field select {
     cursor: pointer;
-    color: var(--text-on-surface);
+    color: var(--text-primary);
+}
+
+.editor-field select option {
+    color: var(--text-primary);
+    background: var(--surface-bg);
 }
 
 .editor-field input:focus,
@@ -87,13 +96,6 @@
     color: var(--text-primary);
 }
 
-.editor-hint {
-    margin-top: 10px;
-    color: var(--text-secondary);
-    font-size: 0.85em;
-    text-align: center;
-}
-
 .editor-status-actions {
     display: flex;
     gap: 8px;
@@ -104,6 +106,10 @@
 .editor-status-actions button {
     height: 38px;
     padding: 0 14px;
+}
+
+.editor-status-actions button.copied {
+    border-color: var(--success) !important;
 }
 
 .editor-instructions {
