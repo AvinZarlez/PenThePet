@@ -678,4 +678,106 @@ describe('PathfindingUtils', () => {
             expect(PathfindingUtils.shortestPathToEdge(map, passAll)).toBe(2);
         });
     });
+
+    describe('allNonEdgeTilesReachableViaInterior()', () => {
+        test('should return true when all interior tiles are reachable from home via interior', () => {
+            const map = [
+                ['water', 'water', 'water', 'water', 'water'],
+                ['water', 'grass', 'grass', 'grass', 'water'],
+                ['water', 'grass', 'home',  'grass', 'water'],
+                ['water', 'grass', 'grass', 'grass', 'water'],
+                ['water', 'water', 'water', 'water', 'water'],
+            ];
+            expect(PathfindingUtils.allNonEdgeTilesReachableViaInterior(map)).toBe(true);
+        });
+
+        test('should return false when an interior tile is only reachable via edge', () => {
+            // star at (1,3) is interior but only reachable via edge columns
+            // because row 2 is all water except at edge cols 0 and 6
+            const map = [
+                ['grass', 'grass', 'grass', 'grass', 'grass', 'grass', 'grass'],
+                ['grass', 'grass', 'grass', 'star',  'grass', 'grass', 'grass'],
+                ['grass', 'water', 'water', 'water', 'water', 'water', 'grass'],
+                ['grass', 'water', 'grass', 'home',  'grass', 'water', 'grass'],
+                ['grass', 'grass', 'grass', 'grass', 'grass', 'grass', 'grass'],
+                ['grass', 'grass', 'grass', 'grass', 'grass', 'grass', 'grass'],
+                ['grass', 'grass', 'grass', 'grass', 'grass', 'grass', 'grass'],
+            ];
+            // (2,0) through (2,6) is a water barrier except at edge columns
+            // The only path from home (3,3) to star (1,3) goes through edge col 0 or 6
+            expect(PathfindingUtils.allNonEdgeTilesReachableViaInterior(map)).toBe(false);
+        });
+
+        test('should return false when no home tile exists', () => {
+            const map = [
+                ['water', 'water', 'water'],
+                ['water', 'grass', 'water'],
+                ['water', 'water', 'water'],
+            ];
+            expect(PathfindingUtils.allNonEdgeTilesReachableViaInterior(map)).toBe(false);
+        });
+
+        test('should treat hole tiles as passable during interior traversal', () => {
+            const map = [
+                ['water', 'water', 'water', 'water', 'water'],
+                ['water', 'grass', 'hole',  'grass', 'water'],
+                ['water', 'grass', 'home',  'grass', 'water'],
+                ['water', 'grass', 'grass', 'grass', 'water'],
+                ['water', 'water', 'water', 'water', 'water'],
+            ];
+            // (1,1) is reachable via interior even though hole at (1,2) blocks direct path
+            expect(PathfindingUtils.allNonEdgeTilesReachableViaInterior(map)).toBe(true);
+        });
+
+        test('should return true when home is the only non-blocking interior tile', () => {
+            const map = [
+                ['water', 'water', 'water'],
+                ['water', 'home',  'water'],
+                ['water', 'water', 'water'],
+            ];
+            expect(PathfindingUtils.allNonEdgeTilesReachableViaInterior(map)).toBe(true);
+        });
+    });
+
+    describe('reachableAreaCount()', () => {
+        test('should return 0 when no home tile exists', () => {
+            const map = [
+                ['grass', 'grass', 'grass'],
+                ['grass', 'water', 'grass'],
+                ['grass', 'grass', 'grass'],
+            ];
+            expect(PathfindingUtils.reachableAreaCount(map)).toBe(0);
+        });
+
+        test('should return total walkable area with default blocking', () => {
+            const map = [
+                ['grass', 'grass', 'grass'],
+                ['grass', 'home',  'grass'],
+                ['grass', 'grass', 'grass'],
+            ];
+            expect(PathfindingUtils.reachableAreaCount(map)).toBe(9);
+        });
+
+        test('should respect custom blocking function', () => {
+            const map = [
+                ['water', 'water', 'water'],
+                ['water', 'home',  'water'],
+                ['water', 'water', 'water'],
+            ];
+            // Default blocking (water is blocked) → only home
+            expect(PathfindingUtils.reachableAreaCount(map)).toBe(1);
+            // Custom: nothing is blocked → all 9
+            expect(PathfindingUtils.reachableAreaCount(map, () => false)).toBe(9);
+        });
+
+        test('should count only connected tiles from home', () => {
+            const map = [
+                ['grass', 'water', 'grass'],
+                ['water', 'home',  'water'],
+                ['grass', 'water', 'grass'],
+            ];
+            // Home is surrounded by water → only home counted
+            expect(PathfindingUtils.reachableAreaCount(map)).toBe(1);
+        });
+    });
 });

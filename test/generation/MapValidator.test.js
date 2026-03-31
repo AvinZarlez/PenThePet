@@ -606,4 +606,79 @@ describe('MapValidator', () => {
             expect(result.errors.some(e => e.includes('Score-modifying tiles adjacent to home'))).toBe(false);
         });
     });
+
+    describe('_findHomePosition()', () => {
+        test('should return [-1, -1] when no home tile exists in the map', () => {
+            const map = [
+                ['grass', 'water', 'grass'],
+                ['water', 'star',  'water'],
+                ['grass', 'bee',   'grass'],
+            ];
+            expect(MapValidator._findHomePosition(map)).toEqual([-1, -1]);
+        });
+
+        test('should return correct position when home exists', () => {
+            const map = [
+                ['grass', 'water', 'grass'],
+                ['water', 'home',  'water'],
+                ['grass', 'grass', 'grass'],
+            ];
+            expect(MapValidator._findHomePosition(map)).toEqual([1, 1]);
+        });
+    });
+
+    describe('_scoreModifyingTilesAdjacentToHome() — no home', () => {
+        test('should return empty array when no home tile exists', () => {
+            const map = [
+                ['grass', 'star',  'grass'],
+                ['bee',   'water', 'grass'],
+                ['grass', 'grass', 'grass'],
+            ];
+            expect(MapValidator._scoreModifyingTilesAdjacentToHome(map)).toEqual([]);
+        });
+    });
+
+    describe('_isScoreModifyingTile()', () => {
+        test('should return true for star tile', () => {
+            expect(MapValidator._isScoreModifyingTile('star')).toBe(true);
+        });
+
+        test('should return true for bee tile', () => {
+            expect(MapValidator._isScoreModifyingTile('bee')).toBe(true);
+        });
+
+        test('should return false for grass tile', () => {
+            expect(MapValidator._isScoreModifyingTile('grass')).toBe(false);
+        });
+
+        test('should return false for home tile', () => {
+            expect(MapValidator._isScoreModifyingTile('home')).toBe(false);
+        });
+
+        test('should return false for water tile', () => {
+            expect(MapValidator._isScoreModifyingTile('water')).toBe(false);
+        });
+    });
+
+    describe('_hasAtLeastOneStar() and _hasAtLeastOneBee()', () => {
+        test('_hasAtLeastOneStar returns false when no stars exist', () => {
+            const map = [['grass', 'home'], ['bee', 'water']];
+            expect(MapValidator._hasAtLeastOneStar(map)).toBe(false);
+        });
+
+        test('_hasAtLeastOneStar returns true when star exists', () => {
+            const map = [['star', 'home'], ['bee', 'water']];
+            expect(MapValidator._hasAtLeastOneStar(map)).toBe(true);
+        });
+
+        test('_hasAtLeastOneBee returns false when no bees exist', () => {
+            const map = [['grass', 'home'], ['star', 'water']];
+            expect(MapValidator._hasAtLeastOneBee(map)).toBe(false);
+        });
+
+        test('_hasAtLeastOneBee returns true when bee exists', () => {
+            const map = [['grass', 'home'], ['bee', 'water']];
+            expect(MapValidator._hasAtLeastOneBee(map)).toBe(true);
+        });
+    });
 });

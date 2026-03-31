@@ -93,3 +93,10 @@ describe('DateUtils', () => {
         });
     });
 });
+
+describe('getTodayDate() — invalid timezone fallback', () => {
+    test('returns a valid UTC date string when an invalid timezone is given', () => {
+        const result = DateUtils.getTodayDate('Invalid/Timezone_XYZ');
+        expect(result).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+    });
+});
