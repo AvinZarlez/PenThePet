@@ -235,7 +235,10 @@ function validateMapsDatabase(maps) {
  * @returns {Object} Fixed maps object (does not mutate the input)
  */
 function fixMapsDatabase(maps) {
-    const fixed = { ...maps };
+    const fixed = {};
+    for (const [date, mapData] of Object.entries(maps)) {
+        fixed[date] = { ...mapData };
+    }
     const dates = Object.keys(fixed).sort();
 
     // Fix day numbers (no gaps, sequential)
