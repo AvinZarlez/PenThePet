@@ -454,3 +454,98 @@ describe('LevelEditorApp', () => {
     });
 
 });
+
+// ===========================================================================
+// DOM click event regression tests for the level editor
+// Verifies that real click events dispatched to rendered cell elements reach
+// handleCellClick correctly (event object must be first arg, not row).
+// ===========================================================================
+
+describe('LevelEditorApp — DOM click event regression', () => {
+    let originalSetInterval;
+    let app;
+    let LevelEditorApp;
+
+    beforeEach(() => {
+        document.body.innerHTML = `
+            <input id="editorLevelName" />
+            <select id="editorMapSize"></select>
+            <select id="editorTileSelector"></select>
+            <button id="editorResetBtn"></button>
+            <button id="editorSolveBtn"></button>
+            <button id="editorToggleSolutionBtn"></button>
+            <div id="editorGoalPanel"></div>
+            <div id="editorStatus"></div>
+            <div id="grid"></div>
+        `;
+
+        jest.spyOn(CookieUtils, 'getCookie').mockReturnValue('');
+        originalSetInterval = global.setInterval;
+        global.setInterval = jest.fn(() => 1);
+        window.alert = jest.fn();
+        window.open = jest.fn();
+        global.fetch = jest.fn();
+        global.navigator.clipboard = { writeText: jest.fn().mockResolvedValue(undefined) };
+        global.LevelEditorCore = require('../../../js/editor/LevelEditorCore.js');
+        LevelEditorApp = require('../../../js/editor/LevelEditorApp.js');
+        app = new LevelEditorApp();
+        app.core.setSelectedTile('water');
+        app.render();
+    });
+
+    afterEach(() => {
+        global.setInterval = originalSetInterval;
+        jest.restoreAllMocks();
+    });
+
+    test('clicking a cell via DOM event places the selected tile', () => {
+        const grid = document.getElementById('grid');
+        const cell = grid.querySelector('[data-row="0"][data-col="0"]');
+        expect(cell).not.toBeNull();
+
+        cell.click();
+
+        expect(app.core.map[0][0]).toBe('water');
+    });
+
+    test('shift-click via DOM event erases a tile to grass', () => {
+        // Place a tile first via direct API
+        app.core.setSelectedTile('water');
+        app.core.placeTile(1, 1);
+        app.grid.loadMap(app.core.map);
+        app.render();
+        expect(app.core.map[1][1]).toBe('water');
+
+        const grid = document.getElementById('grid');
+        const cell = grid.querySelector('[data-row="1"][data-col="1"]');
+        const shiftClick = new MouseEvent('click', { bubbles: true, shiftKey: true });
+        cell.dispatchEvent(shiftClick);
+
+        expect(app.core.map[1][1]).toBe('grass');
+    });
+
+    test('right-click (contextmenu) via DOM event erases a tile', () => {
+        // Place a tile first
+        app.core.setSelectedTile('star');
+        app.core.placeTile(2, 2);
+        app.grid.loadMap(app.core.map);
+        app.render();
+        expect(app.core.map[2][2]).toBe('star');
+
+        const grid = document.getElementById('grid');
+        const cell = grid.querySelector('[data-row="2"][data-col="2"]');
+        const contextEvent = new MouseEvent('contextmenu', { bubbles: true, cancelable: true });
+        cell.dispatchEvent(contextEvent);
+
+        expect(app.core.map[2][2]).toBe('grass');
+    });
+
+    test('Enter keydown on a cell via DOM event places the selected tile', () => {
+        const grid = document.getElementById('grid');
+        const cell = grid.querySelector('[data-row="3"][data-col="3"]');
+        const event = new KeyboardEvent('keydown', { key: 'Enter', bubbles: true, cancelable: true });
+        cell.dispatchEvent(event);
+
+        expect(app.core.map[3][3]).toBe('water');
+    });
+});

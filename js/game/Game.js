@@ -151,10 +151,12 @@ class Game {
 
     /**
      * Handle click events on cells
+     * @param {MouseEvent|KeyboardEvent|null} event - The triggering event (not used by the game, but
+     *   accepted so the signature matches the mixin's calling convention and the level editor)
      * @param {number} row - Row index
      * @param {number} col - Column index
      */
-    handleCellClick(row, col) {
+    handleCellClick(event, row, col) {
         // Prevent changes if already submitted or viewing optimal solution
         if (this.isSubmitted || this.viewingOptimal) {
             return;
@@ -210,7 +212,7 @@ class Game {
     handleCellKeydown(event, row, col) {
         if (event.key === 'Enter') {
             event.preventDefault();
-            this.handleCellClick(row, col);
+            this.handleCellClick(event, row, col);
             // Restore focus to the same cell after click
             setTimeout(() => {
                 const cell = this.gridElement.querySelector(`[data-row="${row}"][data-col="${col}"]`);

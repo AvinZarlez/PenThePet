@@ -1375,7 +1375,7 @@ describe('Game — handleCellClick focus restoration', () => {
         const row = 0;
         const col = 0;
 
-        g.handleCellClick(row, col);
+        g.handleCellClick(null, row, col);
 
         // The cell element is recreated by render(), so we query after the call
         const cellAfter = g.gridElement.querySelector(`[data-row="${row}"][data-col="${col}"]`);
@@ -1390,7 +1390,7 @@ describe('Game — handleCellClick focus restoration', () => {
         g.wallCount = 1;
         g.render();
 
-        g.handleCellClick(0, 0);
+        g.handleCellClick(null, 0, 0);
 
         const cellAfter = g.gridElement.querySelector('[data-row="0"][data-col="0"]');
         expect(cellAfter).not.toBeNull();
@@ -1404,7 +1404,7 @@ describe('Game — handleCellClick focus restoration', () => {
         homeCell.focus();
         expect(document.activeElement).toBe(homeCell);
 
-        g.handleCellClick(2, 2);
+        g.handleCellClick(null, 2, 2);
 
         // Focus should remain unchanged (no render was called)
         expect(document.activeElement).toBe(homeCell);
@@ -1416,7 +1416,7 @@ describe('Game — handleCellClick focus restoration', () => {
         g.grid.saveInitialState();
         g.render();
 
-        g.handleCellClick(1, 1);
+        g.handleCellClick(null, 1, 1);
 
         expect(g.grid.getTile(1, 1)).toBe('filledHole');
         expect(g.wallCount).toBe(1);
@@ -1430,7 +1430,7 @@ describe('Game — handleCellClick focus restoration', () => {
         g.wallCount = 1;
         g.render();
 
-        g.handleCellClick(1, 1);
+        g.handleCellClick(null, 1, 1);
 
         expect(g.grid.getTile(1, 1)).toBe('hole');
         expect(g.wallCount).toBe(0);
@@ -1464,7 +1464,7 @@ describe('Game — Keyboard Controls', () => {
             const spy = jest.spyOn(g, 'handleCellClick');
             const event = new KeyboardEvent('keydown', { key: 'Enter', bubbles: true, cancelable: true });
             g.handleCellKeydown(event, 0, 0);
-            expect(spy).toHaveBeenCalledWith(0, 0);
+            expect(spy).toHaveBeenCalledWith(event, 0, 0);
         });
 
         test('Space does NOT trigger handleCellClick', () => {
@@ -2558,21 +2558,21 @@ describe('Game — Reset & Hint button visibility after submission', () => {
             game.grid.loadMap(tiles);
             game.grid.saveInitialState();
             game.render();
-            game.handleCellClick(0, 0);
+            game.handleCellClick(null, 0, 0);
             const cell = game.gridElement.querySelector('[data-row="0"][data-col="0"]');
             expect(cell.querySelector('.tile-tooltip')).not.toBeNull();
         });
 
         test('clicking a home tile shows a tooltip', () => {
             game.render();
-            game.handleCellClick(3, 3);
+            game.handleCellClick(null, 3, 3);
             const cell = game.gridElement.querySelector('[data-row="3"][data-col="3"]');
             expect(cell.querySelector('.tile-tooltip')).not.toBeNull();
         });
 
         test('clicking a grass tile does NOT show a tooltip', () => {
             game.render();
-            game.handleCellClick(0, 0);
+            game.handleCellClick(null, 0, 0);
             const cell = game.gridElement.querySelector('[data-row="0"][data-col="0"]');
             expect(cell.querySelector('.tile-tooltip')).toBeNull();
         });
@@ -2584,7 +2584,7 @@ describe('Game — Reset & Hint button visibility after submission', () => {
             game.grid.loadMap(tiles);
             game.grid.saveInitialState();
             game.render();
-            game.handleCellClick(0, 0);
+            game.handleCellClick(null, 0, 0);
             const cell = game.gridElement.querySelector('[data-row="0"][data-col="0"]');
             expect(cell.querySelector('.tile-tooltip')).not.toBeNull();
         });
@@ -2596,7 +2596,7 @@ describe('Game — Reset & Hint button visibility after submission', () => {
             game.grid.loadMap(tiles);
             game.grid.saveInitialState();
             game.render();
-            game.handleCellClick(0, 0);
+            game.handleCellClick(null, 0, 0);
             const cell = game.gridElement.querySelector('[data-row="0"][data-col="0"]');
             expect(cell.querySelector('.tile-tooltip')).not.toBeNull();
         });
@@ -2609,7 +2609,7 @@ describe('Game — Reset & Hint button visibility after submission', () => {
             game.grid.saveInitialState();
             game.render();
             game.isSubmitted = true;
-            game.handleCellClick(0, 0);
+            game.handleCellClick(null, 0, 0);
             const cell = game.gridElement.querySelector('[data-row="0"][data-col="0"]');
             expect(cell.querySelector('.tile-tooltip')).toBeNull();
         });
@@ -3181,5 +3181,101 @@ describe('Game — Timer branch coverage (submission.time and currentDate)', () 
         game.isPaused = true;
         game._startTimerInterval();
         expect(game._timerInterval).toBeNull();
+    });
+});
+
+// ===========================================================================
+// DOM click event regression tests
+// Ensures that dispatching a real click event on a grid cell triggers the full
+// handleCellClick flow — catching the bug where the event object was passed as
+// the `row` argument (making every cell click a silent no-op).
+// ===========================================================================
+
+describe('Game — DOM click event regression (cell click must work end-to-end)', () => {
+    function buildGame() {
+        setupDOM();
+        const g = new Game(5);
+        const tiles = Array.from({ length: 5 }, () => Array(5).fill('grass'));
+        tiles[2][2] = 'home';
+        g.grid.loadMap(tiles);
+        g.grid.saveInitialState();
+        g.render();
+        return g;
+    }
+
+    test('clicking a grass cell via DOM event places a wall', () => {
+        const g = buildGame();
+        const cell = g.gridElement.querySelector('[data-row="0"][data-col="0"]');
+        expect(cell).not.toBeNull();
+
+        // Dispatch a real click — this goes through the event listener in GameAnimations
+        cell.click();
+
+        // The tile must have changed to 'wall' and wallCount must be 1
+        expect(g.grid.getTile(0, 0)).toBe('wall');
+        expect(g.wallCount).toBe(1);
+    });
+
+    test('clicking a wall cell via DOM event removes the wall', () => {
+        const g = buildGame();
+        // Pre-place a wall
+        g.grid.setTile(0, 0, 'wall');
+        g.wallCount = 1;
+        g.render();
+
+        const cell = g.gridElement.querySelector('[data-row="0"][data-col="0"]');
+        cell.click();
+
+        expect(g.grid.getTile(0, 0)).toBe('grass');
+        expect(g.wallCount).toBe(0);
+    });
+
+    test('clicking a non-interactive (home) cell via DOM event shows a tooltip', () => {
+        const g = buildGame();
+        const homeCell = g.gridElement.querySelector('[data-row="2"][data-col="2"]');
+        homeCell.click();
+
+        expect(homeCell.querySelector('.tile-tooltip')).not.toBeNull();
+    });
+
+    test('DOM click does nothing after game is submitted', () => {
+        const g = buildGame();
+        g.isSubmitted = true;
+        const cell = g.gridElement.querySelector('[data-row="0"][data-col="0"]');
+        cell.click();
+
+        // Wall should NOT have been placed
+        expect(g.grid.getTile(0, 0)).toBe('grass');
+        expect(g.wallCount).toBe(0);
+    });
+
+    test('pressing Enter on a focused cell via DOM event places a wall', () => {
+        jest.useFakeTimers();
+        const g = buildGame();
+        const cell = g.gridElement.querySelector('[data-row="0"][data-col="0"]');
+        const event = new KeyboardEvent('keydown', { key: 'Enter', bubbles: true, cancelable: true });
+        cell.dispatchEvent(event);
+
+        expect(g.grid.getTile(0, 0)).toBe('wall');
+        expect(g.wallCount).toBe(1);
+        jest.useRealTimers();
+    });
+
+    test('wall limit notification fires via DOM click when all walls are placed', () => {
+        const g = buildGame();
+        g.maxWalls = 1;
+        // Place the one allowed wall directly
+        g.grid.setTile(0, 0, 'wall');
+        g.wallCount = 1;
+        g.render();
+
+        const notifEl = document.getElementById('notification');
+        const cell = g.gridElement.querySelector('[data-row="0"][data-col="1"]');
+        cell.click();
+
+        // Notification should contain the wall-limit message
+        expect(notifEl.textContent).toMatch(/1/);
+        // Tile must NOT have changed
+        expect(g.grid.getTile(0, 1)).toBe('grass');
     });
 });
