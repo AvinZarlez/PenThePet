@@ -340,6 +340,19 @@ const LANGUAGES = {
         editor_instructions_step_5: 'Copy the generated map code and use Copy URL / Play Map for quick verification.',
         editor_instructions_step_6: 'Paste the map code into the GitHub Actions add-map workflow inputs to add the level.',
 
+        // ── Level Loader ───────────────────────────────────────────────────
+        editor_load_btn: 'Load Level',
+        editor_load_modal_title: 'Load Level',
+        editor_load_modal_close_aria: 'Close level loader',
+        editor_load_from_code_title: 'Load from Map Code',
+        editor_load_code_placeholder: 'Paste map code here…',
+        editor_load_code_btn: 'Load',
+        editor_load_invalid_code: 'Invalid map code. Make sure you pasted the full code.',
+        editor_load_confirm: 'Load this level into the editor? Your current map will be replaced.',
+        editor_load_browse_title: 'Browse Existing Levels',
+        editor_load_browse_loading: 'Loading levels…',
+        editor_load_level_size: '{size}×{size}',
+
         // ── Tile Descriptions (referenced by descriptionKey in tileData.js) ─
         tile_grass_description: 'Click to place a wall. Scores 1 point when penned.',
         tile_grass_aria: 'Grass tile at row {row}, column {col}. Click to build a wall.',
@@ -674,6 +687,19 @@ const LANGUAGES = {
         editor_instructions_step_4: 'Usa Ver solución opcional para congelar la edición y revisar la colocación óptima de muros.',
         editor_instructions_step_5: 'Copia el código del mapa generado y usa Copiar URL / Jugar mapa para verificar rápidamente.',
         editor_instructions_step_6: 'Pega el código del mapa en los campos del workflow add-map de GitHub Actions para añadir el nivel.',
+
+        // ── Level Loader ───────────────────────────────────────────────────
+        editor_load_btn: 'Cargar nivel',
+        editor_load_modal_title: 'Cargar nivel',
+        editor_load_modal_close_aria: 'Cerrar cargador de niveles',
+        editor_load_from_code_title: 'Cargar desde código de mapa',
+        editor_load_code_placeholder: 'Pega aquí el código del mapa…',
+        editor_load_code_btn: 'Cargar',
+        editor_load_invalid_code: 'Código de mapa inválido. Asegúrate de pegar el código completo.',
+        editor_load_confirm: '¿Cargar este nivel en el editor? Tu mapa actual será reemplazado.',
+        editor_load_browse_title: 'Explorar niveles existentes',
+        editor_load_browse_loading: 'Cargando niveles…',
+        editor_load_level_size: '{size}×{size}',
 
         // ── Tile Descriptions (referenced by descriptionKey in tileData.js) ─
         tile_grass_description: 'Haz clic para colocar un muro. Suma 1 punto cuando está cercado.',

@@ -131,3 +131,62 @@
     margin: 10px 0 0 18px;
     color: var(--text-secondary);
 }
+
+/* ========== Level Loader Modal ========== */
+.editor-load-section {
+    margin-bottom: 18px;
+}
+
+.editor-load-section h3 {
+    color: var(--text-primary);
+    font-size: 1em;
+    margin: 0 0 8px;
+    font-weight: 700;
+}
+
+.editor-load-code-row {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.editor-load-code-input {
+    flex: 1;
+    min-width: 0;
+    padding: 0 12px;
+    height: var(--ctrl-height);
+    border: 2px solid var(--accent);
+    border-radius: 999px;
+    background: linear-gradient(135deg, var(--ctrl-bg-start) 0%, var(--ctrl-bg-end) 100%);
+    color: var(--text-primary);
+    font-size: 0.9em;
+}
+
+.editor-load-code-input:focus {
+    outline: none;
+    border-color: var(--accent-end);
+    box-shadow: 0 0 0 2px var(--accent-glow);
+}
+
+.editor-load-code-input::placeholder {
+    color: var(--text-muted);
+}
+
+.editor-load-code-row .ctrl-panel {
+    flex-shrink: 0;
+    padding: 0 18px;
+}
+
+/* Size badge on calendar level cells in the loader */
+.calendar-level-size {
+    font-size: 0.75em;
+    opacity: 0.8;
+    white-space: nowrap;
+    font-weight: 600;
+    color: var(--accent);
+}
+
+.calendar-day-level.active .calendar-level-size {
+    color: var(--text-on-accent);
+}

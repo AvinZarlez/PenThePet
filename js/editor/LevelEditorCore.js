@@ -145,6 +145,34 @@ class LevelEditorCore {
         this.solvedResult = draft.solvedResult || null;
     }
 
+    /**
+     * Load map data from a parsed map object (e.g. from maps/YYYY.json or MapURLCodec).
+     * The map must be a 2D array already converted from the compact string.
+     * Resets solved state and uses the map name from the data if available.
+     * @param {Object} options
+     * @param {string[][]} options.map - 2D tile array (size × size)
+     * @param {number} options.size - Grid dimension
+     * @param {string} [options.levelName] - Optional level name
+     */
+    loadFromMapData({ map, size, levelName }) {
+        const minSize = CONSTANTS.MIN_GRID_SIZE;
+        const maxSize = CONSTANTS.MAX_GRID_SIZE;
+        if (size < minSize || size > maxSize) {
+            throw new Error(`Invalid map size ${size}`);
+        }
+        if (!Array.isArray(map) || map.length !== size) {
+            throw new Error('map must be a 2D array matching size');
+        }
+        this.size = size;
+        this.map = map.map(row => [...row]);
+        this.levelName = (typeof levelName === 'string' && levelName.trim())
+            ? levelName.trim()
+            : CONSTANTS.LEVEL_EDITOR.DEFAULT_LEVEL_NAME;
+        this.selectedTile = LevelEditorCore.DEFAULT_SELECTED_TILE;
+        this.solvedResult = null;
+        this.ensureSingleHome();
+    }
+
     setSolvedResult(result) {
         this.solvedResult = result;
     }
