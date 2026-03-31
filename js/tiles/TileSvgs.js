@@ -185,6 +185,90 @@ const _WATER_VARIANT_FNS = [
 const TILE_SVGS_TILES = new Set(['grass', 'water', 'home', 'star', 'bee']);
 
 /**
+ * Create a tile icon element with all visual layers applied — the same
+ * background, variant-overlay, and asset-overlay logic used by the game
+ * cell renderer (_createCellElement in GameAnimations.js). Shore overlays,
+ * paw overlays, accessibility attributes, and event listeners are NOT added;
+ * those are game-specific.
+ *
+ * This is the shared rendering function used by both the game and the
+ * instructions panel. Updating tileData.js (assets, backgroundGroup, etc.)
+ * automatically updates both contexts.
+ *
+ * Requires tileData.js to be loaded first (getTileBaseLayer, getTileBackgroundGroup,
+ * getTileAssets must be available as globals).
+ *
+ * @param {string} tileName - Tile type name (key in TILE_DATA)
+ * @param {boolean} [isPenned=false] - Whether to use the penned colour palette
+ * @returns {HTMLElement} A <div> with all tile visual layers applied as
+ *   inline background and child overlay elements.
+ */
+function createTileIconElement(tileName, isPenned) {
+    isPenned = isPenned === true;
+    const el = document.createElement('div');
+
+    // Background — same logic as _setCellBackground in GameAnimations:
+    // TileSvgs data: URI → static baseLayer asset → first asset
+    const svgUri = getTileBaseUri(tileName, isPenned);
+    if (svgUri) {
+        el.style.background = `url("${svgUri}") center/cover no-repeat`;
+    } else {
+        const baseLayer = getTileBaseLayer(tileName);
+        if (baseLayer) {
+            el.style.background = `url('assets/${baseLayer}') center/cover no-repeat`;
+        } else {
+            const firstAssets = getTileAssets(tileName, isPenned);
+            if (firstAssets && firstAssets.length > 0 && /\.(svg|png|jpe?g|webp|gif)$/i.test(firstAssets[0])) {
+                el.style.background = `url('assets/${firstAssets[0]}') center/cover no-repeat`;
+            }
+        }
+    }
+
+    if (getTileBaseLayer(tileName)) {
+        // Tiles with a base layer (grass, water): add a variant overlay at index 0
+        const variantUri = getTileVariantUri(tileName, 0, isPenned);
+        if (variantUri) {
+            const img = document.createElement('img');
+            img.src = variantUri;
+            img.alt = '';
+            img.className = 'tile-overlay-fill';
+            img.setAttribute('aria-hidden', 'true');
+            el.appendChild(img);
+        }
+    } else {
+        // Standard tiles: add icon overlays for all asset types (images and emoji),
+        // mirroring the startIndex logic in _createCellElement (GameAnimations.js).
+        const hasBackgroundGroup = !!getTileBackgroundGroup(tileName);
+        const assetList = getTileAssets(tileName, isPenned);
+        // Tiles with backgroundGroup have TileSvgs managing their background, so ALL
+        // assets are icon overlays (startIndex = 0). Other tiles skip index 0 which
+        // was loaded as the CSS background.
+        const startIndex = hasBackgroundGroup ? 0 : 1;
+        if (assetList && assetList.length > startIndex) {
+            for (let i = startIndex; i < assetList.length; i++) {
+                const asset = assetList[i];
+                if (/\.(svg|png|jpe?g|webp|gif)$/i.test(asset)) {
+                    const img = document.createElement('img');
+                    img.src = `assets/${asset}`;
+                    img.alt = '';
+                    img.className = 'tile-overlay';
+                    img.setAttribute('aria-hidden', 'true');
+                    el.appendChild(img);
+                } else {
+                    const span = document.createElement('span');
+                    span.className = 'tile-overlay-emoji';
+                    span.textContent = asset;
+                    span.setAttribute('aria-hidden', 'true');
+                    el.appendChild(span);
+                }
+            }
+        }
+    }
+
+    return el;
+}
+
+/**
  * Returns a data: URI for the base-layer SVG of the given tile type.
  * Returns null for tile types not managed by TileSvgs.
  * @param {string} tileName
@@ -236,6 +320,7 @@ if (typeof window !== 'undefined') {
         getTileBaseUri,
         getTileVariantUri,
         svgToDataUri,
+        createTileIconElement,
     };
 }
 
@@ -251,5 +336,6 @@ if (typeof module !== 'undefined' && module.exports) {
         getTileBaseUri,
         getTileVariantUri,
         svgToDataUri,
+        createTileIconElement,
     };
 }

@@ -214,11 +214,54 @@ describe('Menu', () => {
                 expect(idx).toBeGreaterThanOrEqual(0);
                 const row = rows[idx];
                 const imgs = row.querySelectorAll('img');
-                // Grass and water each render exactly 2 layers: base + variant overlay
-                expect(imgs.length).toBe(2);
+                // Base layer is set as style.background (data: URI), so only
+                // the variant overlay is an <img> element.
+                expect(imgs.length).toBe(1);
                 imgs.forEach(img => {
                     expect(img.src).toMatch(/^data:/);
                 });
+            }
+        });
+
+        test('png tile icons (home, wall, hole) render with correct asset paths', () => {
+            menu.openInstructions();
+            const container = document.getElementById('tileDescriptions');
+            const rows = Array.from(container.querySelectorAll('.tile-desc-row'));
+            const tileNames = Object.keys(TILE_DATA).filter(k => TILE_DATA[k].descriptionKey);
+
+            // wall: single PNG asset used as background, no overlay <img> elements
+            const wallIdx = tileNames.indexOf('wall');
+            expect(wallIdx).toBeGreaterThanOrEqual(0);
+            expect(rows[wallIdx].querySelectorAll('img').length).toBe(0);
+
+            // home: TileSvgs grass background + home.png overlay <img>
+            const homeIdx = tileNames.indexOf('home');
+            expect(homeIdx).toBeGreaterThanOrEqual(0);
+            const homeImgs = rows[homeIdx].querySelectorAll('img');
+            expect(homeImgs.length).toBe(1);
+            expect(homeImgs[0].src).toMatch(/home\.png/);
+
+            // hole: single PNG asset used as background, no overlay <img> elements
+            const holeIdx = tileNames.indexOf('hole');
+            expect(holeIdx).toBeGreaterThanOrEqual(0);
+            expect(rows[holeIdx].querySelectorAll('img').length).toBe(0);
+        });
+
+        test('emoji tile icons (star, bee) render with img and emoji span overlays', () => {
+            menu.openInstructions();
+            const container = document.getElementById('tileDescriptions');
+            const rows = Array.from(container.querySelectorAll('.tile-desc-row'));
+            const tileNames = Object.keys(TILE_DATA).filter(k => TILE_DATA[k].descriptionKey);
+
+            for (const tileName of ['star', 'bee']) {
+                const idx = tileNames.indexOf(tileName);
+                expect(idx).toBeGreaterThanOrEqual(0);
+                const row = rows[idx];
+                // One <img> overlay (star-outline.svg / beehive.png)
+                expect(row.querySelectorAll('img').length).toBe(1);
+                // One emoji span overlay (⭐ / 🐝)
+                const spans = row.querySelectorAll('span.tile-overlay-emoji');
+                expect(spans.length).toBe(1);
             }
         });
 

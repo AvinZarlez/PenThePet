@@ -718,7 +718,7 @@ class Menu {
     /**
      * Populate the tile descriptions list from TILE_DATA.
      * Each tile with a description is rendered as a row with its
-     * first asset icon and description text.
+     * icon (via TileSvgs.createTileIconElement) and description text.
      * @private
      */
     _populateTileDescriptions() {
@@ -731,50 +731,8 @@ class Menu {
             const row = document.createElement('div');
             row.className = 'tile-desc-row';
 
-            const icon = document.createElement('div');
+            const icon = TileSvgs.createTileIconElement(tileName, false);
             icon.className = 'tile-desc-icon';
-
-            if (TileSvgs.TILE_SVGS_TILES.has(tileName)) {
-                // Tiles managed by TileSvgs use dynamically-generated SVG layers
-                const baseUri = TileSvgs.getTileBaseUri(tileName, false);
-                if (baseUri) {
-                    const img = document.createElement('img');
-                    img.src = baseUri;
-                    img.alt = '';
-                    img.setAttribute('aria-hidden', 'true');
-                    icon.appendChild(img);
-                }
-                const variantUri = TileSvgs.getTileVariantUri(tileName, 0, false);
-                if (variantUri) {
-                    const img = document.createElement('img');
-                    img.src = variantUri;
-                    img.alt = '';
-                    img.setAttribute('aria-hidden', 'true');
-                    icon.appendChild(img);
-                }
-                // Icon tiles (home, star, bee) also have a static overlay icon
-                if (data.backgroundGroup && data.assets && data.assets.length > 0) {
-                    for (const asset of data.assets) {
-                        if (asset.endsWith('.svg')) {
-                            const img = document.createElement('img');
-                            img.src = `assets/${asset}`;
-                            img.alt = '';
-                            img.setAttribute('aria-hidden', 'true');
-                            icon.appendChild(img);
-                        }
-                    }
-                }
-            } else if (data.assets && data.assets.length > 0) {
-                for (const asset of data.assets) {
-                    if (asset.endsWith('.svg')) {
-                        const img = document.createElement('img');
-                        img.src = `assets/${asset}`;
-                        img.alt = '';
-                        img.setAttribute('aria-hidden', 'true');
-                        icon.appendChild(img);
-                    }
-                }
-            }
 
             const text = document.createElement('span');
             text.className = 'tile-desc-text';
