@@ -520,3 +520,23 @@ describe('encodeCompactSolution', () => {
         expect(Grid.encodeCompactSolution([[1, 2], null, [3]])).toEqual([1, 2]);
     });
 });
+
+
+describe('encodeCompactMap — unknown tile fallback', () => {
+    test('falls back to grass char for unknown tile types', () => {
+        // 'unknown_tile' has no compact char → should use grass fallback
+        const result = Grid.encodeCompactMap([['unknown_tile', 'grass']]);
+        const grassChar = TILE_TO_COMPACT_CHAR['grass'];
+        expect(result).toBe(grassChar + grassChar);
+    });
+});
+
+describe('encodeCompactSolution — non-array input', () => {
+    test('returns empty array for null input', () => {
+        expect(Grid.encodeCompactSolution(null)).toEqual([]);
+    });
+
+    test('returns empty array for undefined input', () => {
+        expect(Grid.encodeCompactSolution(undefined)).toEqual([]);
+    });
+});

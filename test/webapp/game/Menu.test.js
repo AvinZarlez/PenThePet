@@ -1332,4 +1332,93 @@ describe('Menu — additional branch coverage', () => {
             expect(langSelect.value).toBe('en');
         });
     });
+
+    // -----------------------------------------------------------------------
+    // shareMapUrl() — various branch paths (lines 197-215)
+    // -----------------------------------------------------------------------
+    describe('shareMapUrl()', () => {
+        test('calls _copyToClipboard with encoded URL when currentMapData is set', () => {
+            const mockCopy = jest.fn();
+            game._copyToClipboard = mockCopy;
+            const mapData = {
+                date: '2026-02-06',
+                size: 7,
+                goal: 11,
+                maxWalls: 5,
+                map: 'g'.repeat(49),
+                optimalSolution: null,
+            };
+            menu.currentMapData = mapData;
+            menu.shareMapUrl();
+            expect(mockCopy).toHaveBeenCalledWith(expect.stringContaining('?map='));
+        });
+
+        test('does nothing when currentMapData is null', () => {
+            const mockCopy = jest.fn();
+            game._copyToClipboard = mockCopy;
+            menu.currentMapData = null;
+            menu.shareMapUrl();
+            expect(mockCopy).not.toHaveBeenCalled();
+        });
+
+        test('calls showNotification when MapURLCodec is unavailable', () => {
+            const origMapURLCodec = global.MapURLCodec;
+            delete global.MapURLCodec;
+            const mockNotify = jest.fn();
+            game.showNotification = mockNotify;
+            try {
+                menu.shareMapUrl();
+                expect(mockNotify).toHaveBeenCalledWith(I18N.t('copied_failed'));
+            } finally {
+                global.MapURLCodec = origMapURLCodec;
+            }
+        });
+    });
+
+    // -----------------------------------------------------------------------
+    // loadMapsDatabase() — error handling (lines 330-331)
+    // -----------------------------------------------------------------------
+    describe('loadMapsDatabase() — error handling', () => {
+        test('sets mapsDatabase to empty object on fetch failure', async () => {
+            global.fetch = jest.fn(() => Promise.reject(new Error('Network error')));
+            const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+            await menu.loadMapsDatabase();
+            expect(menu.mapsDatabase).toEqual({});
+            consoleSpy.mockRestore();
+        });
+    });
+
+    // -----------------------------------------------------------------------
+    // openLevelSelector() — CloudSync branch (lines 295-315)
+    // -----------------------------------------------------------------------
+    describe('openLevelSelector() — CloudSync sync branch', () => {
+        test('syncs via CloudSync when configured and logged in', async () => {
+            const origCloudSync = global.CloudSync;
+            global.CloudSync = {
+                isConfigured: jest.fn(() => true),
+                isLoggedIn: jest.fn(() => true),
+                syncNow: jest.fn(() => Promise.resolve()),
+            };
+            global.fetch = jest.fn(() =>
+                Promise.resolve({ ok: true, json: () => Promise.resolve({}) })
+            );
+            await menu.openLevelSelector();
+            expect(global.CloudSync.syncNow).toHaveBeenCalled();
+            global.CloudSync = origCloudSync;
+        });
+
+        test('handles CloudSync.syncNow rejection gracefully', async () => {
+            const origCloudSync = global.CloudSync;
+            global.CloudSync = {
+                isConfigured: jest.fn(() => true),
+                isLoggedIn: jest.fn(() => true),
+                syncNow: jest.fn(() => Promise.reject(new Error('sync failed'))),
+            };
+            global.fetch = jest.fn(() =>
+                Promise.resolve({ ok: true, json: () => Promise.resolve({}) })
+            );
+            await expect(menu.openLevelSelector()).resolves.not.toThrow();
+            global.CloudSync = origCloudSync;
+        });
+    });
 });

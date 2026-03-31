@@ -717,4 +717,129 @@ describe('MapGenerator', () => {
         });
     });
 
+    describe('_fixAdjacentHoles()', () => {
+        test('should replace the right neighbor hole with grass', () => {
+            const generator = new MapGenerator(7);
+            const map = Array(7).fill(null).map(() => Array(7).fill('grass'));
+            map[3][3] = 'home';
+            // Place two adjacent holes horizontally
+            map[2][2] = 'hole';
+            map[2][3] = 'hole';
+            generator._fixAdjacentHoles(map);
+            expect(map[2][2]).toBe('hole');
+            expect(map[2][3]).toBe('grass');
+        });
+
+        test('should replace the lower neighbor hole with grass', () => {
+            const generator = new MapGenerator(7);
+            const map = Array(7).fill(null).map(() => Array(7).fill('grass'));
+            map[3][3] = 'home';
+            // Place two adjacent holes vertically
+            map[2][2] = 'hole';
+            map[3][2] = 'hole';
+            generator._fixAdjacentHoles(map);
+            expect(map[2][2]).toBe('hole');
+            expect(map[3][2]).toBe('grass');
+        });
+
+        test('should not modify non-adjacent holes', () => {
+            const generator = new MapGenerator(7);
+            const map = Array(7).fill(null).map(() => Array(7).fill('grass'));
+            map[3][3] = 'home';
+            // Two non-adjacent holes
+            map[1][1] = 'hole';
+            map[3][3] = 'home';
+            map[5][5] = 'hole';
+            generator._fixAdjacentHoles(map);
+            expect(map[1][1]).toBe('hole');
+            expect(map[5][5]).toBe('hole');
+        });
+
+        test('should handle a map with no holes gracefully', () => {
+            const generator = new MapGenerator(7);
+            const map = Array(7).fill(null).map(() => Array(7).fill('grass'));
+            map[3][3] = 'home';
+            expect(() => generator._fixAdjacentHoles(map)).not.toThrow();
+        });
+    });
+
+    describe('_enforceMaxPerLevel()', () => {
+        test('should replace excess blocking tiles with water', () => {
+            const generator = new MapGenerator(7);
+            const map = Array(7).fill(null).map(() => Array(7).fill('grass'));
+            map[3][3] = 'home';
+            // hole is a blocking tile; TILE_DATA.hole.maxPerLevel should be 3
+            const holeMax = TILE_DATA.hole && TILE_DATA.hole.maxPerLevel ? TILE_DATA.hole.maxPerLevel : 3;
+            // Place holeMax + 1 holes
+            let placed = 0;
+            for (let r = 1; r < 6 && placed <= holeMax; r++) {
+                for (let c = 1; c < 6 && placed <= holeMax; c++) {
+                    if (map[r][c] === 'grass') {
+                        map[r][c] = 'hole';
+                        placed++;
+                    }
+                }
+            }
+            generator._enforceMaxPerLevel(map);
+            let holeCount = 0;
+            for (const row of map) for (const tile of row) if (tile === 'hole') holeCount++;
+            expect(holeCount).toBeLessThanOrEqual(holeMax);
+        });
+
+        test('should replace excess passable tiles with grass', () => {
+            const generator = new MapGenerator(7);
+            const map = Array(7).fill(null).map(() => Array(7).fill('grass'));
+            map[3][3] = 'home';
+            // star is a passable tile; get max from TILE_DATA
+            const starMax = TILE_DATA.star && TILE_DATA.star.maxPerLevel;
+            if (starMax !== undefined) {
+                let placed = 0;
+                for (let r = 1; r < 6 && placed <= starMax; r++) {
+                    for (let c = 1; c < 6 && placed <= starMax; c++) {
+                        if (map[r][c] === 'grass') {
+                            map[r][c] = 'star';
+                            placed++;
+                        }
+                    }
+                }
+                generator._enforceMaxPerLevel(map);
+                let starCount = 0;
+                for (const row of map) for (const tile of row) if (tile === 'star') starCount++;
+                expect(starCount).toBeLessThanOrEqual(starMax);
+            }
+        });
+    });
+
+    describe('_removeScoreModifyingTilesAdjacentToHome()', () => {
+        test('should replace score-modifying tiles adjacent to home with grass', () => {
+            const generator = new MapGenerator(7);
+            const map = Array(7).fill(null).map(() => Array(7).fill('grass'));
+            map[3][3] = 'home';
+            map[2][3] = 'star';
+            map[3][4] = 'bee';
+            generator._removeScoreModifyingTilesAdjacentToHome(map);
+            expect(map[2][3]).toBe('grass');
+            expect(map[3][4]).toBe('grass');
+        });
+
+        test('should not modify tiles that are not adjacent to home', () => {
+            const generator = new MapGenerator(7);
+            const map = Array(7).fill(null).map(() => Array(7).fill('grass'));
+            map[3][3] = 'home';
+            map[1][1] = 'star';
+            map[5][5] = 'bee';
+            generator._removeScoreModifyingTilesAdjacentToHome(map);
+            expect(map[1][1]).toBe('star');
+            expect(map[5][5]).toBe('bee');
+        });
+
+        test('should handle map with no home gracefully', () => {
+            const generator = new MapGenerator(7);
+            const map = Array(7).fill(null).map(() => Array(7).fill('grass'));
+            map[1][1] = 'star';
+            expect(() => generator._removeScoreModifyingTilesAdjacentToHome(map)).not.toThrow();
+            expect(map[1][1]).toBe('star');
+        });
+    });
+
 });
