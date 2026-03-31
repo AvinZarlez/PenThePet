@@ -172,6 +172,16 @@
     height: 100%;
 }
 
+/* Emoji/text tile overlays inside the instructions icon (mirrors .cell .tile-overlay-emoji) */
+.tile-desc-icon .tile-overlay-emoji {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 18px;
+    pointer-events: none;
+}
+
 .tile-desc-text {
     font-size: 0.9em;
     color: var(--text-secondary);
