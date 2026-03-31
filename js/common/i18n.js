@@ -326,7 +326,7 @@ const LANGUAGES = {
         editor_status_unsolved: 'Map is unsolved. Any edits require solve again.',
         editor_status_solving: 'Solving and validating map...',
         editor_status_code: 'Map Code:',
-        editor_status_edit_locked: 'Return to editing before placing tiles.',
+        editor_status_edit_locked: 'Hide optional solution to return to editing.',
         editor_status_copy_failed: 'Unable to copy URL.',
         editor_goal_panel: 'Goal: {goal} · Max Walls: {maxWalls}',
         editor_error_popup_title: 'Validation failed',
@@ -336,8 +336,10 @@ const LANGUAGES = {
         editor_instructions_summary: 'Level Editor Instructions',
         editor_instructions_step_1: 'Pick a tile type from the selector, then click cells to paint.',
         editor_instructions_step_2: 'Use right-click, Shift+click, or Ctrl+click to erase a tile back to grass.',
-        editor_instructions_step_3: 'Place exactly one home tile, then press Solve & Validate.',
-        editor_instructions_step_4: 'Use View Optional Solution to inspect walls, then copy or play the generated URL.',
+        editor_instructions_step_3: 'Place exactly one home tile, at least one star tile, and at least one bee tile, then press Solve & Validate.',
+        editor_instructions_step_4: 'Use View Optional Solution to freeze editing and inspect optimal wall placement.',
+        editor_instructions_step_5: 'Copy the generated map code and use Copy URL / Play Map for quick verification.',
+        editor_instructions_step_6: 'Paste the map code into the GitHub Actions add-map workflow inputs to add the level.',
 
         // ── Tile Descriptions (referenced by descriptionKey in tileData.js) ─
         tile_grass_description: 'Click to place a wall. Scores 1 point when penned.',
@@ -660,7 +662,7 @@ const LANGUAGES = {
         editor_status_unsolved: 'El mapa no está resuelto. Cualquier cambio requiere resolver de nuevo.',
         editor_status_solving: 'Resolviendo y validando mapa...',
         editor_status_code: 'Código del mapa:',
-        editor_status_edit_locked: 'Vuelve al modo de edición antes de colocar casillas.',
+        editor_status_edit_locked: 'Oculta la solución opcional para volver al modo de edición.',
         editor_status_copy_failed: 'No se pudo copiar la URL.',
         editor_goal_panel: 'Objetivo: {goal} · Muros máximos: {maxWalls}',
         editor_error_popup_title: 'La validación falló',
@@ -670,8 +672,10 @@ const LANGUAGES = {
         editor_instructions_summary: 'Instrucciones del editor',
         editor_instructions_step_1: 'Elige una loseta del selector y haz clic para pintar casillas.',
         editor_instructions_step_2: 'Usa clic derecho, Shift+clic o Ctrl+clic para borrar una casilla a pasto.',
-        editor_instructions_step_3: 'Coloca exactamente una casilla de hogar y pulsa Resolver y validar.',
-        editor_instructions_step_4: 'Usa Ver solución opcional para revisar muros, luego copia o abre la URL.',
+        editor_instructions_step_3: 'Coloca exactamente una casilla de hogar, al menos una estrella y al menos una abeja, luego pulsa Resolver y validar.',
+        editor_instructions_step_4: 'Usa Ver solución opcional para congelar la edición y revisar la colocación óptima de muros.',
+        editor_instructions_step_5: 'Copia el código del mapa generado y usa Copiar URL / Jugar mapa para verificar rápidamente.',
+        editor_instructions_step_6: 'Pega el código del mapa en los campos del workflow add-map de GitHub Actions para añadir el nivel.',
 
         // ── Tile Descriptions (referenced by descriptionKey in tileData.js) ─
         tile_grass_description: 'Haz clic para colocar un muro. Suma 1 punto cuando está cercado.',
