@@ -11,6 +11,7 @@
  */
 
 const fs = require('fs');
+const os = require('os');
 const path = require('path');
 const {
     readAllMaps,
@@ -28,7 +29,7 @@ const {
 
 /** Create a fresh temp directory for each test that needs filesystem I/O. */
 function tmpDir() {
-    const dir = path.join('/tmp', `maputils-test-${Date.now()}-${Math.random().toString(36).slice(2)}`);
+    const dir = path.join(os.tmpdir(), `maputils-test-${Date.now()}-${Math.random().toString(36).slice(2)}`);
     fs.mkdirSync(dir, { recursive: true });
     return dir;
 }
@@ -52,7 +53,7 @@ function writeMaps(dir, maps) {
 
 describe('readAllMaps', () => {
     test('returns empty object when directory does not exist', () => {
-        expect(readAllMaps('/tmp/nonexistent-maputils-' + Date.now())).toEqual({});
+        expect(readAllMaps(path.join(os.tmpdir(), 'nonexistent-maputils-' + Date.now()))).toEqual({});
     });
 
     test('returns empty object when directory has no YYYY.json files', () => {
@@ -135,7 +136,7 @@ describe('readAllMaps', () => {
 
 describe('saveMapsToDirectory', () => {
     test('creates the directory when it does not exist', () => {
-        const dir = path.join('/tmp', `maputils-save-${Date.now()}`);
+        const dir = path.join(os.tmpdir(), `maputils-save-${Date.now()}`);
         expect(fs.existsSync(dir)).toBe(false);
         try {
             saveMapsToDirectory(dir, { '2026-01-01': { dayNumber: 1, mapName: 'Alpha' } });
@@ -217,7 +218,7 @@ describe('saveMapsToDirectory', () => {
 
 describe('getNextDayNumber', () => {
     test('returns 1 when directory does not exist', () => {
-        expect(getNextDayNumber('/tmp/nonexistent-daynum-' + Date.now())).toBe(1);
+        expect(getNextDayNumber(path.join(os.tmpdir(), 'nonexistent-daynum-' + Date.now()))).toBe(1);
     });
 
     test('returns 1 when directory exists but has no maps', () => {
