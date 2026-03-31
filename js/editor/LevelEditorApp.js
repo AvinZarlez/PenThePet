@@ -510,8 +510,11 @@ class LevelEditorApp {
             const [year, month] = yearMonth.split('-');
             const labelDate = new Date(parseInt(year), parseInt(month) - 1, 1);
             monthLabel.textContent = labelDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
-            prevBtn.disabled = currentMonthIdx === 0;
-            nextBtn.disabled = currentMonthIdx === sortedMonths.length - 1;
+            const firstLoadedYear = parseInt(sortedMonths[0].substring(0, 4));
+            const lastLoadedYear = parseInt(sortedMonths[sortedMonths.length - 1].substring(0, 4));
+            const maxYear = new Date().getFullYear() + 1;
+            prevBtn.disabled = currentMonthIdx === 0 && firstLoadedYear - 1 < CONSTANTS.FIRST_MAP_YEAR;
+            nextBtn.disabled = currentMonthIdx === sortedMonths.length - 1 && lastLoadedYear + 1 > maxYear;
             calendarContainer.innerHTML = '';
             this._renderLoaderCalendarGrid(calendarContainer, yearMonth, monthGroups[yearMonth] || []);
         };
