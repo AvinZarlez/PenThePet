@@ -620,8 +620,8 @@
   },
   "2026-03-21": {
     "date": "2026-03-21",
-    "mapName": "Amberness",
     "dayNumber": 22,
+    "mapName": "Amberness",
     "size": 13,
     "goal": 43,
     "maxWalls": 9,
