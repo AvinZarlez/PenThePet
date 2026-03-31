@@ -66,6 +66,7 @@ export default [
                 I18N: 'readonly',
                 LANGUAGE_OPTIONS: 'readonly',
                 LANGUAGES: 'readonly',
+                MapURLCodec: 'readonly',
             },
         },
         rules: {
