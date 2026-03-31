@@ -40,7 +40,7 @@ class LevelEditorApp {
     _wireUI() {
         const nameInput = document.getElementById('editorLevelName');
         const sizeSelect = document.getElementById('editorMapSize');
-        const tileSelect = document.getElementById('editorTileSelector');
+        const tileSelector = document.getElementById('editorTileSelector');
         const resetBtn = document.getElementById('editorResetBtn');
         const solveBtn = document.getElementById('editorSolveBtn');
         const toggleSolutionBtn = document.getElementById('editorToggleSolutionBtn');
@@ -63,8 +63,11 @@ class LevelEditorApp {
             this._reloadGridFromCore();
         });
 
-        tileSelect.addEventListener('change', () => {
-            this.core.setSelectedTile(tileSelect.value);
+        tileSelector.addEventListener('click', (e) => {
+            const btn = e.target.closest('.tile-palette-btn');
+            if (!btn || !btn.dataset.tile) return;
+            this.core.setSelectedTile(btn.dataset.tile);
+            this._syncTileSelection();
             this._saveDraft();
         });
 
@@ -94,7 +97,7 @@ class LevelEditorApp {
     _syncControlsFromState() {
         const nameInput = document.getElementById('editorLevelName');
         const sizeSelect = document.getElementById('editorMapSize');
-        const tileSelect = document.getElementById('editorTileSelector');
+        const tileSelector = document.getElementById('editorTileSelector');
 
         nameInput.value = this.core.levelName || '';
 
@@ -107,15 +110,28 @@ class LevelEditorApp {
             sizeSelect.appendChild(option);
         }
 
-        tileSelect.innerHTML = '';
+        tileSelector.innerHTML = '';
         for (const value of LevelEditorCore.EDITABLE_TILE_OPTIONS) {
             const tileData = TILE_DATA[value];
             if (!tileData || !tileData.nameKey) continue;
-            const option = document.createElement('option');
-            option.value = value;
-            option.textContent = I18N.t(tileData.nameKey);
-            if (value === this.core.selectedTile) option.selected = true;
-            tileSelect.appendChild(option);
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'tile-palette-btn';
+            if (value === this.core.selectedTile) btn.classList.add('selected');
+            btn.dataset.tile = value;
+            btn.title = I18N.t(tileData.nameKey);
+            const icon = TileSvgs.createTileIconElement(value, false);
+            icon.className = 'tile-palette-icon';
+            btn.appendChild(icon);
+            tileSelector.appendChild(btn);
+        }
+    }
+
+    _syncTileSelection() {
+        const tileSelector = document.getElementById('editorTileSelector');
+        if (!tileSelector) return;
+        for (const btn of tileSelector.querySelectorAll('.tile-palette-btn')) {
+            btn.classList.toggle('selected', btn.dataset.tile === this.core.selectedTile);
         }
     }
 
