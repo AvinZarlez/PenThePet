@@ -996,9 +996,20 @@ class Game {
 
             // Add the URL so recipients can jump directly to this puzzle.
             // Use window.location.origin + pathname so it works on any deployment.
-            if (date && typeof window !== 'undefined' && window.location) {
+            // For custom maps loaded via ?map=, encode the full map data so the
+            // recipient can load the same puzzle without a maps database entry.
+            if (typeof window !== 'undefined' && window.location) {
                 const base = window.location.origin + window.location.pathname;
-                lines.push(I18N.t('share_url_line', { url: `${base}?date=${date}` }));
+                if (this.isCustomMapLevel) {
+                    if (this.currentMapData && typeof MapURLCodec !== 'undefined') {
+                        const encoded = MapURLCodec.encodeMapData(this.currentMapData);
+                        lines.push(I18N.t('share_url_line', { url: `${base}?map=${encoded}` }));
+                    }
+                    // If MapURLCodec or currentMapData is unavailable, omit the URL
+                    // rather than exposing the internal save key as a ?date= param.
+                } else if (date) {
+                    lines.push(I18N.t('share_url_line', { url: `${base}?date=${date}` }));
+                }
             }
         } else {
             // No specific level — use a generic "play latest" URL.

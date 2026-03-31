@@ -429,6 +429,7 @@ async function initGame() {
     const saveKey = mapData._saveKey || mapData.date;
     game.currentDate = saveKey;
     game.isCustomMapLevel = !!(mapData._saveKey);
+    game.currentMapData = mapData;
     game.optimalSolution = mapData.optimalSolution ?
         parseCompactSolution(mapData.optimalSolution) : null;
 
