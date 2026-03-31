@@ -84,19 +84,23 @@
       "type": "node-terminal",
       "request": "launch",
       "name": "Open Level Editor in Browser",
-      "command": "open http://localhost:8787/level-editor/index.html || xdg-open http://localhost:8787/level-editor/index.html"
+      "command": "open http://localhost:8787/ || xdg-open http://localhost:8787/"
     }
   ],
   "compounds": [
     {
       "name": "Start in web browser",
-      "configurations": ["Open in Browser"],
+      "configurations": [
+        "Open in Browser"
+      ],
       "preLaunchTask": "Start HTTP Server",
       "stopAll": true
     },
     {
       "name": "Start Level Editor in browser",
-      "configurations": ["Open Level Editor in Browser"],
+      "configurations": [
+        "Open Level Editor in Browser"
+      ],
       "preLaunchTask": "Start Level Editor Server",
       "stopAll": true
     }
