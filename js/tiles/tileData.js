@@ -13,6 +13,7 @@
 
 const TILE_DATA = {
     grass: {
+        nameKey: 'tile_name_grass',
         score: 1,
         wallPlaceable: true,
         clickable: true,
@@ -27,6 +28,7 @@ const TILE_DATA = {
         ariaLabel: (row, col) => I18N.t('tile_grass_aria', { row: row + 1, col: col + 1 }),
     },
     water: {
+        nameKey: 'tile_name_water',
         score: 0,
         wallPlaceable: false,
         clickable: false,
@@ -42,6 +44,7 @@ const TILE_DATA = {
         ariaLabel: (row, col) => I18N.t('tile_water_aria', { row: row + 1, col: col + 1 }),
     },
     wall: {
+        nameKey: 'tile_name_wall',
         score: 0,
         wallPlaceable: false,
         clickable: true,
@@ -57,6 +60,7 @@ const TILE_DATA = {
         ariaLabel: (row, col) => I18N.t('tile_wall_aria', { row: row + 1, col: col + 1 }),
     },
     home: {
+        nameKey: 'tile_name_home',
         score: 1,
         wallPlaceable: false,
         clickable: false,
@@ -74,6 +78,7 @@ const TILE_DATA = {
         ariaLabel: (row, col) => I18N.t('tile_home_aria', { row: row + 1, col: col + 1 }),
     },
     star: {
+        nameKey: 'tile_name_star',
         score: 3,
         wallPlaceable: false,
         clickable: false,
@@ -90,6 +95,7 @@ const TILE_DATA = {
         ariaLabel: (row, col) => I18N.t('tile_star_aria', { row: row + 1, col: col + 1 }),
     },
     bee: {
+        nameKey: 'tile_name_bee',
         score: -3,
         wallPlaceable: false,
         clickable: false,
@@ -106,6 +112,7 @@ const TILE_DATA = {
         ariaLabel: (row, col) => I18N.t('tile_bee_aria', { row: row + 1, col: col + 1 }),
     },
     hole: {
+        nameKey: 'tile_name_hole',
         score: 0,
         wallPlaceable: true,
         clickable: true,
@@ -122,6 +129,7 @@ const TILE_DATA = {
         ariaLabel: (row, col) => I18N.t('tile_hole_aria', { row: row + 1, col: col + 1 }),
     },
     filledHole: {
+        nameKey: 'tile_name_filled_hole',
         score: 1,
         wallPlaceable: false,
         clickable: true,

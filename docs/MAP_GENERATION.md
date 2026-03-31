@@ -18,7 +18,7 @@ The Python MILP solver (`scripts/solver/solve.py`, powered by PuLP + CBC):
 
 **Why MILP?** Provably optimal, solves 17×17 maps in <2 seconds, scales to any grid size.
 
-**Wall budget:** `maxWalls = floor(size × 0.75)`
+**Wall budget input to solver:** `maxWalls = floor(size × 0.75)`
 
 | Size  | maxWalls |
 | ----- | -------- |
@@ -127,7 +127,8 @@ MapGenerator.generate()
 
 ## Key Invariants
 
-- `maxWalls = floor(size × 0.75)` — stored per-map; never change without regenerating all maps
+- Solver receives `floor(size × 0.75)` as the wall budget input.
+- Stored map `maxWalls` is aligned to `optimalWallCount` so the published level budget matches the solved optimum.
 - Goal = maximum achievable area; `goalArea ≥ 9`; at least one wall not on edge
 - Home can reach edge initially; no fallbacks — generation throws on failure
 - Compact format: tile string (`g`/`w`/`h`) + flat solution array `[r,c,r,c,…]`

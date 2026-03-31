@@ -59,6 +59,16 @@
       }
     },
     {
+      "label": "Run Level Editor Tests",
+      "type": "npm",
+      "script": "test:editor",
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      }
+    },
+    {
       "label": "Lint JavaScript",
       "type": "npm",
       "script": "lint",
@@ -108,6 +118,29 @@
       "presentation": {
         "reveal": "always",
         "panel": "shared"
+      }
+    },
+    {
+      "label": "Start Level Editor Server",
+      "type": "npm",
+      "script": "level-editor",
+      "isBackground": true,
+      "problemMatcher": [
+        {
+          "pattern": {
+            "regexp": "^(Level editor server running at .+)$",
+            "message": 1
+          },
+          "background": {
+            "activeOnStart": true,
+            "beginsPattern": "^Level editor server running at",
+            "endsPattern": "^Level editor server running at"
+          }
+        }
+      ],
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
       }
     }
   ]

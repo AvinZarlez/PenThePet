@@ -40,6 +40,18 @@
     {
       "type": "node",
       "request": "launch",
+      "name": "Jest: Run Level Editor Tests",
+      "program": "${workspaceFolder}/node_modules/.bin/jest",
+      "args": [
+        "--runInBand",
+        "--testPathPatterns=test/webapp/editor/|test/generation/levelEditorMap\\.test\\.js|test/generation/level-editor-server\\.test\\.js"
+      ],
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen"
+    },
+    {
+      "type": "node",
+      "request": "launch",
       "name": "Jest: Run Current Test File",
       "program": "${workspaceFolder}/node_modules/.bin/jest",
       "args": [
@@ -67,6 +79,12 @@
       "request": "launch",
       "name": "Open in Browser",
       "command": "open http://localhost:8080 || xdg-open http://localhost:8080"
+    },
+    {
+      "type": "node-terminal",
+      "request": "launch",
+      "name": "Open Level Editor in Browser",
+      "command": "open http://localhost:8787/level-editor/index.html || xdg-open http://localhost:8787/level-editor/index.html"
     }
   ],
   "compounds": [
@@ -74,6 +92,12 @@
       "name": "Start in web browser",
       "configurations": ["Open in Browser"],
       "preLaunchTask": "Start HTTP Server",
+      "stopAll": true
+    },
+    {
+      "name": "Start Level Editor in browser",
+      "configurations": ["Open Level Editor in Browser"],
+      "preLaunchTask": "Start Level Editor Server",
       "stopAll": true
     }
   ]

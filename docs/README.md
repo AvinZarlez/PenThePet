@@ -11,6 +11,7 @@ All project documentation lives here. Each file covers a single topic — pick w
 | [CODE_STRUCTURE.md](CODE_STRUCTURE.md)         | Every code file in the project — what it does and how it connects                                |
 | [TILE_SYSTEM.md](TILE_SYSTEM.md)               | Tile data system — properties, adding new tiles, architecture                                    |
 | [MAP_GENERATION.md](MAP_GENERATION.md)         | Map generation algorithm, solver details, and how to generate maps locally or via GitHub Actions |
+| [LEVEL_VALIDATION.md](LEVEL_VALIDATION.md)     | Shared validation rules for generated and level-editor maps                                      |
 | [DEVELOPMENT.md](DEVELOPMENT.md)               | How to clone, run, lint, test, and debug locally (including VS Code setup)                       |
 | [TESTING.md](TESTING.md)                       | Test infrastructure, running tests, writing tests, and debugging failures                        |
 | [DEBUGGING_BRANCHES.md](DEBUGGING_BRANCHES.md) | How to test branches before merging (GitHub Pages, local, Codespaces)                            |

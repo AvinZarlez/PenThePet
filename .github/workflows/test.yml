@@ -23,7 +23,7 @@ jobs:
   test-webapp:
     name: Test Webapp
     needs: check-paths
-    if: needs.check-paths.outputs.tests == 'true'
+    if: needs.check-paths.outputs.test-webapp == 'true'
     runs-on: ubuntu-latest
 
     permissions:
@@ -48,7 +48,7 @@ jobs:
   test-generation:
     name: Test Level Generation
     needs: check-paths
-    if: needs.check-paths.outputs.tests == 'true'
+    if: needs.check-paths.outputs.test-generation == 'true'
     runs-on: ubuntu-latest
 
     permissions:
@@ -77,10 +77,42 @@ jobs:
       - name: Run level generation tests
         run: npm run test:generation
 
+  test-level-editor:
+    name: Test Level Editor
+    needs: check-paths
+    if: needs.check-paths.outputs.test-editor == 'true'
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 24.x
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24.x
+          cache: 'npm'
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+
+      - name: Install dependencies
+        run: |
+          npm ci
+          pip install -r scripts/solver/requirements.txt
+
+      - name: Run level editor tests
+        run: npm run test:editor
+
   coverage:
     name: Full Test Suite & Coverage
     runs-on: ubuntu-latest
-    needs: [test-webapp, test-generation]
+    needs: [check-paths, test-webapp, test-generation, test-level-editor]
 
     permissions:
       contents: read
@@ -131,7 +163,7 @@ jobs:
           echo "## Test Results" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           if [ -f coverage/coverage-summary.json ]; then
-            COVERAGE=$(node -e "const summary=JSON.parse(require('fs').readFileSync('./coverage/coverage-summary.json','utf8')); console.log(summary.total.lines.pct)")
+            COVERAGE=$(node -e "const summary=require('./coverage/coverage-summary.json');console.log(summary.total.lines.pct)")
             echo "### Code Coverage: ${COVERAGE}%" >> $GITHUB_STEP_SUMMARY
           fi
           echo "" >> $GITHUB_STEP_SUMMARY
@@ -172,7 +204,7 @@ jobs:
 
   test:
     name: Test
-    needs: [check-paths, test-webapp, test-generation, coverage]
+    needs: [check-paths, test-webapp, test-generation, test-level-editor, coverage]
     if: always()
     runs-on: ubuntu-latest
 
@@ -185,6 +217,7 @@ jobs:
               "${{ needs.check-paths.result }}" \
               "${{ needs.test-webapp.result }}" \
               "${{ needs.test-generation.result }}" \
+              "${{ needs.test-level-editor.result }}" \
               "${{ needs.coverage.result }}"; do
             if [[ "$result" == "failure" || "$result" == "cancelled" ]]; then
               echo "Test pipeline failed or was cancelled."

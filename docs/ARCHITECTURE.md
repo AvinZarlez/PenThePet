@@ -30,12 +30,15 @@
    - `ScoreCalculator.js` — pure scoring function; replace to change scoring rules for a different game variant
 4. **View** (`index.html`, `css/`) — user interface
 5. **Generation** (`scripts/`) — offline map generation, not loaded in browser
+6. **Level Editor App** (`level-editor/`, `js/editor/`) — separate local app that reuses shared tile/solver/validator pipeline
 
 See [CODE_STRUCTURE.md](CODE_STRUCTURE.md) for the full file listing.
 
 ## Algorithm Design
 
 **Map Generation (MILP):** Maps are pre-generated offline using a Python MILP solver (PuLP + CBC). The solver maximizes enclosed area subject to the wall budget. Result is provably optimal — not a heuristic. See [MAP_GENERATION.md](MAP_GENERATION.md).
+
+**Level Editor Pipeline Reuse:** The local level editor is intentionally a separate UI surface but shares solver/validator/map codec logic (`scripts/lib/levelEditorMap.js`) with map ingestion and generation rules. Keep this shared pipeline aligned with generation invariants when changing validation behavior.
 
 **Pathfinding (BFS):** Pet reachability uses BFS — simple, correct, and fast on grids up to 17×17.
 

@@ -1,0 +1,38 @@
+name: Add map
+
+on:
+  workflow_dispatch:
+    inputs:
+      map_code:
+        description: 'Map code (hash) from level editor or debug share URL'
+        required: true
+      date:
+        description: 'Optional date (YYYY-MM-DD). Leave empty to auto-assign.'
+        required: false
+        default: ''
+      map_name:
+        description: 'Optional map name override'
+        required: false
+        default: ''
+
+jobs:
+  add-map:
+    permissions:
+      contents: write
+      pull-requests: write
+    uses: ./.github/workflows/map-update-common.yml
+    with:
+      branch_prefix: maps/add-map
+      run_command: |
+        CMD=(node scripts/add-map.js --map-code "${{ github.event.inputs.map_code }}")
+        if [ -n "${{ github.event.inputs.date }}" ]; then
+          CMD+=(--date "${{ github.event.inputs.date }}")
+        fi
+        if [ -n "${{ github.event.inputs.map_name }}" ]; then
+          CMD+=(--map-name "${{ github.event.inputs.map_name }}")
+        fi
+        "${CMD[@]}"
+      commit_message: Add map from level editor code
+      pr_title: Add map from level editor code
+      pr_body: Adds one map from a submitted level-editor map code after solver + validation checks.
+      no_changes_message: No map changes were produced.

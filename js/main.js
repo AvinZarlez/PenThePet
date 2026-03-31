@@ -355,8 +355,8 @@ function updateMapInfo(mapData) {
     const mapNameElement = document.getElementById('mapName');
     const mapDateElement = document.getElementById('mapDate');
     
-    if (mapDayElement && mapData.dayNumber != null) {
-        mapDayElement.textContent = mapData.dayNumber;
+    if (mapDayElement) {
+        mapDayElement.textContent = mapData.dayNumber != null ? mapData.dayNumber : I18N.t('label_na');
     }
     
     if (mapNameElement && mapData.mapName) {
@@ -639,6 +639,5 @@ window.addEventListener('DOMContentLoaded', () => {
 
 // Export for use in Node.js testing
 if (typeof module !== 'undefined' && module.exports) {
-    module.exports = { loadTodayMap, resolveMapFromUrlParams, _resolveByMapData };
+    module.exports = { loadTodayMap, resolveMapFromUrlParams, _resolveByMapData, updateMapInfo };
 }
-

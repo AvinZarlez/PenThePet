@@ -4,6 +4,7 @@
 [![CI/CD Pipeline](https://github.com/AvinZarlez/penthepet/actions/workflows/test.yml/badge.svg)](https://github.com/AvinZarlez/penthepet/actions/workflows/test.yml)
 [![Deploy to GitHub Pages](https://github.com/AvinZarlez/penthepet/actions/workflows/static.yml/badge.svg)](https://github.com/AvinZarlez/penthepet/actions/workflows/static.yml)
 [![Generate Daily Map](https://github.com/AvinZarlez/penthepet/actions/workflows/generate-daily-map.yml/badge.svg)](https://github.com/AvinZarlez/penthepet/actions/workflows/generate-daily-map.yml)
+[![Add map](https://github.com/AvinZarlez/penthepet/actions/workflows/add-map.yml/badge.svg)](https://github.com/AvinZarlez/penthepet/actions/workflows/add-map.yml)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
 **A daily logic puzzle — fence in your pet!** PenThePet is a free, browser-based puzzle game where you strategically place walls to create the largest enclosed area for your pet. A new puzzle every day, no install required.
@@ -49,6 +50,21 @@ Access these from the **☰ Menu → Options**:
 | **Language**     | Switch between supported UI languages (English, Español)                                                                                         |
 | **Account**      | Sign in with Google or email to sync your puzzle history across devices (optional, requires Firebase setup)                                      |
 | **Debug Mode**   | Shows developer tools at the bottom of the page                                                                                                  |
+
+## 🧱 Local Level Editor
+
+Create and validate custom maps locally using the same solver + validator logic:
+
+```bash
+npm install
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r scripts/solver/requirements.txt
+npm run level-editor
+# open http://localhost:8787/
+```
+
+The editor auto-saves draft state every 30 seconds in a cookie and returns a map code plus playable live-game URL once solved.
 
 ---
 

@@ -61,12 +61,9 @@ class MapValidator {
             errors.push('Not all non-edge tiles are reachable from home without traversing edge tiles');
         }
         
-        // 6. Every available wall must be needed for the optimal score
-        if (solution.maxWalls !== undefined) {
-            if (solution.optimalWallCount !== solution.maxWalls) {
-                errors.push(`Not all walls needed for optimal score (uses ${solution.optimalWallCount} of ${solution.maxWalls} walls)`);
-            }
-        }
+        // 6. Every available wall must be needed for the optimal score.
+        // NOTE: Generation/editor should align map maxWalls down to optimalWallCount.
+        // This validator no longer rejects maps for having spare wall budget.
         
         // 7. No score-modifying tiles adjacent to home (they are always penned, not an interesting choice)
         const adjScoreTiles = this._scoreModifyingTilesAdjacentToHome(map);

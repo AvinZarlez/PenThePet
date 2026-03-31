@@ -21,6 +21,12 @@ if (typeof global !== 'undefined' && typeof global.NUMERIC_ID_TO_SCORE === 'unde
 }
 
 class MILPSolver {
+    static _lastError = null;
+
+    static getLastError() {
+        return this._lastError;
+    }
+
     /**
      * Solve the map to find optimal wall placement using the Python MILP solver.
      *
@@ -29,6 +35,7 @@ class MILPSolver {
      * @returns {Object} Object with {walls, goalArea, optimalWallCount} or null
      */
     static solveMap(map, maxWalls) {
+        this._lastError = null;
         const verticalTiles = map.length;
         const horizontalTiles = map[0].length;
 
@@ -46,7 +53,8 @@ class MILPSolver {
         }
 
         if (homeRow < 0 || homeCol < 0) {
-            console.error('No home position found in map');
+            this._lastError = 'No home position found in map';
+            console.error(this._lastError);
             return null;
         }
 
@@ -89,6 +97,7 @@ class MILPSolver {
                 maxBuffer: 10 * 1024 * 1024
             });
         } catch (err) {
+            this._lastError = err && err.stderr ? String(err.stderr) : err.message;
             console.error('Python solver failed:', err.message);
             return null;
         }
@@ -97,11 +106,13 @@ class MILPSolver {
         try {
             result = JSON.parse(output.trim());
         } catch (_err) { // eslint-disable-line no-unused-vars
+            this._lastError = 'Failed to parse Python solver output';
             console.error('Failed to parse Python solver output:', output);
             return null;
         }
 
         if (!result.feasible) {
+            this._lastError = 'Solver could not find a feasible solution for this map.';
             console.log('Python solver: no feasible solution found');
             return null;
         }

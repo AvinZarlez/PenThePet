@@ -18,6 +18,7 @@ Tests live in `test/webapp/` (browser components) and `test/generation/` (map ge
 npm test                              # all tests with coverage
 npm run test:webapp                   # browser-side tests only
 npm run test:generation               # generation tests only
+npm run test:editor                   # level editor + related pipeline tests
 npm run test:watch                    # watch mode
 npx jest test/webapp/game/Grid.test.js     # single file
 npx jest -t "test name"              # tests matching pattern

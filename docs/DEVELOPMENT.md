@@ -56,6 +56,16 @@ node scripts/generate-map.js --size 7-17 --count 5  # 5 maps, random sizes
 node scripts/generate-map.js --fresh --count 10 --date 2026-03-01 --size 9
 ```
 
+### Local Level Editor
+
+Run the local level editor server:
+
+```bash
+npm run level-editor
+```
+
+Then open `http://localhost:8787/` to build a custom map, solve/validate it with the existing Python MILP solver, and get a playable `?map=` URL for the live game.
+
 ### Keyboard Controls
 
 | Key | Action |
@@ -125,6 +135,8 @@ Use DevTools (F12) → Sources to set breakpoints. Check Network tab for 404s on
 
 **`generate-daily-map.yml`** — Triggered manually via `workflow_dispatch`. Generates maps with the Python MILP solver, validates quality, and opens a PR against `main`.
 
+**`add-map.yml`** — Triggered manually via `workflow_dispatch`. Accepts a level-editor/debug map code, re-runs solver + validation, writes the map into `maps/`, and opens a PR against `main`.
+
 **`static.yml`** — Deploys to GitHub Pages on push to `main`.
 
 > Gate jobs prevent "Expected — Waiting for status to be reported" blocks: they always fire on every PR, while sub-jobs are conditional on which files changed.
@@ -156,7 +168,11 @@ Use **relative paths** in HTML (`js/main.js` not `/js/main.js`) — absolute pat
 
 ## VS Code Setup
 
-Pre-configured in `.vscode/` — launch configs for running/debugging tests, tasks for lint workflows, and recommended extensions (ESLint, Ruff, markdownlint, Jest). Press F5 to debug tests; right-click HTML → Open with Live Server.
+Pre-configured in `.vscode/` — launch configs for running/debugging tests, launching the main webapp and level editor, tasks for test/lint/server workflows, and recommended extensions (ESLint, Ruff, markdownlint, Jest).
+
+- Use **Start in web browser** to launch the main game (`http://localhost:8080`).
+- Use **Start Level Editor in browser** to launch the local level editor (`http://localhost:8787/level-editor/index.html`).
+- Use **Jest: Run Level Editor Tests** or the **Run Level Editor Tests** task for editor-focused coverage.
 
 ---
 

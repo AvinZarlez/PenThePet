@@ -1,0 +1,133 @@
+.editor-controls {
+    display: grid;
+    gap: 10px;
+    margin: 12px 0;
+    grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+}
+
+.editor-field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    background: linear-gradient(135deg, var(--ctrl-bg-start) 0%, var(--ctrl-bg-end) 100%);
+    border: 2px solid var(--ctrl-border);
+    border-radius: 999px;
+    padding: 10px 16px;
+}
+
+.editor-field span {
+    color: var(--text-primary);
+}
+
+.editor-field input,
+.editor-field select {
+    border: 2px solid var(--accent);
+    border-radius: 999px;
+    background: linear-gradient(135deg, var(--ctrl-bg-start) 0%, var(--ctrl-bg-end) 100%);
+    color: var(--text-primary);
+    padding: 8px 10px;
+    font-weight: 600;
+}
+
+.editor-field select {
+    cursor: pointer;
+    color: var(--text-primary);
+}
+
+.editor-field select option {
+    color: var(--text-primary);
+    background: var(--surface-bg);
+}
+
+.editor-field input:focus,
+.editor-field select:focus {
+    outline: none;
+    border-color: var(--accent-end);
+    box-shadow: 0 0 0 2px var(--accent-glow);
+}
+
+.editor-actions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.editor-actions .ctrl-panel {
+    color: var(--text-on-surface);
+}
+
+.editor-actions button.ctrl-panel {
+    padding: 0 16px;
+    min-width: 152px;
+}
+
+.editor-actions button.ctrl-panel:disabled {
+    opacity: 0.65;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+.editor-goal-panel {
+    margin-left: auto;
+    padding: 0 14px;
+    white-space: nowrap;
+    font-size: 0.95em;
+}
+
+.editor-status {
+    margin-top: 10px;
+    padding: 10px;
+    border-radius: 10px;
+    border: 2px solid var(--ctrl-border);
+    background: linear-gradient(135deg, var(--ctrl-bg-start) 0%, var(--ctrl-bg-end) 100%);
+    color: var(--text-on-surface);
+    text-align: left;
+}
+
+.editor-status pre {
+    margin: 6px 0;
+    padding: 8px;
+    overflow: auto;
+    max-height: 130px;
+    border-radius: 8px;
+    background: var(--surface-bg);
+    color: var(--text-primary);
+}
+
+.editor-status-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 8px;
+    flex-wrap: wrap;
+}
+
+.editor-status-actions button {
+    height: 38px;
+    padding: 0 14px;
+}
+
+.editor-status-actions button.copied {
+    border-color: var(--success) !important;
+}
+
+.editor-instructions {
+    margin-top: 14px;
+    border: 2px solid var(--ctrl-border);
+    border-radius: 12px;
+    background: linear-gradient(135deg, var(--ctrl-bg-start) 0%, var(--ctrl-bg-end) 100%);
+    color: var(--text-on-surface);
+    padding: 10px 12px;
+}
+
+.editor-instructions summary {
+    cursor: pointer;
+    color: var(--text-primary);
+    font-weight: 700;
+}
+
+.editor-instructions ul {
+    margin: 10px 0 0 18px;
+    color: var(--text-secondary);
+}

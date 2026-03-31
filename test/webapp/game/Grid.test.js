@@ -495,3 +495,28 @@ describe('parseCompactSolution', () => {
         expect(Grid.parseCompactSolution([1, 0, 2])).toEqual([[1, 0]]);
     });
 });
+
+describe('encodeCompactMap', () => {
+    test('encodes a 2D map into compact row-major string', () => {
+        const result = Grid.encodeCompactMap([
+            ['grass', 'water', 'home'],
+            ['star', 'bee', 'hole'],
+            ['filledHole', 'grass', 'water'],
+        ]);
+        expect(result).toBe('gwhsboOgw');
+    });
+
+    test('throws on invalid map input', () => {
+        expect(() => Grid.encodeCompactMap(null)).toThrow();
+    });
+});
+
+describe('encodeCompactSolution', () => {
+    test('flattens coordinate pairs', () => {
+        expect(Grid.encodeCompactSolution([[1, 2], [3, 4]])).toEqual([1, 2, 3, 4]);
+    });
+
+    test('ignores malformed pairs', () => {
+        expect(Grid.encodeCompactSolution([[1, 2], null, [3]])).toEqual([1, 2]);
+    });
+});

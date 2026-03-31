@@ -1,0 +1,110 @@
+name: Map Update Common
+
+on:
+  workflow_call:
+    inputs:
+      branch_prefix:
+        required: true
+        type: string
+      run_command:
+        required: true
+        type: string
+      commit_message:
+        required: true
+        type: string
+      pr_title:
+        required: true
+        type: string
+      pr_body:
+        required: true
+        type: string
+      no_changes_message:
+        required: true
+        type: string
+
+jobs:
+  map-update:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+      pull-requests: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24.x'
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+
+      - name: Install dependencies
+        run: |
+          npm install
+          pip install -r scripts/solver/requirements.txt
+
+      - name: Create branch
+        id: create_branch
+        run: |
+          BRANCH_NAME="${{ inputs.branch_prefix }}-$(date +%Y%m%d-%H%M%S)"
+          echo "branch_name=${BRANCH_NAME}" >> $GITHUB_OUTPUT
+          git checkout -b "${BRANCH_NAME}"
+
+      - name: Run map update command
+        run: ${{ inputs.run_command }}
+
+      - name: Check for changes
+        id: check_changes
+        run: |
+          if git diff --quiet maps/; then
+            echo "has_changes=false" >> $GITHUB_OUTPUT
+          else
+            echo "has_changes=true" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Commit and push branch
+        if: steps.check_changes.outputs.has_changes == 'true'
+        run: |
+          git config user.name "GitHub Actions Bot"
+          git config user.email "actions@github.com"
+          git add maps/
+          git commit -m "${{ inputs.commit_message }}"
+          git push origin "${{ steps.create_branch.outputs.branch_name }}"
+
+      - name: Create Pull Request
+        id: create_pr
+        if: steps.check_changes.outputs.has_changes == 'true'
+        continue-on-error: true
+        run: |
+          gh pr create \
+            --title "${{ inputs.pr_title }}" \
+            --body "${{ inputs.pr_body }}" \
+            --head "${{ steps.create_branch.outputs.branch_name }}" \
+            --base main
+        env:
+          GH_TOKEN: ${{ secrets.REPO_TOKEN || secrets.GITHUB_TOKEN }}
+
+      - name: PR creation fallback
+        if: steps.check_changes.outputs.has_changes == 'true' && steps.create_pr.outcome == 'failure'
+        run: |
+          BRANCH="${{ steps.create_branch.outputs.branch_name }}"
+          echo "::warning::Automatic PR creation failed. The branch '${BRANCH}' was pushed successfully."
+          echo ""
+          echo "Create the pull request manually:"
+          echo "  https://github.com/${{ github.repository }}/compare/main...${BRANCH}?expand=1"
+          echo ""
+          echo "To fix automatic PR creation, enable one of:"
+          echo "  1. Repository setting: Settings > Actions > General > 'Allow GitHub Actions to create and approve pull requests'"
+          echo "  2. Add a REPO_TOKEN secret (Personal Access Token with 'repo' scope) under Settings > Secrets and variables > Actions"
+
+      - name: No changes
+        if: steps.check_changes.outputs.has_changes == 'false'
+        run: |
+          echo "${{ inputs.no_changes_message }}"
+          exit 1
