@@ -7,6 +7,8 @@
     <link rel="icon" type="image/svg+xml" href="../assets/icon.svg">
     <link rel="stylesheet" href="../css/base.css">
     <link rel="stylesheet" href="../css/game.css">
+    <link rel="stylesheet" href="../css/modals.css">
+    <link rel="stylesheet" href="../css/menu.css">
     <link rel="stylesheet" href="../css/editor.css">
 </head>
 <body>
@@ -30,6 +32,7 @@
         </div>
 
         <div class="editor-actions">
+            <button id="editorLoadBtn" class="ctrl-panel" data-i18n="editor_load_btn"></button>
             <button id="editorResetBtn" class="ctrl-panel" data-i18n="btn_reset"></button>
             <button id="editorSolveBtn" class="ctrl-panel" data-i18n="editor_btn_solve"></button>
             <button id="editorToggleSolutionBtn" class="ctrl-panel" style="display:none;" data-i18n="editor_btn_toggle_solution"></button>
@@ -70,6 +73,31 @@
                 </div>
             </div>
         </footer>
+    </div>
+
+    <!-- Level Loader Modal -->
+    <div id="editorLoadModal" class="modal">
+        <div class="modal-content">
+            <button class="modal-close" id="editorLoadModalClose"
+                data-i18n-aria="editor_load_modal_close_aria" aria-label="Close level loader">&times;</button>
+            <h2 data-i18n="editor_load_modal_title"></h2>
+
+            <!-- Load from map code -->
+            <div class="editor-load-section">
+                <h3 data-i18n="editor_load_from_code_title"></h3>
+                <div class="editor-load-code-row">
+                    <input id="editorLoadCodeInput" type="text" class="editor-load-code-input"
+                        data-i18n-placeholder="editor_load_code_placeholder">
+                    <button id="editorLoadCodeBtn" class="ctrl-panel" data-i18n="editor_load_code_btn"></button>
+                </div>
+            </div>
+
+            <!-- Browse existing levels -->
+            <div class="editor-load-section">
+                <h3 data-i18n="editor_load_browse_title"></h3>
+                <div id="editorLoadLevelList" class="level-list"></div>
+            </div>
+        </div>
     </div>
 
     <script src="../js/config/constants.js"></script>

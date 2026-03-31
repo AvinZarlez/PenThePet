@@ -160,4 +160,65 @@ describe('LevelEditorCore', () => {
         core.setLevelName(undefined);
         expect(core.levelName).toBe('');
     });
+
+    describe('loadFromMapData', () => {
+        function makeMap(size, fill = 'grass') {
+            return Array.from({ length: size }, () => Array(size).fill(fill));
+        }
+
+        test('loads valid map data and resets solved state', () => {
+            const core = new LevelEditorCore({ size: 9 });
+            core.setSolvedResult({ mapData: { goal: 10 } });
+            const map = makeMap(11);
+            core.loadFromMapData({ map, size: 11, levelName: 'Test Level' });
+            expect(core.size).toBe(11);
+            expect(core.map.length).toBe(11);
+            expect(core.levelName).toBe('Test Level');
+            expect(core.solvedResult).toBeNull();
+            expect(core.selectedTile).toBe(LevelEditorCore.DEFAULT_SELECTED_TILE);
+        });
+
+        test('uses DEFAULT_LEVEL_NAME when levelName is empty', () => {
+            const core = new LevelEditorCore({ size: 9 });
+            const map = makeMap(9);
+            core.loadFromMapData({ map, size: 9, levelName: '' });
+            expect(core.levelName).toBe(CONSTANTS.LEVEL_EDITOR.DEFAULT_LEVEL_NAME);
+        });
+
+        test('uses DEFAULT_LEVEL_NAME when levelName is omitted', () => {
+            const core = new LevelEditorCore({ size: 9 });
+            const map = makeMap(9);
+            core.loadFromMapData({ map, size: 9 });
+            expect(core.levelName).toBe(CONSTANTS.LEVEL_EDITOR.DEFAULT_LEVEL_NAME);
+        });
+
+        test('throws on invalid size', () => {
+            const core = new LevelEditorCore({ size: 9 });
+            const map = makeMap(5);
+            expect(() => core.loadFromMapData({ map, size: 5 })).toThrow();
+        });
+
+        test('throws when map array length does not match size', () => {
+            const core = new LevelEditorCore({ size: 9 });
+            const map = makeMap(9);
+            expect(() => core.loadFromMapData({ map, size: 11 })).toThrow();
+        });
+
+        test('enforces single-home constraint after load', () => {
+            const core = new LevelEditorCore({ size: 9 });
+            const map = makeMap(9);
+            map[0][0] = 'home';
+            map[1][1] = 'home'; // two homes — should be reduced to one
+            core.loadFromMapData({ map, size: 9, levelName: 'Two Homes' });
+            expect(core.getHomeCount()).toBe(1);
+        });
+
+        test('deep-copies the provided map array', () => {
+            const core = new LevelEditorCore({ size: 9 });
+            const map = makeMap(9);
+            core.loadFromMapData({ map, size: 9 });
+            map[0][0] = 'water'; // mutate original
+            expect(core.map[0][0]).toBe('grass'); // core is unaffected
+        });
+    });
 });
