@@ -549,3 +549,343 @@ describe('LevelEditorApp — DOM click event regression', () => {
         expect(app.core.map[3][3]).toBe('water');
     });
 });
+
+// ===========================================================================
+// Level Loader Modal tests
+// Verifies openLoadModal, closeLoadModal, _loadLevelFromCode, _applyMapData,
+// _loadLoaderYearIfNeeded, and _populateLevelList behaviour.
+// ===========================================================================
+
+describe('LevelEditorApp — Level Loader Modal', () => {
+    let originalSetInterval;
+    let app;
+    let LevelEditorApp;
+
+    /** Full DOM including the load modal elements. */
+    function buildFullDOM() {
+        document.body.innerHTML = `
+            <input id="editorLevelName" />
+            <select id="editorMapSize"></select>
+            <div id="editorTileSelector"></div>
+            <button id="editorResetBtn"></button>
+            <button id="editorLoadBtn"></button>
+            <button id="editorSolveBtn"></button>
+            <button id="editorToggleSolutionBtn"></button>
+            <div id="editorGoalPanel"></div>
+            <div id="editorStatus"></div>
+            <div id="grid"></div>
+            <div id="editorLoadModal">
+                <button id="editorLoadModalClose"></button>
+                <input id="editorLoadCodeInput" />
+                <button id="editorLoadCodeBtn"></button>
+                <div id="editorLoadLevelList"></div>
+            </div>
+        `;
+    }
+
+    beforeEach(() => {
+        buildFullDOM();
+        jest.spyOn(CookieUtils, 'getCookie').mockReturnValue('');
+        originalSetInterval = global.setInterval;
+        global.setInterval = jest.fn(() => 1);
+        window.alert = jest.fn();
+        window.confirm = jest.fn().mockReturnValue(true);
+        window.open = jest.fn();
+        global.fetch = jest.fn();
+        global.navigator.clipboard = { writeText: jest.fn().mockResolvedValue(undefined) };
+        global.LevelEditorCore = require('../../../js/editor/LevelEditorCore.js');
+        LevelEditorApp = require('../../../js/editor/LevelEditorApp.js');
+        app = new LevelEditorApp();
+    });
+
+    afterEach(() => {
+        global.setInterval = originalSetInterval;
+        jest.restoreAllMocks();
+    });
+
+    // ── openLoadModal / closeLoadModal ────────────────────────────────────
+
+    test('openLoadModal adds "show" class to the modal', () => {
+        global.fetch.mockResolvedValue({ ok: false });
+        const modal = document.getElementById('editorLoadModal');
+        expect(modal.classList.contains('show')).toBe(false);
+        app.openLoadModal();
+        expect(modal.classList.contains('show')).toBe(true);
+    });
+
+    test('openLoadModal clears the code input field', () => {
+        global.fetch.mockResolvedValue({ ok: false });
+        const input = document.getElementById('editorLoadCodeInput');
+        input.value = 'stale-code';
+        app.openLoadModal();
+        expect(input.value).toBe('');
+    });
+
+    test('closeLoadModal removes "show" class from the modal', () => {
+        global.fetch.mockResolvedValue({ ok: false });
+        const modal = document.getElementById('editorLoadModal');
+        modal.classList.add('show');
+        app.closeLoadModal();
+        expect(modal.classList.contains('show')).toBe(false);
+    });
+
+    test('editorLoadBtn click opens the modal', () => {
+        global.fetch.mockResolvedValue({ ok: false });
+        const modal = document.getElementById('editorLoadModal');
+        document.getElementById('editorLoadBtn').click();
+        expect(modal.classList.contains('show')).toBe(true);
+    });
+
+    test('editorLoadModalClose click closes the modal', () => {
+        global.fetch.mockResolvedValue({ ok: false });
+        const modal = document.getElementById('editorLoadModal');
+        modal.classList.add('show');
+        document.getElementById('editorLoadModalClose').click();
+        expect(modal.classList.contains('show')).toBe(false);
+    });
+
+    test('clicking outside the modal (on the backdrop) closes it', () => {
+        global.fetch.mockResolvedValue({ ok: false });
+        const modal = document.getElementById('editorLoadModal');
+        modal.classList.add('show');
+        const event = new MouseEvent('click', { bubbles: true });
+        Object.defineProperty(event, 'target', { value: modal });
+        modal.dispatchEvent(event);
+        expect(modal.classList.contains('show')).toBe(false);
+    });
+
+    // ── _loadLevelFromCode ────────────────────────────────────────────────
+
+    test('_loadLevelFromCode with empty string does nothing', () => {
+        app._loadLevelFromCode('');
+        expect(window.alert).not.toHaveBeenCalled();
+        expect(window.confirm).not.toHaveBeenCalled();
+    });
+
+    test('_loadLevelFromCode with invalid code shows an alert', () => {
+        jest.spyOn(MapURLCodec, 'decodeMapData').mockReturnValue(null);
+        app._loadLevelFromCode('totally-invalid-code');
+        expect(window.alert).toHaveBeenCalledWith(I18N.t('editor_load_invalid_code'));
+    });
+
+    test('_loadLevelFromCode with valid code applies the map when confirmed', () => {
+        const size = 9;
+        const mapStr = 'h' + 'g'.repeat(size * size - 1);
+        const mockMapData = { map: mapStr, size, mapName: 'Loaded Level', goal: 10, maxWalls: 5 };
+        jest.spyOn(MapURLCodec, 'decodeMapData').mockReturnValue(mockMapData);
+        window.confirm = jest.fn().mockReturnValue(true);
+
+        app._loadLevelFromCode('valid-code');
+
+        expect(window.confirm).toHaveBeenCalled();
+        expect(app.core.levelName).toBe('Loaded Level');
+        expect(app.core.size).toBe(size);
+    });
+
+    test('_loadLevelFromCode with valid code but cancelled does not apply the map', () => {
+        const size = 9;
+        const mapStr = 'h' + 'g'.repeat(size * size - 1);
+        const mockMapData = { map: mapStr, size, mapName: 'Not Applied', goal: 10, maxWalls: 5 };
+        jest.spyOn(MapURLCodec, 'decodeMapData').mockReturnValue(mockMapData);
+        window.confirm = jest.fn().mockReturnValue(false);
+
+        const originalName = app.core.levelName;
+        app._loadLevelFromCode('valid-code');
+
+        expect(app.core.levelName).toBe(originalName);
+    });
+
+    test('editorLoadCodeBtn click triggers _loadLevelFromCode with input value', () => {
+        const spy = jest.spyOn(app, '_loadLevelFromCode');
+        const input = document.getElementById('editorLoadCodeInput');
+        input.value = '  test-code  ';
+        document.getElementById('editorLoadCodeBtn').click();
+        expect(spy).toHaveBeenCalledWith('test-code');
+    });
+
+    test('Enter keydown on code input triggers _loadLevelFromCode', () => {
+        const spy = jest.spyOn(app, '_loadLevelFromCode');
+        const input = document.getElementById('editorLoadCodeInput');
+        input.value = 'enter-code';
+        input.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true }));
+        expect(spy).toHaveBeenCalledWith('enter-code');
+    });
+
+    test('non-Enter keydown on code input does not trigger _loadLevelFromCode', () => {
+        const spy = jest.spyOn(app, '_loadLevelFromCode');
+        const input = document.getElementById('editorLoadCodeInput');
+        input.value = 'some-code';
+        input.dispatchEvent(new KeyboardEvent('keydown', { key: 'Tab', bubbles: true }));
+        expect(spy).not.toHaveBeenCalled();
+    });
+
+    // ── _applyMapData ────────────────────────────────────────────────────
+
+    test('_applyMapData closes the modal after applying', () => {
+        global.fetch.mockResolvedValue({ ok: false });
+        const size = 9;
+        const mapStr = 'h' + 'g'.repeat(size * size - 1);
+        const mapData = { map: mapStr, size, mapName: 'Applied', goal: 10, maxWalls: 5 };
+        const modal = document.getElementById('editorLoadModal');
+        modal.classList.add('show');
+
+        window.confirm = jest.fn().mockReturnValue(true);
+        app._applyMapData(mapData);
+
+        expect(modal.classList.contains('show')).toBe(false);
+    });
+
+    test('_applyMapData with cancel leaves modal open', () => {
+        global.fetch.mockResolvedValue({ ok: false });
+        const size = 9;
+        const mapStr = 'h' + 'g'.repeat(size * size - 1);
+        const mapData = { map: mapStr, size, mapName: 'Not Applied', goal: 10, maxWalls: 5 };
+        const modal = document.getElementById('editorLoadModal');
+        modal.classList.add('show');
+
+        window.confirm = jest.fn().mockReturnValue(false);
+        app._applyMapData(mapData);
+
+        expect(modal.classList.contains('show')).toBe(true);
+    });
+
+    // ── _loadLoaderYearIfNeeded ───────────────────────────────────────────
+
+    test('_loadLoaderYearIfNeeded populates database when fetch succeeds', async () => {
+        const yearData = {
+            '2026-01-01': { dayNumber: 1, mapName: 'Alpha', size: 9, goal: 10, maxWalls: 5 },
+        };
+        global.fetch.mockResolvedValue({
+            ok: true,
+            json: async () => yearData,
+        });
+        app._loaderMapsDatabase = {};
+        await app._loadLoaderYearIfNeeded(2026);
+        expect(app._loaderMapsDatabase['2026-01-01']).toBeDefined();
+        expect(app._loaderMapsDatabase['2026-01-01'].mapName).toBe('Alpha');
+    });
+
+    test('_loadLoaderYearIfNeeded skips years already loaded', async () => {
+        global.fetch.mockResolvedValue({
+            ok: true,
+            json: async () => ({ '2026-01-01': { dayNumber: 1, mapName: 'First' } }),
+        });
+        app._loaderMapsDatabase = {};
+        await app._loadLoaderYearIfNeeded(2026);
+        const callCount = global.fetch.mock.calls.length;
+        // Second call with same year should not fetch again
+        await app._loadLoaderYearIfNeeded(2026);
+        expect(global.fetch.mock.calls.length).toBe(callCount);
+    });
+
+    test('_loadLoaderYearIfNeeded silently ignores fetch errors', async () => {
+        global.fetch.mockRejectedValue(new Error('Network error'));
+        app._loaderMapsDatabase = {};
+        await expect(app._loadLoaderYearIfNeeded(2025)).resolves.not.toThrow();
+    });
+
+    test('_loadLoaderYearIfNeeded silently ignores non-ok responses', async () => {
+        global.fetch.mockResolvedValue({ ok: false });
+        app._loaderMapsDatabase = {};
+        await app._loadLoaderYearIfNeeded(2024);
+        // Should not have added anything to the database
+        expect(Object.keys(app._loaderMapsDatabase).length).toBe(0);
+    });
+
+    // ── _populateLevelList ────────────────────────────────────────────────
+
+    test('_populateLevelList renders calendar when maps are available', async () => {
+        app._loaderMapsDatabase = {
+            '2026-03-01': { dayNumber: 1, mapName: 'Alpha', size: 9, goal: 10, maxWalls: 5 },
+            '2026-03-15': { dayNumber: 2, mapName: 'Beta', size: 11, goal: 15, maxWalls: 7 },
+        };
+        await app._populateLevelList();
+        const levelList = document.getElementById('editorLoadLevelList');
+        expect(levelList.innerHTML).not.toBe('');
+        // Should have rendered day numbers
+        expect(levelList.querySelector('.calendar-day-level')).not.toBeNull();
+    });
+
+    test('_populateLevelList clears list when no maps in database', async () => {
+        app._loaderMapsDatabase = {};
+        await app._populateLevelList();
+        const levelList = document.getElementById('editorLoadLevelList');
+        expect(levelList.innerHTML).toBe('');
+    });
+
+    test('_populateLevelList fetches database when not already loaded', async () => {
+        global.fetch.mockResolvedValue({ ok: false });
+        app._loaderMapsDatabase = null;
+        await app._populateLevelList();
+        // fetch was called to try to load the database
+        expect(global.fetch).toHaveBeenCalled();
+    });
+
+    test('_populateLevelList renders calendar navigation (prev/next) buttons', async () => {
+        app._loaderMapsDatabase = {
+            '2026-03-01': { dayNumber: 1, mapName: 'Alpha', size: 9, goal: 10, maxWalls: 5 },
+        };
+        await app._populateLevelList();
+        const levelList = document.getElementById('editorLoadLevelList');
+        expect(levelList.querySelector('.calendar-nav')).not.toBeNull();
+        expect(levelList.querySelector('.calendar-nav-btn')).not.toBeNull();
+    });
+
+    test('_populateLevelList renders day headers in calendar grid', async () => {
+        app._loaderMapsDatabase = {
+            '2026-03-10': { dayNumber: 1, mapName: 'Alpha', size: 9, goal: 10, maxWalls: 5 },
+        };
+        await app._populateLevelList();
+        const levelList = document.getElementById('editorLoadLevelList');
+        expect(levelList.querySelector('.calendar-grid')).not.toBeNull();
+        expect(levelList.querySelector('.calendar-day-header')).not.toBeNull();
+    });
+
+    // ── Calendar navigation ───────────────────────────────────────────────
+
+    test('prev month button navigates to previous month when available', async () => {
+        app._loaderMapsDatabase = {
+            '2026-02-10': { dayNumber: 1, mapName: 'FebMap', size: 9, goal: 10, maxWalls: 5 },
+            '2026-03-10': { dayNumber: 2, mapName: 'MarMap', size: 9, goal: 12, maxWalls: 6 },
+        };
+        await app._populateLevelList();
+        // Start on March (the last month)
+        expect(app._loaderCalendarMonth).toBe('2026-03');
+        const levelList = document.getElementById('editorLoadLevelList');
+        const prevBtn = levelList.querySelector('.calendar-nav-btn');
+        prevBtn.click();
+        expect(app._loaderCalendarMonth).toBe('2026-02');
+    });
+
+    test('next month button navigates to next month when available', async () => {
+        app._loaderMapsDatabase = {
+            '2026-02-10': { dayNumber: 1, mapName: 'FebMap', size: 9, goal: 10, maxWalls: 5 },
+            '2026-03-10': { dayNumber: 2, mapName: 'MarMap', size: 9, goal: 12, maxWalls: 6 },
+        };
+        await app._populateLevelList();
+        // Navigate to February first
+        const levelList = document.getElementById('editorLoadLevelList');
+        const [prevBtn] = levelList.querySelectorAll('.calendar-nav-btn');
+        prevBtn.click();
+        expect(app._loaderCalendarMonth).toBe('2026-02');
+        // Now navigate forward
+        const nextBtn = levelList.querySelectorAll('.calendar-nav-btn')[1];
+        nextBtn.click();
+        expect(app._loaderCalendarMonth).toBe('2026-03');
+    });
+
+    test('clicking a calendar day cell applies the map data', async () => {
+        const mapEntry = { dayNumber: 1, mapName: 'ClickMe', size: 9, goal: 10, maxWalls: 5,
+            map: 'h' + 'g'.repeat(80) };
+        app._loaderMapsDatabase = { '2026-03-10': mapEntry };
+        window.confirm = jest.fn().mockReturnValue(true);
+        await app._populateLevelList();
+
+        const levelList = document.getElementById('editorLoadLevelList');
+        const dayCell = levelList.querySelector('.calendar-day-level');
+        expect(dayCell).not.toBeNull();
+        dayCell.click();
+
+        expect(window.confirm).toHaveBeenCalled();
+    });
+});
