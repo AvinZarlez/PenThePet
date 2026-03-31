@@ -185,30 +185,34 @@ const _WATER_VARIANT_FNS = [
 const TILE_SVGS_TILES = new Set(['grass', 'water', 'home', 'star', 'bee']);
 
 /**
- * Create a tile icon element with all visual layers applied — the same
- * background, variant-overlay, and asset-overlay logic used by the game
- * cell renderer (_createCellElement in GameAnimations.js). Shore overlays,
- * paw overlays, accessibility attributes, and event listeners are NOT added;
- * those are game-specific.
+ * Create a tile icon element with all visual layers applied.
  *
- * This is the shared rendering function used by both the game and the
- * instructions panel. Updating tileData.js (assets, backgroundGroup, etc.)
- * automatically updates both contexts.
+ * This is the single shared rendering function for tile visuals, used by
+ * both game grid cells (via _createCellElement in GameAnimations.js) and
+ * static icon displays (instructions panel, tile palette).
  *
- * Requires tileData.js to be loaded first (getTileBaseLayer, getTileBackgroundGroup,
- * getTileAssets must be available as globals).
+ * Applies background, variant overlays for base-layer tiles, and
+ * asset/emoji overlays for standard tiles. Shore overlays, paw overlays,
+ * accessibility attributes, and event listeners are NOT added; those are
+ * game-specific and are added by _createCellElement after calling this.
+ *
+ * Requires tileData.js to be loaded first (getTileBaseLayer,
+ * getTileBackgroundGroup, getTileAssets must be available as globals).
  *
  * @param {string} tileName - Tile type name (key in TILE_DATA)
  * @param {boolean} [isPenned=false] - Whether to use the penned colour palette
+ * @param {number} [variantIndex=0] - Variant index for base-layer tiles.
+ *   Grid cells pass a deterministic per-cell value; icon displays omit this to
+ *   use variant 0.
  * @returns {HTMLElement} A <div> with all tile visual layers applied as
  *   inline background and child overlay elements.
  */
-function createTileIconElement(tileName, isPenned) {
+function createTileIconElement(tileName, isPenned, variantIndex) {
     isPenned = isPenned === true;
+    const effectiveVariantIndex = variantIndex ?? 0;
     const el = document.createElement('div');
 
-    // Background — same logic as _setCellBackground in GameAnimations:
-    // TileSvgs data: URI → static baseLayer asset → first asset
+    // Background: TileSvgs data URI → static baseLayer asset → first asset
     const svgUri = getTileBaseUri(tileName, isPenned);
     if (svgUri) {
         el.style.background = `url("${svgUri}") center/cover no-repeat`;
@@ -225,8 +229,9 @@ function createTileIconElement(tileName, isPenned) {
     }
 
     if (getTileBaseLayer(tileName)) {
-        // Tiles with a base layer (grass, water): add a variant overlay at index 0
-        const variantUri = getTileVariantUri(tileName, 0, isPenned);
+        // Tiles with a base layer (grass, water): add variant overlay at the given index.
+        // Grid cells pass a deterministic per-cell value; icon displays use 0 (default).
+        const variantUri = getTileVariantUri(tileName, effectiveVariantIndex, isPenned);
         if (variantUri) {
             const img = document.createElement('img');
             img.src = variantUri;
@@ -234,29 +239,46 @@ function createTileIconElement(tileName, isPenned) {
             img.className = 'tile-overlay-fill';
             img.setAttribute('aria-hidden', 'true');
             el.appendChild(img);
-        }
-    } else {
-        // Standard tiles: add icon overlays for all asset types (images and emoji),
-        // mirroring the startIndex logic in _createCellElement (GameAnimations.js).
-        const hasBackgroundGroup = !!getTileBackgroundGroup(tileName);
-        const assetList = getTileAssets(tileName, isPenned);
-        // Tiles with backgroundGroup have TileSvgs managing their background, so ALL
-        // assets are icon overlays (startIndex = 0). Other tiles skip index 0 which
-        // was loaded as the CSS background.
-        const startIndex = hasBackgroundGroup ? 0 : 1;
-        if (assetList && assetList.length > startIndex) {
-            for (let i = startIndex; i < assetList.length; i++) {
-                const asset = assetList[i];
+        } else {
+            // Fallback: static asset at the given variant index
+            const variantAssets = getTileAssets(tileName, false);
+            if (variantAssets && variantAssets.length > 0) {
+                const asset = variantAssets[effectiveVariantIndex % variantAssets.length];
                 if (/\.(svg|png|jpe?g|webp|gif)$/i.test(asset)) {
                     const img = document.createElement('img');
                     img.src = `assets/${asset}`;
                     img.alt = '';
-                    img.className = 'tile-overlay';
+                    img.className = 'tile-overlay-fill';
+                    img.setAttribute('aria-hidden', 'true');
+                    el.appendChild(img);
+                }
+            }
+        }
+    } else {
+        // Standard tiles (home, star, bee, wall, etc.)
+        // Tiles with backgroundGroup have TileSvgs managing their background, so ALL
+        // assets are icon overlays (startIndex = 0). Other tiles skip index 0 which
+        // was loaded as the CSS background.
+        const hasBackgroundGroup = !!getTileBackgroundGroup(tileName);
+        const assetList = getTileAssets(tileName, isPenned);
+        const startIndex = hasBackgroundGroup ? 0 : 1;
+        // The topmost overlay of tiles with floatAnimation floats over the background
+        const tileData = TILE_DATA[tileName];
+        const isLastFloating = tileData && tileData.floatAnimation === true;
+        if (assetList && assetList.length > startIndex) {
+            for (let i = startIndex; i < assetList.length; i++) {
+                const asset = assetList[i];
+                const isTopLayer = isLastFloating && i === assetList.length - 1;
+                if (/\.(svg|png|jpe?g|webp|gif)$/i.test(asset)) {
+                    const img = document.createElement('img');
+                    img.src = `assets/${asset}`;
+                    img.alt = '';
+                    img.className = isTopLayer ? 'tile-overlay tile-overlay-float' : 'tile-overlay';
                     img.setAttribute('aria-hidden', 'true');
                     el.appendChild(img);
                 } else {
                     const span = document.createElement('span');
-                    span.className = 'tile-overlay-emoji';
+                    span.className = isTopLayer ? 'tile-overlay-emoji tile-overlay-float' : 'tile-overlay-emoji';
                     span.textContent = asset;
                     span.setAttribute('aria-hidden', 'true');
                     el.appendChild(span);

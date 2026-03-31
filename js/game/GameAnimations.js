@@ -167,14 +167,23 @@ const GameAnimationsMixin = {
  * @returns {HTMLElement} The created cell element
  */
     _createCellElement(row, col, tileType, pathSet, accessibleTiles, directions) {
-        const cell = document.createElement('div');
         const tileInfo = getTileType(tileType);
-
-        cell.className = `cell ${tileInfo.cssClass}`;
-
-        // Add penned class if this tile is accessible when pet is penned
         const coordKey = `${row},${col}`;
         const isPennedTile = accessibleTiles.has(coordKey);
+
+        // Deterministic per-cell variant index: primes 13 and 7 avoid diagonal
+        // repetition patterns on any grid size, ensuring visual variety across neighbours.
+        const variantAssets = getTileAssets(tileType, false);
+        const variantIndex = (variantAssets && variantAssets.length > 0)
+            ? (row * 13 + col * 7) % variantAssets.length
+            : 0;
+
+        // Use the shared rendering function for all visual layers (background + overlays).
+        // Game-specific elements (shore overlays, paw overlays, accessibility, events)
+        // are added below.
+        const cell = TileSvgs.createTileIconElement(tileType, isPennedTile, variantIndex);
+
+        cell.className = `cell ${tileInfo.cssClass}`;
         if (isPennedTile) {
             cell.classList.add('penned');
         }
@@ -182,54 +191,9 @@ const GameAnimationsMixin = {
         cell.dataset.row = row;
         cell.dataset.col = col;
 
-        // Set background — TileSvgs (grass/water/backgroundGroup), baseLayer asset, or first asset
-        this._setCellBackground(cell, tileType, isPennedTile);
-
+        // Store variant index so _animatePennedArea can recolour the overlay on penning
         if (getTileBaseLayer(tileType)) {
-        // Tiles with a base layer (grass, water): pick one variant deterministically
-            const variantAssets = getTileAssets(tileType, false);
-            if (variantAssets && variantAssets.length > 0) {
-            // Deterministic per-cell selection: primes 13 and 7 avoid diagonal repetition
-            // patterns on any grid size, ensuring visual variety across neighbours
-                const variantIndex = (row * 13 + col * 7) % variantAssets.length;
-                cell.dataset.variantIndex = variantIndex;
-                let variantOverlay;
-                if (typeof TileSvgs !== 'undefined') {
-                    const svgUri = TileSvgs.getTileVariantUri(tileType, variantIndex, isPennedTile);
-                    if (svgUri) {
-                        const img = document.createElement('img');
-                        img.src = svgUri;
-                        img.alt = '';
-                        img.className = 'tile-overlay-fill';
-                        img.setAttribute('aria-hidden', 'true');
-                        variantOverlay = img;
-                    }
-                }
-                if (!variantOverlay) {
-                    variantOverlay = this._createAssetOverlay(variantAssets[variantIndex], 'tile-overlay-fill', 'tile-overlay-emoji');
-                }
-                cell.appendChild(variantOverlay);
-            }
-        // Penned state for baseLayer tiles is handled entirely by TileSvgs recolouring
-        // the base and variant — no enclosed-asset overlays needed here.
-        } else {
-        // Standard tiles (home, star, bee, wall, etc.)
-        // Tiles with backgroundGroup have TileSvgs managing their background, so ALL
-        // assets are icon overlays (start at index 0).  Other tiles skip index 0
-        // (which was loaded as the CSS background).
-            const assetList = getTileAssets(tileType, isPennedTile);
-            const hasBackgroundGroup = !!getTileBackgroundGroup(tileType);
-            const startIndex = hasBackgroundGroup ? 0 : 1;
-            if (assetList && assetList.length > startIndex) {
-                const isLastFloating = tileInfo.floatAnimation === true;
-                for (let i = startIndex; i < assetList.length; i++) {
-                    const asset = assetList[i];
-                    const isTopLayer = isLastFloating && i === assetList.length - 1;
-                    const imageClass = isTopLayer ? 'tile-overlay tile-overlay-float' : 'tile-overlay';
-                    const emojiClass = isTopLayer ? 'tile-overlay-emoji tile-overlay-float' : 'tile-overlay-emoji';
-                    cell.appendChild(this._createAssetOverlay(asset, imageClass, emojiClass));
-                }
-            }
+            cell.dataset.variantIndex = variantIndex;
         }
 
         // Add shore overlays on water tiles (one per non-water neighbour side)
