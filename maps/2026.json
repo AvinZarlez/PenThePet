@@ -620,7 +620,8 @@
   },
   "2026-03-21": {
     "date": "2026-03-21",
-    "mapName": "Amber South",
+    "dayNumber": 22,
+    "mapName": "Amberness",
     "size": 13,
     "goal": 43,
     "maxWalls": 9,
@@ -644,8 +645,7 @@
       10,
       11,
       10
-    ],
-    "dayNumber": 22
+    ]
   },
   "2026-03-22": {
     "date": "2026-03-22",
