@@ -7,7 +7,7 @@ describe('LevelEditorApp', () => {
         document.body.innerHTML = `
             <input id="editorLevelName" />
             <select id="editorMapSize"></select>
-            <select id="editorTileSelector"></select>
+            <div id="editorTileSelector"></div>
             <button id="editorResetBtn"></button>
             <button id="editorSolveBtn"></button>
             <button id="editorToggleSolutionBtn"></button>
@@ -219,10 +219,10 @@ describe('LevelEditorApp', () => {
         expect(sizeSelect.value).toBe(String(originalSize));
     });
 
-    test('tile select change updates selected tile', () => {
-        const tileSelect = document.getElementById('editorTileSelector');
-        tileSelect.value = 'star';
-        tileSelect.dispatchEvent(new Event('change'));
+    test('tile palette click updates selected tile', () => {
+        const starBtn = document.querySelector('#editorTileSelector .tile-palette-btn[data-tile="star"]');
+        expect(starBtn).not.toBeNull();
+        starBtn.click();
         expect(app.core.selectedTile).toBe('star');
     });
 
@@ -470,7 +470,7 @@ describe('LevelEditorApp — DOM click event regression', () => {
         document.body.innerHTML = `
             <input id="editorLevelName" />
             <select id="editorMapSize"></select>
-            <select id="editorTileSelector"></select>
+            <div id="editorTileSelector"></div>
             <button id="editorResetBtn"></button>
             <button id="editorSolveBtn"></button>
             <button id="editorToggleSolutionBtn"></button>

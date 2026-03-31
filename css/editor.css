@@ -46,6 +46,45 @@
     box-shadow: 0 0 0 2px var(--accent-glow);
 }
 
+.editor-field--tile-palette {
+    border-radius: 12px;
+}
+
+.tile-palette {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+}
+
+.tile-palette-btn {
+    position: relative;
+    width: 36px;
+    height: 36px;
+    padding: 0;
+    border: 2px solid transparent;
+    border-radius: 6px;
+    cursor: pointer;
+    overflow: hidden;
+    background: none;
+    flex-shrink: 0;
+}
+
+.tile-palette-btn:hover {
+    border-color: var(--ctrl-border);
+}
+
+.tile-palette-btn.selected {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 2px var(--accent-glow);
+}
+
+.tile-palette-icon {
+    width: 100%;
+    height: 100%;
+    border-radius: 4px;
+    display: block;
+}
+
 .editor-actions {
     display: flex;
     gap: 8px;

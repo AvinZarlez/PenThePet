@@ -2888,14 +2888,11 @@ describe('Game — GameAnimations additional branch coverage', () => {
         });
     });
 
-    // _createCellElement — variant overlay fallback when TileSvgs returns null (line 209)
-    describe('_createCellElement() — variant overlay TileSvgs fallback', () => {
-        test('uses _createAssetOverlay fallback when getTileVariantUri returns null', () => {
-            const origGetVariantUri = TileSvgs.getTileVariantUri;
-            TileSvgs.getTileVariantUri = () => null;
+    // _createCellElement — variant overlay is always present for base-layer tiles
+    describe('_createCellElement() — variant overlay for base-layer tiles', () => {
+        test('grass cells always have a tile-overlay-fill variant overlay', () => {
             const cell = game._createCellElement(0, 0, 'grass', new Set(), new Set(), null);
-            TileSvgs.getTileVariantUri = origGetVariantUri;
-            // A tile-overlay-fill element should still be created via the fallback
+            // A tile-overlay-fill element is always rendered for grass (via createTileIconElement)
             const overlay = cell.querySelector('.tile-overlay-fill');
             expect(overlay).not.toBeNull();
         });
