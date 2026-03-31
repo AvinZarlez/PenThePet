@@ -64,6 +64,8 @@ jobs:
           with open('js/cloud/firebase-config.js', 'w') as f:
               f.write(content)
           PYEOF
+      - name: Exclude level-editor from deployment
+        run: rm -rf level-editor/
       - name: Setup Pages
         uses: actions/configure-pages@v5
       - name: Upload artifact
