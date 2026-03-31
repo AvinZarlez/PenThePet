@@ -651,6 +651,7 @@ class Menu {
         // Update current date/save-key, custom-map flag, and optimal solution.
         this.game.currentDate = saveKey;
         this.game.isCustomMapLevel = !!(mapData._saveKey);
+        this.game.currentMapData = mapData;
         this.game.optimalSolution = mapData.optimalSolution ?
             parseCompactSolution(mapData.optimalSolution) : null;
 

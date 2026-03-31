@@ -997,6 +997,79 @@ describe('buildShareText({ includeLevel: false })', () => {
 });
 
 // ------------------------------------------------------------------
+// buildShareText — custom map level (isCustomMapLevel = true)
+// ------------------------------------------------------------------
+describe('buildShareText — custom map level', () => {
+    let game;
+    let origMapURLCodec;
+    const fakeMapData = {
+        size: 7,
+        goal: 20,
+        maxWalls: 5,
+        map: 'GGGGGGGGGGGG',
+        optimalSolution: [],
+        date: '',  // custom maps have no calendar date
+        mapName: 'Test Map',
+    };
+    const fakeEncoded = 'fakebase64encodedstring';
+
+    beforeEach(() => {
+        setupDOM();
+        jest.useFakeTimers();
+        game = createGame();
+        game.petEmoji = '🐶';
+        game.isCustomMapLevel = true;
+        game.currentDate = 'map_a1d5de4d';
+        game.currentMapData = fakeMapData;
+
+        origMapURLCodec = global.MapURLCodec;
+        global.MapURLCodec = {
+            encodeMapData: jest.fn(() => fakeEncoded),
+        };
+    });
+
+    afterEach(() => {
+        global.MapURLCodec = origMapURLCodec;
+        jest.useRealTimers();
+    });
+
+    test('uses ?map= URL instead of ?date= when isCustomMapLevel is true', () => {
+        const text = game.buildShareText({ includeLevel: true, includeScore: false });
+        expect(text).toContain(`?map=${fakeEncoded}`);
+        expect(text).not.toContain('?date=');
+    });
+
+    test('calls MapURLCodec.encodeMapData with currentMapData', () => {
+        game.buildShareText({ includeLevel: true, includeScore: false });
+        expect(global.MapURLCodec.encodeMapData).toHaveBeenCalledWith(fakeMapData);
+    });
+
+    test('falls back to no URL when MapURLCodec is unavailable', () => {
+        global.MapURLCodec = undefined;
+        const text = game.buildShareText({ includeLevel: true, includeScore: false });
+        expect(text).not.toContain('?map=');
+        expect(text).not.toContain('?date=');
+    });
+
+    test('falls back to no URL when currentMapData is null', () => {
+        game.currentMapData = null;
+        const text = game.buildShareText({ includeLevel: true, includeScore: false });
+        expect(text).not.toContain('?map=');
+        expect(text).not.toContain('?date=');
+    });
+
+    test('includes the ?map= URL with score when includeScore is true', () => {
+        game.isSubmitted = true;
+        game.submittedScore = 15;
+        game.goalAreaSize = 20;
+        game.elapsedSeconds = 60;
+        const text = game.buildShareText({ includeLevel: true, includeScore: true });
+        expect(text).toContain(`?map=${fakeEncoded}`);
+        expect(text).not.toContain('?date=');
+    });
+});
+
+// ------------------------------------------------------------------
 // Penned-area animation
 // ------------------------------------------------------------------
 describe('Game — Penned Animation', () => {
