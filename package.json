@@ -7,6 +7,7 @@
     "test": "jest --coverage",
     "test:webapp": "jest --testPathPatterns=test/webapp/",
     "test:generation": "jest --testPathPatterns=test/generation/",
+    "test:editor": "jest --testPathPatterns=test/webapp/editor/ --testPathPatterns=test/generation/levelEditorMap.test.js --testPathPatterns=test/generation/level-editor-server.test.js",
     "test:watch": "jest --watch",
     "lint": "eslint js/**/*.js test/**/*.js scripts/**/*.js",
     "lint:fix": "eslint js/**/*.js test/**/*.js scripts/**/*.js --fix",

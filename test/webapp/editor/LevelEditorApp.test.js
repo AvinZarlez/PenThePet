@@ -98,4 +98,76 @@ describe('LevelEditorApp', () => {
         expect(app.gridElement.children.length).toBe(app.grid.size * app.grid.size);
     });
 
+    test('toggle solution button switches between editing and viewing solution modes', () => {
+        app.core.setSolvedResult({
+            mapData: { goal: 12, maxWalls: 6, optimalSolution: [0, 0] },
+            encoded: 'abc',
+            playableUrl: 'https://example.com',
+        });
+        app.solveState = CONSTANTS.LEVEL_EDITOR.STATE_SOLVED;
+        app._syncActionControls();
+
+        app.toggleSolutionBtn.click();
+        expect(app.mode).toBe(CONSTANTS.LEVEL_EDITOR.MODE_VIEWING_SOLUTION);
+        expect(app.toggleSolutionBtn.dataset.i18n).toBe('editor_btn_hide_solution');
+
+        app.toggleSolutionBtn.click();
+        expect(app.mode).toBe(CONSTANTS.LEVEL_EDITOR.MODE_EDITING);
+        expect(app.toggleSolutionBtn.dataset.i18n).toBe('editor_btn_toggle_solution');
+    });
+
+    test('goal panel renders with solved map metadata and hides when unsolved', () => {
+        app.core.setSolvedResult({
+            mapData: { goal: 22, maxWalls: 6, optimalSolution: [0, 0] },
+            encoded: 'abc',
+            playableUrl: 'https://example.com',
+        });
+        app.solveState = CONSTANTS.LEVEL_EDITOR.STATE_SOLVED;
+        app._syncActionControls();
+        expect(app.goalPanelElement.style.display).toBe('');
+        expect(app.goalPanelElement.textContent).toContain('22');
+        expect(app.goalPanelElement.textContent).toContain('6');
+
+        app.solveState = CONSTANTS.LEVEL_EDITOR.STATE_UNSOLVED;
+        app._syncActionControls();
+        expect(app.goalPanelElement.style.display).toBe('none');
+    });
+
+    test('play button opens playable URL in a new tab with noopener,noreferrer', () => {
+        app.core.setSolvedResult({
+            mapData: { goal: 12, maxWalls: 6, optimalSolution: [0, 0] },
+            encoded: 'abc',
+            playableUrl: 'https://example.com/map',
+        });
+        app.solveState = CONSTANTS.LEVEL_EDITOR.STATE_SOLVED;
+        app._renderStatus();
+
+        document.getElementById('editorPlayMapBtn').click();
+        expect(window.open).toHaveBeenCalledWith('https://example.com/map', '_blank', 'noopener,noreferrer');
+    });
+
+    test('solve button remains disabled while solve is in progress', async () => {
+        app.core.setSelectedTile('home');
+        app.handleCellClick({ shiftKey: false, ctrlKey: false, metaKey: false }, 0, 0);
+        let releaseFetch;
+        global.fetch.mockImplementation(() => new Promise((resolve) => {
+            releaseFetch = resolve;
+        }));
+
+        const solvePromise = app._solveCurrentMap();
+        expect(app.solveBtn.disabled).toBe(true);
+
+        releaseFetch({
+            ok: true,
+            json: async () => ({
+                ok: true,
+                mapData: { goal: 10, maxWalls: 5, optimalSolution: [0, 0] },
+                encoded: 'abc',
+                playableUrl: 'https://example.com',
+            }),
+        });
+        await solvePromise;
+        expect(app.solveBtn.disabled).toBe(false);
+    });
+
 });
