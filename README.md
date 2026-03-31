@@ -56,6 +56,10 @@ Access these from the **☰ Menu → Options**:
 Create and validate custom maps locally using the same solver + validator logic:
 
 ```bash
+npm install
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r scripts/solver/requirements.txt
 npm run level-editor
 # open http://localhost:8787/
 ```

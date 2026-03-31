@@ -59,6 +59,11 @@ const CONSTANTS = {
         AUTOSAVE_COOKIE_KEY: 'level_editor_draft',
         MAX_REQUEST_BODY_BYTES: 3 * 1024 * 1024,
         DEFAULT_LEVEL_NAME: 'Custom Level',
+        STATE_UNSOLVED: 'unsolved',
+        STATE_SOLVING: 'solving',
+        STATE_SOLVED: 'solved',
+        MODE_EDITING: 'editing',
+        MODE_VIEWING_SOLUTION: 'viewing_solution',
     },
 
     // Gameplay

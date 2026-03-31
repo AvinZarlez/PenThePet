@@ -252,7 +252,7 @@ const GameAnimationsMixin = {
         cell.setAttribute('aria-label', tileInfo.ariaLabel(row, col));
 
         // Add event listeners
-        cell.addEventListener('click', () => this.handleCellClick(row, col));
+        cell.addEventListener('click', (e) => this.handleCellClick(e, row, col));
         if (typeof this.handleCellContextMenu === 'function') {
             cell.addEventListener('contextmenu', (e) => this.handleCellContextMenu(e, row, col));
         }

@@ -33,14 +33,25 @@
             <button id="editorResetBtn" class="ctrl-panel" data-i18n="btn_reset"></button>
             <button id="editorSolveBtn" class="ctrl-panel" data-i18n="editor_btn_solve"></button>
             <button id="editorToggleSolutionBtn" class="ctrl-panel" style="display:none;" data-i18n="editor_btn_toggle_solution"></button>
+            <div id="editorGoalPanel" class="ctrl-panel editor-goal-panel" style="display:none;"></div>
         </div>
         <p class="editor-hint" data-i18n="editor_hint_right_click_erase"></p>
+
+        <div id="editorStatus" class="editor-status" role="status" aria-live="polite"></div>
 
         <div class="grid-container">
             <div id="grid" class="grid"></div>
         </div>
 
-        <div id="editorStatus" class="editor-status" role="status" aria-live="polite"></div>
+        <details class="editor-instructions">
+            <summary data-i18n="editor_instructions_summary"></summary>
+            <ul>
+                <li data-i18n="editor_instructions_step_1"></li>
+                <li data-i18n="editor_instructions_step_2"></li>
+                <li data-i18n="editor_instructions_step_3"></li>
+                <li data-i18n="editor_instructions_step_4"></li>
+            </ul>
+        </details>
     </div>
 
     <script src="../js/config/constants.js"></script>

@@ -4,7 +4,12 @@ class LevelEditorApp {
     constructor() {
         this.gridElement = document.getElementById('grid');
         this.statusElement = document.getElementById('editorStatus');
-        this.solutionVisible = false;
+        this.goalPanelElement = document.getElementById('editorGoalPanel');
+        this.solveBtn = null;
+        this.toggleSolutionBtn = null;
+        this.mode = CONSTANTS.LEVEL_EDITOR.MODE_EDITING;
+        this.solveState = CONSTANTS.LEVEL_EDITOR.STATE_UNSOLVED;
+        this.statusMessageKey = '';
         this.lastFocusedCell = null;
 
         const draftRaw = CookieUtils.getCookie(CONSTANTS.LEVEL_EDITOR.AUTOSAVE_COOKIE_KEY);
@@ -28,6 +33,7 @@ class LevelEditorApp {
         this.render();
         this._startAutosave();
         this._renderStatus();
+        this._syncActionControls();
     }
 
     _wireUI() {
@@ -37,6 +43,8 @@ class LevelEditorApp {
         const resetBtn = document.getElementById('editorResetBtn');
         const solveBtn = document.getElementById('editorSolveBtn');
         const toggleSolutionBtn = document.getElementById('editorToggleSolutionBtn');
+        this.solveBtn = solveBtn;
+        this.toggleSolutionBtn = toggleSolutionBtn;
 
         nameInput.addEventListener('input', () => {
             this.core.setLevelName(nameInput.value);
@@ -69,12 +77,16 @@ class LevelEditorApp {
         solveBtn.addEventListener('click', () => this._solveCurrentMap());
 
         toggleSolutionBtn.addEventListener('click', () => {
-            this.solutionVisible = !this.solutionVisible;
-            toggleSolutionBtn.dataset.i18n = this.solutionVisible
+            if (!this.core.solvedResult) return;
+            this.mode = this.mode === CONSTANTS.LEVEL_EDITOR.MODE_VIEWING_SOLUTION
+                ? CONSTANTS.LEVEL_EDITOR.MODE_EDITING
+                : CONSTANTS.LEVEL_EDITOR.MODE_VIEWING_SOLUTION;
+            toggleSolutionBtn.dataset.i18n = this.mode === CONSTANTS.LEVEL_EDITOR.MODE_VIEWING_SOLUTION
                 ? 'editor_btn_hide_solution'
                 : 'editor_btn_toggle_solution';
             I18N.applyTranslations();
             this.render();
+            this._syncActionControls();
         });
     }
 
@@ -107,13 +119,17 @@ class LevelEditorApp {
     }
 
     _reloadGridFromCore() {
-        this.solutionVisible = false;
+        this.mode = CONSTANTS.LEVEL_EDITOR.MODE_EDITING;
+        this.solveState = this.core.solvedResult
+            ? CONSTANTS.LEVEL_EDITOR.STATE_SOLVED
+            : CONSTANTS.LEVEL_EDITOR.STATE_UNSOLVED;
         this.grid = new Grid(this.core.size);
         this.grid.loadMap(this.core.map);
         this.grid.saveInitialState();
         this._syncControlsFromState();
         this.render();
         this._renderStatus();
+        this._syncActionControls();
         this._saveDraft();
     }
 
@@ -130,39 +146,62 @@ class LevelEditorApp {
     }
 
     async _solveCurrentMap() {
+        if (this.solveState === CONSTANTS.LEVEL_EDITOR.STATE_SOLVING) return;
         if (this.core.getHomeCount() !== 1) {
             window.alert(`${I18N.t('editor_error_popup_title')}\n\n- ${I18N.t('editor_error_no_home')}`);
             return;
         }
+        this.mode = CONSTANTS.LEVEL_EDITOR.MODE_EDITING;
+        this.solveState = CONSTANTS.LEVEL_EDITOR.STATE_SOLVING;
+        this.statusMessageKey = 'editor_status_solving';
+        this._syncActionControls();
+        this._renderStatus();
 
         const payload = this.core.toSolverPayload();
-        const res = await fetch('/api/solve-level', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload),
-        });
-        const data = await res.json();
-        if (!res.ok || !data.ok) {
-            const errors = (data.validationErrors && data.validationErrors.length > 0)
-                ? data.validationErrors
-                : [data.error || I18N.t('url_param_error', { param: 'map' })];
-            window.alert(`${I18N.t('editor_error_popup_title')}\n\n${errors.map((e) => `- ${e}`).join('\n')}`);
-            this.core.invalidateSolvedState();
-            this._renderStatus();
-            this._saveDraft();
-            return;
-        }
+        try {
+            const res = await fetch('/api/solve-level', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload),
+            });
+            const data = await res.json();
+            if (!res.ok || !data.ok) {
+                const errors = (data.validationErrors && data.validationErrors.length > 0)
+                    ? data.validationErrors
+                    : [data.error || I18N.t('url_param_error', { param: 'map' })];
+                window.alert(`${I18N.t('editor_error_popup_title')}\n\n${errors.map((e) => `- ${e}`).join('\n')}`);
+                this.core.invalidateSolvedState();
+                this.solveState = CONSTANTS.LEVEL_EDITOR.STATE_UNSOLVED;
+                this.statusMessageKey = '';
+                this._renderStatus();
+                this._syncActionControls();
+                this._saveDraft();
+                return;
+            }
 
-        this.core.setSolvedResult(data);
-        this._renderStatus();
-        this._saveDraft();
+            this.core.setSolvedResult(data);
+            this.solveState = CONSTANTS.LEVEL_EDITOR.STATE_SOLVED;
+            this.statusMessageKey = '';
+            this._renderStatus();
+            this._syncActionControls();
+            this._saveDraft();
+        } catch {
+            this.core.invalidateSolvedState();
+            this.solveState = CONSTANTS.LEVEL_EDITOR.STATE_UNSOLVED;
+            this.statusMessageKey = '';
+            this._renderStatus();
+            this._syncActionControls();
+            this._saveDraft();
+        }
     }
 
     _renderStatus() {
-        const toggleSolutionBtn = document.getElementById('editorToggleSolutionBtn');
+        if (this.statusMessageKey) {
+            this.statusElement.textContent = I18N.t(this.statusMessageKey);
+            return;
+        }
         if (!this.core.solvedResult) {
             this.statusElement.textContent = I18N.t('editor_status_unsolved');
-            toggleSolutionBtn.style.display = 'none';
             return;
         }
         const solved = this.core.solvedResult;
@@ -172,8 +211,22 @@ class LevelEditorApp {
             <pre>${solved.encoded}</pre>
             <div>${I18N.t('editor_status_url')}</div>
             <pre>${solved.playableUrl}</pre>
+            <div class="editor-status-actions">
+                <button type="button" id="editorCopyUrlBtn" data-i18n="editor_btn_copy_url"></button>
+                <button type="button" id="editorPlayMapBtn" data-i18n="editor_btn_play_map"></button>
+            </div>
         `;
-        toggleSolutionBtn.style.display = '';
+        I18N.applyTranslations();
+        const copyBtn = document.getElementById('editorCopyUrlBtn');
+        const playBtn = document.getElementById('editorPlayMapBtn');
+        if (copyBtn) {
+            copyBtn.addEventListener('click', () => this._copyPlayableUrl(solved.playableUrl));
+        }
+        if (playBtn) {
+            playBtn.addEventListener('click', () => {
+                window.open(solved.playableUrl, '_blank', 'noopener,noreferrer');
+            });
+        }
     }
 
     render() {
@@ -192,36 +245,103 @@ class LevelEditorApp {
     }
 
     _getSolutionSet() {
-        if (!this.solutionVisible || !this.core.solvedResult || !Array.isArray(this.core.solvedResult.mapData.optimalSolution)) {
+        if (this.mode !== CONSTANTS.LEVEL_EDITOR.MODE_VIEWING_SOLUTION
+            || !this.core.solvedResult
+            || !Array.isArray(this.core.solvedResult.mapData.optimalSolution)) {
             return new Set();
         }
         const pairs = parseCompactSolution(this.core.solvedResult.mapData.optimalSolution);
         return new Set(pairs.map(([r, c]) => `${r},${c}`));
     }
 
-    handleCellClick(row, col) {
+    handleCellClick(event, row, col) {
+        if (this.mode === CONSTANTS.LEVEL_EDITOR.MODE_VIEWING_SOLUTION) {
+            window.alert(I18N.t('editor_status_edit_locked'));
+            return;
+        }
+        if (event && (event.shiftKey || event.ctrlKey || event.metaKey)) {
+            this.handleCellErase(row, col);
+            return;
+        }
         this.core.placeTile(row, col);
         this.grid.loadMap(this.core.map);
-        this.solutionVisible = false;
+        this.solveState = CONSTANTS.LEVEL_EDITOR.STATE_UNSOLVED;
+        this.statusMessageKey = '';
         this.render();
         this._renderStatus();
+        this._syncActionControls();
         this._saveDraft();
     }
 
     handleCellContextMenu(event, row, col) {
         event.preventDefault();
+        if (this.mode === CONSTANTS.LEVEL_EDITOR.MODE_VIEWING_SOLUTION) {
+            window.alert(I18N.t('editor_status_edit_locked'));
+            return;
+        }
+        this.handleCellErase(row, col);
+    }
+
+    handleCellErase(row, col) {
         this.core.eraseTile(row, col);
         this.grid.loadMap(this.core.map);
-        this.solutionVisible = false;
+        this.solveState = CONSTANTS.LEVEL_EDITOR.STATE_UNSOLVED;
+        this.statusMessageKey = '';
         this.render();
         this._renderStatus();
+        this._syncActionControls();
         this._saveDraft();
     }
 
     handleCellKeydown(event, row, col) {
         if (event.key === 'Enter') {
             event.preventDefault();
-            this.handleCellClick(row, col);
+            this.handleCellClick(event, row, col);
+        }
+    }
+
+    _syncActionControls() {
+        const solving = this.solveState === CONSTANTS.LEVEL_EDITOR.STATE_SOLVING;
+        this.solveBtn.disabled = solving;
+        this.toggleSolutionBtn.style.display = this.solveState === CONSTANTS.LEVEL_EDITOR.STATE_SOLVED ? '' : 'none';
+        this.toggleSolutionBtn.dataset.i18n = this.mode === CONSTANTS.LEVEL_EDITOR.MODE_VIEWING_SOLUTION
+            ? 'editor_btn_hide_solution'
+            : 'editor_btn_toggle_solution';
+        if (this.solveState === CONSTANTS.LEVEL_EDITOR.STATE_SOLVED && this.core.solvedResult) {
+            this.goalPanelElement.style.display = '';
+            this.goalPanelElement.textContent = I18N.t('editor_goal_panel', {
+                goal: this.core.solvedResult.mapData.goal,
+                maxWalls: this.core.solvedResult.mapData.maxWalls,
+            });
+        } else {
+            this.goalPanelElement.style.display = 'none';
+            this.goalPanelElement.textContent = '';
+        }
+        I18N.applyTranslations();
+    }
+
+    async _copyPlayableUrl(url) {
+        try {
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                await navigator.clipboard.writeText(url);
+                this.statusMessageKey = 'editor_status_copied_url';
+                this._renderStatus();
+                setTimeout(() => {
+                    if (this.statusMessageKey === 'editor_status_copied_url') {
+                        this.statusMessageKey = '';
+                        this._renderStatus();
+                    }
+                }, 2000);
+            }
+        } catch {
+            this.statusMessageKey = 'editor_status_copy_failed';
+            this._renderStatus();
+            setTimeout(() => {
+                if (this.statusMessageKey === 'editor_status_copy_failed') {
+                    this.statusMessageKey = '';
+                    this._renderStatus();
+                }
+            }, 2500);
         }
     }
 }
@@ -234,3 +354,7 @@ window.addEventListener('DOMContentLoaded', () => {
     document.title = I18N.t('editor_page_title');
     window.levelEditorApp = new LevelEditorApp();
 });
+
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = LevelEditorApp;
+}
