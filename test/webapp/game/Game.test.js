@@ -3447,6 +3447,19 @@ describe('Game — Map version migration', () => {
             expect(result).not.toBeNull();
             expect(result.score).toBe(15);
         });
+
+        test('treats score above goal as perfect (map goal may have decreased after revision)', () => {
+            game.currentMapData = { version: 2 };
+            game.goalAreaSize = 12; // new goal is lower than the old score
+            game.optimalSolution = [[0, 0]];
+            const data = { score: 15, walls: [], mapVersion: 1 }; // score exceeds new goal
+
+            const result = game._handleMapVersionCheck('2026-01-01', data);
+            expect(result).not.toBeNull();
+            // Migrated score is clamped to the current goal
+            expect(result.score).toBe(12);
+            expect(result.walls).toEqual([[0, 0]]);
+        });
     });
 
     // ------------------------------------------------------------------

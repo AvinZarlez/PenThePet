@@ -1532,7 +1532,10 @@ class Game {
             return data;
         }
 
-        // Version mismatch — check if the user previously achieved a perfect score
+        // Version mismatch — check if the user previously achieved a perfect score.
+        // `>=` is intentional: the issue spec defines perfect as "value greater than or
+        // equal to the goal".  A score above the goal can legitimately occur if the map
+        // was revised to have a lower goal after the user achieved the previous goal.
         const isPerfect = typeof data.score === 'number' && data.score >= this.goalAreaSize;
 
         if (isPerfect && this.optimalSolution && this.optimalSolution.length > 0) {

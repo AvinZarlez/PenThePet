@@ -88,10 +88,8 @@
     "version": 1
   },
   "2027-01-04": {
-    "dayNumber": 311,
-    "version": 1,
-    "mapName": "Lagoon Onyx",
     "date": "2027-01-04",
+    "mapName": "Lagoon Onyx",
     "size": 9,
     "goal": 9,
     "maxWalls": 6,
@@ -109,7 +107,9 @@
       7,
       6,
       4
-    ]
+    ],
+    "dayNumber": 311,
+    "version": 1
   },
   "2027-01-05": {
     "date": "2027-01-05",
@@ -206,10 +206,8 @@
     "version": 1
   },
   "2027-01-08": {
-    "dayNumber": 315,
-    "version": 1,
-    "mapName": "Eagle",
     "date": "2027-01-08",
+    "mapName": "Eagle",
     "size": 9,
     "goal": 11,
     "maxWalls": 6,
@@ -227,7 +225,9 @@
       4,
       7,
       2
-    ]
+    ],
+    "dayNumber": 315,
+    "version": 1
   },
   "2027-01-09": {
     "date": "2027-01-09",
@@ -260,10 +260,8 @@
     "version": 1
   },
   "2027-01-10": {
-    "dayNumber": 317,
-    "version": 1,
-    "mapName": "Summer Hawk",
     "date": "2027-01-10",
+    "mapName": "Summer Hawk",
     "size": 9,
     "goal": 17,
     "maxWalls": 6,
@@ -281,7 +279,9 @@
       7,
       8,
       5
-    ]
+    ],
+    "dayNumber": 317,
+    "version": 1
   },
   "2027-01-11": {
     "date": "2027-01-11",
@@ -364,10 +364,8 @@
     "version": 1
   },
   "2027-01-14": {
-    "dayNumber": 321,
-    "version": 1,
-    "mapName": "Stone Stag",
     "date": "2027-01-14",
+    "mapName": "Stone Stag",
     "size": 9,
     "goal": 13,
     "maxWalls": 6,
@@ -385,7 +383,9 @@
       3,
       6,
       5
-    ]
+    ],
+    "dayNumber": 321,
+    "version": 1
   },
   "2027-01-15": {
     "date": "2027-01-15",
@@ -588,10 +588,8 @@
     "version": 1
   },
   "2027-01-22": {
-    "dayNumber": 329,
-    "version": 1,
-    "mapName": "Obsidian Swan",
     "date": "2027-01-22",
+    "mapName": "Obsidian Swan",
     "size": 9,
     "goal": 18,
     "maxWalls": 6,
@@ -609,7 +607,9 @@
       0,
       6,
       4
-    ]
+    ],
+    "dayNumber": 329,
+    "version": 1
   },
   "2027-01-23": {
     "date": "2027-01-23",
@@ -734,10 +734,8 @@
     "version": 1
   },
   "2027-01-27": {
-    "dayNumber": 334,
-    "version": 1,
-    "mapName": "Eon",
     "date": "2027-01-27",
+    "mapName": "Eon",
     "size": 9,
     "goal": 21,
     "maxWalls": 6,
@@ -755,13 +753,13 @@
       3,
       8,
       5
-    ]
+    ],
+    "dayNumber": 334,
+    "version": 1
   },
   "2027-01-28": {
-    "dayNumber": 335,
-    "version": 1,
-    "mapName": "Deer Hollow",
     "date": "2027-01-28",
+    "mapName": "Deer Hollow",
     "size": 9,
     "goal": 12,
     "maxWalls": 6,
@@ -779,13 +777,13 @@
       7,
       6,
       7
-    ]
+    ],
+    "dayNumber": 335,
+    "version": 1
   },
   "2027-01-29": {
-    "dayNumber": 336,
-    "version": 1,
-    "mapName": "Ruby",
     "date": "2027-01-29",
+    "mapName": "Ruby",
     "size": 9,
     "goal": 13,
     "maxWalls": 6,
@@ -803,13 +801,13 @@
       1,
       7,
       5
-    ]
+    ],
+    "dayNumber": 336,
+    "version": 1
   },
   "2027-01-30": {
-    "dayNumber": 337,
-    "version": 1,
-    "mapName": "Canyon Elysium",
     "date": "2027-01-30",
+    "mapName": "Canyon Elysium",
     "size": 9,
     "goal": 15,
     "maxWalls": 6,
@@ -827,7 +825,9 @@
       5,
       7,
       8
-    ]
+    ],
+    "dayNumber": 337,
+    "version": 1
   },
   "2027-01-31": {
     "date": "2027-01-31",
@@ -892,10 +892,8 @@
     "version": 1
   },
   "2027-02-02": {
-    "dayNumber": 340,
-    "version": 1,
-    "mapName": "Copper Eternity",
     "date": "2027-02-02",
+    "mapName": "Copper Eternity",
     "size": 9,
     "goal": 14,
     "maxWalls": 6,
@@ -913,7 +911,9 @@
       7,
       8,
       3
-    ]
+    ],
+    "dayNumber": 340,
+    "version": 1
   },
   "2027-02-03": {
     "date": "2027-02-03",
@@ -952,10 +952,8 @@
     "version": 1
   },
   "2027-02-04": {
-    "dayNumber": 342,
-    "version": 1,
-    "mapName": "Stag Refuge",
     "date": "2027-02-04",
+    "mapName": "Stag Refuge",
     "size": 9,
     "goal": 17,
     "maxWalls": 6,
@@ -973,7 +971,9 @@
       0,
       5,
       4
-    ]
+    ],
+    "dayNumber": 342,
+    "version": 1
   },
   "2027-02-05": {
     "date": "2027-02-05",
@@ -1632,10 +1632,8 @@
     "version": 1
   },
   "2027-02-27": {
-    "dayNumber": 365,
-    "version": 1,
-    "mapName": "Sunset Jade",
     "date": "2027-02-27",
+    "mapName": "Sunset Jade",
     "size": 9,
     "goal": 15,
     "maxWalls": 6,
@@ -1653,6 +1651,8 @@
       4,
       8,
       6
-    ]
+    ],
+    "dayNumber": 365,
+    "version": 1
   }
 }
