@@ -605,7 +605,7 @@ class Game {
      * @param {Array} walls - Wall positions [[row, col], ...]
      */
     saveBestState(dateString, score, walls) {
-        const data = { bestScore: score, bestWalls: walls };
+        const data = { bestScore: score, bestWalls: walls, mapVersion: this._getCurrentMapVersion() };
         CookieUtils.setCookie(`progress_${dateString}`, JSON.stringify(data), 365);
 
         if (typeof CloudSync !== 'undefined' && CloudSync.isConfigured() && CloudSync.isLoggedIn()) {
@@ -615,6 +615,8 @@ class Game {
 
     /**
      * Load the best state from cookie into this.bestScore / this.bestWalls.
+     * Clears the progress state if the saved map version no longer matches
+     * the current map version (the map layout or goal has changed).
      * @param {string} dateString - Puzzle date
      */
     loadBestState(dateString) {
@@ -623,6 +625,13 @@ class Game {
             try {
                 const data = JSON.parse(value);
                 if (typeof data.bestScore === 'number' && Array.isArray(data.bestWalls)) {
+                    const savedVersion = typeof data.mapVersion === 'number' ? data.mapVersion : 0;
+                    if (savedVersion !== this._getCurrentMapVersion()) {
+                        this._clearStaleProgress(dateString);
+                        this.bestScore = null;
+                        this.bestWalls = null;
+                        return;
+                    }
                     this.bestScore = data.bestScore;
                     this.bestWalls = data.bestWalls;
                     return;
@@ -631,6 +640,33 @@ class Game {
         }
         this.bestScore = null;
         this.bestWalls = null;
+    }
+
+    /**
+     * Return the version number of the currently loaded map.
+     * Maps that pre-date the version field are treated as version 0.
+     * @returns {number}
+     */
+    _getCurrentMapVersion() {
+        return (this.currentMapData && typeof this.currentMapData.version === 'number')
+            ? this.currentMapData.version
+            : 0;
+    }
+
+    /**
+     * Delete stale progress and timer cookies/cloud docs for a puzzle date.
+     * Called when a map version mismatch is detected so that in-progress state
+     * from an older version of the map does not linger.
+     * @param {string} dateString - Puzzle date
+     */
+    _clearStaleProgress(dateString) {
+        CookieUtils.deleteCookie(`progress_${dateString}`);
+        CookieUtils.deleteCookie(`timer_${dateString}`);
+
+        if (typeof CloudSync !== 'undefined' && CloudSync.isConfigured() && CloudSync.isLoggedIn()) {
+            CloudSync.deleteSubmission(`progress_${dateString}`);
+            CloudSync.deleteSubmission(`timer_${dateString}`);
+        }
     }
 
     /**
@@ -1441,6 +1477,7 @@ class Game {
         const cookieName = `submission_${dateString}`;
         const submissionData = {
             __version: CloudMigration.CURRENT_VERSION,
+            mapVersion: this._getCurrentMapVersion(),
             score: score,
             walls: wallPositions,
             timestamp: new Date().toISOString(),
@@ -1468,12 +1505,56 @@ class Game {
                 const data = CloudMigration.migrateSubmission(JSON.parse(value));
                 // Return null for pre-submission data (hints stored before formal submission)
                 if (typeof data.score !== 'number') return null;
-                return data;
+                return this._handleMapVersionCheck(dateString, data);
             } catch (e) {
                 console.error('Failed to parse submission cookie:', e);
                 return null;
             }
         }
+        return null;
+    }
+
+    /**
+     * Check whether saved submission data is compatible with the current map version.
+     * If versions match, returns data unchanged.
+     * If the user previously achieved a perfect score, migrates the submission to use
+     * the current map's optimal solution and goal, keeping the original timestamp.
+     * Otherwise, deletes all save data for this date so the user starts fresh.
+     * @param {string} dateString - Puzzle date
+     * @param {Object} data - Submission data object (already schema-migrated)
+     * @returns {Object|null} Migrated data, or null if data was cleared
+     */
+    _handleMapVersionCheck(dateString, data) {
+        const currentVersion = this._getCurrentMapVersion();
+        const savedVersion = typeof data.mapVersion === 'number' ? data.mapVersion : 0;
+
+        if (savedVersion === currentVersion) {
+            return data;
+        }
+
+        // Version mismatch — check if the user previously achieved a perfect score
+        const isPerfect = typeof data.score === 'number' && data.score >= this.goalAreaSize;
+
+        if (isPerfect && this.optimalSolution && this.optimalSolution.length > 0) {
+            // Migrate: update walls and score to the current optimal solution.
+            // Keep the original submission timestamp so the user's completion time is preserved.
+            const migrated = Object.assign({}, data, {
+                mapVersion: currentVersion,
+                score: this.goalAreaSize,
+                walls: this.optimalSolution,
+            });
+            CookieUtils.setCookie(`submission_${dateString}`, JSON.stringify(migrated), 365);
+            if (typeof CloudSync !== 'undefined' && CloudSync.isConfigured() && CloudSync.isLoggedIn()) {
+                CloudSync.saveSubmission(dateString, migrated);
+            }
+            this._clearStaleProgress(dateString);
+            return migrated;
+        }
+
+        // Not a perfect score (or no optimal solution available) — delete all save data
+        // so the user can tackle the updated map fresh.
+        this.deleteSubmission(dateString);
+        this._clearStaleProgress(dateString);
         return null;
     }
 
