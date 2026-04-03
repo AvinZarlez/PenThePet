@@ -75,6 +75,7 @@ async function main() {
         maxWalls: solved.mapData.maxWalls,
         map: solved.mapData.map,
         optimalSolution: solved.mapData.optimalSolution,
+        version: (existingMap.version || 0) + 1,
     };
 
     let validation = validateMapsDatabase(maps);

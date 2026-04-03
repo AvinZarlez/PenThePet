@@ -3570,6 +3570,63 @@ describe('Game — Map version migration', () => {
     });
 
     // ------------------------------------------------------------------
+    // resetLevelData — shared reset used by version mismatch and debug reset
+    // ------------------------------------------------------------------
+    describe('resetLevelData()', () => {
+        test('deletes submission cookie', () => {
+            CookieUtils.setCookie('submission_2026-01-01',
+                JSON.stringify({ score: 10, walls: [], mapVersion: 1 }), 1);
+            game.resetLevelData('2026-01-01');
+            expect(CookieUtils.getCookie('submission_2026-01-01')).toBeNull();
+        });
+
+        test('deletes progress and timer cookies', () => {
+            CookieUtils.setCookie('progress_2026-01-01', JSON.stringify({ bestScore: 5, bestWalls: [] }), 1);
+            CookieUtils.setCookie('timer_2026-01-01', JSON.stringify({ elapsed: 30 }), 1);
+            game.resetLevelData('2026-01-01');
+            expect(CookieUtils.getCookie('progress_2026-01-01')).toBeNull();
+            expect(CookieUtils.getCookie('timer_2026-01-01')).toBeNull();
+        });
+
+        test('resets all in-memory submission state', () => {
+            game.isSubmitted = true;
+            game.submittedScore = 10;
+            game.submittedWalls = [[1, 1]];
+            game.viewingOptimal = true;
+            game.hintsUsed = ['checked'];
+            game.bestScore = 8;
+            game.bestWalls = [[0, 0]];
+
+            game.resetLevelData('2026-01-01');
+
+            expect(game.isSubmitted).toBe(false);
+            expect(game.submittedScore).toBeNull();
+            expect(game.submittedWalls).toBeNull();
+            expect(game.viewingOptimal).toBe(false);
+            expect(game.hintsUsed).toEqual([]);
+            expect(game.bestScore).toBeNull();
+            expect(game.bestWalls).toBeNull();
+        });
+
+        test('calls CloudSync.deleteSubmission for submission, progress, and timer docs', () => {
+            const deleted = [];
+            const origCloudSync = global.CloudSync;
+            global.CloudSync = {
+                isConfigured: () => true,
+                isLoggedIn: () => true,
+                deleteSubmission: (id) => deleted.push(id),
+            };
+
+            game.resetLevelData('2026-01-01');
+
+            expect(deleted).toContain('2026-01-01');
+            expect(deleted).toContain('progress_2026-01-01');
+            expect(deleted).toContain('timer_2026-01-01');
+            global.CloudSync = origCloudSync;
+        });
+    });
+
+    // ------------------------------------------------------------------
     // _clearStaleProgress
     // ------------------------------------------------------------------
     describe('_clearStaleProgress()', () => {

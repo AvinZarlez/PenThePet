@@ -75,10 +75,10 @@ function createMockGame() {
         loadHintsUsed: jest.fn(() => []),
         loadSubmission: jest.fn(() => null),
         deleteSubmission: jest.fn(),
+        resetLevelData: jest.fn(),
         isValidPosition: jest.fn(() => true)
     };
 }
-
 // Mock fetch for maps database
 function mockFetch() {
     global.fetch = jest.fn(() =>
@@ -775,22 +775,12 @@ describe('Menu', () => {
     });
 
     describe('Debug Reset Level', () => {
-        test('should delete submission and reset game state', () => {
-            game.isSubmitted = true;
-            game.submittedScore = 8;
-            game.submittedWalls = [[1, 2], [3, 4]];
-            game.viewingOptimal = true;
+        test('should call resetLevelData and reset grid/UI state', () => {
             game.wallCount = 2;
-            game.hintsUsed = ['checked', 'target'];
 
             menu.resetCurrentLevel();
 
-            expect(game.deleteSubmission).toHaveBeenCalledWith('2026-02-06');
-            expect(game.isSubmitted).toBe(false);
-            expect(game.submittedScore).toBe(null);
-            expect(game.submittedWalls).toBe(null);
-            expect(game.viewingOptimal).toBe(false);
-            expect(game.hintsUsed).toEqual([]);
+            expect(game.resetLevelData).toHaveBeenCalledWith('2026-02-06');
             expect(game.grid.reset).toHaveBeenCalled();
             expect(game.wallCount).toBe(0);
             expect(game.render).toHaveBeenCalled();
@@ -805,7 +795,7 @@ describe('Menu', () => {
 
             menu.resetCurrentLevel();
 
-            expect(game.deleteSubmission).not.toHaveBeenCalled();
+            expect(game.resetLevelData).not.toHaveBeenCalled();
         });
 
         test('should trigger on reset level button click', () => {
@@ -1065,6 +1055,7 @@ describe('Menu — additional branch coverage', () => {
             loadHintsUsed: jest.fn(() => []),
             loadSubmission: jest.fn(() => null),
             deleteSubmission: jest.fn(),
+            resetLevelData: jest.fn(),
             isValidPosition: jest.fn(() => true),
         };
     }

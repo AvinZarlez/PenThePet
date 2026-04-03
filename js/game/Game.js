@@ -627,9 +627,7 @@ class Game {
                 if (typeof data.bestScore === 'number' && Array.isArray(data.bestWalls)) {
                     const savedVersion = typeof data.mapVersion === 'number' ? data.mapVersion : 0;
                     if (savedVersion !== this._getCurrentMapVersion()) {
-                        this._clearStaleProgress(dateString);
-                        this.bestScore = null;
-                        this.bestWalls = null;
+                        this.resetLevelData(dateString);
                         return;
                     }
                     this.bestScore = data.bestScore;
@@ -667,6 +665,31 @@ class Game {
             CloudSync.deleteSubmission(`progress_${dateString}`);
             CloudSync.deleteSubmission(`timer_${dateString}`);
         }
+    }
+
+    /**
+     * Fully reset all saved data for a puzzle and clear in-memory state.
+     * Deletes the submission, hints, progress, and timer cookies/cloud docs,
+     * then resets all submission-related fields on this game object.
+     *
+     * Used as the shared implementation for:
+     *   - The debug "Reset Level" tool (via Menu.resetCurrentLevel)
+     *   - Map version mismatch when the user did not achieve a perfect score
+     *
+     * Callers are responsible for any visual / grid / timer resets that follow.
+     * @param {string} dateString - Puzzle date / save key
+     */
+    resetLevelData(dateString) {
+        this.deleteSubmission(dateString);
+        this._clearStaleProgress(dateString);
+
+        this.isSubmitted = false;
+        this.submittedScore = null;
+        this.submittedWalls = null;
+        this.viewingOptimal = false;
+        this.hintsUsed = [];
+        this.bestScore = null;
+        this.bestWalls = null;
     }
 
     /**
@@ -1556,8 +1579,7 @@ class Game {
 
         // Not a perfect score (or no optimal solution available) — delete all save data
         // so the user can tackle the updated map fresh.
-        this.deleteSubmission(dateString);
-        this._clearStaleProgress(dateString);
+        this.resetLevelData(dateString);
         return null;
     }
 
