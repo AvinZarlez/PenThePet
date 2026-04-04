@@ -25,7 +25,7 @@
       5
     ],
     "dayNumber": 308,
-    "version": 1
+    "version": 2
   },
   "2027-01-02": {
     "date": "2027-01-02",
@@ -57,7 +57,7 @@
       9
     ],
     "dayNumber": 309,
-    "version": 1
+    "version": 2
   },
   "2027-01-03": {
     "date": "2027-01-03",
@@ -85,13 +85,13 @@
       3
     ],
     "dayNumber": 310,
-    "version": 1
+    "version": 2
   },
   "2027-01-04": {
     "date": "2027-01-04",
     "mapName": "Lagoon Onyx",
     "size": 9,
-    "goal": 9,
+    "goal": 7,
     "maxWalls": 6,
     "map": "gwgwwgsgwggggggggggggwgggwwgwggggwgwgwwghgwgggggggbwggggggggggwwgggswwwwwggsgggww",
     "optimalSolution": [
@@ -101,28 +101,26 @@
       2,
       2,
       5,
+      4,
+      5,
       5,
       3,
       5,
-      7,
-      6,
       4
     ],
     "dayNumber": 311,
-    "version": 1
+    "version": 2
   },
   "2027-01-05": {
     "date": "2027-01-05",
     "mapName": "Marsh Beryl",
     "size": 13,
-    "goal": 58,
+    "goal": 54,
     "maxWalls": 9,
     "map": "gwwwggwggwgswgwgwgggbwgggggggwwwggggswggsgoggwgwgwwggwgwggggggwwgwgwwwwgggbwggwggswghggwsgwwwggggggggwgggwwggwggggggggggwgbggwggwwggoggggggwswgwwgbgwwbwsogswwggggggwwbwg",
     "optimalSolution": [
-      0,
-      10,
       1,
-      11,
+      10,
       2,
       0,
       2,
@@ -133,19 +131,21 @@
       3,
       8,
       11,
-      10,
+      9,
       4,
+      9,
+      6,
       10,
       7
     ],
     "dayNumber": 312,
-    "version": 1
+    "version": 2
   },
   "2027-01-06": {
     "date": "2027-01-06",
     "mapName": "Avalon Mist",
     "size": 16,
-    "goal": 81,
+    "goal": 79,
     "maxWalls": 12,
     "map": "wwgwgggggwswggbgssggggggggggwggwggbgwbwwgggwgggbsggwwgwggwgwwgggwgwgwgwwwgggwwggwgggggwwwwggggoggggwgggwgwgwswgwwggggwwgggggggggwggggwgghggwwggggggbwggggwggggsgggggggwswwggwsgggswgggwgggwgwgswwgwwwgwwggggwgggggbggggwwwbwggwggggwgggwggoggbsggwgggwgwggwwgwgg",
     "optimalSolution": [
@@ -175,7 +175,7 @@
       5
     ],
     "dayNumber": 313,
-    "version": 1
+    "version": 2
   },
   "2027-01-07": {
     "date": "2027-01-07",
@@ -203,31 +203,29 @@
       7
     ],
     "dayNumber": 314,
-    "version": 1
+    "version": 2
   },
   "2027-01-08": {
     "date": "2027-01-08",
     "mapName": "Eagle",
     "size": 9,
-    "goal": 11,
-    "maxWalls": 6,
+    "goal": 10,
+    "maxWalls": 5,
     "map": "gggggggswggggggswwgwwgbwsgwggggggwwwwwgghwgggwggggbggggwgwgwgwggggggggwwwggwwgggg",
     "optimalSolution": [
+      2,
+      3,
+      3,
       0,
+      3,
       4,
-      1,
-      3,
-      1,
-      5,
-      3,
-      0,
       5,
       4,
       7,
       2
     ],
     "dayNumber": 315,
-    "version": 1
+    "version": 2
   },
   "2027-01-09": {
     "date": "2027-01-09",
@@ -257,7 +255,7 @@
       3
     ],
     "dayNumber": 316,
-    "version": 1
+    "version": 2
   },
   "2027-01-10": {
     "date": "2027-01-10",
@@ -281,7 +279,7 @@
       5
     ],
     "dayNumber": 317,
-    "version": 1
+    "version": 2
   },
   "2027-01-11": {
     "date": "2027-01-11",
@@ -311,7 +309,7 @@
       8
     ],
     "dayNumber": 318,
-    "version": 1
+    "version": 2
   },
   "2027-01-12": {
     "date": "2027-01-12",
@@ -335,7 +333,7 @@
       3
     ],
     "dayNumber": 319,
-    "version": 1
+    "version": 2
   },
   "2027-01-13": {
     "date": "2027-01-13",
@@ -361,7 +359,7 @@
       9
     ],
     "dayNumber": 320,
-    "version": 1
+    "version": 2
   },
   "2027-01-14": {
     "date": "2027-01-14",
@@ -385,7 +383,7 @@
       5
     ],
     "dayNumber": 321,
-    "version": 1
+    "version": 2
   },
   "2027-01-15": {
     "date": "2027-01-15",
@@ -413,7 +411,7 @@
       7
     ],
     "dayNumber": 322,
-    "version": 1
+    "version": 2
   },
   "2027-01-16": {
     "date": "2027-01-16",
@@ -443,59 +441,61 @@
       5
     ],
     "dayNumber": 323,
-    "version": 1
+    "version": 2
   },
   "2027-01-17": {
     "date": "2027-01-17",
     "mapName": "Sunrise Oasis",
     "size": 12,
-    "goal": 44,
+    "goal": 43,
     "maxWalls": 9,
     "map": "gwwggggggwwggoggggggwgwgwgwggwggggggwgwwgwwgwgsgwwwgggggwggggggwggggwgggwgwggghggwggwoggwggggwgggggggggwgwwwwggggwwggbwgggwggsgggsgssgwwgggwwgwg",
     "optimalSolution": [
-      2,
+      0,
+      3,
+      1,
       4,
       2,
       7,
+      5,
+      0,
+      7,
+      1,
       8,
       0,
+      9,
+      8,
       10,
       1,
       10,
-      10,
-      11,
-      4,
-      11,
-      5,
-      11,
-      6,
-      11,
-      9
+      4
     ],
     "dayNumber": 324,
-    "version": 1
+    "version": 2
   },
   "2027-01-18": {
     "date": "2027-01-18",
     "mapName": "Shimmer Copper",
     "size": 9,
-    "goal": 20,
-    "maxWalls": 5,
+    "goal": 21,
+    "maxWalls": 6,
     "map": "ggsbgwwggggwgwgwggwggggggogwggwgwgwwwowghggwggggwgggggwggwggwggggggwbggggggwwgwgw",
     "optimalSolution": [
-      0,
       1,
       1,
-      0,
       1,
       3,
       5,
-      7,
+      8,
       6,
-      5
+      5,
+      6,
+      8,
+      7,
+      7
     ],
     "dayNumber": 325,
-    "version": 1
+    "version": 2
   },
   "2027-01-19": {
     "date": "2027-01-19",
@@ -519,7 +519,7 @@
       5
     ],
     "dayNumber": 326,
-    "version": 1
+    "version": 2
   },
   "2027-01-20": {
     "date": "2027-01-20",
@@ -555,7 +555,7 @@
       5
     ],
     "dayNumber": 327,
-    "version": 1
+    "version": 2
   },
   "2027-01-21": {
     "date": "2027-01-21",
@@ -585,7 +585,7 @@
       8
     ],
     "dayNumber": 328,
-    "version": 1
+    "version": 2
   },
   "2027-01-22": {
     "date": "2027-01-22",
@@ -609,13 +609,13 @@
       4
     ],
     "dayNumber": 329,
-    "version": 1
+    "version": 2
   },
   "2027-01-23": {
     "date": "2027-01-23",
     "mapName": "Border Amber",
     "size": 16,
-    "goal": 86,
+    "goal": 84,
     "maxWalls": 12,
     "map": "ggwwggsggggggwwgwgggggwwggwgwwggggggwbwggwggggggggswgggwggwwwggwwwwgwwgwgwggwwggwggggwggggggwggggsggwwgwwggwgwggggwggwgwgggggggwgggwgggghgggwwgggssgggggwgggggbggwgwggggwgwgggswwgggwwwgggwgsgggwwwggwwwwggggwwwggggwgggggggwggggwgggggwgggggggggwswggggwgwggggw",
     "optimalSolution": [
@@ -645,7 +645,7 @@
       9
     ],
     "dayNumber": 330,
-    "version": 1
+    "version": 2
   },
   "2027-01-24": {
     "date": "2027-01-24",
@@ -675,7 +675,7 @@
       8
     ],
     "dayNumber": 331,
-    "version": 1
+    "version": 2
   },
   "2027-01-25": {
     "date": "2027-01-25",
@@ -703,26 +703,26 @@
       8
     ],
     "dayNumber": 332,
-    "version": 1
+    "version": 2
   },
   "2027-01-26": {
     "date": "2027-01-26",
     "mapName": "Grove Heron",
     "size": 11,
-    "goal": 31,
+    "goal": 27,
     "maxWalls": 8,
     "map": "wgssggwgggggggwwwggggswggggggggwgggwgwggggggwwgwgwgggggwwgbghgggbwwgwwwwggwswwgggwwwggwgwggggwgwogggsgwggggggggggggggwggw",
     "optimalSolution": [
       0,
-      7,
+      1,
       0,
-      8,
+      7,
       1,
-      1,
+      0,
       1,
       2,
       1,
-      9,
+      8,
       3,
       0,
       3,
@@ -731,7 +731,7 @@
       10
     ],
     "dayNumber": 333,
-    "version": 1
+    "version": 2
   },
   "2027-01-27": {
     "date": "2027-01-27",
@@ -755,7 +755,7 @@
       5
     ],
     "dayNumber": 334,
-    "version": 1
+    "version": 2
   },
   "2027-01-28": {
     "date": "2027-01-28",
@@ -779,7 +779,7 @@
       7
     ],
     "dayNumber": 335,
-    "version": 1
+    "version": 2
   },
   "2027-01-29": {
     "date": "2027-01-29",
@@ -803,7 +803,7 @@
       5
     ],
     "dayNumber": 336,
-    "version": 1
+    "version": 2
   },
   "2027-01-30": {
     "date": "2027-01-30",
@@ -827,7 +827,7 @@
       8
     ],
     "dayNumber": 337,
-    "version": 1
+    "version": 2
   },
   "2027-01-31": {
     "date": "2027-01-31",
@@ -859,7 +859,7 @@
       3
     ],
     "dayNumber": 338,
-    "version": 1
+    "version": 2
   },
   "2027-02-01": {
     "date": "2027-02-01",
@@ -889,7 +889,7 @@
       5
     ],
     "dayNumber": 339,
-    "version": 1
+    "version": 2
   },
   "2027-02-02": {
     "date": "2027-02-02",
@@ -913,7 +913,7 @@
       3
     ],
     "dayNumber": 340,
-    "version": 1
+    "version": 2
   },
   "2027-02-03": {
     "date": "2027-02-03",
@@ -949,7 +949,7 @@
       6
     ],
     "dayNumber": 341,
-    "version": 1
+    "version": 2
   },
   "2027-02-04": {
     "date": "2027-02-04",
@@ -973,7 +973,7 @@
       4
     ],
     "dayNumber": 342,
-    "version": 1
+    "version": 2
   },
   "2027-02-05": {
     "date": "2027-02-05",
@@ -1009,29 +1009,31 @@
       12
     ],
     "dayNumber": 343,
-    "version": 1
+    "version": 2
   },
   "2027-02-06": {
     "date": "2027-02-06",
     "mapName": "Hawk Eon",
     "size": 9,
-    "goal": 15,
-    "maxWalls": 5,
+    "goal": 16,
+    "maxWalls": 6,
     "map": "ggggggwgwggwggwgggwgwggwwggggwgwgggggggghggggwggwwggbgwggwgswgswgggwggwgwgwwgggwg",
     "optimalSolution": [
       0,
       3,
       0,
       4,
-      4,
+      3,
       1,
+      4,
+      0,
       4,
       5,
       8,
       1
     ],
     "dayNumber": 344,
-    "version": 1
+    "version": 2
   },
   "2027-02-07": {
     "date": "2027-02-07",
@@ -1055,7 +1057,7 @@
       7
     ],
     "dayNumber": 345,
-    "version": 1
+    "version": 2
   },
   "2027-02-08": {
     "date": "2027-02-08",
@@ -1085,7 +1087,7 @@
       8
     ],
     "dayNumber": 346,
-    "version": 1
+    "version": 2
   },
   "2027-02-09": {
     "date": "2027-02-09",
@@ -1109,7 +1111,7 @@
       8
     ],
     "dayNumber": 347,
-    "version": 1
+    "version": 2
   },
   "2027-02-10": {
     "date": "2027-02-10",
@@ -1143,13 +1145,13 @@
       9
     ],
     "dayNumber": 348,
-    "version": 1
+    "version": 2
   },
   "2027-02-11": {
     "date": "2027-02-11",
     "mapName": "Era Volcano",
     "size": 10,
-    "goal": 36,
+    "goal": 34,
     "maxWalls": 7,
     "map": "gggwwwwgwgggwgwgwgggwoggggwwgggggsgggggwgwwggggwgggggwghwbgswggbggwgwwwgggggggbggwsggwggggsggwwgggww",
     "optimalSolution": [
@@ -1169,7 +1171,7 @@
       2
     ],
     "dayNumber": 349,
-    "version": 1
+    "version": 2
   },
   "2027-02-12": {
     "date": "2027-02-12",
@@ -1199,7 +1201,7 @@
       10
     ],
     "dayNumber": 350,
-    "version": 1
+    "version": 2
   },
   "2027-02-13": {
     "date": "2027-02-13",
@@ -1229,7 +1231,7 @@
       5
     ],
     "dayNumber": 351,
-    "version": 1
+    "version": 2
   },
   "2027-02-14": {
     "date": "2027-02-14",
@@ -1255,7 +1257,7 @@
       4
     ],
     "dayNumber": 352,
-    "version": 1
+    "version": 2
   },
   "2027-02-15": {
     "date": "2027-02-15",
@@ -1265,16 +1267,16 @@
     "maxWalls": 9,
     "map": "gggggggwgwwwwggsggwgggwggggsgwwgwgggggwwgbggwggggggwwgggwgggggbggwwwgggggggggwhggwsgggwggwgwggwgwwwwwgggwwggwggwggwgggggggggggsgggggwwgggswwwwgg",
     "optimalSolution": [
-      1,
-      8,
       2,
-      11,
+      9,
       3,
-      11,
+      10,
       4,
       11,
       5,
-      10,
+      11,
+      6,
+      11,
       9,
       10,
       10,
@@ -1285,7 +1287,7 @@
       10
     ],
     "dayNumber": 353,
-    "version": 1
+    "version": 2
   },
   "2027-02-16": {
     "date": "2027-02-16",
@@ -1319,7 +1321,7 @@
       1
     ],
     "dayNumber": 354,
-    "version": 1
+    "version": 2
   },
   "2027-02-17": {
     "date": "2027-02-17",
@@ -1351,7 +1353,7 @@
       7
     ],
     "dayNumber": 355,
-    "version": 1
+    "version": 2
   },
   "2027-02-18": {
     "date": "2027-02-18",
@@ -1383,7 +1385,7 @@
       11
     ],
     "dayNumber": 356,
-    "version": 1
+    "version": 2
   },
   "2027-02-19": {
     "date": "2027-02-19",
@@ -1411,7 +1413,7 @@
       1
     ],
     "dayNumber": 357,
-    "version": 1
+    "version": 2
   },
   "2027-02-20": {
     "date": "2027-02-20",
@@ -1435,7 +1437,7 @@
       1
     ],
     "dayNumber": 358,
-    "version": 1
+    "version": 2
   },
   "2027-02-21": {
     "date": "2027-02-21",
@@ -1469,7 +1471,7 @@
       13
     ],
     "dayNumber": 359,
-    "version": 1
+    "version": 2
   },
   "2027-02-22": {
     "date": "2027-02-22",
@@ -1501,7 +1503,7 @@
       8
     ],
     "dayNumber": 360,
-    "version": 1
+    "version": 2
   },
   "2027-02-23": {
     "date": "2027-02-23",
@@ -1537,7 +1539,7 @@
       8
     ],
     "dayNumber": 361,
-    "version": 1
+    "version": 2
   },
   "2027-02-24": {
     "date": "2027-02-24",
@@ -1558,22 +1560,22 @@
       13,
       16,
       15,
-      1,
-      15,
-      11,
+      3,
       15,
       13,
-      16,
-      3,
       16,
       5,
       16,
       6,
       16,
+      10,
+      16,
+      11,
+      16,
       12
     ],
     "dayNumber": 362,
-    "version": 1
+    "version": 2
   },
   "2027-02-25": {
     "date": "2027-02-25",
@@ -1605,37 +1607,37 @@
       10
     ],
     "dayNumber": 363,
-    "version": 1
+    "version": 2
   },
   "2027-02-26": {
     "date": "2027-02-26",
     "mapName": "Paradox Crystal",
     "size": 9,
-    "goal": 16,
+    "goal": 14,
     "maxWalls": 6,
     "map": "ggbggswwggwggggggbwwgggwwgwbgggwswggggwwhggswggwwgwgggwggwggbwwgggggggggggggwwggw",
     "optimalSolution": [
-      1,
-      7,
       3,
-      8,
+      7,
+      5,
+      6,
       5,
       8,
+      6,
+      5,
       7,
       3,
       7,
-      7,
-      8,
       6
     ],
     "dayNumber": 364,
-    "version": 1
+    "version": 2
   },
   "2027-02-27": {
     "date": "2027-02-27",
     "mapName": "Sunset Jade",
     "size": 9,
-    "goal": 15,
+    "goal": 13,
     "maxWalls": 6,
     "map": "wggwwwgwwgwggwwggggggswgggggwggwggwgwsgwhwgwggggwggggggggwgbggwwggggggwggggggwggg",
     "optimalSolution": [
@@ -1653,6 +1655,6 @@
       6
     ],
     "dayNumber": 365,
-    "version": 1
+    "version": 2
   }
 }

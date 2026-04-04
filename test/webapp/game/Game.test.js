@@ -1884,7 +1884,7 @@ describe('Game — Score Modifier Popups', () => {
         expect(popup.classList.contains('positive')).toBe(true);
     });
 
-    test('_animatePennedArea shows popup for bee tile (score -3)', () => {
+    test('_animatePennedArea shows popup for bee tile (score -5)', () => {
         setupDOM();
         const g = new Game(5);
         const tiles = Array.from({ length: 5 }, () => Array(5).fill('grass'));
@@ -1908,7 +1908,7 @@ describe('Game — Score Modifier Popups', () => {
         expect(beeCell.classList.contains('penned')).toBe(true);
         const popup = g.gridElement.querySelector('.score-popup');
         expect(popup).not.toBeNull();
-        expect(popup.textContent).toBe('-3');
+        expect(popup.textContent).toBe('-5');
         expect(popup.classList.contains('negative')).toBe(true);
     });
 });

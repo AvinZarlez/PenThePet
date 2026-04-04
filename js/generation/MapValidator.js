@@ -183,7 +183,7 @@ class MapValidator {
 
     /**
      * Returns true if the tile is a score-modifying tile (score is not 0 or 1).
-     * Stars (+3) and bees (-3) are score-modifying; grass, water, home, etc. are not.
+     * Stars (+3) and bees (-5) are score-modifying; grass, water, home, etc. are not.
      * @param {string} tile - Tile type string
      * @returns {boolean}
      */

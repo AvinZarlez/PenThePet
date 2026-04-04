@@ -29,13 +29,13 @@
       6
     ],
     "dayNumber": 1,
-    "version": 1
+    "version": 2
   },
   "2026-03-01": {
     "date": "2026-03-01",
     "mapName": "Mystic",
     "size": 11,
-    "goal": 21,
+    "goal": 17,
     "maxWalls": 8,
     "map": "gwwwgggswgbgbggggwggggwggwwbwggwgggsggggwggwgwggwggwgwgggwgwhbwgwgggwggggsbsgwwggwwggggbwwgwgggggwggggwwgwggggwsgggggggwg",
     "optimalSolution": [
@@ -57,13 +57,13 @@
       7
     ],
     "dayNumber": 2,
-    "version": 1
+    "version": 2
   },
   "2026-03-02": {
     "date": "2026-03-02",
     "mapName": "Spire",
     "size": 17,
-    "goal": 81,
+    "goal": 75,
     "maxWalls": 12,
     "map": "gwwgwwbggggggggwwgwgggggwggggggbgwggggswgggggggsgsggwggggwgwgwwgggwgwggbwggwwwgggwggwgggggwwgggwwwwgggwwwgwwggwgggwgsbsbggggwgwggggbggggsggwgggwhwgwgsgwgggggggggggwwgwwggsggwggggwwggggwggwgsgwgggwgsgggggwwbgwggwgwgwgggwwgwggwgwwbggggwwgbgwgsggwgwbwwggwgwswggggwgggggwgggggwggwsgwgggwggggwb",
     "optimalSolution": [
@@ -93,7 +93,7 @@
       12
     ],
     "dayNumber": 3,
-    "version": 1
+    "version": 2
   },
   "2026-03-03": {
     "date": "2026-03-03",
@@ -117,7 +117,7 @@
       4
     ],
     "dayNumber": 4,
-    "version": 1
+    "version": 2
   },
   "2026-03-04": {
     "date": "2026-03-04",
@@ -151,41 +151,41 @@
       10
     ],
     "dayNumber": 5,
-    "version": 1
+    "version": 2
   },
   "2026-03-05": {
     "date": "2026-03-05",
     "mapName": "Cascade",
     "size": 11,
-    "goal": 26,
+    "goal": 22,
     "maxWalls": 8,
     "map": "gwgggggwgwgggggggggggggggggwwsggwgggwwwwwgwgwwggggggggggggwbhbwwwwggggwggwwwbggggggswggbgbgsggswwbgwgwggggsgwgwwggwwwgggg",
     "optimalSolution": [
-      3,
+      2,
+      8,
+      4,
       2,
       4,
-      8,
-      5,
-      0,
-      6,
-      0,
+      10,
       7,
-      1,
+      3,
       8,
       2,
-      9,
-      6,
       10,
-      3
+      3,
+      10,
+      7,
+      10,
+      8
     ],
     "dayNumber": 6,
-    "version": 1
+    "version": 2
   },
   "2026-03-06": {
     "date": "2026-03-06",
     "mapName": "Jungle Orbit",
     "size": 17,
-    "goal": 83,
+    "goal": 79,
     "maxWalls": 12,
     "map": "ggwwgggsggwwwgggggggwggwgwgwgggggggwgwgwggwgwbwggsgwwbgggggwggswwbggggwgwwwswgbgwgggwgwwwggggwwggwwgbgsgggwggwgwwbwggggggwggggwgggggwggwwgwggggghgsgwwggwgwswgwggwgggsgggbgggswgggwggswgggbgwsgwwgggwbgggwwggwwwgggwwsgwgsggwgwggggggggwwbggggbggwgwwgggwgggwwggwwgggggggggwggggggggggggggwggwwgg",
     "optimalSolution": [
@@ -215,13 +215,13 @@
       11
     ],
     "dayNumber": 7,
-    "version": 1
+    "version": 2
   },
   "2026-03-07": {
     "date": "2026-03-07",
     "mapName": "Cyclone",
     "size": 10,
-    "goal": 19,
+    "goal": 17,
     "maxWalls": 7,
     "map": "gggggbggwwgwwwwggwgwgwgwbggwggwgggggggggggwwgggggsggwwghgggbwwggwwwwgwgggggwgbgwgswbggwsggwgggggggsg",
     "optimalSolution": [
@@ -241,13 +241,13 @@
       8
     ],
     "dayNumber": 8,
-    "version": 1
+    "version": 2
   },
   "2026-03-08": {
     "date": "2026-03-08",
     "mapName": "Torrent",
     "size": 16,
-    "goal": 73,
+    "goal": 67,
     "maxWalls": 12,
     "map": "wgggggwwgggwggwgggggwsgggwwwggggwggwwwgwggwggggbwgbggggggggggggggggwgsggggbggggggwwwgwgwgwwwggggggwsgwwgbwbwgggwgwgggwggwwgwgggggwgsgggghbgggssgggwggwwwwggwwgwgwwgwgwgwgggwgggwgggwgggggwwwsggggggsggwgggggwsggbggggwwbggwwsgggssgwgwgggggggwwgwwgggwgwwwwbgwgg",
     "optimalSolution": [
@@ -258,9 +258,9 @@
       3,
       3,
       3,
-      11,
+      10,
       4,
-      12,
+      9,
       8,
       10,
       11,
@@ -277,7 +277,7 @@
       6
     ],
     "dayNumber": 9,
-    "version": 1
+    "version": 2
   },
   "2026-03-09": {
     "date": "2026-03-09",
@@ -313,7 +313,7 @@
       8
     ],
     "dayNumber": 10,
-    "version": 1
+    "version": 2
   },
   "2026-03-10": {
     "date": "2026-03-10",
@@ -347,7 +347,7 @@
       5
     ],
     "dayNumber": 11,
-    "version": 1
+    "version": 2
   },
   "2026-03-11": {
     "date": "2026-03-11",
@@ -369,13 +369,13 @@
       1
     ],
     "dayNumber": 12,
-    "version": 1
+    "version": 2
   },
   "2026-03-12": {
     "date": "2026-03-12",
     "mapName": "Valhalla",
     "size": 16,
-    "goal": 84,
+    "goal": 82,
     "maxWalls": 12,
     "map": "wwwgwggwwgwwsggggsggggwwgggwggwgwgggggggwggggwggwgggggwgwwwgggggggwgggggggggsgggggwwggggwwgwwgggwggbwggwggsgwgggwwgggwgwwgggggwwgbgggggghwwwwggggswgggwgwwgggwwggwggwgwgwwggggwgwwgggggggwwgwggbgwgggggggggggwgwgsgggwwwwgwwggwgwgswgggggggwggggggggwsggggggggwg",
     "optimalSolution": [
@@ -405,7 +405,7 @@
       9
     ],
     "dayNumber": 13,
-    "version": 1
+    "version": 2
   },
   "2026-03-13": {
     "date": "2026-03-13",
@@ -435,7 +435,7 @@
       6
     ],
     "dayNumber": 14,
-    "version": 1
+    "version": 2
   },
   "2026-03-14": {
     "date": "2026-03-14",
@@ -471,7 +471,7 @@
       14
     ],
     "dayNumber": 15,
-    "version": 1
+    "version": 2
   },
   "2026-03-15": {
     "date": "2026-03-15",
@@ -499,7 +499,7 @@
       5
     ],
     "dayNumber": 16,
-    "version": 1
+    "version": 2
   },
   "2026-03-16": {
     "date": "2026-03-16",
@@ -525,7 +525,7 @@
       3
     ],
     "dayNumber": 17,
-    "version": 1
+    "version": 2
   },
   "2026-03-17": {
     "date": "2026-03-17",
@@ -555,7 +555,7 @@
       4
     ],
     "dayNumber": 18,
-    "version": 1
+    "version": 2
   },
   "2026-03-18": {
     "date": "2026-03-18",
@@ -583,7 +583,7 @@
       6
     ],
     "dayNumber": 19,
-    "version": 1
+    "version": 2
   },
   "2026-03-19": {
     "date": "2026-03-19",
@@ -613,7 +613,7 @@
       5
     ],
     "dayNumber": 20,
-    "version": 1
+    "version": 2
   },
   "2026-03-20": {
     "date": "2026-03-20",
@@ -637,13 +637,13 @@
       6
     ],
     "dayNumber": 21,
-    "version": 1
+    "version": 2
   },
   "2026-03-21": {
     "date": "2026-03-21",
     "mapName": "Amberness",
     "size": 13,
-    "goal": 43,
+    "goal": 41,
     "maxWalls": 9,
     "map": "ggwwwgggggggwwgwwgggggwggggogswggggwwggwgwgggwwggggwgggwgwgwggwwswwggggggggwggggwwwghgwgwgggggsggwbwwggggwbgggwggggwgwsgggggwgwggggggggwgwggwswggbggggbwgggwggwggwgggwggw",
     "optimalSolution": [
@@ -667,7 +667,7 @@
       10
     ],
     "dayNumber": 22,
-    "version": 1
+    "version": 2
   },
   "2026-03-22": {
     "date": "2026-03-22",
@@ -687,15 +687,15 @@
       2,
       5,
       10,
-      6,
+      7,
+      2,
+      7,
       3,
       9,
-      8,
-      10,
       6
     ],
     "dayNumber": 23,
-    "version": 1
+    "version": 2
   },
   "2026-03-23": {
     "date": "2026-03-23",
@@ -721,7 +721,7 @@
       6
     ],
     "dayNumber": 24,
-    "version": 1
+    "version": 2
   },
   "2026-03-24": {
     "date": "2026-03-24",
@@ -745,13 +745,13 @@
       2
     ],
     "dayNumber": 25,
-    "version": 1
+    "version": 2
   },
   "2026-03-25": {
     "date": "2026-03-25",
     "mapName": "Quake",
     "size": 13,
-    "goal": 57,
+    "goal": 53,
     "maxWalls": 9,
     "map": "wwwgbggwwwgggggwgggwgggwgwwgsgwgggwggowggwwgggwggwwsgwwgbggggggwggggggwgggggwggggggwhggwgogwgwggwggggggwgwwggbggwwwwggggggggoggggggwggggwggggwgsgggwgwgwwgwggwgggswggwggw",
     "optimalSolution": [
@@ -775,7 +775,7 @@
       3
     ],
     "dayNumber": 26,
-    "version": 1
+    "version": 2
   },
   "2026-03-26": {
     "date": "2026-03-26",
@@ -805,13 +805,13 @@
       10
     ],
     "dayNumber": 27,
-    "version": 1
+    "version": 2
   },
   "2026-03-27": {
     "date": "2026-03-27",
     "mapName": "Harmony",
     "size": 12,
-    "goal": 29,
+    "goal": 27,
     "maxWalls": 9,
     "map": "ggggggggwwwwgggggssggwsgggwgwggggggggwbwggwgbwwgggggwgwgwgggggwgwwgggggggbgggwhgggggwgwggwgwwgwgwgwggwwwsgwgwggggsgggggggwgggwbgwgwwsggwgwggwggw",
     "optimalSolution": [
@@ -823,19 +823,19 @@
       7,
       1,
       4,
+      1,
+      11,
       2,
-      10,
+      11,
       4,
       11,
       5,
-      11,
+      10,
       6,
-      11,
-      8,
       9
     ],
     "dayNumber": 28,
-    "version": 1
+    "version": 2
   },
   "2026-03-28": {
     "date": "2026-03-28",
@@ -857,7 +857,7 @@
       3
     ],
     "dayNumber": 29,
-    "version": 1
+    "version": 2
   },
   "2026-03-29": {
     "date": "2026-03-29",
@@ -872,14 +872,14 @@
       1,
       4,
       3,
+      4,
+      4,
+      1,
       5,
-      4,
-      2,
-      4,
-      4
+      2
     ],
     "dayNumber": 30,
-    "version": 1
+    "version": 2
   },
   "2026-03-30": {
     "date": "2026-03-30",
@@ -903,13 +903,13 @@
       2
     ],
     "dayNumber": 31,
-    "version": 1
+    "version": 2
   },
   "2026-03-31": {
     "date": "2026-03-31",
     "mapName": "Orbit Obsidian",
     "size": 15,
-    "goal": 74,
+    "goal": 66,
     "maxWalls": 11,
     "map": "ggwggbwggbggwgggggggggwwggggwgggggwgggwgwwwwgwwggggggggggwggwgwggwgggwsggbggsgbggsgwgwgggwgggwwggwgggwggwwgwggwghgggggwwggwwbwwggggggwwswwggggggwgbsogggwggbgwggwwwsggggwgwggggwgwgggggggwgwwgggwggwsgwggbgggggwwgsgggggwwgwgwwww",
     "optimalSolution": [
@@ -919,25 +919,25 @@
       9,
       3,
       3,
-      3,
-      14,
       4,
-      14,
+      12,
       5,
       0,
+      5,
+      13,
       6,
       1,
       12,
       4,
+      12,
+      6,
       13,
-      5,
-      14,
       8,
       14,
       10
     ],
     "dayNumber": 32,
-    "version": 1
+    "version": 2
   },
   "2026-04-01": {
     "date": "2026-04-01",
@@ -965,7 +965,7 @@
       5
     ],
     "dayNumber": 33,
-    "version": 1
+    "version": 2
   },
   "2026-04-02": {
     "date": "2026-04-02",
@@ -993,7 +993,7 @@
       4
     ],
     "dayNumber": 34,
-    "version": 1
+    "version": 2
   },
   "2026-04-03": {
     "date": "2026-04-03",
@@ -1017,7 +1017,7 @@
       4
     ],
     "dayNumber": 35,
-    "version": 1
+    "version": 2
   },
   "2026-04-04": {
     "date": "2026-04-04",
@@ -1049,13 +1049,13 @@
       7
     ],
     "dayNumber": 36,
-    "version": 1
+    "version": 2
   },
   "2026-04-05": {
     "date": "2026-04-05",
     "mapName": "Olympus Diamond",
     "size": 17,
-    "goal": 72,
+    "goal": 68,
     "maxWalls": 12,
     "map": "gggggwwggwggwggwwwwwgwgwggggggggwgggggggwggwwbgwgwgwgwgwggggwgggwwggwggwwgbggwbggggggwgwgggggggsggggggggggggwggggwgwgwgwwgggggggwwgggwswsgwggwgghgssgggggwgwswggggwggwggwgggggggwggwggggggggsgggwwwgwwggsggggwgwwgggggggwggggwggwgggwwggwwggggwwggggggggsggwggggwgggggwwwgwgggwwggggwgwwwwgwswgww",
     "optimalSolution": [
@@ -1085,7 +1085,7 @@
       8
     ],
     "dayNumber": 37,
-    "version": 1
+    "version": 2
   },
   "2026-04-06": {
     "date": "2026-04-06",
@@ -1111,7 +1111,7 @@
       5
     ],
     "dayNumber": 38,
-    "version": 1
+    "version": 2
   },
   "2026-04-07": {
     "date": "2026-04-07",
@@ -1147,7 +1147,7 @@
       6
     ],
     "dayNumber": 39,
-    "version": 1
+    "version": 2
   },
   "2026-04-08": {
     "date": "2026-04-08",
@@ -1177,7 +1177,7 @@
       4
     ],
     "dayNumber": 40,
-    "version": 1
+    "version": 2
   },
   "2026-04-09": {
     "date": "2026-04-09",
@@ -1213,7 +1213,7 @@
       9
     ],
     "dayNumber": 41,
-    "version": 1
+    "version": 2
   },
   "2026-04-10": {
     "date": "2026-04-10",
@@ -1243,7 +1243,7 @@
       5
     ],
     "dayNumber": 42,
-    "version": 1
+    "version": 2
   },
   "2026-04-11": {
     "date": "2026-04-11",
@@ -1267,13 +1267,13 @@
       5
     ],
     "dayNumber": 43,
-    "version": 1
+    "version": 2
   },
   "2026-04-12": {
     "date": "2026-04-12",
     "mapName": "Eclipse",
     "size": 17,
-    "goal": 91,
+    "goal": 89,
     "maxWalls": 12,
     "map": "ggwggggwggggwgggwgggggggggggsgggggwggwgggggwwggggggggggwggwwgwwgwwwgwwgggwgggggggwggwwswgggswbwwsggwsgggwwgwwggggwggwgbwsggwggggwgwwggggsggwwwgghwgggggwggwgwwwggwggwgwwwwgggggggggwwwgswgggggggggwgwggggggggwwgggggggggwwwgwgwgwgwgwggggggggggggwgggwgwwwgwggggsgggggwgwgggwgwgwggwggggggwggwggg",
     "optimalSolution": [
@@ -1303,7 +1303,7 @@
       8
     ],
     "dayNumber": 44,
-    "version": 1
+    "version": 2
   },
   "2026-04-13": {
     "date": "2026-04-13",
@@ -1331,7 +1331,7 @@
       4
     ],
     "dayNumber": 45,
-    "version": 1
+    "version": 2
   },
   "2026-04-14": {
     "date": "2026-04-14",
@@ -1341,27 +1341,27 @@
     "maxWalls": 9,
     "map": "ggswggggwggwwwwggwgggsgwwwggggsggwgggggggwwsgsgwggbsgwbwgwwwgggwgwggggwgggwggwggwwgwhgwgggwswwggwgggggggwwgggggwwgggggwgwggggwwgwggggwgggggggggwgggsggggggwgwgggwbggggwwg",
     "optimalSolution": [
-      0,
-      9,
-      1,
-      7,
       2,
-      11,
+      9,
       3,
       10,
       7,
-      12,
+      11,
       8,
-      5,
+      4,
       8,
-      12,
-      9,
-      6,
       10,
-      10
+      10,
+      7,
+      11,
+      3,
+      11,
+      5,
+      11,
+      6
     ],
     "dayNumber": 46,
-    "version": 1
+    "version": 2
   },
   "2026-04-15": {
     "date": "2026-04-15",
@@ -1391,13 +1391,13 @@
       8
     ],
     "dayNumber": 47,
-    "version": 1
+    "version": 2
   },
   "2026-04-16": {
     "date": "2026-04-16",
     "mapName": "Sanctuary",
     "size": 12,
-    "goal": 26,
+    "goal": 24,
     "maxWalls": 9,
     "map": "wggwggggggwgssgwwwwggwggggwwswwgggbgwgwwggbgwggwgggwwggwgggggwgggwgggbggggggwghgwggggwwgwggwwwgggwggwwgggggwgsggwggwgwggwgwggggggggswgggggwggggs",
     "optimalSolution": [
@@ -1409,19 +1409,19 @@
       9,
       5,
       8,
-      8,
+      7,
+      10,
+      9,
       10,
       10,
-      4,
-      10,
-      8,
-      11,
       5,
+      10,
+      8,
       11,
       7
     ],
     "dayNumber": 48,
-    "version": 1
+    "version": 2
   },
   "2026-04-17": {
     "date": "2026-04-17",
@@ -1445,7 +1445,7 @@
       6
     ],
     "dayNumber": 49,
-    "version": 1
+    "version": 2
   },
   "2026-04-18": {
     "date": "2026-04-18",
@@ -1475,7 +1475,7 @@
       10
     ],
     "dayNumber": 50,
-    "version": 1
+    "version": 2
   },
   "2026-04-19": {
     "date": "2026-04-19",
@@ -1505,7 +1505,7 @@
       7
     ],
     "dayNumber": 51,
-    "version": 1
+    "version": 2
   },
   "2026-04-20": {
     "date": "2026-04-20",
@@ -1531,7 +1531,7 @@
       4
     ],
     "dayNumber": 52,
-    "version": 1
+    "version": 2
   },
   "2026-04-21": {
     "date": "2026-04-21",
@@ -1555,31 +1555,31 @@
       7
     ],
     "dayNumber": 53,
-    "version": 1
+    "version": 2
   },
   "2026-04-22": {
     "date": "2026-04-22",
     "mapName": "Stone",
     "size": 9,
-    "goal": 13,
+    "goal": 12,
     "maxWalls": 6,
     "map": "wwgggggggggwggswwgwgggwggggwgwggwgggwgwghgggwggwgwgwgggggggsbggwwgwwwsgwgggggwggg",
     "optimalSolution": [
-      2,
+      0,
       3,
+      1,
+      0,
+      1,
       4,
+      4,
+      5,
+      5,
+      1,
       6,
-      6,
-      2,
-      6,
-      7,
-      8,
-      6,
-      8,
-      7
+      3
     ],
     "dayNumber": 54,
-    "version": 1
+    "version": 2
   },
   "2026-04-23": {
     "date": "2026-04-23",
@@ -1611,7 +1611,7 @@
       7
     ],
     "dayNumber": 55,
-    "version": 1
+    "version": 2
   },
   "2026-04-24": {
     "date": "2026-04-24",
@@ -1641,7 +1641,7 @@
       8
     ],
     "dayNumber": 56,
-    "version": 1
+    "version": 2
   },
   "2026-04-25": {
     "date": "2026-04-25",
@@ -1665,7 +1665,7 @@
       3
     ],
     "dayNumber": 57,
-    "version": 1
+    "version": 2
   },
   "2026-04-26": {
     "date": "2026-04-26",
@@ -1689,7 +1689,7 @@
       7
     ],
     "dayNumber": 58,
-    "version": 1
+    "version": 2
   },
   "2026-04-27": {
     "date": "2026-04-27",
@@ -1699,12 +1699,10 @@
     "maxWalls": 9,
     "map": "ggwgggwwggggwbgwgwggggggswgggggwwggggwwwgggwwgwggggwwggwgggwgwgggggggggwgwgwwghwwwgsgwwgggggwsgggwgggggwggwwgwbwwgggsggggggwggggggggsgggwgwgggwg",
     "optimalSolution": [
-      0,
-      4,
-      1,
-      2,
       1,
       8,
+      2,
+      4,
       2,
       9,
       4,
@@ -1714,12 +1712,14 @@
       8,
       2,
       9,
-      6,
+      7,
       10,
+      7,
+      11,
       5
     ],
     "dayNumber": 59,
-    "version": 1
+    "version": 2
   },
   "2026-04-28": {
     "date": "2026-04-28",
@@ -1747,7 +1747,7 @@
       3
     ],
     "dayNumber": 60,
-    "version": 1
+    "version": 2
   },
   "2026-04-29": {
     "date": "2026-04-29",
@@ -1775,7 +1775,7 @@
       6
     ],
     "dayNumber": 61,
-    "version": 1
+    "version": 2
   },
   "2026-04-30": {
     "date": "2026-04-30",
@@ -1803,7 +1803,7 @@
       7
     ],
     "dayNumber": 62,
-    "version": 1
+    "version": 2
   },
   "2026-05-01": {
     "date": "2026-05-01",
@@ -1827,7 +1827,7 @@
       6
     ],
     "dayNumber": 63,
-    "version": 1
+    "version": 2
   },
   "2026-05-02": {
     "date": "2026-05-02",
@@ -1857,7 +1857,7 @@
       8
     ],
     "dayNumber": 64,
-    "version": 1
+    "version": 2
   },
   "2026-05-03": {
     "date": "2026-05-03",
@@ -1887,7 +1887,7 @@
       9
     ],
     "dayNumber": 65,
-    "version": 1
+    "version": 2
   },
   "2026-05-04": {
     "date": "2026-05-04",
@@ -1917,7 +1917,7 @@
       7
     ],
     "dayNumber": 66,
-    "version": 1
+    "version": 2
   },
   "2026-05-05": {
     "date": "2026-05-05",
@@ -1953,7 +1953,7 @@
       9
     ],
     "dayNumber": 67,
-    "version": 1
+    "version": 2
   },
   "2026-05-06": {
     "date": "2026-05-06",
@@ -1987,7 +1987,7 @@
       7
     ],
     "dayNumber": 68,
-    "version": 1
+    "version": 2
   },
   "2026-05-07": {
     "date": "2026-05-07",
@@ -2011,7 +2011,7 @@
       4
     ],
     "dayNumber": 69,
-    "version": 1
+    "version": 2
   },
   "2026-05-08": {
     "date": "2026-05-08",
@@ -2039,7 +2039,7 @@
       4
     ],
     "dayNumber": 70,
-    "version": 1
+    "version": 2
   },
   "2026-05-09": {
     "date": "2026-05-09",
@@ -2063,7 +2063,7 @@
       4
     ],
     "dayNumber": 71,
-    "version": 1
+    "version": 2
   },
   "2026-05-10": {
     "date": "2026-05-10",
@@ -2085,7 +2085,7 @@
       8
     ],
     "dayNumber": 72,
-    "version": 1
+    "version": 2
   },
   "2026-05-11": {
     "date": "2026-05-11",
@@ -2117,13 +2117,13 @@
       7
     ],
     "dayNumber": 73,
-    "version": 1
+    "version": 2
   },
   "2026-05-12": {
     "date": "2026-05-12",
     "mapName": "Forest Steel",
     "size": 9,
-    "goal": 17,
+    "goal": 15,
     "maxWalls": 6,
     "map": "wgsggsgwwgwgggwwgggggwggwggggsgggggwgwwwhgwgwwgggggwggggggggwggwwgggbwgggggwgwggw",
     "optimalSolution": [
@@ -2141,7 +2141,7 @@
       4
     ],
     "dayNumber": 74,
-    "version": 1
+    "version": 2
   },
   "2026-05-13": {
     "date": "2026-05-13",
@@ -2153,25 +2153,25 @@
     "optimalSolution": [
       4,
       6,
-      5,
+      6,
       2,
       6,
       8,
       7,
-      2,
-      7,
-      7,
       8,
-      6
+      8,
+      6,
+      8,
+      7
     ],
     "dayNumber": 75,
-    "version": 1
+    "version": 2
   },
   "2026-05-14": {
     "date": "2026-05-14",
     "mapName": "Beryl Eclipse",
     "size": 16,
-    "goal": 73,
+    "goal": 71,
     "maxWalls": 12,
     "map": "gggwwwwsggswgwwggggwggggwsgggwgggggggwgggggggggwgggsgwgggggwwggwwggwwggwswgwwggwgbggggggwwwwggwggwwbgggggggggsgggggggggwwwgggwgggwggggwwhwggggggwbgwggwgggggggggsgwggwwwggggwgwgwgwggggggwwggwwggggwgwgwggggwwwwggwwwwwgggggsgggwwgggggbggggwwggggggggwwgwggggwg",
     "optimalSolution": [
@@ -2201,13 +2201,13 @@
       11
     ],
     "dayNumber": 76,
-    "version": 1
+    "version": 2
   },
   "2026-05-15": {
     "date": "2026-05-15",
     "mapName": "Ocean",
     "size": 13,
-    "goal": 56,
+    "goal": 54,
     "maxWalls": 9,
     "map": "gswwwwwwgwgwgwggwwwgwgwgggggoggggggggwgwwgggwggwggggwggwggggggggwgwggwwggggggwsgwgwwhgwgggggggwgggbggwgggwggggggwggggggwwgwggggggggsgggggwggwggwggggwgwwggsgwwggggggwwggw",
     "optimalSolution": [
@@ -2231,7 +2231,7 @@
       10
     ],
     "dayNumber": 77,
-    "version": 1
+    "version": 2
   },
   "2026-05-16": {
     "date": "2026-05-16",
@@ -2263,7 +2263,7 @@
       5
     ],
     "dayNumber": 78,
-    "version": 1
+    "version": 2
   },
   "2026-05-17": {
     "date": "2026-05-17",
@@ -2287,7 +2287,7 @@
       4
     ],
     "dayNumber": 79,
-    "version": 1
+    "version": 2
   },
   "2026-05-18": {
     "date": "2026-05-18",
@@ -2313,7 +2313,7 @@
       8
     ],
     "dayNumber": 80,
-    "version": 1
+    "version": 2
   },
   "2026-05-19": {
     "date": "2026-05-19",
@@ -2337,7 +2337,7 @@
       6
     ],
     "dayNumber": 81,
-    "version": 1
+    "version": 2
   },
   "2026-05-20": {
     "date": "2026-05-20",
@@ -2361,7 +2361,7 @@
       6
     ],
     "dayNumber": 82,
-    "version": 1
+    "version": 2
   },
   "2026-05-21": {
     "date": "2026-05-21",
@@ -2391,7 +2391,7 @@
       8
     ],
     "dayNumber": 83,
-    "version": 1
+    "version": 2
   },
   "2026-05-22": {
     "date": "2026-05-22",
@@ -2423,7 +2423,7 @@
       12
     ],
     "dayNumber": 84,
-    "version": 1
+    "version": 2
   },
   "2026-05-23": {
     "date": "2026-05-23",
@@ -2449,7 +2449,7 @@
       8
     ],
     "dayNumber": 85,
-    "version": 1
+    "version": 2
   },
   "2026-05-24": {
     "date": "2026-05-24",
@@ -2485,7 +2485,7 @@
       4
     ],
     "dayNumber": 86,
-    "version": 1
+    "version": 2
   },
   "2026-05-25": {
     "date": "2026-05-25",
@@ -2521,7 +2521,7 @@
       12
     ],
     "dayNumber": 87,
-    "version": 1
+    "version": 2
   },
   "2026-05-26": {
     "date": "2026-05-26",
@@ -2553,7 +2553,7 @@
       6
     ],
     "dayNumber": 88,
-    "version": 1
+    "version": 2
   },
   "2026-05-27": {
     "date": "2026-05-27",
@@ -2583,7 +2583,7 @@
       11
     ],
     "dayNumber": 89,
-    "version": 1
+    "version": 2
   },
   "2026-05-28": {
     "date": "2026-05-28",
@@ -2613,7 +2613,7 @@
       1
     ],
     "dayNumber": 90,
-    "version": 1
+    "version": 2
   },
   "2026-05-29": {
     "date": "2026-05-29",
@@ -2643,7 +2643,7 @@
       8
     ],
     "dayNumber": 91,
-    "version": 1
+    "version": 2
   },
   "2026-05-30": {
     "date": "2026-05-30",
@@ -2677,37 +2677,37 @@
       6
     ],
     "dayNumber": 92,
-    "version": 1
+    "version": 2
   },
   "2026-05-31": {
     "date": "2026-05-31",
     "mapName": "Elysium",
     "size": 13,
-    "goal": 49,
+    "goal": 48,
     "maxWalls": 9,
     "map": "wgggwgsggwggwsggwggggggggwgggwggggggggsgggwgwwgwwggwgswgggwwwgggggggoggwggwggwwggwwghgwgwgwggwggggggggggwwgggwgggggwwwgggggwgwwggwgwgwggsbgwwwggggwgwggggwwgggwwggbgggggg",
     "optimalSolution": [
       2,
       4,
-      3,
+      2,
       10,
-      4,
+      2,
       11,
+      4,
+      12,
       7,
       12,
+      9,
+      7,
+      10,
+      5,
       11,
       1,
-      11,
-      6,
-      11,
-      8,
       12,
-      4,
-      12,
-      7
+      4
     ],
     "dayNumber": 93,
-    "version": 1
+    "version": 2
   },
   "2026-06-01": {
     "date": "2026-06-01",
@@ -2735,14 +2735,14 @@
       7
     ],
     "dayNumber": 94,
-    "version": 1
+    "version": 2
   },
   "2026-06-02": {
     "date": "2026-06-02",
     "mapName": "Century",
     "size": 12,
-    "goal": 36,
-    "maxWalls": 8,
+    "goal": 37,
+    "maxWalls": 9,
     "map": "wgggwggwgggggggwwwgggggggggwwggwgsgwggwgggwggwgssggggggwggggggwggggwgwwwwwwwwghgwggwggwggwggggggwgggwgwggggggwggsgwwgggggwggsggggwgggggwwbwwwggg",
     "optimalSolution": [
       0,
@@ -2760,10 +2760,12 @@
       10,
       5,
       10,
+      11,
+      11,
       10
     ],
     "dayNumber": 95,
-    "version": 1
+    "version": 2
   },
   "2026-06-03": {
     "date": "2026-06-03",
@@ -2787,7 +2789,7 @@
       8
     ],
     "dayNumber": 96,
-    "version": 1
+    "version": 2
   },
   "2026-06-04": {
     "date": "2026-06-04",
@@ -2817,7 +2819,7 @@
       3
     ],
     "dayNumber": 97,
-    "version": 1
+    "version": 2
   },
   "2026-06-05": {
     "date": "2026-06-05",
@@ -2843,7 +2845,7 @@
       8
     ],
     "dayNumber": 98,
-    "version": 1
+    "version": 2
   },
   "2026-06-06": {
     "date": "2026-06-06",
@@ -2879,7 +2881,7 @@
       12
     ],
     "dayNumber": 99,
-    "version": 1
+    "version": 2
   },
   "2026-06-07": {
     "date": "2026-06-07",
@@ -2903,7 +2905,7 @@
       4
     ],
     "dayNumber": 100,
-    "version": 1
+    "version": 2
   },
   "2026-06-08": {
     "date": "2026-06-08",
@@ -2935,13 +2937,13 @@
       7
     ],
     "dayNumber": 101,
-    "version": 1
+    "version": 2
   },
   "2026-06-09": {
     "date": "2026-06-09",
     "mapName": "Sunfire Dusk",
     "size": 14,
-    "goal": 44,
+    "goal": 42,
     "maxWalls": 10,
     "map": "gggwbgggwgwgwwgggggwggggsggwgwgwgwgggwggggggggbwgwggwgwggwgwwggwgggggggwggwwggggggwgggsgwwgwwgwggwggggwbghgwggggwwgggwggwgggggggwgwggwwwggwgggggggwwgggggwswgwggggbggggsgwwggwggsgggsgggwwggwgwwgwgw",
     "optimalSolution": [
@@ -2967,7 +2969,7 @@
       4
     ],
     "dayNumber": 102,
-    "version": 1
+    "version": 2
   },
   "2026-06-10": {
     "date": "2026-06-10",
@@ -2997,7 +2999,7 @@
       7
     ],
     "dayNumber": 103,
-    "version": 1
+    "version": 2
   },
   "2026-06-11": {
     "date": "2026-06-11",
@@ -3025,7 +3027,7 @@
       8
     ],
     "dayNumber": 104,
-    "version": 1
+    "version": 2
   },
   "2026-06-12": {
     "date": "2026-06-12",
@@ -3055,7 +3057,7 @@
       6
     ],
     "dayNumber": 105,
-    "version": 1
+    "version": 2
   },
   "2026-06-13": {
     "date": "2026-06-13",
@@ -3083,7 +3085,7 @@
       3
     ],
     "dayNumber": 106,
-    "version": 1
+    "version": 2
   },
   "2026-06-14": {
     "date": "2026-06-14",
@@ -3115,7 +3117,7 @@
       10
     ],
     "dayNumber": 107,
-    "version": 1
+    "version": 2
   },
   "2026-06-15": {
     "date": "2026-06-15",
@@ -3149,7 +3151,7 @@
       9
     ],
     "dayNumber": 108,
-    "version": 1
+    "version": 2
   },
   "2026-06-16": {
     "date": "2026-06-16",
@@ -3179,7 +3181,7 @@
       3
     ],
     "dayNumber": 109,
-    "version": 1
+    "version": 2
   },
   "2026-06-17": {
     "date": "2026-06-17",
@@ -3205,7 +3207,7 @@
       3
     ],
     "dayNumber": 110,
-    "version": 1
+    "version": 2
   },
   "2026-06-18": {
     "date": "2026-06-18",
@@ -3231,13 +3233,13 @@
       4
     ],
     "dayNumber": 111,
-    "version": 1
+    "version": 2
   },
   "2026-06-19": {
     "date": "2026-06-19",
     "mapName": "Avalon",
     "size": 16,
-    "goal": 84,
+    "goal": 82,
     "maxWalls": 12,
     "map": "wsggwggwggggggggggwwbggwwgswgbwwgswgsggwgggggwwsgggggbwggggwggggwbgggwwggwgwwgwgwwwwgggwbggggggwgwwgggggggggggwgggwggwwggggwwwwgwggggggghwgwggsgwgggggwggwwwgwggggwgwgggwwgwgggwwwggwgwgwwggggggwwsgwggggggggggggwgwgwwggggggwgggsgggwggggwggggwgggwwgggggwggggg",
     "optimalSolution": [
@@ -3267,7 +3269,7 @@
       2
     ],
     "dayNumber": 112,
-    "version": 1
+    "version": 2
   },
   "2026-06-20": {
     "date": "2026-06-20",
@@ -3291,7 +3293,7 @@
       3
     ],
     "dayNumber": 113,
-    "version": 1
+    "version": 2
   },
   "2026-06-21": {
     "date": "2026-06-21",
@@ -3315,50 +3317,48 @@
       6
     ],
     "dayNumber": 114,
-    "version": 1
+    "version": 2
   },
   "2026-06-22": {
     "date": "2026-06-22",
     "mapName": "Solar East",
     "size": 11,
-    "goal": 48,
+    "goal": 47,
     "maxWalls": 8,
     "map": "wgssgggwggggwgwwwggwggggggggggggggwgwggggwgwgwgwgggwgggwgggghgwggwwgwgggwgggwggwggggggwwgwggwgwgbwggwwgwwwgsgggggwggggggg",
     "optimalSolution": [
       0,
       6,
+      1,
       2,
       2,
+      0,
       2,
       9,
       4,
       10,
       7,
       0,
-      9,
-      9,
-      10,
       7,
-      10,
-      8
+      8,
+      8,
+      7
     ],
     "dayNumber": 115,
-    "version": 1
+    "version": 2
   },
   "2026-06-23": {
     "date": "2026-06-23",
     "mapName": "Ember Rainbow",
     "size": 13,
-    "goal": 32,
+    "goal": 30,
     "maxWalls": 9,
     "map": "gwwwwgsgwgwgggggwgggggggwgggwwgggggggggggwgggwgbgggwggggwgwgggwgggwbwgggwgwwggwwggwwhwwgwggggggggwwgggsggwwggggggwwggsgggwggwgggggwwgwwwggggggsggggggwggggggwgwwggwsggwwg",
     "optimalSolution": [
-      0,
-      5,
       1,
-      6,
+      5,
       2,
-      7,
+      6,
       4,
       1,
       7,
@@ -3366,14 +3366,16 @@
       7,
       10,
       9,
-      2,
+      1,
       9,
       8,
       10,
-      7
+      7,
+      11,
+      2
     ],
     "dayNumber": 116,
-    "version": 1
+    "version": 2
   },
   "2026-06-24": {
     "date": "2026-06-24",
@@ -3405,7 +3407,7 @@
       9
     ],
     "dayNumber": 117,
-    "version": 1
+    "version": 2
   },
   "2026-06-25": {
     "date": "2026-06-25",
@@ -3437,7 +3439,7 @@
       8
     ],
     "dayNumber": 118,
-    "version": 1
+    "version": 2
   },
   "2026-06-26": {
     "date": "2026-06-26",
@@ -3467,13 +3469,13 @@
       9
     ],
     "dayNumber": 119,
-    "version": 1
+    "version": 2
   },
   "2026-06-27": {
     "date": "2026-06-27",
     "mapName": "Serenity",
     "size": 10,
-    "goal": 28,
+    "goal": 26,
     "maxWalls": 7,
     "map": "wggggggggwgggwgwwwwwgggwggwwwggggwggggwggwggggwgggwgggghggggswggwgwwgggggbggggggwwowggwwggggggwggggw",
     "optimalSolution": [
@@ -3493,7 +3495,7 @@
       5
     ],
     "dayNumber": 120,
-    "version": 1
+    "version": 2
   },
   "2026-06-28": {
     "date": "2026-06-28",
@@ -3523,7 +3525,7 @@
       2
     ],
     "dayNumber": 121,
-    "version": 1
+    "version": 2
   },
   "2026-06-29": {
     "date": "2026-06-29",
@@ -3549,7 +3551,7 @@
       6
     ],
     "dayNumber": 122,
-    "version": 1
+    "version": 2
   },
   "2026-06-30": {
     "date": "2026-06-30",
@@ -3585,7 +3587,7 @@
       7
     ],
     "dayNumber": 123,
-    "version": 1
+    "version": 2
   },
   "2026-07-01": {
     "date": "2026-07-01",
@@ -3621,7 +3623,7 @@
       0
     ],
     "dayNumber": 124,
-    "version": 1
+    "version": 2
   },
   "2026-07-02": {
     "date": "2026-07-02",
@@ -3657,7 +3659,7 @@
       7
     ],
     "dayNumber": 125,
-    "version": 1
+    "version": 2
   },
   "2026-07-03": {
     "date": "2026-07-03",
@@ -3689,7 +3691,7 @@
       7
     ],
     "dayNumber": 126,
-    "version": 1
+    "version": 2
   },
   "2026-07-04": {
     "date": "2026-07-04",
@@ -3717,7 +3719,7 @@
       4
     ],
     "dayNumber": 127,
-    "version": 1
+    "version": 2
   },
   "2026-07-05": {
     "date": "2026-07-05",
@@ -3741,7 +3743,7 @@
       3
     ],
     "dayNumber": 128,
-    "version": 1
+    "version": 2
   },
   "2026-07-06": {
     "date": "2026-07-06",
@@ -3771,7 +3773,7 @@
       6
     ],
     "dayNumber": 129,
-    "version": 1
+    "version": 2
   },
   "2026-07-07": {
     "date": "2026-07-07",
@@ -3797,7 +3799,7 @@
       4
     ],
     "dayNumber": 130,
-    "version": 1
+    "version": 2
   },
   "2026-07-08": {
     "date": "2026-07-08",
@@ -3831,7 +3833,7 @@
       13
     ],
     "dayNumber": 131,
-    "version": 1
+    "version": 2
   },
   "2026-07-09": {
     "date": "2026-07-09",
@@ -3859,7 +3861,7 @@
       2
     ],
     "dayNumber": 132,
-    "version": 1
+    "version": 2
   },
   "2026-07-10": {
     "date": "2026-07-10",
@@ -3891,7 +3893,7 @@
       11
     ],
     "dayNumber": 133,
-    "version": 1
+    "version": 2
   },
   "2026-07-11": {
     "date": "2026-07-11",
@@ -3925,7 +3927,7 @@
       8
     ],
     "dayNumber": 134,
-    "version": 1
+    "version": 2
   },
   "2026-07-12": {
     "date": "2026-07-12",
@@ -3949,7 +3951,7 @@
       3
     ],
     "dayNumber": 135,
-    "version": 1
+    "version": 2
   },
   "2026-07-13": {
     "date": "2026-07-13",
@@ -3975,7 +3977,7 @@
       1
     ],
     "dayNumber": 136,
-    "version": 1
+    "version": 2
   },
   "2026-07-14": {
     "date": "2026-07-14",
@@ -3999,7 +4001,7 @@
       6
     ],
     "dayNumber": 137,
-    "version": 1
+    "version": 2
   },
   "2026-07-15": {
     "date": "2026-07-15",
@@ -4023,7 +4025,7 @@
       1
     ],
     "dayNumber": 138,
-    "version": 1
+    "version": 2
   },
   "2026-07-16": {
     "date": "2026-07-16",
@@ -4053,7 +4055,7 @@
       8
     ],
     "dayNumber": 139,
-    "version": 1
+    "version": 2
   },
   "2026-07-17": {
     "date": "2026-07-17",
@@ -4083,7 +4085,7 @@
       8
     ],
     "dayNumber": 140,
-    "version": 1
+    "version": 2
   },
   "2026-07-18": {
     "date": "2026-07-18",
@@ -4113,7 +4115,7 @@
       3
     ],
     "dayNumber": 141,
-    "version": 1
+    "version": 2
   },
   "2026-07-19": {
     "date": "2026-07-19",
@@ -4143,7 +4145,7 @@
       12
     ],
     "dayNumber": 142,
-    "version": 1
+    "version": 2
   },
   "2026-07-20": {
     "date": "2026-07-20",
@@ -4175,7 +4177,7 @@
       3
     ],
     "dayNumber": 143,
-    "version": 1
+    "version": 2
   },
   "2026-07-21": {
     "date": "2026-07-21",
@@ -4203,13 +4205,13 @@
       8
     ],
     "dayNumber": 144,
-    "version": 1
+    "version": 2
   },
   "2026-07-22": {
     "date": "2026-07-22",
     "mapName": "Elysium North",
     "size": 11,
-    "goal": 34,
+    "goal": 32,
     "maxWalls": 8,
     "map": "gggwggwggsggwgwggggggggwgggwggwwgwggwgwwbggbgggggwwggggggggwhwgwgggwbwggggwgwwgggwggwggggoggggggggwggwwwwwwwoggggggwwgggg",
     "optimalSolution": [
@@ -4231,7 +4233,7 @@
       10
     ],
     "dayNumber": 145,
-    "version": 1
+    "version": 2
   },
   "2026-07-23": {
     "date": "2026-07-23",
@@ -4263,7 +4265,7 @@
       4
     ],
     "dayNumber": 146,
-    "version": 1
+    "version": 2
   },
   "2026-07-24": {
     "date": "2026-07-24",
@@ -4291,7 +4293,7 @@
       6
     ],
     "dayNumber": 147,
-    "version": 1
+    "version": 2
   },
   "2026-07-25": {
     "date": "2026-07-25",
@@ -4315,13 +4317,13 @@
       1
     ],
     "dayNumber": 148,
-    "version": 1
+    "version": 2
   },
   "2026-07-26": {
     "date": "2026-07-26",
     "mapName": "Blizzard Flare",
     "size": 11,
-    "goal": 44,
+    "goal": 42,
     "maxWalls": 8,
     "map": "gwgwgggwggwggogwwggsgggwwggggggggwwggwggwgwgwgggggggggwggggghwgwgggggggwggggwggwwwgggbogwogggwggwgwggggswgwgswggsgwwggwww",
     "optimalSolution": [
@@ -4343,7 +4345,7 @@
       6
     ],
     "dayNumber": 149,
-    "version": 1
+    "version": 2
   },
   "2026-07-27": {
     "date": "2026-07-27",
@@ -4373,7 +4375,7 @@
       8
     ],
     "dayNumber": 150,
-    "version": 1
+    "version": 2
   },
   "2026-07-28": {
     "date": "2026-07-28",
@@ -4401,13 +4403,13 @@
       6
     ],
     "dayNumber": 151,
-    "version": 1
+    "version": 2
   },
   "2026-07-29": {
     "date": "2026-07-29",
     "mapName": "Comet Tundra",
     "size": 9,
-    "goal": 11,
+    "goal": 9,
     "maxWalls": 6,
     "map": "wgggwwggggggwggwggggggggggwwgggwggggggwwhwwgggggggwwggggbwwgggwggwwsgwggsggwwgwgg",
     "optimalSolution": [
@@ -4425,7 +4427,7 @@
       1
     ],
     "dayNumber": 152,
-    "version": 1
+    "version": 2
   },
   "2026-07-30": {
     "date": "2026-07-30",
@@ -4449,7 +4451,7 @@
       5
     ],
     "dayNumber": 153,
-    "version": 1
+    "version": 2
   },
   "2026-07-31": {
     "date": "2026-07-31",
@@ -4473,7 +4475,7 @@
       4
     ],
     "dayNumber": 154,
-    "version": 1
+    "version": 2
   },
   "2026-08-01": {
     "date": "2026-08-01",
@@ -4497,7 +4499,7 @@
       6
     ],
     "dayNumber": 155,
-    "version": 1
+    "version": 2
   },
   "2026-08-02": {
     "date": "2026-08-02",
@@ -4525,7 +4527,7 @@
       3
     ],
     "dayNumber": 156,
-    "version": 1
+    "version": 2
   },
   "2026-08-03": {
     "date": "2026-08-03",
@@ -4557,7 +4559,7 @@
       6
     ],
     "dayNumber": 157,
-    "version": 1
+    "version": 2
   },
   "2026-08-04": {
     "date": "2026-08-04",
@@ -4581,13 +4583,13 @@
       7
     ],
     "dayNumber": 158,
-    "version": 1
+    "version": 2
   },
   "2026-08-05": {
     "date": "2026-08-05",
     "mapName": "Lightning",
     "size": 14,
-    "goal": 68,
+    "goal": 66,
     "maxWalls": 10,
     "map": "wwwgssgwgggwggwwwwggwgwwsgwgggwgggwggwwgogggwggggwgggwgwggoggggggggwgggwgwggwwgggggwwwggwgwwgggwggggsgwgghgggggggggwggwggggwwggwgwwggggwggwggwggggggggggwgggbggwwggggbggggwwwgggggwggwggggggwgwggwgw",
     "optimalSolution": [
@@ -4603,41 +4605,41 @@
       13,
       10,
       4,
+      10,
       11,
-      13,
+      11,
+      10,
       12,
       7,
       13,
-      9,
-      13,
-      12
+      9
     ],
     "dayNumber": 159,
-    "version": 1
+    "version": 2
   },
   "2026-08-06": {
     "date": "2026-08-06",
     "mapName": "River",
     "size": 9,
-    "goal": 16,
+    "goal": 15,
     "maxWalls": 6,
     "map": "ggggwgggggggwwggwgggwggwgggggwgwwgggwgwghgsggwgggwgwwwwbggwgggswgggwgggwggwggwggg",
     "optimalSolution": [
-      3,
-      1,
-      3,
+      2,
       6,
-      4,
+      3,
       7,
-      6,
+      4,
+      8,
       5,
-      8,
-      1,
-      8,
-      3
+      3,
+      6,
+      7,
+      7,
+      6
     ],
     "dayNumber": 160,
-    "version": 1
+    "version": 2
   },
   "2026-08-07": {
     "date": "2026-08-07",
@@ -4647,12 +4649,12 @@
     "maxWalls": 12,
     "map": "ggggwwwwgggsgsgwgggwgggwwgwwwgsgwgwwgwgwggggggggwgsgggwggwgwwgggggbggwgwwggwwggggwswgggwwsgggwwwgggggggwwggwggwgwgwgwggwwggwwgggggggwggghwgwgggggwwggwwgggwggwwgwwbgwgwgggwsggggggggggwwggwwggwgggbwbgggggggggggwgggwggggggggbggggwgggggwggwgwggggggggggwgggggww",
     "optimalSolution": [
+      0,
+      9,
       2,
-      10,
-      3,
-      3,
+      13,
       4,
-      3,
+      4,
       6,
       3,
       7,
@@ -4673,7 +4675,7 @@
       10
     ],
     "dayNumber": 161,
-    "version": 1
+    "version": 2
   },
   "2026-08-08": {
     "date": "2026-08-08",
@@ -4697,7 +4699,7 @@
       3
     ],
     "dayNumber": 162,
-    "version": 1
+    "version": 2
   },
   "2026-08-09": {
     "date": "2026-08-09",
@@ -4721,7 +4723,7 @@
       5
     ],
     "dayNumber": 163,
-    "version": 1
+    "version": 2
   },
   "2026-08-10": {
     "date": "2026-08-10",
@@ -4751,7 +4753,7 @@
       1
     ],
     "dayNumber": 164,
-    "version": 1
+    "version": 2
   },
   "2026-08-11": {
     "date": "2026-08-11",
@@ -4777,7 +4779,7 @@
       8
     ],
     "dayNumber": 165,
-    "version": 1
+    "version": 2
   },
   "2026-08-12": {
     "date": "2026-08-12",
@@ -4807,7 +4809,7 @@
       4
     ],
     "dayNumber": 166,
-    "version": 1
+    "version": 2
   },
   "2026-08-13": {
     "date": "2026-08-13",
@@ -4835,7 +4837,7 @@
       7
     ],
     "dayNumber": 167,
-    "version": 1
+    "version": 2
   },
   "2026-08-14": {
     "date": "2026-08-14",
@@ -4865,7 +4867,7 @@
       4
     ],
     "dayNumber": 168,
-    "version": 1
+    "version": 2
   },
   "2026-08-15": {
     "date": "2026-08-15",
@@ -4893,13 +4895,13 @@
       9
     ],
     "dayNumber": 169,
-    "version": 1
+    "version": 2
   },
   "2026-08-16": {
     "date": "2026-08-16",
     "mapName": "Whale Polar",
     "size": 13,
-    "goal": 32,
+    "goal": 30,
     "maxWalls": 9,
     "map": "ggwggggggwgswgwgwgggbgwggggwggwgggwwgggsgwggwsbggggwwgggggggwgggggggggwgggggggwwggwghwwwggggwgggwwgsgwgwggggwwwswwgggwgggssgggwgggggggwgwwwwwgwgggwgggwggggwgwwwwgggggggg",
     "optimalSolution": [
@@ -4923,7 +4925,7 @@
       3
     ],
     "dayNumber": 170,
-    "version": 1
+    "version": 2
   },
   "2026-08-17": {
     "date": "2026-08-17",
@@ -4947,7 +4949,7 @@
       3
     ],
     "dayNumber": 171,
-    "version": 1
+    "version": 2
   },
   "2026-08-18": {
     "date": "2026-08-18",
@@ -4977,13 +4979,13 @@
       8
     ],
     "dayNumber": 172,
-    "version": 1
+    "version": 2
   },
   "2026-08-19": {
     "date": "2026-08-19",
     "mapName": "Savanna",
     "size": 12,
-    "goal": 50,
+    "goal": 46,
     "maxWalls": 9,
     "map": "gsswggwggggwggggggggggwgggwggwwwwgggswgggggggwwwgggggggggggwggwwggggbbgwwgwwgghgwwwwggwggwgwgggwgwgggggwgwgwgggggwgggwgggwggggggwgowgggwwggwsggw",
     "optimalSolution": [
@@ -5007,37 +5009,35 @@
       6
     ],
     "dayNumber": 173,
-    "version": 1
+    "version": 2
   },
   "2026-08-20": {
     "date": "2026-08-20",
     "mapName": "Utopia Silver",
     "size": 9,
-    "goal": 10,
-    "maxWalls": 6,
+    "goal": 7,
+    "maxWalls": 5,
     "map": "wggwwbgggwgwsgggwggggwgbgwwgogwwbwgswgwghgwggwggbwgsgwwggggwgggggwggwggggggggggwg",
     "optimalSolution": [
+      4,
+      5,
+      7,
       0,
-      6,
+      8,
       1,
-      5,
-      5,
-      7,
-      6,
+      8,
       3,
-      6,
-      6,
-      7,
-      1
+      8,
+      4
     ],
     "dayNumber": 174,
-    "version": 1
+    "version": 2
   },
   "2026-08-21": {
     "date": "2026-08-21",
     "mapName": "Crest",
     "size": 12,
-    "goal": 45,
+    "goal": 43,
     "maxWalls": 9,
     "map": "ggggggggwwggggggwwwgwggwwgggwwggggwsgggwwsggggggggwwgggggwgbgsswbgggggggwggwwghggggwggbgwgwwwwggwwgggggsgwgbwwggwgggggwgwsgwggwwwgggggggwwwggggg",
     "optimalSolution": [
@@ -5061,13 +5061,13 @@
       9
     ],
     "dayNumber": 175,
-    "version": 1
+    "version": 2
   },
   "2026-08-22": {
     "date": "2026-08-22",
     "mapName": "Glow Isle",
     "size": 17,
-    "goal": 73,
+    "goal": 69,
     "maxWalls": 12,
     "map": "gggggwgswgwwggggggwgggggwgggwgwgwwgggggsgwgwwggwgwwgggggggwgwwgwsgggggbswbwgowggwgwgggbggwggggwggggwwgwgsgwbwwgwggwwgggwwggwgwggggwgggwggggggggghggggggggggggwwwwgbgwgggwgggwbggggbgggwwwwgwgggwggggwwgggggggwggwgwwswggwgwgggwgwggwwwggwgggwgswwggwwgwoggggggwgogswgggbgwggwggggwggwwgwggwgsggwg",
     "optimalSolution": [
@@ -5080,7 +5080,7 @@
       6,
       16,
       8,
-      3,
+      5,
       8,
       16,
       10,
@@ -5097,7 +5097,7 @@
       11
     ],
     "dayNumber": 176,
-    "version": 1
+    "version": 2
   },
   "2026-08-23": {
     "date": "2026-08-23",
@@ -5131,7 +5131,7 @@
       11
     ],
     "dayNumber": 177,
-    "version": 1
+    "version": 2
   },
   "2026-08-24": {
     "date": "2026-08-24",
@@ -5167,7 +5167,7 @@
       11
     ],
     "dayNumber": 178,
-    "version": 1
+    "version": 2
   },
   "2026-08-25": {
     "date": "2026-08-25",
@@ -5203,7 +5203,7 @@
       13
     ],
     "dayNumber": 179,
-    "version": 1
+    "version": 2
   },
   "2026-08-26": {
     "date": "2026-08-26",
@@ -5227,7 +5227,7 @@
       7
     ],
     "dayNumber": 180,
-    "version": 1
+    "version": 2
   },
   "2026-08-27": {
     "date": "2026-08-27",
@@ -5257,7 +5257,7 @@
       4
     ],
     "dayNumber": 181,
-    "version": 1
+    "version": 2
   },
   "2026-08-28": {
     "date": "2026-08-28",
@@ -5293,7 +5293,7 @@
       7
     ],
     "dayNumber": 182,
-    "version": 1
+    "version": 2
   },
   "2026-08-29": {
     "date": "2026-08-29",
@@ -5325,13 +5325,13 @@
       6
     ],
     "dayNumber": 183,
-    "version": 1
+    "version": 2
   },
   "2026-08-30": {
     "date": "2026-08-30",
     "mapName": "Winter Cobalt",
     "size": 15,
-    "goal": 66,
+    "goal": 63,
     "maxWalls": 11,
     "map": "gggwggggwgggwgggwwwgggwwggggggggwgggggggwggwgggwsgggggggwgwggggggwggwwwgwgggggwggwwwggggbwggwgggggggwggwwgggbggghwggwggwgggggggwwwgwgggwgggwgggggwgggbwwggwwgwwggggwwggwgwwggwgwggggggwwwgbwgwgwsgsggggbggobwsgggwwgggwwwggwgwggg",
     "optimalSolution": [
@@ -5346,20 +5346,20 @@
       4,
       2,
       5,
-      12,
+      11,
       7,
       1,
-      7,
-      12,
       8,
       0,
-      10,
+      9,
+      12,
       11,
-      13,
-      5
+      6,
+      11,
+      12
     ],
     "dayNumber": 184,
-    "version": 1
+    "version": 2
   },
   "2026-08-31": {
     "date": "2026-08-31",
@@ -5381,7 +5381,7 @@
       4
     ],
     "dayNumber": 185,
-    "version": 1
+    "version": 2
   },
   "2026-09-01": {
     "date": "2026-09-01",
@@ -5409,7 +5409,7 @@
       4
     ],
     "dayNumber": 186,
-    "version": 1
+    "version": 2
   },
   "2026-09-02": {
     "date": "2026-09-02",
@@ -5445,7 +5445,7 @@
       12
     ],
     "dayNumber": 187,
-    "version": 1
+    "version": 2
   },
   "2026-09-03": {
     "date": "2026-09-03",
@@ -5471,7 +5471,7 @@
       8
     ],
     "dayNumber": 188,
-    "version": 1
+    "version": 2
   },
   "2026-09-04": {
     "date": "2026-09-04",
@@ -5497,7 +5497,7 @@
       5
     ],
     "dayNumber": 189,
-    "version": 1
+    "version": 2
   },
   "2026-09-05": {
     "date": "2026-09-05",
@@ -5521,7 +5521,7 @@
       7
     ],
     "dayNumber": 190,
-    "version": 1
+    "version": 2
   },
   "2026-09-06": {
     "date": "2026-09-06",
@@ -5549,14 +5549,14 @@
       7
     ],
     "dayNumber": 191,
-    "version": 1
+    "version": 2
   },
   "2026-09-07": {
     "date": "2026-09-07",
     "mapName": "Equinox",
     "size": 11,
-    "goal": 23,
-    "maxWalls": 7,
+    "goal": 24,
+    "maxWalls": 8,
     "map": "wgwggsggggsggwgggbgggggggwwwgwgwgggwggwgwggggggggwgwgwggbwwghggwwwgggggwggggwgwwwwgwgwggggsgwgwwggwgwggggggggggwwgggggggg",
     "optimalSolution": [
       2,
@@ -5568,20 +5568,22 @@
       7,
       10,
       9,
-      8,
+      7,
       9,
       10,
+      10,
+      8,
       10,
       9
     ],
     "dayNumber": 192,
-    "version": 1
+    "version": 2
   },
   "2026-09-08": {
     "date": "2026-09-08",
     "mapName": "Asgard",
     "size": 14,
-    "goal": 61,
+    "goal": 59,
     "maxWalls": 10,
     "map": "wwwgggggwgsgwggwwgswwgggswwgggwgwggwggwwwggggbgggggwgwgggggsgwwgggggggwwswggwggggwgwwgggwgwggggggggggwggwhgwwggggwwggggwwbggggwggggggwbggwggggggggwggwwsggggwggwggwgwwggggggwwggggggggwgwggwgwgwgggg",
     "optimalSolution": [
@@ -5607,7 +5609,7 @@
       3
     ],
     "dayNumber": 193,
-    "version": 1
+    "version": 2
   },
   "2026-09-09": {
     "date": "2026-09-09",
@@ -5633,7 +5635,7 @@
       5
     ],
     "dayNumber": 194,
-    "version": 1
+    "version": 2
   },
   "2026-09-10": {
     "date": "2026-09-10",
@@ -5661,7 +5663,7 @@
       4
     ],
     "dayNumber": 195,
-    "version": 1
+    "version": 2
   },
   "2026-09-11": {
     "date": "2026-09-11",
@@ -5695,7 +5697,7 @@
       9
     ],
     "dayNumber": 196,
-    "version": 1
+    "version": 2
   },
   "2026-09-12": {
     "date": "2026-09-12",
@@ -5719,7 +5721,7 @@
       7
     ],
     "dayNumber": 197,
-    "version": 1
+    "version": 2
   },
   "2026-09-13": {
     "date": "2026-09-13",
@@ -5743,7 +5745,7 @@
       5
     ],
     "dayNumber": 198,
-    "version": 1
+    "version": 2
   },
   "2026-09-14": {
     "date": "2026-09-14",
@@ -5775,7 +5777,7 @@
       8
     ],
     "dayNumber": 199,
-    "version": 1
+    "version": 2
   },
   "2026-09-15": {
     "date": "2026-09-15",
@@ -5811,13 +5813,13 @@
       10
     ],
     "dayNumber": 200,
-    "version": 1
+    "version": 2
   },
   "2026-09-16": {
     "date": "2026-09-16",
     "mapName": "Comet Canyon",
     "size": 9,
-    "goal": 16,
+    "goal": 14,
     "maxWalls": 6,
     "map": "wwgwgwgggggbwgsggwgwsgggggggwsgwwwwgwggghggwwgggwwggwgggwggggwggggggggwgwgggwgggg",
     "optimalSolution": [
@@ -5835,7 +5837,7 @@
       6
     ],
     "dayNumber": 201,
-    "version": 1
+    "version": 2
   },
   "2026-09-17": {
     "date": "2026-09-17",
@@ -5871,7 +5873,7 @@
       4
     ],
     "dayNumber": 202,
-    "version": 1
+    "version": 2
   },
   "2026-09-18": {
     "date": "2026-09-18",
@@ -5907,7 +5909,7 @@
       13
     ],
     "dayNumber": 203,
-    "version": 1
+    "version": 2
   },
   "2026-09-19": {
     "date": "2026-09-19",
@@ -5933,7 +5935,7 @@
       5
     ],
     "dayNumber": 204,
-    "version": 1
+    "version": 2
   },
   "2026-09-20": {
     "date": "2026-09-20",
@@ -5967,7 +5969,7 @@
       3
     ],
     "dayNumber": 205,
-    "version": 1
+    "version": 2
   },
   "2026-09-21": {
     "date": "2026-09-21",
@@ -5991,13 +5993,13 @@
       5
     ],
     "dayNumber": 206,
-    "version": 1
+    "version": 2
   },
   "2026-09-22": {
     "date": "2026-09-22",
     "mapName": "Bison Amber",
     "size": 16,
-    "goal": 76,
+    "goal": 74,
     "maxWalls": 12,
     "map": "gggwgwgggwgwgwggwwgsgwggggggggwggsgggggwwgggggggsgwgggwwgggwgwggwgwgwggwwwwggwggwgggbwwwwwggggwwgwwgggwggggggggwggggggggwgggwwgwgggwgwgghggwggggwgswgwgwwgggggwggwggwwggggwgwgbgsggwggswggwgggbggsggggggwwwgswswsggwwggwgwgwgwwgggwggbgggwgggggggggggwgwggggggws",
     "optimalSolution": [
@@ -6027,7 +6029,7 @@
       12
     ],
     "dayNumber": 207,
-    "version": 1
+    "version": 2
   },
   "2026-09-23": {
     "date": "2026-09-23",
@@ -6057,7 +6059,7 @@
       2
     ],
     "dayNumber": 208,
-    "version": 1
+    "version": 2
   },
   "2026-09-24": {
     "date": "2026-09-24",
@@ -6081,7 +6083,7 @@
       7
     ],
     "dayNumber": 209,
-    "version": 1
+    "version": 2
   },
   "2026-09-25": {
     "date": "2026-09-25",
@@ -6117,7 +6119,7 @@
       4
     ],
     "dayNumber": 210,
-    "version": 1
+    "version": 2
   },
   "2026-09-26": {
     "date": "2026-09-26",
@@ -6141,7 +6143,7 @@
       6
     ],
     "dayNumber": 211,
-    "version": 1
+    "version": 2
   },
   "2026-09-27": {
     "date": "2026-09-27",
@@ -6177,13 +6179,13 @@
       9
     ],
     "dayNumber": 212,
-    "version": 1
+    "version": 2
   },
   "2026-09-28": {
     "date": "2026-09-28",
     "mapName": "Beryl",
     "size": 13,
-    "goal": 42,
+    "goal": 40,
     "maxWalls": 9,
     "map": "gggwwgwggwgwggggggggggggwgggggwgggwggggggggggggggggggggwgggwwwgwggsgwgwgwgwgwgwggwgghwgwgwwgwwwgwggbgggwggwwwgwgggwwggoggggggwggggggwgwggggggwwgwwgggggwwoggsgwggwsgwgggw",
     "optimalSolution": [
@@ -6207,7 +6209,7 @@
       7
     ],
     "dayNumber": 213,
-    "version": 1
+    "version": 2
   },
   "2026-09-29": {
     "date": "2026-09-29",
@@ -6241,7 +6243,7 @@
       4
     ],
     "dayNumber": 214,
-    "version": 1
+    "version": 2
   },
   "2026-09-30": {
     "date": "2026-09-30",
@@ -6267,7 +6269,7 @@
       2
     ],
     "dayNumber": 215,
-    "version": 1
+    "version": 2
   },
   "2026-10-01": {
     "date": "2026-10-01",
@@ -6297,7 +6299,7 @@
       4
     ],
     "dayNumber": 216,
-    "version": 1
+    "version": 2
   },
   "2026-10-02": {
     "date": "2026-10-02",
@@ -6321,7 +6323,7 @@
       5
     ],
     "dayNumber": 217,
-    "version": 1
+    "version": 2
   },
   "2026-10-03": {
     "date": "2026-10-03",
@@ -6331,59 +6333,59 @@
     "maxWalls": 8,
     "map": "wggwggggwgwgsgggwwgggwgggggwgggggwgwggbgggbgwgwggwwwwwwwggwghgggwwwgwwggggwgwgwwwwgggggggggggggggwggggsgggbgsggwwgbgggggg",
     "optimalSolution": [
-      0,
-      4,
-      1,
       2,
-      2,
-      1,
+      3,
       3,
       4,
       7,
+      10,
       8,
-      8,
-      5,
+      4,
       8,
       7,
       9,
-      6
+      5,
+      9,
+      6,
+      9,
+      8
     ],
     "dayNumber": 218,
-    "version": 1
+    "version": 2
   },
   "2026-10-04": {
     "date": "2026-10-04",
     "mapName": "Jaguar Equinox",
     "size": 15,
-    "goal": 60,
+    "goal": 59,
     "maxWalls": 11,
     "map": "ggsggggggwgwgggwwgwwwggwsgggwwgwggwggwgwwgwbwggggggwgggggggggwgwggwwggggggwgggggggggggggbggggggwgwgwwgwgggsggwwghggggggwwggwwggggwwgwgwswgggggggwggggggwwwgwwgwgwwggggwgggwggwggwwggggggwwggggggggggggggwwgwgggwgwgggwggwgwwggsgw",
     "optimalSolution": [
-      0,
-      10,
-      0,
-      12,
-      3,
-      13,
-      5,
-      5,
-      5,
-      14,
+      1,
       6,
-      14,
-      8,
+      3,
+      3,
+      3,
+      11,
+      4,
+      12,
+      5,
       2,
-      9,
-      14,
-      10,
-      13,
+      5,
+      12,
+      6,
+      1,
+      7,
+      0,
+      7,
+      11,
       11,
       3,
       12,
       7
     ],
     "dayNumber": 219,
-    "version": 1
+    "version": 2
   },
   "2026-10-05": {
     "date": "2026-10-05",
@@ -6413,7 +6415,7 @@
       2
     ],
     "dayNumber": 220,
-    "version": 1
+    "version": 2
   },
   "2026-10-06": {
     "date": "2026-10-06",
@@ -6445,7 +6447,7 @@
       10
     ],
     "dayNumber": 221,
-    "version": 1
+    "version": 2
   },
   "2026-10-07": {
     "date": "2026-10-07",
@@ -6469,7 +6471,7 @@
       0
     ],
     "dayNumber": 222,
-    "version": 1
+    "version": 2
   },
   "2026-10-08": {
     "date": "2026-10-08",
@@ -6497,7 +6499,7 @@
       5
     ],
     "dayNumber": 223,
-    "version": 1
+    "version": 2
   },
   "2026-10-09": {
     "date": "2026-10-09",
@@ -6521,7 +6523,7 @@
       7
     ],
     "dayNumber": 224,
-    "version": 1
+    "version": 2
   },
   "2026-10-10": {
     "date": "2026-10-10",
@@ -6557,7 +6559,7 @@
       6
     ],
     "dayNumber": 225,
-    "version": 1
+    "version": 2
   },
   "2026-10-11": {
     "date": "2026-10-11",
@@ -6583,7 +6585,7 @@
       5
     ],
     "dayNumber": 226,
-    "version": 1
+    "version": 2
   },
   "2026-10-12": {
     "date": "2026-10-12",
@@ -6593,25 +6595,25 @@
     "maxWalls": 8,
     "map": "wgsgwwwggggggwgwggwwwgggggggggggggwwggwggggwwgwggggggggggggghggggwwwoggwwggwwgggwwoggbgbgwwgggwgsgggwwwgwsgggggwwggwsgsgg",
     "optimalSolution": [
-      2,
+      0,
       3,
+      1,
+      1,
+      2,
+      0,
       2,
       10,
       4,
       10,
       5,
       0,
-      7,
-      9,
+      6,
       8,
-      9,
-      9,
       7,
-      9,
-      8
+      7
     ],
     "dayNumber": 227,
-    "version": 1
+    "version": 2
   },
   "2026-10-13": {
     "date": "2026-10-13",
@@ -6641,7 +6643,7 @@
       8
     ],
     "dayNumber": 228,
-    "version": 1
+    "version": 2
   },
   "2026-10-14": {
     "date": "2026-10-14",
@@ -6671,7 +6673,7 @@
       8
     ],
     "dayNumber": 229,
-    "version": 1
+    "version": 2
   },
   "2026-10-15": {
     "date": "2026-10-15",
@@ -6697,7 +6699,7 @@
       5
     ],
     "dayNumber": 230,
-    "version": 1
+    "version": 2
   },
   "2026-10-16": {
     "date": "2026-10-16",
@@ -6729,13 +6731,13 @@
       4
     ],
     "dayNumber": 231,
-    "version": 1
+    "version": 2
   },
   "2026-10-17": {
     "date": "2026-10-17",
     "mapName": "Plateau Refuge",
     "size": 12,
-    "goal": 38,
+    "goal": 36,
     "maxWalls": 9,
     "map": "sgggggggwsggwggwwggwggsgggbggggwgggwgwwgwgwwggggwggwgggwggggggggbgwwggggwgggwghgggggwggwwgggggwwgwgggwgggwgwgggwgwggwwgwgwbwwggggggggwwgggwwgggw",
     "optimalSolution": [
@@ -6759,13 +6761,13 @@
       5
     ],
     "dayNumber": 232,
-    "version": 1
+    "version": 2
   },
   "2026-10-18": {
     "date": "2026-10-18",
     "mapName": "Maelstrom",
     "size": 12,
-    "goal": 51,
+    "goal": 49,
     "maxWalls": 9,
     "map": "ggwgwwgwggggggggwggwwggwgggwgggwwgsgwowwwgwgggggwggwggwgggggwgwggggggwgggggggghggwgggwgwwgggggggwwggwgwgggggwgggwgbgwgggwgggggwwwwgwwwwgwggggggw",
     "optimalSolution": [
@@ -6789,7 +6791,7 @@
       5
     ],
     "dayNumber": 233,
-    "version": 1
+    "version": 2
   },
   "2026-10-19": {
     "date": "2026-10-19",
@@ -6825,7 +6827,7 @@
       11
     ],
     "dayNumber": 234,
-    "version": 1
+    "version": 2
   },
   "2026-10-20": {
     "date": "2026-10-20",
@@ -6861,7 +6863,7 @@
       11
     ],
     "dayNumber": 235,
-    "version": 1
+    "version": 2
   },
   "2026-10-21": {
     "date": "2026-10-21",
@@ -6893,13 +6895,13 @@
       10
     ],
     "dayNumber": 236,
-    "version": 1
+    "version": 2
   },
   "2026-10-22": {
     "date": "2026-10-22",
     "mapName": "Ivory Geyser",
     "size": 17,
-    "goal": 124,
+    "goal": 120,
     "maxWalls": 12,
     "map": "gwgwwwgggwwswwggggsgbwsowwwggwggwwwggggwgggggwgggwwgggwggbwggggsggwwggwwggwwggwggggwgwgwggggwgwggwggogwgggggwwgwgggwswggwggwwwgggggbwwwggwgwwggghggggggwggwgggggggwgwgggwwsggggggggwgwwgwwwgbggggggwggwwgggwggwgwgggswgwgswggwwwgggwgggggggggggwwowgggwggwbgggggggggwggwgwwgbwwggwwggwgwwgggsgggg",
     "optimalSolution": [
@@ -6929,7 +6931,7 @@
       9
     ],
     "dayNumber": 237,
-    "version": 1
+    "version": 2
   },
   "2026-10-23": {
     "date": "2026-10-23",
@@ -6953,7 +6955,7 @@
       3
     ],
     "dayNumber": 238,
-    "version": 1
+    "version": 2
   },
   "2026-10-24": {
     "date": "2026-10-24",
@@ -6983,7 +6985,7 @@
       3
     ],
     "dayNumber": 239,
-    "version": 1
+    "version": 2
   },
   "2026-10-25": {
     "date": "2026-10-25",
@@ -7017,7 +7019,7 @@
       10
     ],
     "dayNumber": 240,
-    "version": 1
+    "version": 2
   },
   "2026-10-26": {
     "date": "2026-10-26",
@@ -7041,7 +7043,7 @@
       3
     ],
     "dayNumber": 241,
-    "version": 1
+    "version": 2
   },
   "2026-10-27": {
     "date": "2026-10-27",
@@ -7065,25 +7067,25 @@
       2,
       8,
       2,
+      10,
       11,
-      3,
       12,
-      15,
-      14,
-      7,
-      14,
+      0,
+      12,
       9,
       14,
-      13
+      2,
+      14,
+      7
     ],
     "dayNumber": 242,
-    "version": 1
+    "version": 2
   },
   "2026-10-28": {
     "date": "2026-10-28",
     "mapName": "Gorge",
     "size": 11,
-    "goal": 30,
+    "goal": 28,
     "maxWalls": 8,
     "map": "wgggggggggswwggswggggwgwgwwwgwwgwgsgwgggwgggwgwgwwggggwggwgghgwwgggggwswggggggggwbwgggggwggwgggggggggggggwwgwgggwggbggwwg",
     "optimalSolution": [
@@ -7105,7 +7107,7 @@
       5
     ],
     "dayNumber": 243,
-    "version": 1
+    "version": 2
   },
   "2026-10-29": {
     "date": "2026-10-29",
@@ -7115,31 +7117,31 @@
     "maxWalls": 11,
     "map": "wggwgwsgwggwgwwgwgwgggwgggggwwggbggwggwggggggggsggggggwgwgwggwgggwgggwgggggwwsggggwwggwgwgwsgggwgwggggwgwgggggwghwgggwggwwgwwgwggwgggggwwggwgggggggggggwwgwgwwggggwwwgwgwgwgwggggggwggggggsgggbgwgwgggggwwgwwgsgssggggwggggwggsgw",
     "optimalSolution": [
-      0,
-      2,
-      0,
-      4,
       1,
       6,
       2,
-      0,
+      4,
       3,
-      0,
+      3,
+      4,
+      2,
+      4,
+      10,
       7,
       0,
+      8,
+      12,
       9,
+      11,
       10,
       10,
       11,
-      11,
-      10,
+      9,
       12,
-      7,
-      12,
-      9
+      8
     ],
     "dayNumber": 244,
-    "version": 1
+    "version": 2
   },
   "2026-10-30": {
     "date": "2026-10-30",
@@ -7163,7 +7165,7 @@
       3
     ],
     "dayNumber": 245,
-    "version": 1
+    "version": 2
   },
   "2026-10-31": {
     "date": "2026-10-31",
@@ -7193,7 +7195,7 @@
       9
     ],
     "dayNumber": 246,
-    "version": 1
+    "version": 2
   },
   "2026-11-01": {
     "date": "2026-11-01",
@@ -7217,13 +7219,13 @@
       6
     ],
     "dayNumber": 247,
-    "version": 1
+    "version": 2
   },
   "2026-11-02": {
     "date": "2026-11-02",
     "mapName": "Tempest Thunder",
     "size": 13,
-    "goal": 45,
+    "goal": 43,
     "maxWalls": 9,
     "map": "wwgggwgswggggggggwggwgggsggwggwwgwwgggwggggwogwwgwwggwggggwgwgggggsgggggggggggwgwwgghwgwggggogwgwgwggwggwggwggbgggggsggggwgggwwggggggwgggwggwgwgwggwgogggwwwwwgwggwgggggw",
     "optimalSolution": [
@@ -7247,7 +7249,7 @@
       5
     ],
     "dayNumber": 248,
-    "version": 1
+    "version": 2
   },
   "2026-11-03": {
     "date": "2026-11-03",
@@ -7275,7 +7277,7 @@
       8
     ],
     "dayNumber": 249,
-    "version": 1
+    "version": 2
   },
   "2026-11-04": {
     "date": "2026-11-04",
@@ -7303,7 +7305,7 @@
       7
     ],
     "dayNumber": 250,
-    "version": 1
+    "version": 2
   },
   "2026-11-05": {
     "date": "2026-11-05",
@@ -7327,7 +7329,7 @@
       8
     ],
     "dayNumber": 251,
-    "version": 1
+    "version": 2
   },
   "2026-11-06": {
     "date": "2026-11-06",
@@ -7357,7 +7359,7 @@
       6
     ],
     "dayNumber": 252,
-    "version": 1
+    "version": 2
   },
   "2026-11-07": {
     "date": "2026-11-07",
@@ -7387,7 +7389,7 @@
       4
     ],
     "dayNumber": 253,
-    "version": 1
+    "version": 2
   },
   "2026-11-08": {
     "date": "2026-11-08",
@@ -7411,7 +7413,7 @@
       7
     ],
     "dayNumber": 254,
-    "version": 1
+    "version": 2
   },
   "2026-11-09": {
     "date": "2026-11-09",
@@ -7445,7 +7447,7 @@
       8
     ],
     "dayNumber": 255,
-    "version": 1
+    "version": 2
   },
   "2026-11-10": {
     "date": "2026-11-10",
@@ -7473,24 +7475,24 @@
       4
     ],
     "dayNumber": 256,
-    "version": 1
+    "version": 2
   },
   "2026-11-11": {
     "date": "2026-11-11",
     "mapName": "Bear",
     "size": 14,
-    "goal": 47,
+    "goal": 45,
     "maxWalls": 10,
     "map": "ggggsgggggggggwggggwgggwgwwgwgswwgggwgggbgwsgggwgggggwwwggbgggggwgwggggggwgwgbggggggsgggwwwggwwgwwggwwgswhgwggwgggggggggwsggggggwwggggwggwgggggggwgwwggbgggggwwwgwggggwgwwgwggggwgwwwwgggwgwwwgggggw",
     "optimalSolution": [
       0,
       6,
       0,
-      10,
-      1,
       7,
+      0,
+      8,
       2,
-      11,
+      10,
       3,
       2,
       4,
@@ -7505,7 +7507,7 @@
       4
     ],
     "dayNumber": 257,
-    "version": 1
+    "version": 2
   },
   "2026-11-12": {
     "date": "2026-11-12",
@@ -7537,7 +7539,7 @@
       7
     ],
     "dayNumber": 258,
-    "version": 1
+    "version": 2
   },
   "2026-11-13": {
     "date": "2026-11-13",
@@ -7573,7 +7575,7 @@
       13
     ],
     "dayNumber": 259,
-    "version": 1
+    "version": 2
   },
   "2026-11-14": {
     "date": "2026-11-14",
@@ -7609,22 +7611,22 @@
       4
     ],
     "dayNumber": 260,
-    "version": 1
+    "version": 2
   },
   "2026-11-15": {
     "date": "2026-11-15",
     "mapName": "Dune Stellar",
     "size": 9,
-    "goal": 13,
+    "goal": 12,
     "maxWalls": 6,
     "map": "gwwggwwggggggwwgggggggggbgggswggwgwggggwhggwwswgggwgggggggwwgwgggggwggwggwggggwww",
     "optimalSolution": [
-      1,
-      7,
       2,
       3,
       2,
-      8,
+      5,
+      3,
+      6,
       5,
       3,
       5,
@@ -7633,7 +7635,7 @@
       5
     ],
     "dayNumber": 261,
-    "version": 1
+    "version": 2
   },
   "2026-11-16": {
     "date": "2026-11-16",
@@ -7661,7 +7663,7 @@
       2
     ],
     "dayNumber": 262,
-    "version": 1
+    "version": 2
   },
   "2026-11-17": {
     "date": "2026-11-17",
@@ -7691,7 +7693,7 @@
       8
     ],
     "dayNumber": 263,
-    "version": 1
+    "version": 2
   },
   "2026-11-18": {
     "date": "2026-11-18",
@@ -7715,7 +7717,7 @@
       4
     ],
     "dayNumber": 264,
-    "version": 1
+    "version": 2
   },
   "2026-11-19": {
     "date": "2026-11-19",
@@ -7739,13 +7741,13 @@
       6
     ],
     "dayNumber": 265,
-    "version": 1
+    "version": 2
   },
   "2026-11-20": {
     "date": "2026-11-20",
     "mapName": "Pinnacle Falls",
     "size": 9,
-    "goal": 10,
+    "goal": 8,
     "maxWalls": 6,
     "map": "gwwwbggwwggwwggsgwggwwggwggbgwgwgwggwowghgggwgggggbgggwgbsggwwwwgggwoggwggggwgggg",
     "optimalSolution": [
@@ -7763,7 +7765,7 @@
       4
     ],
     "dayNumber": 266,
-    "version": 1
+    "version": 2
   },
   "2026-11-21": {
     "date": "2026-11-21",
@@ -7787,7 +7789,7 @@
       4
     ],
     "dayNumber": 267,
-    "version": 1
+    "version": 2
   },
   "2026-11-22": {
     "date": "2026-11-22",
@@ -7817,7 +7819,7 @@
       8
     ],
     "dayNumber": 268,
-    "version": 1
+    "version": 2
   },
   "2026-11-23": {
     "date": "2026-11-23",
@@ -7849,7 +7851,7 @@
       12
     ],
     "dayNumber": 269,
-    "version": 1
+    "version": 2
   },
   "2026-11-24": {
     "date": "2026-11-24",
@@ -7873,7 +7875,7 @@
       7
     ],
     "dayNumber": 270,
-    "version": 1
+    "version": 2
   },
   "2026-11-25": {
     "date": "2026-11-25",
@@ -7897,7 +7899,7 @@
       4
     ],
     "dayNumber": 271,
-    "version": 1
+    "version": 2
   },
   "2026-11-26": {
     "date": "2026-11-26",
@@ -7923,7 +7925,7 @@
       7
     ],
     "dayNumber": 272,
-    "version": 1
+    "version": 2
   },
   "2026-11-27": {
     "date": "2026-11-27",
@@ -7951,7 +7953,7 @@
       9
     ],
     "dayNumber": 273,
-    "version": 1
+    "version": 2
   },
   "2026-11-28": {
     "date": "2026-11-28",
@@ -7985,7 +7987,7 @@
       1
     ],
     "dayNumber": 274,
-    "version": 1
+    "version": 2
   },
   "2026-11-29": {
     "date": "2026-11-29",
@@ -8007,7 +8009,7 @@
       0
     ],
     "dayNumber": 275,
-    "version": 1
+    "version": 2
   },
   "2026-11-30": {
     "date": "2026-11-30",
@@ -8037,7 +8039,7 @@
       5
     ],
     "dayNumber": 276,
-    "version": 1
+    "version": 2
   },
   "2026-12-01": {
     "date": "2026-12-01",
@@ -8071,7 +8073,7 @@
       10
     ],
     "dayNumber": 277,
-    "version": 1
+    "version": 2
   },
   "2026-12-02": {
     "date": "2026-12-02",
@@ -8105,7 +8107,7 @@
       11
     ],
     "dayNumber": 278,
-    "version": 1
+    "version": 2
   },
   "2026-12-03": {
     "date": "2026-12-03",
@@ -8129,7 +8131,7 @@
       0
     ],
     "dayNumber": 279,
-    "version": 1
+    "version": 2
   },
   "2026-12-04": {
     "date": "2026-12-04",
@@ -8155,7 +8157,7 @@
       4
     ],
     "dayNumber": 280,
-    "version": 1
+    "version": 2
   },
   "2026-12-05": {
     "date": "2026-12-05",
@@ -8185,7 +8187,7 @@
       6
     ],
     "dayNumber": 281,
-    "version": 1
+    "version": 2
   },
   "2026-12-06": {
     "date": "2026-12-06",
@@ -8211,7 +8213,7 @@
       6
     ],
     "dayNumber": 282,
-    "version": 1
+    "version": 2
   },
   "2026-12-07": {
     "date": "2026-12-07",
@@ -8241,7 +8243,7 @@
       10
     ],
     "dayNumber": 283,
-    "version": 1
+    "version": 2
   },
   "2026-12-08": {
     "date": "2026-12-08",
@@ -8275,7 +8277,7 @@
       6
     ],
     "dayNumber": 284,
-    "version": 1
+    "version": 2
   },
   "2026-12-09": {
     "date": "2026-12-09",
@@ -8307,13 +8309,13 @@
       9
     ],
     "dayNumber": 285,
-    "version": 1
+    "version": 2
   },
   "2026-12-10": {
     "date": "2026-12-10",
     "mapName": "Limit Isle",
     "size": 13,
-    "goal": 36,
+    "goal": 34,
     "maxWalls": 9,
     "map": "wwgggwwgbwggwwwgggsggsgggbgggwsgwwwwggwwgbwggggwwggwggwgwggwwgggggwwggwwggggsgggggbghgwwgwggggwwgwgsggwggggggwgsggwggggwwggggwggggwgggggwgwggggggggggbggggwwwgggwwwgggggg",
     "optimalSolution": [
@@ -8326,18 +8328,18 @@
       5,
       12,
       6,
-      1,
-      7,
       2,
       9,
+      4,
+      9,
+      9,
+      10,
       5,
-      9,
-      9,
       11,
       7
     ],
     "dayNumber": 286,
-    "version": 1
+    "version": 2
   },
   "2026-12-11": {
     "date": "2026-12-11",
@@ -8363,33 +8365,33 @@
       5
     ],
     "dayNumber": 287,
-    "version": 1
+    "version": 2
   },
   "2026-12-12": {
     "date": "2026-12-12",
     "mapName": "Bronze Crag",
     "size": 10,
-    "goal": 22,
+    "goal": 25,
     "maxWalls": 7,
     "map": "wggbgwggggwwggwgggggsggwggwgwgwgwggggggggggwwggggwgowgghggwwwgwggwgsgwgggggwsgbggggggggwgwggwwwggwgw",
     "optimalSolution": [
-      1,
-      6,
-      3,
-      7,
-      4,
-      7,
-      5,
-      6,
-      7,
       0,
-      8,
+      6,
       1,
+      7,
+      3,
+      9,
+      5,
+      4,
+      6,
       8,
-      5
+      7,
+      7,
+      8,
+      6
     ],
     "dayNumber": 288,
-    "version": 1
+    "version": 2
   },
   "2026-12-13": {
     "date": "2026-12-13",
@@ -8415,7 +8417,7 @@
       5
     ],
     "dayNumber": 289,
-    "version": 1
+    "version": 2
   },
   "2026-12-14": {
     "date": "2026-12-14",
@@ -8441,7 +8443,7 @@
       2
     ],
     "dayNumber": 290,
-    "version": 1
+    "version": 2
   },
   "2026-12-15": {
     "date": "2026-12-15",
@@ -8471,7 +8473,7 @@
       11
     ],
     "dayNumber": 291,
-    "version": 1
+    "version": 2
   },
   "2026-12-16": {
     "date": "2026-12-16",
@@ -8501,13 +8503,13 @@
       7
     ],
     "dayNumber": 292,
-    "version": 1
+    "version": 2
   },
   "2026-12-17": {
     "date": "2026-12-17",
     "mapName": "Gold Radiance",
     "size": 11,
-    "goal": 21,
+    "goal": 22,
     "maxWalls": 8,
     "map": "wgwgwggsgwwggwgwwwggggwswgggggwwwgggwwgwggwswgggggwwgwggggwghgggwggggwgwggggggggssgggbggggggwggggggggwgggggwgwgwwgggwgggw",
     "optimalSolution": [
@@ -8517,19 +8519,19 @@
       7,
       4,
       2,
+      5,
       6,
-      4,
-      6,
+      5,
       8,
+      7,
+      2,
       7,
       5,
-      7,
-      7,
       8,
-      6
+      3
     ],
     "dayNumber": 293,
-    "version": 1
+    "version": 2
   },
   "2026-12-18": {
     "date": "2026-12-18",
@@ -8563,7 +8565,7 @@
       8
     ],
     "dayNumber": 294,
-    "version": 1
+    "version": 2
   },
   "2026-12-19": {
     "date": "2026-12-19",
@@ -8591,7 +8593,7 @@
       5
     ],
     "dayNumber": 295,
-    "version": 1
+    "version": 2
   },
   "2026-12-20": {
     "date": "2026-12-20",
@@ -8623,7 +8625,7 @@
       8
     ],
     "dayNumber": 296,
-    "version": 1
+    "version": 2
   },
   "2026-12-21": {
     "date": "2026-12-21",
@@ -8657,7 +8659,7 @@
       11
     ],
     "dayNumber": 297,
-    "version": 1
+    "version": 2
   },
   "2026-12-22": {
     "date": "2026-12-22",
@@ -8693,7 +8695,7 @@
       6
     ],
     "dayNumber": 298,
-    "version": 1
+    "version": 2
   },
   "2026-12-23": {
     "date": "2026-12-23",
@@ -8723,7 +8725,7 @@
       5
     ],
     "dayNumber": 299,
-    "version": 1
+    "version": 2
   },
   "2026-12-24": {
     "date": "2026-12-24",
@@ -8757,7 +8759,7 @@
       11
     ],
     "dayNumber": 300,
-    "version": 1
+    "version": 2
   },
   "2026-12-25": {
     "date": "2026-12-25",
@@ -8781,13 +8783,13 @@
       4
     ],
     "dayNumber": 301,
-    "version": 1
+    "version": 2
   },
   "2026-12-26": {
     "date": "2026-12-26",
     "mapName": "Ocean Pelican",
     "size": 15,
-    "goal": 71,
+    "goal": 63,
     "maxWalls": 11,
     "map": "ggwwwwggggwgsggwgwgwgwgggbswgggsoggggwggggggwgwwwggggwgwgggwgwwgwgbggwwowwgwgggggwgwwwgwggwggwbggwggggwggwwwgwgghwgbggggwwggogbggwgwgwggwggwgwggwgggwggwgwwggggwwgwsgggggwgwgggggggggggggwgggwgwggggwgggwggggwgggwggggwwgwggsgwgg",
     "optimalSolution": [
@@ -8815,13 +8817,13 @@
       6
     ],
     "dayNumber": 302,
-    "version": 1
+    "version": 2
   },
   "2026-12-27": {
     "date": "2026-12-27",
     "mapName": "Knoll",
     "size": 14,
-    "goal": 65,
+    "goal": 63,
     "maxWalls": 10,
     "map": "wwgggwggggggwgwwwggwwgwwgggggwwgwggggggggggggggggggggwgwggwwgggggwgwsggwwgggwwgwgwwggwwgwwgggwwggggggggbghggwswwwwgggggggggggwwgggggggggwgwsggswwggwwggggggggwwggggwgwggwwggggwgggggggwgggggsgwgwggg",
     "optimalSolution": [
@@ -8847,13 +8849,13 @@
       10
     ],
     "dayNumber": 303,
-    "version": 1
+    "version": 2
   },
   "2026-12-28": {
     "date": "2026-12-28",
     "mapName": "Rabbit Savanna",
     "size": 15,
-    "goal": 64,
+    "goal": 62,
     "maxWalls": 11,
     "map": "wgggggbggggwggwwwgggggwgwggwggwggwgbwbbsgwosggwggwbwggwgggwwgggwwgggwggwgggwgwwgwgogwwgbwggggggwwwggwgggwwggwggghwgwwggwwgggwgwwgwgggggsggggswggggggggggswwsgbgggsggwwgwgwggggwggwgwgggggsggwggwgggwgggwgwswggggggggwgggggggggwww",
     "optimalSolution": [
@@ -8881,7 +8883,7 @@
       7
     ],
     "dayNumber": 304,
-    "version": 1
+    "version": 2
   },
   "2026-12-29": {
     "date": "2026-12-29",
@@ -8911,13 +8913,13 @@
       8
     ],
     "dayNumber": 305,
-    "version": 1
+    "version": 2
   },
   "2026-12-30": {
     "date": "2026-12-30",
     "mapName": "Mountain Century",
     "size": 16,
-    "goal": 74,
+    "goal": 72,
     "maxWalls": 12,
     "map": "wwgggggggwgggggwggggggggwggwwgggwggwwwgggggggwggsggwggwggwgwgggggggggwwwwwggggggggwggwgbwwwgwgggggwgwwbgggggggggwggwwwwgwggggwwgggwgggwghgggwgwgggwwgggggggggggggwgwwgwgggwgwwwwgwgggggggwgwwggwgggwggggbgggwgsggwwggwwwggwgssggwggggggwgwgggwwgwgggggggbgsggwws",
     "optimalSolution": [
@@ -8947,7 +8949,7 @@
       8
     ],
     "dayNumber": 306,
-    "version": 1
+    "version": 2
   },
   "2026-12-31": {
     "date": "2026-12-31",
@@ -8981,6 +8983,6 @@
       6
     ],
     "dayNumber": 307,
-    "version": 1
+    "version": 2
   }
 }
