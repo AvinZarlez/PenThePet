@@ -14,11 +14,18 @@
  *   1.1  — Added hintsUsed: string[] to submission data.
  *          Introduced __version field.
  *
+ *   1.2  — Added goal: number to submission data.
+ *          Stores the map's optimal goal at the time the user submitted so
+ *          that map-version migration can correctly detect a "perfect score"
+ *          even when the map's goal changes between versions.
+ *          Older saves without this field have goal back-filled to null,
+ *          indicating that the original goal is unknown.
+ *
  * ── HOW TO ADD A NEW VERSION ──────────────────────────────────────────────────
  *
- *   1. Bump CURRENT_VERSION (e.g. '1.2').
+ *   1. Bump CURRENT_VERSION (e.g. '1.3').
  *   2. Add a migration function keyed by the version it upgrades FROM:
- *        submissionMigrations['1.1'] = function(data) { ... return { ...data, __version: '1.2' }; };
+ *        submissionMigrations['1.2'] = function(data) { ... return { ...data, __version: '1.3' }; };
  *   3. The migration chain runs automatically — no manual calls needed.
  *
  * ─────────────────────────────────────────────────────────────────────────────
@@ -31,7 +38,7 @@ if (typeof CONSTANTS === 'undefined' && typeof require !== 'undefined') {
 
 const CloudMigration = (function () {
     // The schema version all new submission data is written in.
-    const CURRENT_VERSION = '1.1';
+    const CURRENT_VERSION = '1.2';
 
     /**
      * Migration functions keyed by the version they upgrade FROM.
@@ -44,6 +51,13 @@ const CloudMigration = (function () {
             return Object.assign({}, data, {
                 hintsUsed: Array.isArray(data.hintsUsed) ? data.hintsUsed : [],
                 __version: '1.1',
+            });
+        },
+        // v1.1 → v1.2: add goal field (null for old saves where the original goal is unknown)
+        '1.1': function (data) {
+            return Object.assign({}, data, {
+                goal: typeof data.goal === 'number' ? data.goal : null,
+                __version: '1.2',
             });
         },
     };

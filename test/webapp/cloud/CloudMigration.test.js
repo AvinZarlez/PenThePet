@@ -14,8 +14,8 @@ describe('CloudMigration', () => {
             expect(CloudMigration.CURRENT_VERSION.length).toBeGreaterThan(0);
         });
 
-        test('is "1.1"', () => {
-            expect(CloudMigration.CURRENT_VERSION).toBe('1.1');
+        test('is "1.2"', () => {
+            expect(CloudMigration.CURRENT_VERSION).toBe('1.2');
         });
     });
 
@@ -51,10 +51,10 @@ describe('CloudMigration', () => {
                 expect(result.hintsUsed).toEqual([]);
             });
 
-            test('sets __version to "1.1" on a v1.0 document', () => {
+            test('sets __version to "1.2" on a v1.0 document', () => {
                 const v10 = { score: 15, walls: [], timestamp: '2026-01-01T00:00:00.000Z', time: 60 };
                 const result = CloudMigration.migrateSubmission(v10);
-                expect(result.__version).toBe('1.1');
+                expect(result.__version).toBe('1.2');
             });
 
             test('preserves all existing v1.0 fields', () => {
@@ -87,9 +87,27 @@ describe('CloudMigration', () => {
             });
         });
 
-        // ── Already at current version ────────────────────────────────────────
-        describe('v1.1 (no-op)', () => {
-            test('returns v1.1 data unchanged', () => {
+        // ── v1.1 → v1.2 ──────────────────────────────────────────────────────
+        describe('v1.1 → v1.2', () => {
+            test('adds goal: null when goal is absent in v1.1 data', () => {
+                const v11 = { __version: '1.1', score: 12, walls: [], timestamp: '', time: 0, hintsUsed: [] };
+                const result = CloudMigration.migrateSubmission(v11);
+                expect(result.goal).toBeNull();
+            });
+
+            test('sets __version to "1.2" on a v1.1 document', () => {
+                const v11 = { __version: '1.1', score: 12, walls: [], timestamp: '', time: 0, hintsUsed: [] };
+                const result = CloudMigration.migrateSubmission(v11);
+                expect(result.__version).toBe('1.2');
+            });
+
+            test('preserves numeric goal if already present in v1.1 data', () => {
+                const v11 = { __version: '1.1', score: 10, walls: [], timestamp: '', time: 0, hintsUsed: [], goal: 10 };
+                const result = CloudMigration.migrateSubmission(v11);
+                expect(result.goal).toBe(10);
+            });
+
+            test('preserves all existing v1.1 fields', () => {
                 const v11 = {
                     __version: '1.1',
                     score: 12,
@@ -99,19 +117,41 @@ describe('CloudMigration', () => {
                     hintsUsed: ['checked', 'target'],
                 };
                 const result = CloudMigration.migrateSubmission(v11);
-                expect(result).toEqual(v11);
+                expect(result.score).toBe(12);
+                expect(result.walls).toEqual([[3, 4]]);
+                expect(result.timestamp).toBe('2026-02-01T00:00:00.000Z');
+                expect(result.time).toBe(90);
+                expect(result.hintsUsed).toEqual(['checked', 'target']);
+            });
+        });
+
+        // ── Already at current version ────────────────────────────────────────
+        describe('v1.2 (no-op)', () => {
+            test('returns v1.2 data unchanged', () => {
+                const v12 = {
+                    __version: '1.2',
+                    goal: 15,
+                    score: 12,
+                    walls: [[3, 4]],
+                    timestamp: '2026-02-01T00:00:00.000Z',
+                    time: 90,
+                    hintsUsed: ['checked', 'target'],
+                };
+                const result = CloudMigration.migrateSubmission(v12);
+                expect(result).toEqual(v12);
             });
 
             test('does not add duplicate hintsUsed entries', () => {
-                const v11 = {
-                    __version: '1.1',
+                const v12 = {
+                    __version: '1.2',
+                    goal: null,
                     score: 8,
                     walls: [],
                     timestamp: '',
                     time: 0,
                     hintsUsed: ['checked'],
                 };
-                const result = CloudMigration.migrateSubmission(v11);
+                const result = CloudMigration.migrateSubmission(v12);
                 expect(result.hintsUsed).toEqual(['checked']);
             });
         });
