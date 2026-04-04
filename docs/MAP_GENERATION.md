@@ -55,13 +55,16 @@ Each entry in `maps/YYYY.json` is keyed by date (`YYYY-MM-DD`):
   "goal": 19,
   "maxWalls": 6,
   "map": "gwgwh...",
-  "optimalSolution": [1, 0, 2, 3]
+  "optimalSolution": [1, 0, 2, 3],
+  "version": 1
 }
 ```
 
 **`map`** — compact string of `size²` characters, row-major: `g`=grass, `w`=water, `h`=home, `s`=star, `b`=bee, `o`=hole. Decode with `parseCompactMap(mapStr, size)` in `js/game/Grid.js`.
 
 **`optimalSolution`** — flat array `[r0, c0, r1, c1, …]` of optimal wall coordinates. Decode with `parseCompactSolution(flatArr)` in `js/game/Grid.js`.
+
+**`version`** — integer incremented each time the map layout or goal value changes. Starts at `1` for all generated maps. Maps without this field (or with no `version`) are treated as version `0`. When a user loads a puzzle and their saved data carries a different version number, the game automatically migrates or resets their progress — see [Save-data migration](#save-data-migration) below.
 
 ## Generating Maps
 
@@ -134,6 +137,19 @@ MapGenerator.generate()
 - Compact format: tile string (`g`/`w`/`h`) + flat solution array `[r,c,r,c,…]`
 - No map generation in the browser — browser is checker only
 - Maps for today and the past are **frozen** — never regenerate or edit them; only fix future maps
+- Every newly generated map carries `version: 1`; increment this integer by hand whenever the layout or goal is changed on an already-published map
+
+## Save-data migration
+
+Each map carries an integer `version` field (default `1` for new maps; maps without the field are treated as `0`). When the game loads a puzzle, it compares the map's `version` against the `mapVersion` stored in the user's saved data:
+
+| Situation | Behaviour |
+|-----------|-----------|
+| Versions match | Load save data normally |
+| Mismatch, user previously achieved a perfect score (`score ≥ goal`) | Migrate: keep the submission timestamp, update score and wall layout to the current optimal solution |
+| Mismatch, score was below the goal | Delete all save data for that puzzle (submission, progress, timer) and reset progress |
+
+To update a live map, edit `maps/YYYY.json`, increment its `version` by 1, and commit. Users will be migrated automatically on their next visit.
 
 ---
 

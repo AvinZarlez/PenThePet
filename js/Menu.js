@@ -211,21 +211,14 @@ class Menu {
     }
 
     /**
-     * Reset the current level by deleting the player's saved submission
-     * and reloading the level to its initial state
+     * Reset the current level by deleting all saved data and reloading
+     * the level to its initial state.
      */
     resetCurrentLevel() {
         const currentDate = this.game.currentDate;
         if (!currentDate) return;
 
-        this.game.deleteSubmission(currentDate);
-
-        // Reset submission state on the game object
-        this.game.isSubmitted = false;
-        this.game.submittedScore = null;
-        this.game.submittedWalls = null;
-        this.game.viewingOptimal = false;
-        this.game.hintsUsed = [];
+        this.game.resetLevelData(currentDate);
 
         // Reset the grid to its initial state
         this.game.grid.reset();

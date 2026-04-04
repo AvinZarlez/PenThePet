@@ -21,6 +21,7 @@ const MapGenerator = require('../js/generation/MapGenerator.js');
 const MapValidator = require('../js/generation/MapValidator.js');
 const { generateLevelName } = require('../js/generation/wordList.js');
 const { encodeCompactMap, encodeCompactSolution } = require('../js/game/Grid.js');
+const CONSTANTS = require('../js/config/constants.js');
 const {
     parseSizeInput,
     getRandomSize,
@@ -93,7 +94,8 @@ async function generateMap(date, size) {
         goal: result.goal,
         maxWalls: result.maxWalls,
         map: encodeCompactMap(result.map),
-        optimalSolution: encodeCompactSolution(result.optimalSolution)
+        optimalSolution: encodeCompactSolution(result.optimalSolution),
+        version: CONSTANTS.INITIAL_MAP_VERSION,
     };
 }
 

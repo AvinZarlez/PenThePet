@@ -24,7 +24,8 @@
       9,
       5
     ],
-    "dayNumber": 308
+    "dayNumber": 308,
+    "version": 1
   },
   "2027-01-02": {
     "date": "2027-01-02",
@@ -55,7 +56,8 @@
       11,
       9
     ],
-    "dayNumber": 309
+    "dayNumber": 309,
+    "version": 1
   },
   "2027-01-03": {
     "date": "2027-01-03",
@@ -82,12 +84,12 @@
       9,
       3
     ],
-    "dayNumber": 310
+    "dayNumber": 310,
+    "version": 1
   },
   "2027-01-04": {
-    "dayNumber": 311,
-    "mapName": "Lagoon Onyx",
     "date": "2027-01-04",
+    "mapName": "Lagoon Onyx",
     "size": 9,
     "goal": 9,
     "maxWalls": 6,
@@ -105,7 +107,9 @@
       7,
       6,
       4
-    ]
+    ],
+    "dayNumber": 311,
+    "version": 1
   },
   "2027-01-05": {
     "date": "2027-01-05",
@@ -134,7 +138,8 @@
       10,
       7
     ],
-    "dayNumber": 312
+    "dayNumber": 312,
+    "version": 1
   },
   "2027-01-06": {
     "date": "2027-01-06",
@@ -169,7 +174,8 @@
       13,
       5
     ],
-    "dayNumber": 313
+    "dayNumber": 313,
+    "version": 1
   },
   "2027-01-07": {
     "date": "2027-01-07",
@@ -196,12 +202,12 @@
       9,
       7
     ],
-    "dayNumber": 314
+    "dayNumber": 314,
+    "version": 1
   },
   "2027-01-08": {
-    "dayNumber": 315,
-    "mapName": "Eagle",
     "date": "2027-01-08",
+    "mapName": "Eagle",
     "size": 9,
     "goal": 11,
     "maxWalls": 6,
@@ -219,7 +225,9 @@
       4,
       7,
       2
-    ]
+    ],
+    "dayNumber": 315,
+    "version": 1
   },
   "2027-01-09": {
     "date": "2027-01-09",
@@ -248,12 +256,12 @@
       11,
       3
     ],
-    "dayNumber": 316
+    "dayNumber": 316,
+    "version": 1
   },
   "2027-01-10": {
-    "dayNumber": 317,
-    "mapName": "Summer Hawk",
     "date": "2027-01-10",
+    "mapName": "Summer Hawk",
     "size": 9,
     "goal": 17,
     "maxWalls": 6,
@@ -271,7 +279,9 @@
       7,
       8,
       5
-    ]
+    ],
+    "dayNumber": 317,
+    "version": 1
   },
   "2027-01-11": {
     "date": "2027-01-11",
@@ -300,7 +310,8 @@
       12,
       8
     ],
-    "dayNumber": 318
+    "dayNumber": 318,
+    "version": 1
   },
   "2027-01-12": {
     "date": "2027-01-12",
@@ -323,7 +334,8 @@
       8,
       3
     ],
-    "dayNumber": 319
+    "dayNumber": 319,
+    "version": 1
   },
   "2027-01-13": {
     "date": "2027-01-13",
@@ -348,12 +360,12 @@
       5,
       9
     ],
-    "dayNumber": 320
+    "dayNumber": 320,
+    "version": 1
   },
   "2027-01-14": {
-    "dayNumber": 321,
-    "mapName": "Stone Stag",
     "date": "2027-01-14",
+    "mapName": "Stone Stag",
     "size": 9,
     "goal": 13,
     "maxWalls": 6,
@@ -371,7 +383,9 @@
       3,
       6,
       5
-    ]
+    ],
+    "dayNumber": 321,
+    "version": 1
   },
   "2027-01-15": {
     "date": "2027-01-15",
@@ -398,7 +412,8 @@
       9,
       7
     ],
-    "dayNumber": 322
+    "dayNumber": 322,
+    "version": 1
   },
   "2027-01-16": {
     "date": "2027-01-16",
@@ -427,7 +442,8 @@
       11,
       5
     ],
-    "dayNumber": 323
+    "dayNumber": 323,
+    "version": 1
   },
   "2027-01-17": {
     "date": "2027-01-17",
@@ -456,7 +472,8 @@
       11,
       9
     ],
-    "dayNumber": 324
+    "dayNumber": 324,
+    "version": 1
   },
   "2027-01-18": {
     "date": "2027-01-18",
@@ -477,7 +494,8 @@
       6,
       5
     ],
-    "dayNumber": 325
+    "dayNumber": 325,
+    "version": 1
   },
   "2027-01-19": {
     "date": "2027-01-19",
@@ -500,7 +518,8 @@
       8,
       5
     ],
-    "dayNumber": 326
+    "dayNumber": 326,
+    "version": 1
   },
   "2027-01-20": {
     "date": "2027-01-20",
@@ -535,7 +554,8 @@
       15,
       5
     ],
-    "dayNumber": 327
+    "dayNumber": 327,
+    "version": 1
   },
   "2027-01-21": {
     "date": "2027-01-21",
@@ -564,12 +584,12 @@
       12,
       8
     ],
-    "dayNumber": 328
+    "dayNumber": 328,
+    "version": 1
   },
   "2027-01-22": {
-    "dayNumber": 329,
-    "mapName": "Obsidian Swan",
     "date": "2027-01-22",
+    "mapName": "Obsidian Swan",
     "size": 9,
     "goal": 18,
     "maxWalls": 6,
@@ -587,7 +607,9 @@
       0,
       6,
       4
-    ]
+    ],
+    "dayNumber": 329,
+    "version": 1
   },
   "2027-01-23": {
     "date": "2027-01-23",
@@ -622,7 +644,8 @@
       15,
       9
     ],
-    "dayNumber": 330
+    "dayNumber": 330,
+    "version": 1
   },
   "2027-01-24": {
     "date": "2027-01-24",
@@ -651,7 +674,8 @@
       10,
       8
     ],
-    "dayNumber": 331
+    "dayNumber": 331,
+    "version": 1
   },
   "2027-01-25": {
     "date": "2027-01-25",
@@ -678,7 +702,8 @@
       9,
       8
     ],
-    "dayNumber": 332
+    "dayNumber": 332,
+    "version": 1
   },
   "2027-01-26": {
     "date": "2027-01-26",
@@ -705,12 +730,12 @@
       4,
       10
     ],
-    "dayNumber": 333
+    "dayNumber": 333,
+    "version": 1
   },
   "2027-01-27": {
-    "dayNumber": 334,
-    "mapName": "Eon",
     "date": "2027-01-27",
+    "mapName": "Eon",
     "size": 9,
     "goal": 21,
     "maxWalls": 6,
@@ -728,12 +753,13 @@
       3,
       8,
       5
-    ]
+    ],
+    "dayNumber": 334,
+    "version": 1
   },
   "2027-01-28": {
-    "dayNumber": 335,
-    "mapName": "Deer Hollow",
     "date": "2027-01-28",
+    "mapName": "Deer Hollow",
     "size": 9,
     "goal": 12,
     "maxWalls": 6,
@@ -751,12 +777,13 @@
       7,
       6,
       7
-    ]
+    ],
+    "dayNumber": 335,
+    "version": 1
   },
   "2027-01-29": {
-    "dayNumber": 336,
-    "mapName": "Ruby",
     "date": "2027-01-29",
+    "mapName": "Ruby",
     "size": 9,
     "goal": 13,
     "maxWalls": 6,
@@ -774,12 +801,13 @@
       1,
       7,
       5
-    ]
+    ],
+    "dayNumber": 336,
+    "version": 1
   },
   "2027-01-30": {
-    "dayNumber": 337,
-    "mapName": "Canyon Elysium",
     "date": "2027-01-30",
+    "mapName": "Canyon Elysium",
     "size": 9,
     "goal": 15,
     "maxWalls": 6,
@@ -797,7 +825,9 @@
       5,
       7,
       8
-    ]
+    ],
+    "dayNumber": 337,
+    "version": 1
   },
   "2027-01-31": {
     "date": "2027-01-31",
@@ -828,7 +858,8 @@
       12,
       3
     ],
-    "dayNumber": 338
+    "dayNumber": 338,
+    "version": 1
   },
   "2027-02-01": {
     "date": "2027-02-01",
@@ -857,12 +888,12 @@
       11,
       5
     ],
-    "dayNumber": 339
+    "dayNumber": 339,
+    "version": 1
   },
   "2027-02-02": {
-    "dayNumber": 340,
-    "mapName": "Copper Eternity",
     "date": "2027-02-02",
+    "mapName": "Copper Eternity",
     "size": 9,
     "goal": 14,
     "maxWalls": 6,
@@ -880,7 +911,9 @@
       7,
       8,
       3
-    ]
+    ],
+    "dayNumber": 340,
+    "version": 1
   },
   "2027-02-03": {
     "date": "2027-02-03",
@@ -915,12 +948,12 @@
       15,
       6
     ],
-    "dayNumber": 341
+    "dayNumber": 341,
+    "version": 1
   },
   "2027-02-04": {
-    "dayNumber": 342,
-    "mapName": "Stag Refuge",
     "date": "2027-02-04",
+    "mapName": "Stag Refuge",
     "size": 9,
     "goal": 17,
     "maxWalls": 6,
@@ -938,7 +971,9 @@
       0,
       5,
       4
-    ]
+    ],
+    "dayNumber": 342,
+    "version": 1
   },
   "2027-02-05": {
     "date": "2027-02-05",
@@ -973,7 +1008,8 @@
       15,
       12
     ],
-    "dayNumber": 343
+    "dayNumber": 343,
+    "version": 1
   },
   "2027-02-06": {
     "date": "2027-02-06",
@@ -994,7 +1030,8 @@
       8,
       1
     ],
-    "dayNumber": 344
+    "dayNumber": 344,
+    "version": 1
   },
   "2027-02-07": {
     "date": "2027-02-07",
@@ -1017,7 +1054,8 @@
       5,
       7
     ],
-    "dayNumber": 345
+    "dayNumber": 345,
+    "version": 1
   },
   "2027-02-08": {
     "date": "2027-02-08",
@@ -1046,7 +1084,8 @@
       8,
       8
     ],
-    "dayNumber": 346
+    "dayNumber": 346,
+    "version": 1
   },
   "2027-02-09": {
     "date": "2027-02-09",
@@ -1069,7 +1108,8 @@
       6,
       8
     ],
-    "dayNumber": 347
+    "dayNumber": 347,
+    "version": 1
   },
   "2027-02-10": {
     "date": "2027-02-10",
@@ -1102,7 +1142,8 @@
       14,
       9
     ],
-    "dayNumber": 348
+    "dayNumber": 348,
+    "version": 1
   },
   "2027-02-11": {
     "date": "2027-02-11",
@@ -1127,7 +1168,8 @@
       9,
       2
     ],
-    "dayNumber": 349
+    "dayNumber": 349,
+    "version": 1
   },
   "2027-02-12": {
     "date": "2027-02-12",
@@ -1156,7 +1198,8 @@
       10,
       10
     ],
-    "dayNumber": 350
+    "dayNumber": 350,
+    "version": 1
   },
   "2027-02-13": {
     "date": "2027-02-13",
@@ -1185,7 +1228,8 @@
       11,
       5
     ],
-    "dayNumber": 351
+    "dayNumber": 351,
+    "version": 1
   },
   "2027-02-14": {
     "date": "2027-02-14",
@@ -1210,7 +1254,8 @@
       7,
       4
     ],
-    "dayNumber": 352
+    "dayNumber": 352,
+    "version": 1
   },
   "2027-02-15": {
     "date": "2027-02-15",
@@ -1239,7 +1284,8 @@
       10,
       10
     ],
-    "dayNumber": 353
+    "dayNumber": 353,
+    "version": 1
   },
   "2027-02-16": {
     "date": "2027-02-16",
@@ -1272,7 +1318,8 @@
       11,
       1
     ],
-    "dayNumber": 354
+    "dayNumber": 354,
+    "version": 1
   },
   "2027-02-17": {
     "date": "2027-02-17",
@@ -1303,7 +1350,8 @@
       10,
       7
     ],
-    "dayNumber": 355
+    "dayNumber": 355,
+    "version": 1
   },
   "2027-02-18": {
     "date": "2027-02-18",
@@ -1334,7 +1382,8 @@
       12,
       11
     ],
-    "dayNumber": 356
+    "dayNumber": 356,
+    "version": 1
   },
   "2027-02-19": {
     "date": "2027-02-19",
@@ -1361,7 +1410,8 @@
       8,
       1
     ],
-    "dayNumber": 357
+    "dayNumber": 357,
+    "version": 1
   },
   "2027-02-20": {
     "date": "2027-02-20",
@@ -1384,7 +1434,8 @@
       7,
       1
     ],
-    "dayNumber": 358
+    "dayNumber": 358,
+    "version": 1
   },
   "2027-02-21": {
     "date": "2027-02-21",
@@ -1417,7 +1468,8 @@
       13,
       13
     ],
-    "dayNumber": 359
+    "dayNumber": 359,
+    "version": 1
   },
   "2027-02-22": {
     "date": "2027-02-22",
@@ -1448,7 +1500,8 @@
       13,
       8
     ],
-    "dayNumber": 360
+    "dayNumber": 360,
+    "version": 1
   },
   "2027-02-23": {
     "date": "2027-02-23",
@@ -1483,7 +1536,8 @@
       15,
       8
     ],
-    "dayNumber": 361
+    "dayNumber": 361,
+    "version": 1
   },
   "2027-02-24": {
     "date": "2027-02-24",
@@ -1518,7 +1572,8 @@
       16,
       12
     ],
-    "dayNumber": 362
+    "dayNumber": 362,
+    "version": 1
   },
   "2027-02-25": {
     "date": "2027-02-25",
@@ -1549,7 +1604,8 @@
       11,
       10
     ],
-    "dayNumber": 363
+    "dayNumber": 363,
+    "version": 1
   },
   "2027-02-26": {
     "date": "2027-02-26",
@@ -1572,12 +1628,12 @@
       8,
       6
     ],
-    "dayNumber": 364
+    "dayNumber": 364,
+    "version": 1
   },
   "2027-02-27": {
-    "dayNumber": 365,
-    "mapName": "Sunset Jade",
     "date": "2027-02-27",
+    "mapName": "Sunset Jade",
     "size": 9,
     "goal": 15,
     "maxWalls": 6,
@@ -1595,6 +1651,8 @@
       4,
       8,
       6
-    ]
+    ],
+    "dayNumber": 365,
+    "version": 1
   }
 }
