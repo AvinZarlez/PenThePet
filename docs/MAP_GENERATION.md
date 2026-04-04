@@ -138,6 +138,7 @@ MapGenerator.generate()
 - No map generation in the browser — browser is checker only
 - Maps for today and the past are **frozen** — never regenerate or edit them; only fix future maps
 - Every newly generated map carries `version: 1`; increment this integer by hand whenever the layout or goal is changed on an already-published map
+- **Only increment `version` when map data actually changes** (goal score, maxWalls, or optimalSolution). If a re-solve produces the same goal, same wall count, and same optimal solution, leave `version` unchanged. Do not bump version just because you ran a solver — only bump it when the stored values differ from before.
 
 ## Save-data migration
 
