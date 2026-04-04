@@ -150,7 +150,7 @@ describe('Game — Timer', () => {
         test('loads locked time from submission when already submitted', () => {
             CookieUtils.setCookie(
                 'submission_2026-01-01',
-                JSON.stringify({ score: 10, walls: [], timestamp: '', time: 250 }),
+                JSON.stringify({ score: 10, walls: [], timestamp: '', time: 250, mapVersion: 1 }),
                 1
             );
             game.isSubmitted = true;
@@ -2248,11 +2248,11 @@ describe('Game — Best State', () => {
             expect(saved.mapVersion).toBe(2);
         });
 
-        test('saveBestState saves mapVersion 0 when currentMapData is absent', () => {
+        test('saveBestState saves mapVersion 1 when currentMapData is absent (absent map = v1)', () => {
             game.currentMapData = null;
             game.saveBestState('2026-01-01', 10, [[0, 0]]);
             const saved = JSON.parse(CookieUtils.getCookie('progress_2026-01-01'));
-            expect(saved.mapVersion).toBe(0);
+            expect(saved.mapVersion).toBe(1);
         });
 
         test('loadBestState clears state and cookie when map version has changed', () => {
@@ -2275,12 +2275,15 @@ describe('Game — Best State', () => {
             expect(game.bestWalls).toEqual([[1, 0]]);
         });
 
-        test('loadBestState treats missing mapVersion as 0 and accepts when currentMapData is null', () => {
-            game.currentMapData = null;
+        test('loadBestState clears state when old progress (no mapVersion → v0) vs absent map (defaults to v1)', () => {
+            game.currentMapData = null; // absent map defaults to v1
             CookieUtils.setCookie('progress_2026-01-01',
-                JSON.stringify({ bestScore: 5, bestWalls: [[0, 1]] }), 1);
+                JSON.stringify({ bestScore: 5, bestWalls: [[0, 1]] }), 1); // no mapVersion → v0
             game.loadBestState('2026-01-01');
-            expect(game.bestScore).toBe(5);
+            // mismatch: v0 save vs v1 map → clear state
+            expect(game.bestScore).toBeNull();
+            expect(game.bestWalls).toBeNull();
+            expect(CookieUtils.getCookie('progress_2026-01-01')).toBeNull();
         });
     });
 
@@ -2432,7 +2435,7 @@ describe('Game — Best State', () => {
 
     describe('initTimerForDate() loads best state', () => {
         test('loads bestScore from cookie when not yet submitted', () => {
-            CookieUtils.setCookie('progress_2026-01-01', JSON.stringify({ bestScore: 20, bestWalls: [[0,1]] }), 1);
+            CookieUtils.setCookie('progress_2026-01-01', JSON.stringify({ bestScore: 20, bestWalls: [[0,1]], mapVersion: 1 }), 1);
             game.initTimerForDate('2026-01-01');
             expect(game.bestScore).toBe(20);
             expect(game.bestWalls).toEqual([[0, 1]]);
@@ -2443,10 +2446,10 @@ describe('Game — Best State', () => {
             game.isSubmitted = true;
             game.elapsedSeconds = 0;
             game.submittedScore = 8;
-            CookieUtils.setCookie('progress_2026-01-01', JSON.stringify({ bestScore: 8, bestWalls: [[0,1]] }), 1);
+            CookieUtils.setCookie('progress_2026-01-01', JSON.stringify({ bestScore: 8, bestWalls: [[0,1]], mapVersion: 1 }), 1);
             // Supply a minimal submission cookie so loadSubmission() works
             CookieUtils.setCookie('submission_2026-01-01', JSON.stringify({
-                __version: '1.1', score: 8, walls: [[0,1]], timestamp: '', time: 0, hintsUsed: []
+                __version: '1.1', score: 8, walls: [[0,1]], timestamp: '', time: 0, hintsUsed: [], mapVersion: 1
             }), 1);
             game.initTimerForDate('2026-01-01');
             expect(game.bestScore).toBe(8);
@@ -3338,19 +3341,29 @@ describe('Game — Map version migration', () => {
     // _getCurrentMapVersion
     // ------------------------------------------------------------------
     describe('_getCurrentMapVersion()', () => {
-        test('returns 0 when currentMapData is null', () => {
+        test('returns 1 when currentMapData is null (absent map defaults to v1)', () => {
             game.currentMapData = null;
-            expect(game._getCurrentMapVersion()).toBe(0);
+            expect(game._getCurrentMapVersion()).toBe(1);
         });
 
-        test('returns 0 when currentMapData has no version field', () => {
+        test('returns 1 when currentMapData has no version field', () => {
             game.currentMapData = { goal: 10 };
-            expect(game._getCurrentMapVersion()).toBe(0);
+            expect(game._getCurrentMapVersion()).toBe(1);
         });
 
         test('returns the version from currentMapData', () => {
             game.currentMapData = { version: 3 };
             expect(game._getCurrentMapVersion()).toBe(3);
+        });
+
+        test('returns version 1 when version field is explicitly set to 1', () => {
+            game.currentMapData = { version: 1 };
+            expect(game._getCurrentMapVersion()).toBe(1);
+        });
+
+        test('returns 0 when version is explicitly set to 0 (edge case)', () => {
+            game.currentMapData = { version: 0 };
+            expect(game._getCurrentMapVersion()).toBe(0);
         });
     });
 
@@ -3366,12 +3379,12 @@ describe('Game — Map version migration', () => {
             expect(saved.mapVersion).toBe(2);
         });
 
-        test('saves mapVersion 0 when currentMapData is absent', () => {
+        test('saves mapVersion 1 when currentMapData is absent (absent map = v1)', () => {
             game.currentMapData = null;
             game.elapsedSeconds = 0;
             game.saveSubmission('2026-01-01', 15, []);
             const saved = JSON.parse(CookieUtils.getCookie('submission_2026-01-01'));
-            expect(saved.mapVersion).toBe(0);
+            expect(saved.mapVersion).toBe(1);
         });
     });
 
@@ -3385,10 +3398,19 @@ describe('Game — Map version migration', () => {
             expect(game._handleMapVersionCheck('2026-01-01', data)).toBe(data);
         });
 
-        test('treats missing mapVersion as 0 and accepts when currentMapData is null', () => {
-            game.currentMapData = null;
-            const data = { score: 10, walls: [] };
+        test('returns data unchanged when save and absent map both resolve to v1', () => {
+            game.currentMapData = null; // absent map defaults to v1
+            const data = { score: 10, walls: [[0, 0]], mapVersion: 1 };
             expect(game._handleMapVersionCheck('2026-01-01', data)).toBe(data);
+        });
+
+        test('old save (no mapVersion → v0) vs absent map (defaults to v1) is a mismatch', () => {
+            game.currentMapData = null;
+            game.goalAreaSize = 10;
+            game.optimalSolution = null;
+            const data = { score: 10, walls: [] }; // no mapVersion → v0
+            // mismatch: savedVersion=0 vs currentVersion=1 → triggers reset
+            expect(game._handleMapVersionCheck('2026-01-01', data)).toBeNull();
         });
     });
 
@@ -3556,16 +3578,18 @@ describe('Game — Map version migration', () => {
             expect(result.mapVersion).toBe(1);
         });
 
-        test('old saves without mapVersion are treated as v0 and accepted when map is also v0', () => {
-            game.currentMapData = null; // currentMapData absent => v0
+        test('old saves without mapVersion (v0) trigger migration against absent-version map (defaults to v1)', () => {
+            game.currentMapData = null; // absent map defaults to v1
             game.goalAreaSize = 10;
+            game.optimalSolution = null;
             CookieUtils.setCookie('submission_2026-01-01',
                 JSON.stringify({ __version: '1.1', score: 8, walls: [], timestamp: 'T', time: 0, hintsUsed: [] }), 1);
 
             const result = game.loadSubmission('2026-01-01');
 
-            expect(result).not.toBeNull();
-            expect(result.score).toBe(8);
+            // mismatch: save v0 vs map v1 → reset (no optimal solution to migrate to)
+            expect(result).toBeNull();
+            expect(CookieUtils.getCookie('submission_2026-01-01')).toBeNull();
         });
     });
 
@@ -3671,6 +3695,248 @@ describe('Game — Map version migration', () => {
 
             expect(mockDelete).not.toHaveBeenCalled();
             global.CloudSync = origCloudSync;
+        });
+    });
+
+    // ------------------------------------------------------------------
+    // Comprehensive edge cases
+    // ------------------------------------------------------------------
+    describe('Version migration — comprehensive edge cases', () => {
+        // --- Default version behaviour ----------------------------------
+
+        test('old save (no mapVersion → v0) vs map with explicit version=1 → mismatch triggers migration', () => {
+            game.currentMapData = { version: 1 };
+            game.goalAreaSize = 10;
+            game.optimalSolution = null;
+            const data = { score: 5, walls: [] }; // no mapVersion → v0
+            expect(game._handleMapVersionCheck('2026-01-01', data)).toBeNull();
+        });
+
+        test('save with mapVersion=1 vs map without version field (defaults to v1) → match', () => {
+            game.currentMapData = { goal: 10 }; // no version field → defaults to v1
+            const data = { score: 8, walls: [], mapVersion: 1 };
+            expect(game._handleMapVersionCheck('2026-01-01', data)).toBe(data);
+        });
+
+        test('save with mapVersion=1 vs map with explicit version=1 → match', () => {
+            game.currentMapData = { version: 1 };
+            const data = { score: 8, walls: [], mapVersion: 1 };
+            expect(game._handleMapVersionCheck('2026-01-01', data)).toBe(data);
+        });
+
+        test('version rollback: save at mapVersion=3 vs map at version=2 → treated as mismatch', () => {
+            game.currentMapData = { version: 2 };
+            game.goalAreaSize = 10;
+            game.optimalSolution = null;
+            const data = { score: 8, walls: [], mapVersion: 3 }; // save is from a newer version
+            expect(game._handleMapVersionCheck('2026-01-01', data)).toBeNull();
+        });
+
+        // --- Perfect-score migration with old saves ---------------------
+
+        test('old perfect save (no mapVersion) vs map v1 with optimal → migrates with updated walls', () => {
+            game.currentMapData = { version: 1 };
+            game.goalAreaSize = 10;
+            game.optimalSolution = [[5, 5]];
+            const data = { score: 10, walls: [[0, 0]], timestamp: 'T1' }; // no mapVersion → v0
+            const result = game._handleMapVersionCheck('2026-01-01', data);
+            expect(result).not.toBeNull();
+            expect(result.mapVersion).toBe(1);
+            expect(result.walls).toEqual([[5, 5]]);
+            expect(result.timestamp).toBe('T1'); // original timestamp preserved
+        });
+
+        test('perfect score against absent-version map (defaults to v1) → migrates when optimal exists', () => {
+            game.currentMapData = null; // absent → v1
+            game.goalAreaSize = 10;
+            game.optimalSolution = [[3, 3]];
+            const data = { score: 10, walls: [[0, 0]] }; // no mapVersion → v0 → mismatch with v1
+            const result = game._handleMapVersionCheck('2026-01-01', data);
+            expect(result).not.toBeNull();
+            expect(result.mapVersion).toBe(1);
+            expect(result.walls).toEqual([[3, 3]]);
+        });
+
+        test('perfect old save but no optimalSolution → full reset even on perfect score', () => {
+            game.currentMapData = { version: 2 };
+            game.goalAreaSize = 10;
+            game.optimalSolution = [];       // empty array: length=0 so migration guard (length > 0) fails → reset
+            const data = { score: 10, walls: [], mapVersion: 1 };
+            expect(game._handleMapVersionCheck('2026-01-01', data)).toBeNull();
+        });
+
+        test('perfect old save with optimalSolution=null → full reset', () => {
+            game.currentMapData = { version: 2 };
+            game.goalAreaSize = 10;
+            game.optimalSolution = null;
+            const data = { score: 10, walls: [], mapVersion: 1 };
+            expect(game._handleMapVersionCheck('2026-01-01', data)).toBeNull();
+        });
+
+        // --- Non-perfect scores -----------------------------------------
+
+        test('non-perfect old save (no mapVersion) vs map v1 → full reset', () => {
+            game.currentMapData = { version: 1 };
+            game.goalAreaSize = 10;
+            game.optimalSolution = [[1, 2]];
+            CookieUtils.setCookie('submission_2026-01-01',
+                JSON.stringify({ score: 6, walls: [] }), 1);  // no mapVersion
+            game._handleMapVersionCheck('2026-01-01', { score: 6, walls: [] });
+            expect(CookieUtils.getCookie('submission_2026-01-01')).toBeNull();
+        });
+
+        // --- Multiple version jumps -------------------------------------
+
+        test('large version jump: save at v1, map at v5 → triggers migration', () => {
+            game.currentMapData = { version: 5 };
+            game.goalAreaSize = 10;
+            game.optimalSolution = null;
+            const data = { score: 7, walls: [], mapVersion: 1 };
+            expect(game._handleMapVersionCheck('2026-01-01', data)).toBeNull();
+        });
+
+        test('large version jump with perfect score and optimal → migrates correctly', () => {
+            game.currentMapData = { version: 5 };
+            game.goalAreaSize = 12;
+            game.optimalSolution = [[0, 1]];
+            const data = { score: 12, walls: [[0, 0]], timestamp: 'T2', mapVersion: 1 };
+            const result = game._handleMapVersionCheck('2026-01-01', data);
+            expect(result).not.toBeNull();
+            expect(result.mapVersion).toBe(5);
+            expect(result.walls).toEqual([[0, 1]]);
+        });
+
+        // --- loadBestState edge cases -----------------------------------
+
+        test('loadBestState: old progress (mapVersion=0) vs map with explicit version=1 → clears state', () => {
+            game.currentMapData = { version: 1 };
+            CookieUtils.setCookie('progress_2026-01-01',
+                JSON.stringify({ bestScore: 9, bestWalls: [[1, 0]], mapVersion: 0 }), 1);
+            game.loadBestState('2026-01-01');
+            expect(game.bestScore).toBeNull();
+            expect(game.bestWalls).toBeNull();
+            expect(CookieUtils.getCookie('progress_2026-01-01')).toBeNull();
+        });
+
+        test('loadBestState: matching mapVersion=1 vs map v1 → state loaded normally', () => {
+            game.currentMapData = { version: 1 };
+            CookieUtils.setCookie('progress_2026-01-01',
+                JSON.stringify({ bestScore: 9, bestWalls: [[1, 0]], mapVersion: 1 }), 1);
+            game.loadBestState('2026-01-01');
+            expect(game.bestScore).toBe(9);
+            expect(game.bestWalls).toEqual([[1, 0]]);
+        });
+
+        test('loadBestState: progress with mapVersion=1 vs absent-version map (v1) → match, loaded', () => {
+            game.currentMapData = null; // absent → v1
+            CookieUtils.setCookie('progress_2026-01-01',
+                JSON.stringify({ bestScore: 7, bestWalls: [[2, 2]], mapVersion: 1 }), 1);
+            game.loadBestState('2026-01-01');
+            expect(game.bestScore).toBe(7);
+            expect(game.bestWalls).toEqual([[2, 2]]);
+        });
+
+        test('loadBestState: malformed cookie value does not throw', () => {
+            game.currentMapData = { version: 1 };
+            CookieUtils.setCookie('progress_2026-01-01', '{broken json}', 1);
+            expect(() => game.loadBestState('2026-01-01')).not.toThrow();
+            expect(game.bestScore).toBeNull();
+        });
+
+        // --- loadSubmission edge cases ----------------------------------
+
+        test('loadSubmission: old save (no mapVersion → v0) + map v1 + perfect + has optimal → migrates', () => {
+            game.currentMapData = { version: 1 };
+            game.goalAreaSize = 10;
+            game.optimalSolution = [[4, 4]];
+            CookieUtils.setCookie('submission_2026-01-01', JSON.stringify({
+                __version: '1.1', score: 10, walls: [[0, 0]], timestamp: 'old', time: 30, hintsUsed: []
+            }), 1);
+            const result = game.loadSubmission('2026-01-01');
+            expect(result).not.toBeNull();
+            expect(result.mapVersion).toBe(1);
+            expect(result.walls).toEqual([[4, 4]]);
+        });
+
+        test('loadSubmission: old save (no mapVersion → v0) + map v1 + below goal → null', () => {
+            game.currentMapData = { version: 1 };
+            game.goalAreaSize = 10;
+            game.optimalSolution = [[4, 4]];
+            CookieUtils.setCookie('submission_2026-01-01', JSON.stringify({
+                __version: '1.1', score: 7, walls: [[0, 0]], timestamp: 'old', time: 30, hintsUsed: []
+            }), 1);
+            const result = game.loadSubmission('2026-01-01');
+            expect(result).toBeNull();
+            expect(CookieUtils.getCookie('submission_2026-01-01')).toBeNull();
+        });
+
+        test('loadSubmission: save at mapVersion=2 vs map at version=2 → passes through unchanged', () => {
+            game.currentMapData = { version: 2 };
+            game.goalAreaSize = 10;
+            CookieUtils.setCookie('submission_2026-01-01', JSON.stringify({
+                __version: '1.1', score: 8, walls: [[1, 1]], timestamp: 'T', time: 60, hintsUsed: [], mapVersion: 2
+            }), 1);
+            const result = game.loadSubmission('2026-01-01');
+            expect(result).not.toBeNull();
+            expect(result.mapVersion).toBe(2);
+            expect(result.score).toBe(8);
+        });
+
+        // --- Cookie / cloud cleanup on reset ---------------------------
+
+        test('resetLevelData clears all cookies and resets state atomically', () => {
+            game.currentMapData = { version: 1 };
+            game.isSubmitted = true;
+            game.bestScore = 5;
+            CookieUtils.setCookie('submission_2026-01-01', JSON.stringify({ score: 5, mapVersion: 1 }), 1);
+            CookieUtils.setCookie('hints_2026-01-01', JSON.stringify(['checked']), 1);
+            CookieUtils.setCookie('progress_2026-01-01', JSON.stringify({ bestScore: 5, bestWalls: [], mapVersion: 1 }), 1);
+            CookieUtils.setCookie('timer_2026-01-01', JSON.stringify({ elapsed: 90 }), 1);
+
+            game.resetLevelData('2026-01-01');
+
+            expect(CookieUtils.getCookie('submission_2026-01-01')).toBeNull();
+            expect(CookieUtils.getCookie('hints_2026-01-01')).toBeNull();
+            expect(CookieUtils.getCookie('progress_2026-01-01')).toBeNull();
+            expect(CookieUtils.getCookie('timer_2026-01-01')).toBeNull();
+            expect(game.isSubmitted).toBe(false);
+            expect(game.bestScore).toBeNull();
+        });
+
+        // --- saveSubmission/saveBestState mapVersion field -------------
+
+        test('saveSubmission writes mapVersion matching current map version', () => {
+            game.currentMapData = { version: 3 };
+            game.elapsedSeconds = 0;
+            game.saveSubmission('2026-01-01', 10, []);
+            const saved = JSON.parse(CookieUtils.getCookie('submission_2026-01-01'));
+            expect(saved.mapVersion).toBe(3);
+        });
+
+        test('saveBestState writes mapVersion matching current map version', () => {
+            game.currentMapData = { version: 3 };
+            game.saveBestState('2026-01-01', 10, []);
+            const saved = JSON.parse(CookieUtils.getCookie('progress_2026-01-01'));
+            expect(saved.mapVersion).toBe(3);
+        });
+
+        test('after migration, re-loading the migrated save succeeds (no double-migration)', () => {
+            game.currentMapData = { version: 1 };
+            game.goalAreaSize = 10;
+            game.optimalSolution = [[2, 2]];
+            // Simulate a first load that triggers migration
+            CookieUtils.setCookie('submission_2026-01-01', JSON.stringify({
+                __version: '1.1', score: 10, walls: [[0, 0]], timestamp: 'T', time: 0, hintsUsed: []
+            }), 1);
+            const migrated = game.loadSubmission('2026-01-01');
+            expect(migrated).not.toBeNull();
+            expect(migrated.mapVersion).toBe(1);
+
+            // Simulate a second load — should be a match, no migration
+            const reloaded = game.loadSubmission('2026-01-01');
+            expect(reloaded).not.toBeNull();
+            expect(reloaded.mapVersion).toBe(1);
+            expect(reloaded.walls).toEqual([[2, 2]]);
         });
     });
 });
