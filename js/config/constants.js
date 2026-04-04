@@ -28,7 +28,7 @@ const CONSTANTS = {
     // Map data
     FIRST_MAP_YEAR: 2026,          // First year that has map data files in maps/
     LIVE_GAME_URL: 'https://avinzarlez.com/penthepet',
-    INITIAL_MAP_VERSION: 1,        // Version assigned to newly generated maps (maps without a version field default to 1; old saves without mapVersion default to 0 and are always migrated)
+    INITIAL_MAP_VERSION: 1,        // Version assigned to newly generated maps (maps without a version field default to v0; save data without mapVersion defaults to v1 — matches all v1 maps cleanly)
 
     // Map generation
     MAX_GENERATION_ATTEMPTS: 100,  // Inner-loop attempts per outer retry (outer limit is 1000 in generate())

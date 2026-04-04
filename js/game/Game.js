@@ -625,7 +625,7 @@ class Game {
             try {
                 const data = JSON.parse(value);
                 if (typeof data.bestScore === 'number' && Array.isArray(data.bestWalls)) {
-                    const savedVersion = typeof data.mapVersion === 'number' ? data.mapVersion : 0;
+                    const savedVersion = typeof data.mapVersion === 'number' ? data.mapVersion : 1;
                     if (savedVersion !== this._getCurrentMapVersion()) {
                         this.resetLevelData(dateString);
                         return;
@@ -642,15 +642,17 @@ class Game {
 
     /**
      * Return the version number of the currently loaded map.
-     * Maps that do not have a version field are treated as version 1 (the
-     * baseline version).  Old save data without a mapVersion field defaults
-     * to 0, so it will always be migrated against any v1+ map on first load.
+     * Maps that do not have a version field are treated as version 0.
+     * Save data without a mapVersion field defaults to 1 (the first
+     * released version), so existing saves load cleanly against v1 maps
+     * without triggering spurious migration.  Migration fires only when a
+     * map is explicitly bumped to v2+.
      * @returns {number}
      */
     _getCurrentMapVersion() {
         return (this.currentMapData && typeof this.currentMapData.version === 'number')
             ? this.currentMapData.version
-            : 1;
+            : 0;
     }
 
     /**
@@ -1551,7 +1553,7 @@ class Game {
      */
     _handleMapVersionCheck(dateString, data) {
         const currentVersion = this._getCurrentMapVersion();
-        const savedVersion = typeof data.mapVersion === 'number' ? data.mapVersion : 0;
+        const savedVersion = typeof data.mapVersion === 'number' ? data.mapVersion : 1;
 
         if (savedVersion === currentVersion) {
             return data;
