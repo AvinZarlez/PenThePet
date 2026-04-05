@@ -24,7 +24,7 @@ const G = 1; // grass
 const W = 0; // water (blocking, not fillable)
 const H = 2; // home
 const S = 3; // star  (score +3)
-const B = 4; // bee   (score -3)
+const B = 4; // bee   (score -5)
 const O = 6; // hole  (blocking, fillable — becomes filledHole when filled, score +1)
 
 // Each test calls the Python solver, so a generous timeout is needed.
@@ -99,8 +99,8 @@ describe('MILPSolver — hole fill-or-not choice', () => {
      *   Row 5:  G  W  G  B  G  W  G   (bee at col 3)
      *   Row 6:  G  G  G  G  G  G  G
      *
-     * The hole at (4,3) is on the pen boundary.  Below it is a bee (score -3).
-     * Filling the hole to include the bee would HURT the score (-3 + 1 = -2).
+     * The hole at (4,3) is on the pen boundary.  Below it is a bee (score -5).
+     * Filling the hole to include the bee would HURT the score (-5 + 1 = -4).
      * The solver must leave the hole unfilled — using it as a free barrier
      * just like water.  Both the hole map and the equivalent water map should
      * produce identical results.

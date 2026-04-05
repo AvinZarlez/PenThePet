@@ -138,6 +138,7 @@ MapGenerator.generate()
 - No map generation in the browser — browser is checker only
 - Maps for today and the past are **frozen** — never regenerate or edit them; only fix future maps
 - Every newly generated map carries `version: 1`; increment this integer by hand whenever the layout or goal is changed on an already-published map
+- **Only increment `version` when map data actually changes** (goal score, maxWalls, or optimalSolution). If a re-solve produces the same goal, same wall count, and same optimal solution, leave `version` unchanged. Do not bump version just because you ran a solver — only bump it when the stored values differ from before.
 
 ## Save-data migration
 
@@ -146,8 +147,15 @@ Each map carries an integer `version` field (default `1` for new maps; maps with
 | Situation | Behaviour |
 |-----------|-----------|
 | Versions match | Load save data normally |
-| Mismatch, user previously achieved a perfect score (`score ≥ goal`) | Migrate: keep the submission timestamp, update score and wall layout to the current optimal solution |
-| Mismatch, score was below the goal | Delete all save data for that puzzle (submission, progress, timer) and reset progress |
+| Mismatch, user previously achieved a perfect score (`score ≥ goal at submission time`) | Migrate: keep the submission timestamp, update score and wall layout to the current optimal solution |
+| Mismatch, score was below the goal at submission time | Delete all save data for that puzzle (submission, progress, timer) and reset progress |
+
+**How "perfect at submission time" is determined:** each submission now stores the map's `goal` value at the moment the user submitted. Migration compares the user's saved score against this stored goal — not the new map's goal. This correctly handles both directions of goal change:
+
+- **Goal decreased** (e.g. 75 → 70): user's score of 75 ≥ stored goal 75 → migrated ✓
+- **Goal increased** (e.g. 36 → 37): user's score of 36 ≥ stored goal 36 → migrated ✓
+
+Submissions written before this `goal` field was introduced (schema v1.1 and earlier) have `goal: null` after migration. For those legacy saves, the comparison falls back to the *new* map goal — matching the original behavior.
 
 To update a live map, edit `maps/YYYY.json`, increment its `version` by 1, and commit. Users will be migrated automatically on their next visit.
 

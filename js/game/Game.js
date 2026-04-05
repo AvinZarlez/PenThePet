@@ -1505,6 +1505,7 @@ class Game {
         const submissionData = {
             __version: CloudMigration.CURRENT_VERSION,
             mapVersion: this._getCurrentMapVersion(),
+            goal: this.goalAreaSize,
             score: score,
             walls: wallPositions,
             timestamp: new Date().toISOString(),
@@ -1560,16 +1561,20 @@ class Game {
         }
 
         // Version mismatch — check if the user previously achieved a perfect score.
-        // `>=` is intentional: the issue spec defines perfect as "value greater than or
-        // equal to the goal".  A score above the goal can legitimately occur if the map
-        // was revised to have a lower goal after the user achieved the previous goal.
-        const isPerfect = typeof data.score === 'number' && data.score >= this.goalAreaSize;
+        // Use the goal stored at submission time (data.goal) when available; older saves
+        // that lack this field fall back to the current map's goal.  The `>=` comparison
+        // is intentional: a score above the reference goal is still "perfect" and can
+        // legitimately occur when the map is revised to have a lower goal after the user
+        // already achieved the previous (higher) goal.
+        const referenceGoal = typeof data.goal === 'number' ? data.goal : this.goalAreaSize;
+        const isPerfect = typeof data.score === 'number' && data.score >= referenceGoal;
 
         if (isPerfect && this.optimalSolution && this.optimalSolution.length > 0) {
             // Migrate: update walls and score to the current optimal solution.
             // Keep the original submission timestamp so the user's completion time is preserved.
             const migrated = Object.assign({}, data, {
                 mapVersion: currentVersion,
+                goal: this.goalAreaSize,
                 score: this.goalAreaSize,
                 walls: this.optimalSolution,
             });

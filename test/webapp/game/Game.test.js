@@ -1884,7 +1884,7 @@ describe('Game — Score Modifier Popups', () => {
         expect(popup.classList.contains('positive')).toBe(true);
     });
 
-    test('_animatePennedArea shows popup for bee tile (score -3)', () => {
+    test('_animatePennedArea shows popup for bee tile (score -5)', () => {
         setupDOM();
         const g = new Game(5);
         const tiles = Array.from({ length: 5 }, () => Array(5).fill('grass'));
@@ -1908,7 +1908,7 @@ describe('Game — Score Modifier Popups', () => {
         expect(beeCell.classList.contains('penned')).toBe(true);
         const popup = g.gridElement.querySelector('.score-popup');
         expect(popup).not.toBeNull();
-        expect(popup.textContent).toBe('-3');
+        expect(popup.textContent).toBe('-5');
         expect(popup.classList.contains('negative')).toBe(true);
     });
 });
@@ -3391,6 +3391,28 @@ describe('Game — Map version migration', () => {
         });
     });
 
+    // saveSubmission includes goal
+    // ------------------------------------------------------------------
+    describe('saveSubmission() includes goal', () => {
+        test('saves goalAreaSize as goal field', () => {
+            game.currentMapData = { version: 1 };
+            game.goalAreaSize = 42;
+            game.elapsedSeconds = 0;
+            game.saveSubmission('2026-01-01', 42, []);
+            const saved = JSON.parse(CookieUtils.getCookie('submission_2026-01-01'));
+            expect(saved.goal).toBe(42);
+        });
+
+        test('saves goal 0 when goalAreaSize is 0', () => {
+            game.currentMapData = { version: 1 };
+            game.goalAreaSize = 0;
+            game.elapsedSeconds = 0;
+            game.saveSubmission('2026-01-01', 0, []);
+            const saved = JSON.parse(CookieUtils.getCookie('submission_2026-01-01'));
+            expect(saved.goal).toBe(0);
+        });
+    });
+
     // ------------------------------------------------------------------
     // _handleMapVersionCheck — version match
     // ------------------------------------------------------------------
@@ -3484,6 +3506,45 @@ describe('Game — Map version migration', () => {
             // Migrated score is clamped to the current goal
             expect(result.score).toBe(12);
             expect(result.walls).toEqual([[0, 0]]);
+        });
+
+        test('uses stored goal to detect perfect score when new goal is higher', () => {
+            // Scenario: user had score 36 on v1 (goal was 36 = perfect).
+            // Map updated to v2 with goal 37. Old code would delete (36 < 37);
+            // new code uses data.goal=36 to correctly detect a perfect score.
+            game.currentMapData = { version: 2 };
+            game.goalAreaSize = 37; // new goal is higher than old score
+            game.optimalSolution = [[5, 5]];
+            const data = { score: 36, goal: 36, walls: [], mapVersion: 1 };
+
+            const result = game._handleMapVersionCheck('2026-01-01', data);
+            expect(result).not.toBeNull();
+            expect(result.score).toBe(37); // updated to new goal
+            expect(result.walls).toEqual([[5, 5]]);
+            expect(result.goal).toBe(37); // goal updated to current
+        });
+
+        test('falls back to new goal when saved goal is absent (old save format)', () => {
+            // Old saves without a goal field should behave as before:
+            // only perfect if score >= new goal.
+            game.currentMapData = { version: 2 };
+            game.goalAreaSize = 37;
+            game.optimalSolution = [[5, 5]];
+            const data = { score: 36, walls: [], mapVersion: 1 }; // no goal field
+
+            // 36 < 37 (new goal) → treated as non-perfect
+            expect(game._handleMapVersionCheck('2026-01-01', data)).toBeNull();
+        });
+
+        test('migrated data includes updated goal field', () => {
+            game.currentMapData = { version: 2 };
+            game.goalAreaSize = 20;
+            game.optimalSolution = [[1, 1]];
+            const data = { score: 15, goal: 15, walls: [], mapVersion: 1 };
+
+            const result = game._handleMapVersionCheck('2026-01-01', data);
+            expect(result).not.toBeNull();
+            expect(result.goal).toBe(20); // goal updated to the new map's goal
         });
     });
 

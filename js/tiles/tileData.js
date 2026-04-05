@@ -96,7 +96,7 @@ const TILE_DATA = {
     },
     bee: {
         nameKey: 'tile_name_bee',
-        score: -3,
+        score: -5,
         wallPlaceable: false,
         clickable: false,
         blocksMovement: false,
