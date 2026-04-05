@@ -964,7 +964,7 @@ const CloudSync = (function () {
             // ── Version mismatch ─────────────────────────────────────────────────
             if (typeof data.goal !== 'number') {
                 // Legacy save without a stored goal — cannot assess perfect score → reset.
-                _deleteSubmissionAndProgress(dateString);
+                _deleteLevelData(dateString);
                 reset.push(dateString);
                 return;
             }
@@ -997,7 +997,7 @@ const CloudSync = (function () {
             } else {
                 // Non-perfect score or no optimal solution — reset so the user can
                 // retry the updated map.
-                _deleteSubmissionAndProgress(dateString);
+                _deleteLevelData(dateString);
                 reset.push(dateString);
             }
         });
@@ -1011,7 +1011,7 @@ const CloudSync = (function () {
      * Used by migrateLocalSubmissions when a submission must be reset.
      * @param {string} dateString - Puzzle date (YYYY-MM-DD)
      */
-    function _deleteSubmissionAndProgress(dateString) {
+    function _deleteLevelData(dateString) {
         CookieUtils.deleteCookie('submission_' + dateString);
         CookieUtils.deleteCookie('progress_' + dateString);
         CookieUtils.deleteCookie('timer_' + dateString);
@@ -1851,7 +1851,7 @@ const CloudSync = (function () {
         migrateLocalSubmissions: migrateLocalSubmissions,
         // Exposed for unit testing of migration helpers.
         _parseSolutionFlat: _parseSolutionFlat,
-        _deleteSubmissionAndProgress: _deleteSubmissionAndProgress,
+        _deleteLevelData: _deleteLevelData,
     };
 })();
 

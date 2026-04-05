@@ -1219,9 +1219,9 @@ describe('migrateLocalSubmissions()', () => {
 });
 
 // ============================================================
-// _deleteSubmissionAndProgress helper
+// _deleteLevelData helper
 // ============================================================
-describe('_deleteSubmissionAndProgress()', () => {
+describe('_deleteLevelData()', () => {
     const DATE = '2026-09-01';
 
     beforeEach(() => {
@@ -1235,11 +1235,11 @@ describe('_deleteSubmissionAndProgress()', () => {
     });
 
     test('is exposed on the public API', () => {
-        expect(typeof CloudSync._deleteSubmissionAndProgress).toBe('function');
+        expect(typeof CloudSync._deleteLevelData).toBe('function');
     });
 
     test('deletes submission, progress, and timer cookies', () => {
-        CloudSync._deleteSubmissionAndProgress(DATE);
+        CloudSync._deleteLevelData(DATE);
         expect(CookieUtils.getCookie(`submission_${DATE}`)).toBeNull();
         expect(CookieUtils.getCookie(`progress_${DATE}`)).toBeNull();
         expect(CookieUtils.getCookie(`timer_${DATE}`)).toBeNull();
@@ -1249,6 +1249,6 @@ describe('_deleteSubmissionAndProgress()', () => {
         CookieUtils.deleteCookie(`submission_${DATE}`);
         CookieUtils.deleteCookie(`progress_${DATE}`);
         CookieUtils.deleteCookie(`timer_${DATE}`);
-        expect(() => CloudSync._deleteSubmissionAndProgress(DATE)).not.toThrow();
+        expect(() => CloudSync._deleteLevelData(DATE)).not.toThrow();
     });
 });
