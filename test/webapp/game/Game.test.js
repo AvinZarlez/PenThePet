@@ -3503,7 +3503,7 @@ describe('Game — Map version migration', () => {
             game.currentMapData = { version: 2 };
             game.goalAreaSize = 12; // new goal is lower than the old score
             game.optimalSolution = [[0, 0]];
-            const data = { score: 15, goal: 15, walls: [], mapVersion: 1 }; // score exceeds old goal
+            const data = { score: 15, goal: 15, walls: [], mapVersion: 1 }; // score matches old goal
 
             const result = game._handleMapVersionCheck('2026-01-01', data);
             expect(result).not.toBeNull();

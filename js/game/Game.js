@@ -1556,15 +1556,27 @@ class Game {
      * home can no longer reach the grid edge.  Returns true when the submission is
      * corrupted (walls do NOT pen the pet) and should be discarded.
      *
+     * Returns false (assume valid) when required tile helpers or pathfinding utilities
+     * are unavailable, to avoid false positives that would incorrectly reset valid saves.
+     *
      * @param {Object} submission - Submission data with a walls array
      * @returns {boolean} True if the submission is corrupted (pet not penned), false if valid
      */
     _isSubmissionCorrupted(submission) {
         if (!submission || !Array.isArray(submission.walls)) return false;
+        // Zero walls can never pen the pet (home is always interior on valid maps).
+        if (submission.walls.length === 0) return true;
         if (!this.grid || !this.grid.initialTiles) return false;
         if (typeof PathfindingUtils === 'undefined') return false;
+        // Tile helpers are required to apply wall transforms correctly.
+        // If they are unavailable we cannot validate, so we assume the submission is valid
+        // to avoid resetting saves based on incomplete information.
+        if (typeof isWallPlaceable !== 'function' || typeof getWallTransform !== 'function') {
+            return false;
+        }
 
         // Build a temporary copy of the initial map and apply the submitted walls.
+        // This is performed at most once per level load (only when a submission exists).
         const mapCopy = this.grid.initialTiles.map(row => [...row]);
         const rows = mapCopy.length;
         const cols = rows > 0 ? mapCopy[0].length : 0;
@@ -1575,8 +1587,7 @@ class Game {
             if (r < 0 || r >= rows || c < 0 || c >= cols) return true; // out-of-bounds
             const currentTile = mapCopy[r][c];
             // Only transform tiles that accept a wall placement; others are skipped.
-            if (typeof isWallPlaceable === 'function' && isWallPlaceable(currentTile) &&
-                typeof getWallTransform === 'function') {
+            if (isWallPlaceable(currentTile)) {
                 mapCopy[r][c] = getWallTransform(currentTile);
             }
         }
