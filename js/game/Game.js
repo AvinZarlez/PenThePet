@@ -14,6 +14,8 @@
  * so the scoring rules can be swapped for different game variants.
  */
 
+/* global parseCompactSolution */
+
 class Game {
     /**
      * Create a new Game instance

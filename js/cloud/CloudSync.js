@@ -947,7 +947,7 @@ const CloudSync = (function () {
             let data;
             try {
                 data = CloudMigration.migrateSubmission(JSON.parse(rawValue));
-            } catch (e) {
+            } catch {
                 return; // malformed cookie — leave for full sync to clean up
             }
 
@@ -987,7 +987,7 @@ const CloudSync = (function () {
                 CookieUtils.setCookie(cookieName, JSON.stringify(migratedData), 365);
                 // Force-sync the migrated result to cloud so subsequent sync phases
                 // cannot revert this migration by re-applying the old cloud record.
-                if (isConfigured() && isLoggedIn()) {
+                if (isConfigured() && currentUser !== null) {
                     saveSubmission(dateString, migratedData);
                 }
                 // Stale in-progress data is no longer valid for the new map version.
@@ -1015,7 +1015,7 @@ const CloudSync = (function () {
         CookieUtils.deleteCookie('submission_' + dateString);
         CookieUtils.deleteCookie('progress_' + dateString);
         CookieUtils.deleteCookie('timer_' + dateString);
-        if (isConfigured() && isLoggedIn()) {
+        if (isConfigured() && currentUser !== null) {
             deleteSubmission(dateString);
             deleteSubmission(PROGRESS_DOC_PREFIX + dateString);
             deleteSubmission(TIMER_DOC_PREFIX + dateString);
