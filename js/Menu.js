@@ -323,6 +323,15 @@ class Menu {
             console.error('Error loading maps database:', error);
             this.mapsDatabase = {};
         }
+
+        // After loading map data, run map-version migration on all local submission
+        // cookies so that every level badge in the calendar reflects the current
+        // map version.  Any migrated or reset data is force-synced to cloud here
+        // to prevent subsequent cloud-sync phases from reverting the result.
+        if (typeof CloudSync !== 'undefined' &&
+            typeof CloudSync.migrateLocalSubmissions === 'function') {
+            CloudSync.migrateLocalSubmissions(this.mapsDatabase);
+        }
     }
 
     /**
@@ -543,7 +552,10 @@ class Menu {
                     cell.classList.add('active');
                 }
 
-                const submission = this.game.loadSubmission(date);
+                // Pass the date's own map data so that _handleMapVersionCheck uses
+                // the correct version, goal, and optimal solution for this date,
+                // not the currently loaded level's data.
+                const submission = this.game.loadSubmission(date, mapData);
                 let statusHtml = '';
                 if (this._isSyncing) {
                     // Show unknown badge while cloud sync is in progress

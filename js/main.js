@@ -519,6 +519,18 @@ async function initGame() {
         document.addEventListener('cloudsync:synced', async function () {
             if (!menu || !game || !game.currentDate) return;
 
+            // Run map-version migration for all dates that have both a local
+            // submission cookie and map data.  This must happen before we inspect
+            // the current level's submission state so that the cookie reflects the
+            // correct (post-migration) value.  Phasing mirrors the cloud-sync
+            // strategy: current date is always in the mapsDatabase by this point;
+            // additional dates become available as mapsDatabase is populated.
+            if (typeof CloudSync !== 'undefined' &&
+                typeof CloudSync.migrateLocalSubmissions === 'function' &&
+                menu.mapsDatabase) {
+                CloudSync.migrateLocalSubmissions(menu.mapsDatabase);
+            }
+
             // Collect dates overwritten by cloud data so we can notify the user.
             const cloudOverwrites = typeof CloudSync !== 'undefined'
                 ? CloudSync.getAndClearCloudOverwrites()

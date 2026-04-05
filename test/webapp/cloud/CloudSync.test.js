@@ -859,3 +859,396 @@ describe('updateSyncStatus() – phased sync labels', () => {
         expect(I18N.t('cloud_sync_syncing_all')).not.toBe(generic);
     });
 });
+
+// ============================================================
+// applyCloudSubmission — mapVersion tiebreaker
+// ============================================================
+describe('applyCloudSubmission – mapVersion tiebreaker', () => {
+    const DATE = '2026-07-01';
+    const submissionCookie = `submission_${DATE}`;
+    const timestamp = new Date('2026-07-01T12:00:00Z').toISOString();
+
+    beforeEach(() => {
+        CookieUtils.deleteCookie(submissionCookie);
+        CloudSync.getAndClearCloudOverwrites();
+    });
+
+    afterEach(() => {
+        CookieUtils.deleteCookie(submissionCookie);
+        CloudSync.getAndClearCloudOverwrites();
+    });
+
+    test('keeps local when scores equal but local has newer mapVersion (migration result)', () => {
+        // Local has been migrated (mapVersion 2); cloud still has old record (mapVersion 1).
+        // Even though scores and timestamps are identical, local must win so the migration
+        // result is never overwritten by a stale cloud record.
+        CookieUtils.setCookie(submissionCookie, JSON.stringify({
+            score: 50, mapVersion: 2, timestamp, walls: [[0, 0]],
+        }), 1);
+        const updated = CloudSync.applyCloudSubmission(DATE, {
+            score: 50, mapVersion: 1, timestamp, walls: [[1, 1]],
+        });
+        expect(updated).toBe(false);
+        expect(JSON.parse(CookieUtils.getCookie(submissionCookie)).mapVersion).toBe(2);
+        expect(JSON.parse(CookieUtils.getCookie(submissionCookie)).walls).toEqual([[0, 0]]);
+    });
+
+    test('applies cloud when scores equal and cloud has newer mapVersion', () => {
+        // Cloud has been migrated; local is behind.
+        CookieUtils.setCookie(submissionCookie, JSON.stringify({
+            score: 50, mapVersion: 1, timestamp, walls: [[1, 1]],
+        }), 1);
+        const updated = CloudSync.applyCloudSubmission(DATE, {
+            score: 50, mapVersion: 2, timestamp, walls: [[0, 0]],
+        });
+        expect(updated).toBe(true);
+        expect(JSON.parse(CookieUtils.getCookie(submissionCookie)).mapVersion).toBe(2);
+        expect(JSON.parse(CookieUtils.getCookie(submissionCookie)).walls).toEqual([[0, 0]]);
+    });
+
+    test('keeps local when scores equal, mapVersions equal, local timestamp is earlier', () => {
+        const earlier = new Date('2026-07-01T10:00:00Z').toISOString();
+        const later = new Date('2026-07-01T14:00:00Z').toISOString();
+        CookieUtils.setCookie(submissionCookie, JSON.stringify({
+            score: 50, mapVersion: 2, timestamp: earlier, walls: [[0, 0]],
+        }), 1);
+        const updated = CloudSync.applyCloudSubmission(DATE, {
+            score: 50, mapVersion: 2, timestamp: later, walls: [[1, 1]],
+        });
+        expect(updated).toBe(false);
+        expect(JSON.parse(CookieUtils.getCookie(submissionCookie)).walls).toEqual([[0, 0]]);
+    });
+
+    test('applies cloud when scores equal, mapVersions equal, cloud timestamp is earlier', () => {
+        const earlier = new Date('2026-07-01T10:00:00Z').toISOString();
+        const later = new Date('2026-07-01T14:00:00Z').toISOString();
+        CookieUtils.setCookie(submissionCookie, JSON.stringify({
+            score: 50, mapVersion: 2, timestamp: later, walls: [[1, 1]],
+        }), 1);
+        const updated = CloudSync.applyCloudSubmission(DATE, {
+            score: 50, mapVersion: 2, timestamp: earlier, walls: [[0, 0]],
+        });
+        expect(updated).toBe(true);
+        expect(JSON.parse(CookieUtils.getCookie(submissionCookie)).walls).toEqual([[0, 0]]);
+    });
+
+    test('local wins by higher score regardless of mapVersion', () => {
+        CookieUtils.setCookie(submissionCookie, JSON.stringify({
+            score: 55, mapVersion: 2, timestamp, walls: [[0, 0]],
+        }), 1);
+        const updated = CloudSync.applyCloudSubmission(DATE, {
+            score: 50, mapVersion: 3, timestamp, walls: [[1, 1]],
+        });
+        expect(updated).toBe(false);
+        expect(JSON.parse(CookieUtils.getCookie(submissionCookie)).score).toBe(55);
+    });
+
+    test('cloud wins by higher score regardless of mapVersion', () => {
+        CookieUtils.setCookie(submissionCookie, JSON.stringify({
+            score: 50, mapVersion: 3, timestamp, walls: [[0, 0]],
+        }), 1);
+        const updated = CloudSync.applyCloudSubmission(DATE, {
+            score: 55, mapVersion: 1, timestamp, walls: [[1, 1]],
+        });
+        expect(updated).toBe(true);
+        expect(JSON.parse(CookieUtils.getCookie(submissionCookie)).score).toBe(55);
+    });
+
+    test('local (no mapVersion) treated as mapVersion=1 for tiebreaker', () => {
+        // Local has no mapVersion field → defaults to 1; cloud has mapVersion 2 → cloud wins.
+        CookieUtils.setCookie(submissionCookie, JSON.stringify({
+            score: 50, timestamp, walls: [[1, 1]],
+        }), 1);
+        const updated = CloudSync.applyCloudSubmission(DATE, {
+            score: 50, mapVersion: 2, timestamp, walls: [[0, 0]],
+        });
+        expect(updated).toBe(true);
+        expect(JSON.parse(CookieUtils.getCookie(submissionCookie)).mapVersion).toBe(2);
+    });
+});
+
+// ============================================================
+// _parseSolutionFlat helper
+// ============================================================
+describe('_parseSolutionFlat()', () => {
+    test('is exposed on the public API', () => {
+        expect(typeof CloudSync._parseSolutionFlat).toBe('function');
+    });
+
+    test('converts a flat even-length array to [row,col] pairs', () => {
+        expect(CloudSync._parseSolutionFlat([0, 5, 1, 2, 3, 4])).toEqual([[0, 5], [1, 2], [3, 4]]);
+    });
+
+    test('returns empty array for empty input', () => {
+        expect(CloudSync._parseSolutionFlat([])).toEqual([]);
+    });
+
+    test('returns empty array for non-array input', () => {
+        expect(CloudSync._parseSolutionFlat(null)).toEqual([]);
+        expect(CloudSync._parseSolutionFlat('bad')).toEqual([]);
+    });
+
+    test('ignores trailing odd element', () => {
+        expect(CloudSync._parseSolutionFlat([0, 5, 1])).toEqual([[0, 5]]);
+    });
+});
+
+// ============================================================
+// migrateLocalSubmissions()
+// ============================================================
+describe('migrateLocalSubmissions()', () => {
+    const DATE_A = '2026-08-01';
+    const DATE_B = '2026-08-02';
+    const DATE_C = '2026-08-03';
+
+    // Map database with two levels — DATE_A at v1→v2, DATE_B at v1→v2 (same goal)
+    const mapsDatabase = {
+        [DATE_A]: {
+            version: 2,
+            goal: 10,
+            optimalSolution: [0, 1, 2, 3], // → [[0,1],[2,3]]
+        },
+        [DATE_B]: {
+            version: 2,
+            goal: 50, // same goal before and after
+            optimalSolution: [4, 5, 6, 7], // → [[4,5],[6,7]]
+        },
+        [DATE_C]: {
+            version: 2,
+            goal: 20,
+            optimalSolution: [1, 2, 3, 4],
+        },
+    };
+
+    beforeEach(() => {
+        [DATE_A, DATE_B, DATE_C].forEach(d => {
+            CookieUtils.deleteCookie(`submission_${d}`);
+            CookieUtils.deleteCookie(`progress_${d}`);
+            CookieUtils.deleteCookie(`timer_${d}`);
+        });
+        CloudSync.getAndClearCloudOverwrites();
+    });
+
+    afterEach(() => {
+        [DATE_A, DATE_B, DATE_C].forEach(d => {
+            CookieUtils.deleteCookie(`submission_${d}`);
+            CookieUtils.deleteCookie(`progress_${d}`);
+            CookieUtils.deleteCookie(`timer_${d}`);
+        });
+    });
+
+    test('is exposed on the public API', () => {
+        expect(typeof CloudSync.migrateLocalSubmissions).toBe('function');
+    });
+
+    test('returns { migrated: [], reset: [] } when mapsDatabase is null', () => {
+        const result = CloudSync.migrateLocalSubmissions(null);
+        expect(result).toEqual({ migrated: [], reset: [] });
+    });
+
+    test('returns { migrated: [], reset: [] } when mapsDatabase is empty', () => {
+        CookieUtils.setCookie(`submission_${DATE_A}`,
+            JSON.stringify({ score: 10, goal: 10, mapVersion: 1, walls: [[0, 0]], __version: '1.2' }), 1);
+        const result = CloudSync.migrateLocalSubmissions({});
+        expect(result).toEqual({ migrated: [], reset: [] });
+    });
+
+    test('returns { migrated: [], reset: [] } when no submission cookies exist', () => {
+        const result = CloudSync.migrateLocalSubmissions(mapsDatabase);
+        expect(result).toEqual({ migrated: [], reset: [] });
+    });
+
+    test('skips dates where version already matches', () => {
+        CookieUtils.setCookie(`submission_${DATE_A}`,
+            JSON.stringify({ score: 10, goal: 10, mapVersion: 2, walls: [[0, 0]], __version: '1.2' }), 1);
+        const result = CloudSync.migrateLocalSubmissions(mapsDatabase);
+        expect(result.migrated).not.toContain(DATE_A);
+        expect(result.reset).not.toContain(DATE_A);
+    });
+
+    test('migrates perfect-score submission when map version changes (higher goal)', () => {
+        // User had perfect score 10 on map v1 (goal=10); map v2 has same goal=10.
+        CookieUtils.setCookie(`submission_${DATE_A}`,
+            JSON.stringify({ score: 10, goal: 10, mapVersion: 1, walls: [[9, 9]], timestamp: 'T1', __version: '1.2' }), 1);
+
+        const result = CloudSync.migrateLocalSubmissions(mapsDatabase);
+
+        expect(result.migrated).toContain(DATE_A);
+        expect(result.reset).not.toContain(DATE_A);
+
+        const saved = JSON.parse(CookieUtils.getCookie(`submission_${DATE_A}`));
+        expect(saved.mapVersion).toBe(2);
+        expect(saved.score).toBe(10); // goal is still 10
+        expect(saved.walls).toEqual([[0, 1], [2, 3]]); // new optimal
+        expect(saved.timestamp).toBe('T1'); // timestamp preserved
+    });
+
+    test('migrates when user score equals old goal and new goal is the same', () => {
+        // Same goal before and after — migration should still use the new optimal solution.
+        CookieUtils.setCookie(`submission_${DATE_B}`,
+            JSON.stringify({ score: 50, goal: 50, mapVersion: 1, walls: [[0, 0]], timestamp: 'T2', __version: '1.2' }), 1);
+
+        const result = CloudSync.migrateLocalSubmissions(mapsDatabase);
+
+        expect(result.migrated).toContain(DATE_B);
+        const saved = JSON.parse(CookieUtils.getCookie(`submission_${DATE_B}`));
+        expect(saved.mapVersion).toBe(2);
+        expect(saved.walls).toEqual([[4, 5], [6, 7]]); // new optimal
+        expect(saved.timestamp).toBe('T2');
+    });
+
+    test('resets non-perfect score when map version changes', () => {
+        CookieUtils.setCookie(`submission_${DATE_C}`,
+            JSON.stringify({ score: 15, goal: 20, mapVersion: 1, walls: [[0, 0]], __version: '1.2' }), 1);
+
+        const result = CloudSync.migrateLocalSubmissions(mapsDatabase);
+
+        expect(result.reset).toContain(DATE_C);
+        expect(result.migrated).not.toContain(DATE_C);
+        expect(CookieUtils.getCookie(`submission_${DATE_C}`)).toBeNull();
+    });
+
+    test('resets submission with null goal (legacy save)', () => {
+        CookieUtils.setCookie(`submission_${DATE_A}`,
+            JSON.stringify({ score: 10, goal: null, mapVersion: 1, walls: [[0, 0]], __version: '1.2' }), 1);
+
+        const result = CloudSync.migrateLocalSubmissions(mapsDatabase);
+
+        expect(result.reset).toContain(DATE_A);
+        expect(CookieUtils.getCookie(`submission_${DATE_A}`)).toBeNull();
+    });
+
+    test('resets submission without goal field (old schema)', () => {
+        CookieUtils.setCookie(`submission_${DATE_A}`,
+            JSON.stringify({ score: 10, mapVersion: 1, walls: [[0, 0]], __version: '1.1' }), 1);
+
+        const result = CloudSync.migrateLocalSubmissions(mapsDatabase);
+
+        // goal gets set to null by schema migration (v1.1 → v1.2 adds goal: null)
+        expect(result.reset).toContain(DATE_A);
+        expect(CookieUtils.getCookie(`submission_${DATE_A}`)).toBeNull();
+    });
+
+    test('deletes progress and timer cookies when resetting', () => {
+        CookieUtils.setCookie(`submission_${DATE_A}`,
+            JSON.stringify({ score: 5, goal: 10, mapVersion: 1, walls: [[0, 0]], __version: '1.2' }), 1);
+        CookieUtils.setCookie(`progress_${DATE_A}`, JSON.stringify({ bestScore: 5, bestWalls: [] }), 1);
+        CookieUtils.setCookie(`timer_${DATE_A}`, JSON.stringify({ elapsed: 30 }), 1);
+
+        CloudSync.migrateLocalSubmissions(mapsDatabase);
+
+        expect(CookieUtils.getCookie(`submission_${DATE_A}`)).toBeNull();
+        expect(CookieUtils.getCookie(`progress_${DATE_A}`)).toBeNull();
+        expect(CookieUtils.getCookie(`timer_${DATE_A}`)).toBeNull();
+    });
+
+    test('deletes progress and timer cookies after perfect-score migration', () => {
+        CookieUtils.setCookie(`submission_${DATE_A}`,
+            JSON.stringify({ score: 10, goal: 10, mapVersion: 1, walls: [[9, 9]], __version: '1.2' }), 1);
+        CookieUtils.setCookie(`progress_${DATE_A}`, JSON.stringify({ bestScore: 8, bestWalls: [] }), 1);
+        CookieUtils.setCookie(`timer_${DATE_A}`, JSON.stringify({ elapsed: 60 }), 1);
+
+        CloudSync.migrateLocalSubmissions(mapsDatabase);
+
+        expect(CookieUtils.getCookie(`progress_${DATE_A}`)).toBeNull();
+        expect(CookieUtils.getCookie(`timer_${DATE_A}`)).toBeNull();
+    });
+
+    test('skips dates not present in mapsDatabase when dates array is provided', () => {
+        CookieUtils.setCookie(`submission_${DATE_A}`,
+            JSON.stringify({ score: 10, goal: 10, mapVersion: 1, walls: [[9, 9]], __version: '1.2' }), 1);
+
+        // Provide a dates array that does NOT include DATE_A
+        const result = CloudSync.migrateLocalSubmissions(mapsDatabase, [DATE_B]);
+        expect(result.migrated).not.toContain(DATE_A);
+        expect(result.reset).not.toContain(DATE_A);
+        // Cookie should be unchanged
+        expect(JSON.parse(CookieUtils.getCookie(`submission_${DATE_A}`)).mapVersion).toBe(1);
+    });
+
+    test('processes only the dates in the provided array', () => {
+        CookieUtils.setCookie(`submission_${DATE_A}`,
+            JSON.stringify({ score: 10, goal: 10, mapVersion: 1, walls: [[9, 9]], timestamp: 'T1', __version: '1.2' }), 1);
+        CookieUtils.setCookie(`submission_${DATE_B}`,
+            JSON.stringify({ score: 5, goal: 50, mapVersion: 1, walls: [[0, 0]], __version: '1.2' }), 1);
+
+        // Only migrate DATE_A
+        const result = CloudSync.migrateLocalSubmissions(mapsDatabase, [DATE_A]);
+        expect(result.migrated).toContain(DATE_A);
+        // DATE_B should be untouched
+        expect(JSON.parse(CookieUtils.getCookie(`submission_${DATE_B}`)).mapVersion).toBe(1);
+    });
+
+    test('skips pre-submission records (no score field)', () => {
+        // Cookie has hints but no score — not a completed submission
+        CookieUtils.setCookie(`submission_${DATE_A}`,
+            JSON.stringify({ hintsUsed: ['checked'], mapVersion: 1, __version: '1.2' }), 1);
+
+        const result = CloudSync.migrateLocalSubmissions(mapsDatabase);
+        expect(result.migrated).not.toContain(DATE_A);
+        expect(result.reset).not.toContain(DATE_A);
+    });
+
+    test('does not migrate when map has no optimalSolution', () => {
+        const dbNoSolution = {
+            [DATE_A]: { version: 2, goal: 10, optimalSolution: null },
+        };
+        CookieUtils.setCookie(`submission_${DATE_A}`,
+            JSON.stringify({ score: 10, goal: 10, mapVersion: 1, walls: [[9, 9]], __version: '1.2' }), 1);
+
+        const result = CloudSync.migrateLocalSubmissions(dbNoSolution);
+        // No optimal solution → can't migrate perfect score → reset
+        expect(result.reset).toContain(DATE_A);
+        expect(CookieUtils.getCookie(`submission_${DATE_A}`)).toBeNull();
+    });
+
+    test('handles multiple dates in one pass', () => {
+        CookieUtils.setCookie(`submission_${DATE_A}`,
+            JSON.stringify({ score: 10, goal: 10, mapVersion: 1, walls: [[9, 9]], timestamp: 'T1', __version: '1.2' }), 1);
+        CookieUtils.setCookie(`submission_${DATE_B}`,
+            JSON.stringify({ score: 30, goal: 50, mapVersion: 1, walls: [[0, 0]], __version: '1.2' }), 1);
+        CookieUtils.setCookie(`submission_${DATE_C}`,
+            JSON.stringify({ score: 20, goal: 20, mapVersion: 1, walls: [[5, 5]], timestamp: 'T3', __version: '1.2' }), 1);
+
+        const result = CloudSync.migrateLocalSubmissions(mapsDatabase);
+
+        expect(result.migrated).toContain(DATE_A); // perfect (10 >= 10)
+        expect(result.reset).toContain(DATE_B);    // non-perfect (30 < 50)
+        expect(result.migrated).toContain(DATE_C); // perfect (20 >= 20)
+    });
+});
+
+// ============================================================
+// _deleteLevelData helper
+// ============================================================
+describe('_deleteLevelData()', () => {
+    const DATE = '2026-09-01';
+
+    beforeEach(() => {
+        CookieUtils.setCookie(`submission_${DATE}`, JSON.stringify({ score: 5 }), 1);
+        CookieUtils.setCookie(`progress_${DATE}`, JSON.stringify({ bestScore: 3 }), 1);
+        CookieUtils.setCookie(`timer_${DATE}`, JSON.stringify({ elapsed: 10 }), 1);
+    });
+
+    afterEach(() => {
+        [`submission_${DATE}`, `progress_${DATE}`, `timer_${DATE}`].forEach(n => CookieUtils.deleteCookie(n));
+    });
+
+    test('is exposed on the public API', () => {
+        expect(typeof CloudSync._deleteLevelData).toBe('function');
+    });
+
+    test('deletes submission, progress, and timer cookies', () => {
+        CloudSync._deleteLevelData(DATE);
+        expect(CookieUtils.getCookie(`submission_${DATE}`)).toBeNull();
+        expect(CookieUtils.getCookie(`progress_${DATE}`)).toBeNull();
+        expect(CookieUtils.getCookie(`timer_${DATE}`)).toBeNull();
+    });
+
+    test('does not throw when cookies do not exist', () => {
+        CookieUtils.deleteCookie(`submission_${DATE}`);
+        CookieUtils.deleteCookie(`progress_${DATE}`);
+        CookieUtils.deleteCookie(`timer_${DATE}`);
+        expect(() => CloudSync._deleteLevelData(DATE)).not.toThrow();
+    });
+});

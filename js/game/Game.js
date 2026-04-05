@@ -14,6 +14,8 @@
  * so the scoring rules can be swapped for different game variants.
  */
 
+/* global parseCompactSolution */
+
 class Game {
     /**
      * Create a new Game instance
@@ -1520,11 +1522,19 @@ class Game {
     }
 
     /**
-     * Load submitted score data from cookie
+     * Load submitted score data from cookie.
+     * Applies schema migration and map-version migration before returning.
+     *
      * @param {string} dateString - Date of the puzzle
-     * @returns {Object|null} Object with {score, walls, timestamp} or null
+     * @param {Object|null} [overrideMapData] - Optional map-data object to use for
+     *   map-version checking instead of `this.currentMapData`.  Pass the specific
+     *   date's map data when calling from a context where another level is currently
+     *   loaded (e.g. the level-selector calendar) so that the version check uses the
+     *   correct version, goal, and optimal solution for `dateString` rather than the
+     *   currently active level's data.
+     * @returns {Object|null} Migrated submission, or null if absent / corrupted / reset
      */
-    loadSubmission(dateString) {
+    loadSubmission(dateString, overrideMapData) {
         const cookieName = `submission_${dateString}`;
         const value = CookieUtils.getCookie(cookieName);
         if (value) {
@@ -1532,12 +1542,14 @@ class Game {
                 const data = CloudMigration.migrateSubmission(JSON.parse(value));
                 // Return null for pre-submission data (hints stored before formal submission)
                 if (typeof data.score !== 'number') return null;
-                const migrated = this._handleMapVersionCheck(dateString, data);
+                const migrated = this._handleMapVersionCheck(dateString, data, overrideMapData);
                 if (!migrated) return null;
                 // Validate that the stored walls actually result in a penned state.
                 // A corrupted submission (e.g. from a failed migration) where the walls do
                 // not pen the pet is treated as lost and reset so the user can start fresh.
-                if (this._isSubmissionCorrupted(migrated)) {
+                // Skip this check when an overrideMapData is provided (calendar context):
+                // the grid belongs to a different level and would give a false positive.
+                if (!overrideMapData && this._isSubmissionCorrupted(migrated)) {
                     this.resetLevelData(dateString);
                     return null;
                 }
@@ -1611,10 +1623,20 @@ class Game {
      *
      * @param {string} dateString - Puzzle date
      * @param {Object} data - Submission data object (already schema-migrated)
+     * @param {Object|null} [overrideMapData] - When provided, use this map data for the
+     *   version/goal/solution lookup instead of `this.currentMapData` / `this.optimalSolution`.
+     *   Pass the specific date's map data when checking a level that is not currently loaded
+     *   (e.g. from the level-selector calendar) to ensure the correct data is used.
      * @returns {Object|null} Migrated data, or null if data was cleared
      */
-    _handleMapVersionCheck(dateString, data) {
-        const currentVersion = this._getCurrentMapVersion();
+    _handleMapVersionCheck(dateString, data, overrideMapData) {
+        const mapData = overrideMapData || null;
+
+        // Resolve version, goal, and optimal solution from override or game state.
+        const currentVersion = mapData
+            ? (typeof mapData.version === 'number' ? mapData.version : CONSTANTS.INITIAL_MAP_VERSION)
+            : this._getCurrentMapVersion();
+
         const savedVersion = typeof data.mapVersion === 'number' ? data.mapVersion : 1;
 
         if (savedVersion === currentVersion) {
@@ -1634,14 +1656,30 @@ class Game {
         // goal after the user already achieved the previous (higher) goal.
         const isPerfect = typeof data.score === 'number' && data.score >= data.goal;
 
-        if (isPerfect && this.optimalSolution && this.optimalSolution.length > 0) {
+        // Resolve the optimal solution and goal area from the override or game state.
+        let optimalSolution;
+        let goalAreaSize;
+        if (mapData) {
+            // overrideMapData carries the solution as a compact flat array; decode it.
+            optimalSolution = (Array.isArray(mapData.optimalSolution) && mapData.optimalSolution.length > 0)
+                ? (typeof parseCompactSolution === 'function'
+                    ? parseCompactSolution(mapData.optimalSolution)
+                    : mapData.optimalSolution) // fallback: already decoded (test env)
+                : null;
+            goalAreaSize = mapData.goal;
+        } else {
+            optimalSolution = this.optimalSolution;
+            goalAreaSize = this.goalAreaSize;
+        }
+
+        if (isPerfect && optimalSolution && optimalSolution.length > 0) {
             // Migrate: update walls and score to the current optimal solution.
             // Keep the original submission timestamp so the user's completion time is preserved.
             const migrated = Object.assign({}, data, {
                 mapVersion: currentVersion,
-                goal: this.goalAreaSize,
-                score: this.goalAreaSize,
-                walls: this.optimalSolution,
+                goal: goalAreaSize,
+                score: goalAreaSize,
+                walls: optimalSolution,
             });
             CookieUtils.setCookie(`submission_${dateString}`, JSON.stringify(migrated), 365);
             if (typeof CloudSync !== 'undefined' && CloudSync.isConfigured() && CloudSync.isLoggedIn()) {
