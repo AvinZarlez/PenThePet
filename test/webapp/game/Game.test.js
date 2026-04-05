@@ -149,9 +149,11 @@ describe('Game — Timer', () => {
 
         test('loads locked time from submission when already submitted', () => {
             game.currentMapData = { version: 1 };
+            // Walls at (2,3),(4,3),(3,2),(3,4) pen the home at (3,3) in the 7×7 test grid
+            const penningWalls = [[2,3],[4,3],[3,2],[3,4]];
             CookieUtils.setCookie(
                 'submission_2026-01-01',
-                JSON.stringify({ score: 10, walls: [], timestamp: '', time: 250, mapVersion: 1 }),
+                JSON.stringify({ __version: '1.2', goal: 10, score: 10, walls: penningWalls, timestamp: '', time: 250, mapVersion: 1, hintsUsed: [] }),
                 1
             );
             game.isSubmitted = true;
@@ -2249,11 +2251,11 @@ describe('Game — Best State', () => {
             expect(saved.mapVersion).toBe(2);
         });
 
-        test('saveBestState saves mapVersion 0 when currentMapData is absent (absent map = v0)', () => {
+        test('saveBestState saves mapVersion matching INITIAL_MAP_VERSION when currentMapData is absent', () => {
             game.currentMapData = null;
             game.saveBestState('2026-01-01', 10, [[0, 0]]);
             const saved = JSON.parse(CookieUtils.getCookie('progress_2026-01-01'));
-            expect(saved.mapVersion).toBe(0);
+            expect(saved.mapVersion).toBe(CONSTANTS.INITIAL_MAP_VERSION);
         });
 
         test('loadBestState clears state and cookie when map version has changed', () => {
@@ -2276,15 +2278,15 @@ describe('Game — Best State', () => {
             expect(game.bestWalls).toEqual([[1, 0]]);
         });
 
-        test('loadBestState clears state when old progress (no mapVersion → v1) vs absent map (defaults to v0)', () => {
-            game.currentMapData = null; // absent map defaults to v0
+        test('loadBestState loads state when old progress (no mapVersion → v1) vs absent map (defaults to v1)', () => {
+            game.currentMapData = null; // absent map defaults to INITIAL_MAP_VERSION (1)
             CookieUtils.setCookie('progress_2026-01-01',
                 JSON.stringify({ bestScore: 5, bestWalls: [[0, 1]] }), 1); // no mapVersion → defaults to v1
             game.loadBestState('2026-01-01');
-            // mismatch: v1 save vs v0 map → clear state
-            expect(game.bestScore).toBeNull();
-            expect(game.bestWalls).toBeNull();
-            expect(CookieUtils.getCookie('progress_2026-01-01')).toBeNull();
+            // both default to v1 → match → state is loaded
+            expect(game.bestScore).toBe(5);
+            expect(game.bestWalls).toEqual([[0, 1]]);
+            expect(CookieUtils.getCookie('progress_2026-01-01')).not.toBeNull();
         });
     });
 
@@ -2449,10 +2451,12 @@ describe('Game — Best State', () => {
             game.isSubmitted = true;
             game.elapsedSeconds = 0;
             game.submittedScore = 8;
-            CookieUtils.setCookie('progress_2026-01-01', JSON.stringify({ bestScore: 8, bestWalls: [[0,1]], mapVersion: 1 }), 1);
-            // Supply a minimal submission cookie so loadSubmission() works
+            // Walls at (2,3),(4,3),(3,2),(3,4) pen the home at (3,3) in the 7×7 test grid
+            const penningWalls = [[2,3],[4,3],[3,2],[3,4]];
+            CookieUtils.setCookie('progress_2026-01-01', JSON.stringify({ bestScore: 8, bestWalls: penningWalls, mapVersion: 1 }), 1);
+            // Supply a minimal submission cookie with penning walls and a known goal so loadSubmission() works
             CookieUtils.setCookie('submission_2026-01-01', JSON.stringify({
-                __version: '1.1', score: 8, walls: [[0,1]], timestamp: '', time: 0, hintsUsed: [], mapVersion: 1
+                __version: '1.2', goal: 8, score: 8, walls: penningWalls, timestamp: '', time: 0, hintsUsed: [], mapVersion: 1
             }), 1);
             game.initTimerForDate('2026-01-01');
             expect(game.bestScore).toBe(8);
@@ -3344,14 +3348,14 @@ describe('Game — Map version migration', () => {
     // _getCurrentMapVersion
     // ------------------------------------------------------------------
     describe('_getCurrentMapVersion()', () => {
-        test('returns 0 when currentMapData is null (absent map defaults to v0)', () => {
+        test('returns INITIAL_MAP_VERSION (1) when currentMapData is null (absent map defaults to v1)', () => {
             game.currentMapData = null;
-            expect(game._getCurrentMapVersion()).toBe(0);
+            expect(game._getCurrentMapVersion()).toBe(CONSTANTS.INITIAL_MAP_VERSION);
         });
 
-        test('returns 0 when currentMapData has no version field', () => {
+        test('returns INITIAL_MAP_VERSION (1) when currentMapData has no version field', () => {
             game.currentMapData = { goal: 10 };
-            expect(game._getCurrentMapVersion()).toBe(0);
+            expect(game._getCurrentMapVersion()).toBe(CONSTANTS.INITIAL_MAP_VERSION);
         });
 
         test('returns the version from currentMapData', () => {
@@ -3364,7 +3368,7 @@ describe('Game — Map version migration', () => {
             expect(game._getCurrentMapVersion()).toBe(1);
         });
 
-        test('returns 0 when version is explicitly set to 0 (edge case)', () => {
+        test('returns 0 when version is explicitly set to 0 (explicit zero is preserved)', () => {
             game.currentMapData = { version: 0 };
             expect(game._getCurrentMapVersion()).toBe(0);
         });
@@ -3382,12 +3386,12 @@ describe('Game — Map version migration', () => {
             expect(saved.mapVersion).toBe(2);
         });
 
-        test('saves mapVersion 0 when currentMapData is absent (absent map = v0)', () => {
+        test('saves mapVersion matching INITIAL_MAP_VERSION when currentMapData is absent', () => {
             game.currentMapData = null;
             game.elapsedSeconds = 0;
             game.saveSubmission('2026-01-01', 15, []);
             const saved = JSON.parse(CookieUtils.getCookie('submission_2026-01-01'));
-            expect(saved.mapVersion).toBe(0);
+            expect(saved.mapVersion).toBe(CONSTANTS.INITIAL_MAP_VERSION);
         });
     });
 
@@ -3429,13 +3433,13 @@ describe('Game — Map version migration', () => {
             expect(game._handleMapVersionCheck('2026-01-01', data)).toBe(data);
         });
 
-        test('old save (no mapVersion → v1) vs absent map (defaults to v0) → mismatch', () => {
-            game.currentMapData = null; // absent map → v0
+        test('old save (no mapVersion → v1) vs absent map (defaults to v1) → match, returns data unchanged', () => {
+            game.currentMapData = null; // absent map → defaults to INITIAL_MAP_VERSION (1)
             game.goalAreaSize = 10;
             game.optimalSolution = null;
             const data = { score: 10, walls: [] }; // no mapVersion → defaults to v1
-            // mismatch: savedVersion=1 vs currentVersion=0 → triggers reset
-            expect(game._handleMapVersionCheck('2026-01-01', data)).toBeNull();
+            // both default to v1 → match → data returned as-is
+            expect(game._handleMapVersionCheck('2026-01-01', data)).toBe(data);
         });
     });
 
@@ -3447,7 +3451,7 @@ describe('Game — Map version migration', () => {
             game.currentMapData = { version: 2 };
             game.goalAreaSize = 10;
             game.optimalSolution = [[1, 2], [3, 4]];
-            const data = { score: 10, walls: [[0, 0]], timestamp: 'T1', mapVersion: 1 };
+            const data = { score: 10, goal: 10, walls: [[0, 0]], timestamp: 'T1', mapVersion: 1 };
 
             const result = game._handleMapVersionCheck('2026-01-01', data);
 
@@ -3462,7 +3466,7 @@ describe('Game — Map version migration', () => {
             game.currentMapData = { version: 2 };
             game.goalAreaSize = 10;
             game.optimalSolution = [[1, 2]];
-            const data = { score: 10, walls: [[0, 0]], mapVersion: 1 };
+            const data = { score: 10, goal: 10, walls: [[0, 0]], mapVersion: 1 };
 
             game._handleMapVersionCheck('2026-01-01', data);
 
@@ -3478,7 +3482,7 @@ describe('Game — Map version migration', () => {
             CookieUtils.setCookie('progress_2026-01-01', JSON.stringify({ bestScore: 5, bestWalls: [] }), 1);
             CookieUtils.setCookie('timer_2026-01-01', JSON.stringify({ elapsed: 60 }), 1);
 
-            game._handleMapVersionCheck('2026-01-01', { score: 10, walls: [], mapVersion: 1 });
+            game._handleMapVersionCheck('2026-01-01', { score: 10, goal: 10, walls: [], mapVersion: 1 });
 
             expect(CookieUtils.getCookie('progress_2026-01-01')).toBeNull();
             expect(CookieUtils.getCookie('timer_2026-01-01')).toBeNull();
@@ -3488,7 +3492,7 @@ describe('Game — Map version migration', () => {
             game.currentMapData = { version: 2 };
             game.goalAreaSize = 15;
             game.optimalSolution = [[0, 0]];
-            const data = { score: 15, walls: [], mapVersion: 1 };
+            const data = { score: 15, goal: 15, walls: [], mapVersion: 1 };
 
             const result = game._handleMapVersionCheck('2026-01-01', data);
             expect(result).not.toBeNull();
@@ -3499,7 +3503,7 @@ describe('Game — Map version migration', () => {
             game.currentMapData = { version: 2 };
             game.goalAreaSize = 12; // new goal is lower than the old score
             game.optimalSolution = [[0, 0]];
-            const data = { score: 15, walls: [], mapVersion: 1 }; // score exceeds new goal
+            const data = { score: 15, goal: 15, walls: [], mapVersion: 1 }; // score matches old goal
 
             const result = game._handleMapVersionCheck('2026-01-01', data);
             expect(result).not.toBeNull();
@@ -3524,15 +3528,24 @@ describe('Game — Map version migration', () => {
             expect(result.goal).toBe(37); // goal updated to current
         });
 
-        test('falls back to new goal when saved goal is absent (old save format)', () => {
-            // Old saves without a goal field should behave as before:
-            // only perfect if score >= new goal.
+        test('resets when saved goal is null (legacy save without stored goal — goal unknown)', () => {
+            // Saves with goal: null cannot be reliably assessed for a perfect score.
+            // Even a very high score triggers a reset so the user retries the updated map.
             game.currentMapData = { version: 2 };
             game.goalAreaSize = 37;
             game.optimalSolution = [[5, 5]];
-            const data = { score: 36, walls: [], mapVersion: 1 }; // no goal field
+            const data = { score: 999, goal: null, walls: [], mapVersion: 1 }; // null goal → always reset
 
-            // 36 < 37 (new goal) → treated as non-perfect
+            expect(game._handleMapVersionCheck('2026-01-01', data)).toBeNull();
+        });
+
+        test('resets when saved goal is absent (old save format — goal unknown)', () => {
+            // Old saves without a goal field cannot be reliably assessed for a perfect score.
+            game.currentMapData = { version: 2 };
+            game.goalAreaSize = 37;
+            game.optimalSolution = [[5, 5]];
+            const data = { score: 36, walls: [], mapVersion: 1 }; // no goal field → always reset
+
             expect(game._handleMapVersionCheck('2026-01-01', data)).toBeNull();
         });
 
@@ -3604,15 +3617,17 @@ describe('Game — Map version migration', () => {
         test('returns migrated data for a perfect-score submission on version change', () => {
             game.currentMapData = { version: 2 };
             game.goalAreaSize = 10;
-            game.optimalSolution = [[2, 3]];
+            // Walls that pen the home at (3,3) in the 7×7 test grid
+            const penningWalls = [[2,3],[4,3],[3,2],[3,4]];
+            game.optimalSolution = penningWalls;
             CookieUtils.setCookie('submission_2026-01-01',
-                JSON.stringify({ __version: '1.1', mapVersion: 1, score: 10, walls: [[0, 0]], timestamp: 'T', time: 0, hintsUsed: [] }), 1);
+                JSON.stringify({ __version: '1.2', mapVersion: 1, goal: 10, score: 10, walls: [[0, 0]], timestamp: 'T', time: 0, hintsUsed: [] }), 1);
 
             const result = game.loadSubmission('2026-01-01');
 
             expect(result).not.toBeNull();
             expect(result.mapVersion).toBe(2);
-            expect(result.walls).toEqual([[2, 3]]);
+            expect(result.walls).toEqual(penningWalls);
         });
 
         test('returns null and clears cookies for a non-perfect submission on version change', () => {
@@ -3620,7 +3635,7 @@ describe('Game — Map version migration', () => {
             game.goalAreaSize = 10;
             game.optimalSolution = [[2, 3]];
             CookieUtils.setCookie('submission_2026-01-01',
-                JSON.stringify({ __version: '1.1', mapVersion: 1, score: 7, walls: [[0, 0]], timestamp: 'T', time: 0, hintsUsed: [] }), 1);
+                JSON.stringify({ __version: '1.2', mapVersion: 1, goal: 10, score: 7, walls: [[0, 0]], timestamp: 'T', time: 0, hintsUsed: [] }), 1);
 
             const result = game.loadSubmission('2026-01-01');
 
@@ -3632,8 +3647,10 @@ describe('Game — Map version migration', () => {
             game.currentMapData = { version: 1 };
             game.goalAreaSize = 10;
             game.optimalSolution = [[1, 1]];
+            // Walls that pen the home at (3,3) in the 7×7 test grid
+            const penningWalls = [[2,3],[4,3],[3,2],[3,4]];
             CookieUtils.setCookie('submission_2026-01-01',
-                JSON.stringify({ __version: '1.1', mapVersion: 1, score: 8, walls: [[0, 0]], timestamp: 'T', time: 0, hintsUsed: [] }), 1);
+                JSON.stringify({ __version: '1.2', mapVersion: 1, goal: 8, score: 8, walls: penningWalls, timestamp: 'T', time: 0, hintsUsed: [] }), 1);
 
             const result = game.loadSubmission('2026-01-01');
 
@@ -3642,16 +3659,17 @@ describe('Game — Map version migration', () => {
             expect(result.mapVersion).toBe(1);
         });
 
-        test('old saves without mapVersion (v0) trigger migration against absent-version map (defaults to v1)', () => {
+        test('old saves without a stored goal are reset when absent-version map is loaded', () => {
             game.currentMapData = null; // absent map defaults to v1
             game.goalAreaSize = 10;
             game.optimalSolution = null;
+            // v1.1 data has no goal field; after migrateSubmission goal becomes null → always reset
             CookieUtils.setCookie('submission_2026-01-01',
                 JSON.stringify({ __version: '1.1', score: 8, walls: [], timestamp: 'T', time: 0, hintsUsed: [] }), 1);
 
             const result = game.loadSubmission('2026-01-01');
 
-            // mismatch: save v0 vs map v1 → reset (no optimal solution to migrate to)
+            // null goal → reset (legacy save without stored goal)
             expect(result).toBeNull();
             expect(CookieUtils.getCookie('submission_2026-01-01')).toBeNull();
         });
@@ -3783,12 +3801,10 @@ describe('Game — Map version migration', () => {
             expect(game._handleMapVersionCheck('2026-01-01', data)).toBeNull();
         });
 
-        test('save with mapVersion=1 vs map without version field (defaults to v0) → mismatch', () => {
-            game.currentMapData = { goal: 10 }; // no version field → defaults to v0
-            game.goalAreaSize = 10;
-            game.optimalSolution = null;
-            const data = { score: 8, walls: [], mapVersion: 1 }; // v1 vs v0 → mismatch
-            expect(game._handleMapVersionCheck('2026-01-01', data)).toBeNull();
+        test('save with mapVersion=1 vs map without version field (defaults to v1) → match', () => {
+            game.currentMapData = { goal: 10 }; // no version field → defaults to INITIAL_MAP_VERSION (1)
+            const data = { score: 8, walls: [], mapVersion: 1 }; // v1 vs v1 → match
+            expect(game._handleMapVersionCheck('2026-01-01', data)).toBe(data);
         });
 
         test('save with mapVersion=1 vs map with explicit version=1 → match', () => {
@@ -3822,7 +3838,7 @@ describe('Game — Map version migration', () => {
             game.currentMapData = { version: 2 };
             game.goalAreaSize = 10;
             game.optimalSolution = [[5, 5]];
-            const data = { score: 10, walls: [[0, 0]], timestamp: 'T1' }; // no mapVersion → v1
+            const data = { score: 10, goal: 10, walls: [[0, 0]], timestamp: 'T1' }; // no mapVersion → v1, goal stored
             const result = game._handleMapVersionCheck('2026-01-01', data);
             expect(result).not.toBeNull();
             expect(result.mapVersion).toBe(2);
@@ -3830,15 +3846,15 @@ describe('Game — Map version migration', () => {
             expect(result.timestamp).toBe('T1'); // original timestamp preserved
         });
 
-        test('perfect score against absent-version map (defaults to v0) with optimal → migrates', () => {
-            game.currentMapData = null; // absent → v0
+        test('absent-version map (defaults to v1) with save mapVersion=1 → match, returns data unchanged', () => {
+            game.currentMapData = null; // absent → defaults to INITIAL_MAP_VERSION (1)
             game.goalAreaSize = 10;
             game.optimalSolution = [[3, 3]];
-            const data = { score: 10, walls: [[0, 0]], mapVersion: 1 }; // mapVersion=1 vs v0 → mismatch
+            const data = { score: 10, goal: 10, walls: [[0, 0]], mapVersion: 1 }; // mapVersion=1 vs v1 → match
             const result = game._handleMapVersionCheck('2026-01-01', data);
-            expect(result).not.toBeNull();
-            expect(result.mapVersion).toBe(0);
-            expect(result.walls).toEqual([[3, 3]]);
+            // v1 match → returned as-is (no migration performed)
+            expect(result).toBe(data);
+            expect(result.walls).toEqual([[0, 0]]); // walls unchanged
         });
 
         test('perfect old save but no optimalSolution → full reset even on perfect score', () => {
@@ -3895,7 +3911,7 @@ describe('Game — Map version migration', () => {
             game.currentMapData = { version: 5 };
             game.goalAreaSize = 12;
             game.optimalSolution = [[0, 1]];
-            const data = { score: 12, walls: [[0, 0]], timestamp: 'T2', mapVersion: 1 };
+            const data = { score: 12, goal: 12, walls: [[0, 0]], timestamp: 'T2', mapVersion: 1 };
             const result = game._handleMapVersionCheck('2026-01-01', data);
             expect(result).not.toBeNull();
             expect(result.mapVersion).toBe(5);
@@ -3932,14 +3948,14 @@ describe('Game — Map version migration', () => {
             expect(game.bestWalls).toEqual([[1, 0]]);
         });
 
-        test('loadBestState: progress with mapVersion=1 vs absent-version map (v0) → mismatch, clears', () => {
-            game.currentMapData = null; // absent → v0
+        test('loadBestState: progress with mapVersion=1 vs absent-version map (defaults to v1) → match, state loaded', () => {
+            game.currentMapData = null; // absent → defaults to INITIAL_MAP_VERSION (1)
             CookieUtils.setCookie('progress_2026-01-01',
                 JSON.stringify({ bestScore: 7, bestWalls: [[2, 2]], mapVersion: 1 }), 1);
             game.loadBestState('2026-01-01');
-            // v1 save vs v0 map → mismatch → clear
-            expect(game.bestScore).toBeNull();
-            expect(game.bestWalls).toBeNull();
+            // v1 save vs v1 map → match → state is loaded
+            expect(game.bestScore).toBe(7);
+            expect(game.bestWalls).toEqual([[2, 2]]);
         });
 
         test('loadBestState: malformed cookie value does not throw', () => {
@@ -3955,27 +3971,31 @@ describe('Game — Map version migration', () => {
             game.currentMapData = { version: 1 };
             game.goalAreaSize = 10;
             game.optimalSolution = [[4, 4]];
+            // Walls that pen the home at (3,3) in the 7×7 test grid
+            const penningWalls = [[2,3],[4,3],[3,2],[3,4]];
             CookieUtils.setCookie('submission_2026-01-01', JSON.stringify({
-                __version: '1.1', score: 7, walls: [[0, 0]], timestamp: 'old', time: 30, hintsUsed: []
+                __version: '1.2', goal: 7, score: 7, walls: penningWalls, timestamp: 'old', time: 30, hintsUsed: [], mapVersion: 1
             }), 1);
             const result = game.loadSubmission('2026-01-01');
-            // v1 match → loaded unchanged
+            // v1 match, valid walls → loaded unchanged
             expect(result).not.toBeNull();
             expect(result.score).toBe(7);
-            expect(result.walls).toEqual([[0, 0]]);
+            expect(result.walls).toEqual(penningWalls);
         });
 
         test('loadSubmission: old perfect save (no mapVersion → v1) + map v2 + optimal → migrates', () => {
             game.currentMapData = { version: 2 };
             game.goalAreaSize = 10;
-            game.optimalSolution = [[4, 4]];
+            // Walls that pen the home at (3,3) in the 7×7 test grid
+            const penningWalls = [[2,3],[4,3],[3,2],[3,4]];
+            game.optimalSolution = penningWalls;
             CookieUtils.setCookie('submission_2026-01-01', JSON.stringify({
-                __version: '1.1', score: 10, walls: [[0, 0]], timestamp: 'old', time: 30, hintsUsed: []
+                __version: '1.2', goal: 10, score: 10, walls: [[0, 0]], timestamp: 'old', time: 30, hintsUsed: [], mapVersion: 1
             }), 1);
             const result = game.loadSubmission('2026-01-01');
             expect(result).not.toBeNull();
             expect(result.mapVersion).toBe(2);
-            expect(result.walls).toEqual([[4, 4]]);
+            expect(result.walls).toEqual(penningWalls);
         });
 
         test('loadSubmission: old below-goal save (no mapVersion → v1) + map v2 → null', () => {
@@ -3993,8 +4013,10 @@ describe('Game — Map version migration', () => {
         test('loadSubmission: save at mapVersion=2 vs map at version=2 → passes through unchanged', () => {
             game.currentMapData = { version: 2 };
             game.goalAreaSize = 10;
+            // Walls that pen the home at (3,3) in the 7×7 test grid
+            const penningWalls = [[2,3],[4,3],[3,2],[3,4]];
             CookieUtils.setCookie('submission_2026-01-01', JSON.stringify({
-                __version: '1.1', score: 8, walls: [[1, 1]], timestamp: 'T', time: 60, hintsUsed: [], mapVersion: 2
+                __version: '1.2', goal: 8, score: 8, walls: penningWalls, timestamp: 'T', time: 60, hintsUsed: [], mapVersion: 2
             }), 1);
             const result = game.loadSubmission('2026-01-01');
             expect(result).not.toBeNull();
@@ -4043,10 +4065,12 @@ describe('Game — Map version migration', () => {
         test('after migration, re-loading the migrated save succeeds (no double-migration)', () => {
             game.currentMapData = { version: 2 };
             game.goalAreaSize = 10;
-            game.optimalSolution = [[2, 2]];
-            // Simulate a first load: old save (no mapVersion → v1) vs map v2 → mismatch → migrates
+            // Walls that pen the home at (3,3) in the 7×7 test grid
+            const penningWalls = [[2,3],[4,3],[3,2],[3,4]];
+            game.optimalSolution = penningWalls;
+            // Simulate a first load: v1.2 save with stored goal, mapVersion=1 vs map v2 → mismatch → migrates
             CookieUtils.setCookie('submission_2026-01-01', JSON.stringify({
-                __version: '1.1', score: 10, walls: [[0, 0]], timestamp: 'T', time: 0, hintsUsed: []
+                __version: '1.2', goal: 10, score: 10, walls: [[0, 0]], timestamp: 'T', time: 0, hintsUsed: [], mapVersion: 1
             }), 1);
             const migrated = game.loadSubmission('2026-01-01');
             expect(migrated).not.toBeNull();
@@ -4056,7 +4080,100 @@ describe('Game — Map version migration', () => {
             const reloaded = game.loadSubmission('2026-01-01');
             expect(reloaded).not.toBeNull();
             expect(reloaded.mapVersion).toBe(2);
-            expect(reloaded.walls).toEqual([[2, 2]]);
+            expect(reloaded.walls).toEqual(penningWalls);
+        });
+    });
+
+    // ------------------------------------------------------------------
+    // _isSubmissionCorrupted — corrupted submission detection
+    // ------------------------------------------------------------------
+    describe('_isSubmissionCorrupted()', () => {
+        test('returns false for valid submission where walls pen the home', () => {
+            // Walls at (2,3),(4,3),(3,2),(3,4) pen the home at (3,3) in the 7×7 test grid
+            const penningWalls = [[2,3],[4,3],[3,2],[3,4]];
+            expect(game._isSubmissionCorrupted({ walls: penningWalls })).toBe(false);
+        });
+
+        test('returns true when no walls are placed (pet can escape)', () => {
+            expect(game._isSubmissionCorrupted({ walls: [] })).toBe(true);
+        });
+
+        test('returns true when walls are insufficient to pen the home', () => {
+            // Only one wall — home at (3,3) can still escape
+            expect(game._isSubmissionCorrupted({ walls: [[2, 3]] })).toBe(true);
+        });
+
+        test('returns false for null submission', () => {
+            expect(game._isSubmissionCorrupted(null)).toBe(false);
+        });
+
+        test('returns false when walls array is absent', () => {
+            expect(game._isSubmissionCorrupted({ score: 5 })).toBe(false);
+        });
+
+        test('returns true for malformed wall entry (wrong type)', () => {
+            expect(game._isSubmissionCorrupted({ walls: [null] })).toBe(true);
+        });
+
+        test('returns true for out-of-bounds wall position', () => {
+            expect(game._isSubmissionCorrupted({ walls: [[99, 99]] })).toBe(true);
+        });
+    });
+
+    // ------------------------------------------------------------------
+    // loadSubmission — corrupted submission detection integration
+    // ------------------------------------------------------------------
+    describe('loadSubmission() — corrupted submission reset', () => {
+        test('resets and returns null when walls do not pen the pet', () => {
+            game.currentMapData = { version: 1 };
+            game.goalAreaSize = 5;
+            // Store a valid (matching version) submission but with no walls → pet not penned
+            CookieUtils.setCookie('submission_2026-01-01', JSON.stringify({
+                __version: '1.2', goal: 5, score: 5, walls: [], timestamp: '', time: 0, hintsUsed: [], mapVersion: 1
+            }), 1);
+            const result = game.loadSubmission('2026-01-01');
+            expect(result).toBeNull();
+            expect(CookieUtils.getCookie('submission_2026-01-01')).toBeNull();
+        });
+
+        test('resets and returns null when walls are insufficient (only one wall placed)', () => {
+            game.currentMapData = { version: 1 };
+            game.goalAreaSize = 5;
+            // One wall at (0,0) — home at (3,3) can still escape to edge
+            CookieUtils.setCookie('submission_2026-01-01', JSON.stringify({
+                __version: '1.2', goal: 5, score: 5, walls: [[0, 0]], timestamp: '', time: 0, hintsUsed: [], mapVersion: 1
+            }), 1);
+            const result = game.loadSubmission('2026-01-01');
+            expect(result).toBeNull();
+            expect(CookieUtils.getCookie('submission_2026-01-01')).toBeNull();
+        });
+
+        test('returns valid submission when penning walls are correct', () => {
+            game.currentMapData = { version: 1 };
+            game.goalAreaSize = 5;
+            // Walls at (2,3),(4,3),(3,2),(3,4) pen the home at (3,3) in the 7×7 test grid
+            const penningWalls = [[2,3],[4,3],[3,2],[3,4]];
+            CookieUtils.setCookie('submission_2026-01-01', JSON.stringify({
+                __version: '1.2', goal: 5, score: 5, walls: penningWalls, timestamp: '', time: 0, hintsUsed: [], mapVersion: 1
+            }), 1);
+            const result = game.loadSubmission('2026-01-01');
+            expect(result).not.toBeNull();
+            expect(result.walls).toEqual(penningWalls);
+        });
+
+        test('also clears progress and timer cookies on corrupted submission reset', () => {
+            game.currentMapData = { version: 1 };
+            CookieUtils.setCookie('submission_2026-01-01', JSON.stringify({
+                __version: '1.2', goal: 5, score: 5, walls: [], timestamp: '', time: 0, hintsUsed: [], mapVersion: 1
+            }), 1);
+            CookieUtils.setCookie('progress_2026-01-01', JSON.stringify({ bestScore: 5, bestWalls: [] }), 1);
+            CookieUtils.setCookie('timer_2026-01-01', JSON.stringify({ elapsed: 30 }), 1);
+
+            game.loadSubmission('2026-01-01');
+
+            expect(CookieUtils.getCookie('submission_2026-01-01')).toBeNull();
+            expect(CookieUtils.getCookie('progress_2026-01-01')).toBeNull();
+            expect(CookieUtils.getCookie('timer_2026-01-01')).toBeNull();
         });
     });
 });

@@ -642,17 +642,16 @@ class Game {
 
     /**
      * Return the version number of the currently loaded map.
-     * Maps that do not have a version field are treated as version 0.
-     * Save data without a mapVersion field defaults to 1 (the first
-     * released version), so existing saves load cleanly against v1 maps
-     * without triggering spurious migration.  Migration fires only when a
-     * map is explicitly bumped to v2+.
+     * Maps that do not have a version field default to CONSTANTS.INITIAL_MAP_VERSION (1).
+     * Save data without a mapVersion field also defaults to 1, so existing saves load
+     * cleanly against v1 maps without triggering spurious migration.
+     * Migration fires only when a map is explicitly bumped to v2+.
      * @returns {number}
      */
     _getCurrentMapVersion() {
         return (this.currentMapData && typeof this.currentMapData.version === 'number')
             ? this.currentMapData.version
-            : 0;
+            : CONSTANTS.INITIAL_MAP_VERSION;
     }
 
     /**
@@ -1533,7 +1532,16 @@ class Game {
                 const data = CloudMigration.migrateSubmission(JSON.parse(value));
                 // Return null for pre-submission data (hints stored before formal submission)
                 if (typeof data.score !== 'number') return null;
-                return this._handleMapVersionCheck(dateString, data);
+                const migrated = this._handleMapVersionCheck(dateString, data);
+                if (!migrated) return null;
+                // Validate that the stored walls actually result in a penned state.
+                // A corrupted submission (e.g. from a failed migration) where the walls do
+                // not pen the pet is treated as lost and reset so the user can start fresh.
+                if (this._isSubmissionCorrupted(migrated)) {
+                    this.resetLevelData(dateString);
+                    return null;
+                }
+                return migrated;
             } catch (e) {
                 console.error('Failed to parse submission cookie:', e);
                 return null;
@@ -1543,11 +1551,64 @@ class Game {
     }
 
     /**
+     * Check whether a submission's wall positions actually result in the pet being penned.
+     * Applies the saved walls to a temporary copy of the initial map and verifies that
+     * home can no longer reach the grid edge.  Returns true when the submission is
+     * corrupted (walls do NOT pen the pet) and should be discarded.
+     *
+     * Returns false (assume valid) when required tile helpers or pathfinding utilities
+     * are unavailable, to avoid false positives that would incorrectly reset valid saves.
+     *
+     * @param {Object} submission - Submission data with a walls array
+     * @returns {boolean} True if the submission is corrupted (pet not penned), false if valid
+     */
+    _isSubmissionCorrupted(submission) {
+        if (!submission || !Array.isArray(submission.walls)) return false;
+        // Zero walls can never pen the pet (home is always interior on valid maps).
+        if (submission.walls.length === 0) return true;
+        if (!this.grid || !this.grid.initialTiles) return false;
+        if (typeof PathfindingUtils === 'undefined') return false;
+        // Tile helpers are required to apply wall transforms correctly.
+        // If they are unavailable we cannot validate, so we assume the submission is valid
+        // to avoid resetting saves based on incomplete information.
+        if (typeof isWallPlaceable !== 'function' || typeof getWallTransform !== 'function') {
+            return false;
+        }
+
+        // Build a temporary copy of the initial map and apply the submitted walls.
+        // This is performed at most once per level load (only when a submission exists).
+        const mapCopy = this.grid.initialTiles.map(row => [...row]);
+        const rows = mapCopy.length;
+        const cols = rows > 0 ? mapCopy[0].length : 0;
+
+        for (const wallPos of submission.walls) {
+            if (!Array.isArray(wallPos) || wallPos.length < 2) return true; // malformed entry
+            const [r, c] = wallPos;
+            if (r < 0 || r >= rows || c < 0 || c >= cols) return true; // out-of-bounds
+            const currentTile = mapCopy[r][c];
+            // Only transform tiles that accept a wall placement; others are skipped.
+            if (isWallPlaceable(currentTile)) {
+                mapCopy[r][c] = getWallTransform(currentTile);
+            }
+        }
+
+        // If home can still reach the edge, the pet is not penned → submission is corrupted.
+        return PathfindingUtils.hasPathToEdge(mapCopy);
+    }
+
+    /**
      * Check whether saved submission data is compatible with the current map version.
      * If versions match, returns data unchanged.
      * If the user previously achieved a perfect score, migrates the submission to use
      * the current map's optimal solution and goal, keeping the original timestamp.
      * Otherwise, deletes all save data for this date so the user starts fresh.
+     *
+     * Migration rules on version mismatch:
+     *   - No goal stored at submission time (legacy save): always reset — the original
+     *     goal is unknown, so we cannot reliably determine whether the score was perfect.
+     *   - Goal stored and score was 100% (score >= stored goal): migrate to current optimal.
+     *   - Goal stored but score was not 100%: reset so the user can retry the updated map.
+     *
      * @param {string} dateString - Puzzle date
      * @param {Object} data - Submission data object (already schema-migrated)
      * @returns {Object|null} Migrated data, or null if data was cleared
@@ -1560,14 +1621,18 @@ class Game {
             return data;
         }
 
-        // Version mismatch — check if the user previously achieved a perfect score.
-        // Use the goal stored at submission time (data.goal) when available; older saves
-        // that lack this field fall back to the current map's goal.  The `>=` comparison
-        // is intentional: a score above the reference goal is still "perfect" and can
-        // legitimately occur when the map is revised to have a lower goal after the user
-        // already achieved the previous (higher) goal.
-        const referenceGoal = typeof data.goal === 'number' ? data.goal : this.goalAreaSize;
-        const isPerfect = typeof data.score === 'number' && data.score >= referenceGoal;
+        // Version mismatch — only attempt migration when the stored goal is known.
+        // Legacy saves (goal === null) cannot be reliably assessed for a perfect score,
+        // so they are always reset to avoid keeping invalid or ambiguous save states.
+        if (typeof data.goal !== 'number') {
+            this.resetLevelData(dateString);
+            return null;
+        }
+
+        // The `>=` comparison is intentional: a score above the reference goal is still
+        // "perfect" and can legitimately occur when the map is revised to have a lower
+        // goal after the user already achieved the previous (higher) goal.
+        const isPerfect = typeof data.score === 'number' && data.score >= data.goal;
 
         if (isPerfect && this.optimalSolution && this.optimalSolution.length > 0) {
             // Migrate: update walls and score to the current optimal solution.
