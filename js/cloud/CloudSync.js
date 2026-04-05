@@ -696,12 +696,22 @@ const CloudSync = (function () {
                     CookieUtils.setCookie(cookieName, JSON.stringify(localData), 365);
                     return false;
                 }
-                if (localScore === cloudScore &&
-                    localData.timestamp && migratedCloud.timestamp &&
-                    new Date(localData.timestamp) < new Date(migratedCloud.timestamp)) {
-                    // Rule E tiebreak: same score; local was submitted first — keep local (migrated)
-                    CookieUtils.setCookie(cookieName, JSON.stringify(localData), 365);
-                    return false;
+                if (localScore === cloudScore) {
+                    // Rule E tiebreak 1: prefer newer map version (migration result should never be
+                    // overwritten by an older-version cloud record, even if scores and timestamps match).
+                    const localMapVer = typeof localData.mapVersion === 'number' ? localData.mapVersion : 1;
+                    const cloudMapVer = typeof migratedCloud.mapVersion === 'number' ? migratedCloud.mapVersion : 1;
+                    if (localMapVer > cloudMapVer) {
+                        CookieUtils.setCookie(cookieName, JSON.stringify(localData), 365);
+                        return false;
+                    }
+                    // Rule E tiebreak 2: same map version — earlier submission timestamp wins
+                    if (localData.timestamp && migratedCloud.timestamp &&
+                        new Date(localData.timestamp) < new Date(migratedCloud.timestamp)) {
+                        // Local was submitted first — keep local (migrated)
+                        CookieUtils.setCookie(cookieName, JSON.stringify(localData), 365);
+                        return false;
+                    }
                 }
             } catch { /* fall through to use cloud data */ }
         }
@@ -848,6 +858,168 @@ const CloudSync = (function () {
             return DateUtils.getTodayDate();
         }
         return new Date().toISOString().substring(0, 10);
+    }
+
+    /**
+     * Convert a flat solution array (e.g. [r0,c0,r1,c1,...]) stored in map data
+     * into an array of [row,col] pairs used by submission cookies.
+     * Mirrors parseCompactSolution() from Grid.js without requiring that module.
+     * @param {number[]} flatArr
+     * @returns {Array<[number,number]>}
+     */
+    function _parseSolutionFlat(flatArr) {
+        if (!Array.isArray(flatArr)) return [];
+        const pairs = [];
+        for (let i = 0; i + 1 < flatArr.length; i += 2) {
+            pairs.push([flatArr[i], flatArr[i + 1]]);
+        }
+        return pairs;
+    }
+
+    /**
+     * Run map-version migration on local submission cookies for the given dates.
+     *
+     * For each date that has both a local submission cookie and an entry in
+     * `mapsDatabase`, this function:
+     *   1. Schema-migrates the cookie to the current CloudMigration version.
+     *   2. Compares the submission's `mapVersion` to the map's current version.
+     *   3. If they differ:
+     *        - Perfect score (score >= stored goal): migrates walls and score to
+     *          the current optimal solution, then force-syncs to cloud.
+     *        - Non-perfect score or no goal stored: deletes the submission (and
+     *          its progress/timer cookies) locally and from cloud so the user
+     *          can attempt the updated map fresh.
+     *
+     * The migrated/reset data is force-synced to cloud unconditionally so that
+     * no subsequent cloud-sync phase can revert a migration result.
+     *
+     * This should be called after each cloud-sync phase fires `cloudsync:synced`
+     * and whenever `mapsDatabase` first becomes available (e.g. when the level
+     * selector is opened) so that all visible level badges are accurate.
+     *
+     * Priority: pass a filtered `dates` array to migrate current date first,
+     * then current month, then all — matching the phased-sync strategy.
+     *
+     * @param {Object} mapsDatabase  - Map data keyed by YYYY-MM-DD date string.
+     *                                 Each value must have at least
+     *                                 { version, goal, optimalSolution }.
+     * @param {string[]|null} [dates] - Dates to check. Omit (or pass null) to
+     *                                  check every local `submission_*` cookie.
+     * @returns {{ migrated: string[], reset: string[] }}
+     *          Dates whose local cookies were changed.
+     */
+    function migrateLocalSubmissions(mapsDatabase, dates) {
+        if (!mapsDatabase || typeof mapsDatabase !== 'object') {
+            return { migrated: [], reset: [] };
+        }
+
+        /** Build the list of dates to inspect. */
+        let datesToCheck;
+        if (Array.isArray(dates)) {
+            datesToCheck = dates.filter(function (d) { return mapsDatabase[d]; });
+        } else {
+            // Scan all submission_* cookies for dates that appear in mapsDatabase.
+            datesToCheck = [];
+            if (typeof document !== 'undefined' && document.cookie) {
+                document.cookie.split(';').forEach(function (cookie) {
+                    const name = cookie.trim().split('=')[0];
+                    if (name.startsWith('submission_')) {
+                        const d = name.slice('submission_'.length);
+                        if (/^\d{4}-\d{2}-\d{2}$/.test(d) && mapsDatabase[d]) {
+                            datesToCheck.push(d);
+                        }
+                    }
+                });
+            }
+        }
+
+        const migrated = [];
+        const reset = [];
+
+        datesToCheck.forEach(function (dateString) {
+            const mapData = mapsDatabase[dateString];
+            if (!mapData) return;
+
+            const cookieName = 'submission_' + dateString;
+            const rawValue = CookieUtils.getCookie(cookieName);
+            if (!rawValue) return;
+
+            let data;
+            try {
+                data = CloudMigration.migrateSubmission(JSON.parse(rawValue));
+            } catch (e) {
+                return; // malformed cookie — leave for full sync to clean up
+            }
+
+            // Skip pre-submission records (hints saved before formal submission)
+            if (typeof data.score !== 'number') return;
+
+            const currentVersion = typeof mapData.version === 'number'
+                ? mapData.version
+                : (typeof CONSTANTS !== 'undefined' ? CONSTANTS.INITIAL_MAP_VERSION : 1);
+            const savedVersion = typeof data.mapVersion === 'number' ? data.mapVersion : 1;
+
+            if (savedVersion === currentVersion) return; // already at current version
+
+            // ── Version mismatch ─────────────────────────────────────────────────
+            if (typeof data.goal !== 'number') {
+                // Legacy save without a stored goal — cannot assess perfect score → reset.
+                _deleteSubmissionAndProgress(dateString);
+                reset.push(dateString);
+                return;
+            }
+
+            const isPerfect = data.score >= data.goal;
+            const optimalFlat = mapData.optimalSolution;
+            const optimal = (Array.isArray(optimalFlat) && optimalFlat.length > 0)
+                ? _parseSolutionFlat(optimalFlat)
+                : null;
+
+            if (isPerfect && optimal) {
+                // Migrate: update to the current optimal solution and goal.
+                // Preserve the original submission timestamp so solve-time is not lost.
+                const migratedData = Object.assign({}, data, {
+                    mapVersion: currentVersion,
+                    goal: mapData.goal,
+                    score: mapData.goal,
+                    walls: optimal,
+                });
+                CookieUtils.setCookie(cookieName, JSON.stringify(migratedData), 365);
+                // Force-sync the migrated result to cloud so subsequent sync phases
+                // cannot revert this migration by re-applying the old cloud record.
+                if (isConfigured() && isLoggedIn()) {
+                    saveSubmission(dateString, migratedData);
+                }
+                // Stale in-progress data is no longer valid for the new map version.
+                CookieUtils.deleteCookie('progress_' + dateString);
+                CookieUtils.deleteCookie('timer_' + dateString);
+                migrated.push(dateString);
+            } else {
+                // Non-perfect score or no optimal solution — reset so the user can
+                // retry the updated map.
+                _deleteSubmissionAndProgress(dateString);
+                reset.push(dateString);
+            }
+        });
+
+        return { migrated: migrated, reset: reset };
+    }
+
+    /**
+     * Delete submission, progress, and timer cookies for a date, and remove
+     * the corresponding Firestore documents when signed in.
+     * Used by migrateLocalSubmissions when a submission must be reset.
+     * @param {string} dateString - Puzzle date (YYYY-MM-DD)
+     */
+    function _deleteSubmissionAndProgress(dateString) {
+        CookieUtils.deleteCookie('submission_' + dateString);
+        CookieUtils.deleteCookie('progress_' + dateString);
+        CookieUtils.deleteCookie('timer_' + dateString);
+        if (isConfigured() && isLoggedIn()) {
+            deleteSubmission(dateString);
+            deleteSubmission(PROGRESS_DOC_PREFIX + dateString);
+            deleteSubmission(TIMER_DOC_PREFIX + dateString);
+        }
     }
 
     /**
@@ -1674,6 +1846,12 @@ const CloudSync = (function () {
         _updateAuthUI: updateAuthUI,
         // Exposed for unit testing of phased sync helpers.
         _getCurrentDate: _getCurrentDate,
+        // Map-version migration for all local submissions using available map data.
+        // Called after each cloud-sync phase and when the level selector opens.
+        migrateLocalSubmissions: migrateLocalSubmissions,
+        // Exposed for unit testing of migration helpers.
+        _parseSolutionFlat: _parseSolutionFlat,
+        _deleteSubmissionAndProgress: _deleteSubmissionAndProgress,
     };
 })();
 

@@ -4176,4 +4176,131 @@ describe('Game — Map version migration', () => {
             expect(CookieUtils.getCookie('timer_2026-01-01')).toBeNull();
         });
     });
+
+    // ------------------------------------------------------------------
+    // _handleMapVersionCheck — overrideMapData parameter
+    // ------------------------------------------------------------------
+    describe('_handleMapVersionCheck() — overrideMapData parameter', () => {
+        test('uses overrideMapData version instead of currentMapData version', () => {
+            // currentMapData reports v2; override says v1 — should match the saved v1 submission.
+            game.currentMapData = { version: 2 };
+            const overrideMapData = { version: 1, goal: 10, optimalSolution: [1, 2, 3, 4] };
+            const data = { score: 10, goal: 10, walls: [[0, 0]], mapVersion: 1 };
+
+            const result = game._handleMapVersionCheck('2026-01-01', data, overrideMapData);
+
+            // savedVersion (1) === overrideMapData.version (1) → no migration, returns unchanged
+            expect(result).toBe(data);
+        });
+
+        test('migrates using overrideMapData goal and optimalSolution on version change', () => {
+            // currentMapData (game level) is v1; override is the actual date's v2 map.
+            game.currentMapData = { version: 1 };
+            game.goalAreaSize = 999; // wrong goal for this date — should NOT be used
+            game.optimalSolution = [[9, 9]]; // wrong solution — should NOT be used
+            const overrideMapData = {
+                version: 2,
+                goal: 15,
+                optimalSolution: [0, 1, 2, 3], // flat array → decoded to [[0,1],[2,3]]
+            };
+            const data = { score: 12, goal: 12, walls: [[5, 5]], mapVersion: 1 };
+
+            const result = game._handleMapVersionCheck('2026-01-01', data, overrideMapData);
+
+            expect(result).not.toBeNull();
+            expect(result.mapVersion).toBe(2);
+            expect(result.goal).toBe(15);
+            expect(result.score).toBe(15);
+            // optimalSolution flat [0,1,2,3] decoded via parseCompactSolution (or fallback)
+            expect(Array.isArray(result.walls)).toBe(true);
+        });
+
+        test('resets using overrideMapData when score is non-perfect', () => {
+            game.currentMapData = { version: 1 };
+            game.goalAreaSize = 999;
+            game.optimalSolution = [[9, 9]];
+            const overrideMapData = { version: 2, goal: 20, optimalSolution: [0, 1] };
+            const data = { score: 10, goal: 20, walls: [[0, 0]], mapVersion: 1 };
+
+            CookieUtils.setCookie('submission_2026-01-01', JSON.stringify(data), 1);
+            const result = game._handleMapVersionCheck('2026-01-01', data, overrideMapData);
+
+            expect(result).toBeNull();
+            expect(CookieUtils.getCookie('submission_2026-01-01')).toBeNull();
+        });
+    });
+
+    // ------------------------------------------------------------------
+    // loadSubmission() — overrideMapData parameter
+    // ------------------------------------------------------------------
+    describe('loadSubmission() — overrideMapData parameter', () => {
+        test('uses overrideMapData for version check instead of currentMapData', () => {
+            // Game has v2 loaded as currentLevel; we are checking a different level at v1.
+            game.currentMapData = { version: 2 };
+            game.goalAreaSize = 999;
+            game.optimalSolution = [[9, 9]];
+
+            const overrideMapData = { version: 1, goal: 8, optimalSolution: [2, 3, 4, 5] };
+            const penningWalls = [[2, 3], [4, 3], [3, 2], [3, 4]];
+            CookieUtils.setCookie('submission_2026-01-01', JSON.stringify({
+                __version: '1.2', mapVersion: 1, goal: 8, score: 8,
+                walls: penningWalls, timestamp: 'T', time: 0, hintsUsed: [],
+            }), 1);
+
+            const result = game.loadSubmission('2026-01-01', overrideMapData);
+
+            // savedVersion (1) === overrideMapData.version (1) → no migration needed
+            expect(result).not.toBeNull();
+            expect(result.score).toBe(8);
+            expect(result.mapVersion).toBe(1);
+        });
+
+        test('migrates with overrideMapData when version differs (calendar context)', () => {
+            // Simulate calendar rendering: game has its own level loaded (v3),
+            // but we are checking date X which has mapVersion=1 and should migrate to v2.
+            game.currentMapData = { version: 3 };
+            game.goalAreaSize = 999;
+            game.optimalSolution = [[9, 9]];
+
+            const penningWalls = [[2, 3], [4, 3], [3, 2], [3, 4]];
+            const overrideMapData = {
+                version: 2,
+                goal: 10,
+                optimalSolution: [2, 3, 4, 3, 3, 2, 3, 4], // → penningWalls
+            };
+            CookieUtils.setCookie('submission_2026-02-01', JSON.stringify({
+                __version: '1.2', mapVersion: 1, goal: 10, score: 10,
+                walls: [[0, 0]], timestamp: 'T2', time: 5, hintsUsed: [],
+            }), 1);
+
+            const result = game.loadSubmission('2026-02-01', overrideMapData);
+
+            expect(result).not.toBeNull();
+            expect(result.mapVersion).toBe(2);
+            // score updated to current map's goal
+            expect(result.score).toBe(10);
+            CookieUtils.deleteCookie('submission_2026-02-01');
+        });
+
+        test('skips _isSubmissionCorrupted check when overrideMapData is provided', () => {
+            // With overrideMapData, the grid belongs to a different level, so we skip the
+            // corruption check to avoid false positives.
+            game.currentMapData = { version: 1 };
+            const overrideMapData = { version: 1, goal: 5, optimalSolution: [0, 1] };
+            // walls = [] would be considered corrupted if we ran _isSubmissionCorrupted
+            // (zero walls can never pen), but since overrideMapData is provided, we skip it.
+            CookieUtils.setCookie('submission_2026-03-01', JSON.stringify({
+                __version: '1.2', mapVersion: 1, goal: 5, score: 5,
+                walls: [], timestamp: 'T', time: 0, hintsUsed: [],
+            }), 1);
+
+            // Since overrideMapData is provided, _isSubmissionCorrupted is skipped.
+            // The result depends only on schema/version migration (both match here).
+            const result = game.loadSubmission('2026-03-01', overrideMapData);
+            // score is valid, versions match → returns the submission (no corruption check)
+            expect(result).not.toBeNull();
+            expect(result.score).toBe(5);
+            CookieUtils.deleteCookie('submission_2026-03-01');
+        });
+    });
 });
