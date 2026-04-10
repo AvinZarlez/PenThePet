@@ -11,6 +11,8 @@
 
 **A daily logic puzzle — fence in your pet!** PenThePet is a free, browser-based puzzle game where you strategically place walls to create the largest enclosed area for your pet. A new puzzle every day, no install required.
 
+You can read more about the game on [Avin Zarlez's blog](https://www.avinzarlez.com/blog/pen-the-pet/).
+
 ---
 
 ## ⚡ Quick Start
