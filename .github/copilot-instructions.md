@@ -11,6 +11,11 @@ PenThePet is a browser-based daily logic puzzle. Vanilla HTML, CSS, and JavaScri
 - **Follow existing patterns** — look at similar code before writing new code
 - **Run `npm test` after changes** — all tests must pass, coverage must stay above thresholds
 - **Keep docs in sync** — update relevant docs when changing code
+- **Always bump the version** — every PR to `main` MUST increment `"version"` in
+  `package.json`. Use **MINOR** (`1.x`) for new features or content, **MAJOR** (`x.0`)
+  for breaking changes, and **PATCH** (`1.1.x`) only for routine map additions via the
+  automated pipelines. Record the change in `CHANGELOG.md`. A PR check will block merges
+  that omit a version bump.
 
 ## Validation
 
@@ -90,6 +95,7 @@ See [docs/MAP_GENERATION.md](../docs/MAP_GENERATION.md).
 
 ## Documentation
 
+- [CHANGELOG.md](../CHANGELOG.md) — version history and release notes
 - [docs/CODE_STRUCTURE.md](../docs/CODE_STRUCTURE.md) — every file's purpose and connections
 - [docs/ARCHITECTURE.md](../docs/ARCHITECTURE.md) — design decisions and tech choices
 - [docs/TESTING.md](../docs/TESTING.md) — test files, running tests, writing tests
